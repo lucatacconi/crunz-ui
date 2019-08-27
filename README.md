@@ -10,12 +10,12 @@
 
 ## Installation and application setup
 
-It's recommended that you use [Composer](https://getcomposer.org/) to install Silly-vue-scaffolding.
+It's recommended that you use [Composer](https://getcomposer.org/) to install Crunz-ui.
 
 Access the **Document Root** folder on your **Apache Server** or one of the configured virtual hosts and run the following command:
 ```
 bash
-$ composer create-project lucatacconi/silly-vue-scaffolding
+$ composer create-project lucatacconi/crunz-ui
 ```
 
 Configure the main application information and environment by editing /config/application.json and .env file
