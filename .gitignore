@@ -1,0 +1,20 @@
+
+#compiled
+var/logs/*
+
+# Logs files
+*.log
+
+# Zipped files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+
+/vendor/*
+composer.lock

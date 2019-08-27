@@ -1,0 +1,29 @@
+{
+    "name": "lucatacconi/crunz-ui",
+    "description": "User interface for lavary/crunz.",
+    "type": "project",
+    "keywords": [
+        "Slim3", "Api", "JWT", "Vue", "Vuetify", "Router", "Http-vue-loader", "Protected area", "Login system", "Menu tool", "Crunz" , "Crontab"
+    ],
+    "homepage": "http://www.monolite.net",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Luca Tacconi",
+            "email": "luca.tacconi@monolite.net",
+            "homepage": "http://www.monolite.net",
+            "role": "Developer"
+        }
+    ],
+
+    "require": {
+        "slim/slim": "^3.12",
+        "monolog/monolog": "^1.24",
+        "tuupola/base62": "^2.0",
+        "tuupola/slim-jwt-auth": "^3.0",
+        "tuupola/slim-basic-auth": "^3.0",
+        "vlucas/phpdotenv": "^2.4",
+        "twig/twig": "^2.0",
+        "lavary/crunz": "^2.0"
+    }
+}
