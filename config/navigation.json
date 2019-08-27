@@ -1,0 +1,104 @@
+{
+
+    "bootstrapPage":{
+        "route": "/dashboard",
+        "title": "Dashboard"
+    },
+
+    "navigationMap" :
+    [
+        {
+            "title": "Dashboard",
+            "subtitle": "App main page",
+            "allowed":[],
+            "visible": true,
+
+            "action":{
+                "path": "/dashboard",
+                "component": "../../app/sections/dashboard/Dashboard.vue"
+            },
+
+            "layout":{
+                "icon":"mdi-view-dashboard-variant",
+                "disabled": false,
+                "color": "red--text",
+                "class": false
+            }
+        },
+
+        {
+            "divider": true,
+            "visible": true
+        },
+
+        {
+            "title": "App setup",
+            "subtitle": "Download and configuration",
+            "allowed": ["admin"],
+            "visible": true,
+            "layout": {
+                "icon": "mdi-menu",
+                "expanded": true,
+                "disabled": false,
+                "color": false,
+                "class": false
+            },
+            "subMenuItems":[
+                {
+                    "title": "Scaffolding setup",
+                    "subtitle": "hot to install",
+                    "allowed": ["admin"],
+                    "visible": true,
+
+                    "action":{
+                        "path": "/doc/scaffoldingSetup",
+                        "component": "../../app/sections/documentation/ScaffoldingSetup.vue"
+                    },
+
+                    "layout":{
+                        "icon": "mdi-settings-outline",
+                        "disabled": false,
+                        "color": false,
+                        "class": false
+                    }
+                },
+                {
+                    "title": "User configuration",
+                    "subtitle": "Navigation setup",
+                    "allowed": ["admin"],
+                    "visible": true,
+
+                    "action":{
+                        "path": "/doc/userSetup",
+                        "component": "../../app/sections/documentation/UsersSetup.vue"
+                    },
+
+                    "layout":{
+                        "icon": "mdi-account-multiple",
+                        "disabled": false,
+                        "color": false,
+                        "class": false
+                    }
+                },
+                {
+                    "title": "Menu configuration",
+                    "subtitle": "Navigation setup",
+                    "allowed": ["admin"],
+                    "visible": true,
+
+                    "action":{
+                        "path": "/doc/navigationSetup",
+                        "component": "../../app/sections/documentation/NavigationSetup.vue"
+                    },
+
+                    "layout":{
+                        "icon": "mdi-dots-vertical-circle",
+                        "disabled": false,
+                        "color": false,
+                        "class": false
+                    }
+                }
+            ]
+        }
+    ]
+}

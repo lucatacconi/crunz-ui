@@ -1,0 +1,32 @@
+{
+    "name": "crunz-ui",
+    "version": "0.0.1",
+    "description": "User interface for lavary/crunz",
+    "dependencies": {
+        "slim/slim": "^3.12",
+        "monolog/monolog": "^1.24",
+        "tuupola/base62": "^2.0",
+        "tuupola/slim-jwt-auth": "^3.0",
+        "tuupola/slim-basic-auth": "^3.0",
+        "vlucas/phpdotenv": "^2.4",
+        "twig/twig": "^2.0",
+        "lavary/crunz": "^2.0"
+    },
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lucatacconi/crunz-ui.git"
+    },
+    "keywords": [
+        "Slim3", "Api", "JWT", "Vue", "Vuetify", "Router", "Http-vue-loader", "Protected area", "Login system", "Menu tool", "Crunz" , "Crontab"
+    ],
+    "author": "Luca Tacconi, Emanuele Marchesotti",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/lucatacconi/crunz-ui/issues"
+    },
+    "homepage": "https://github.com/lucatacconi/crunz-ui#readme"
+}

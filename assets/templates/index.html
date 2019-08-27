@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="{{ application.language }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="application-name" content="{{ application.name }}">
+        <meta name="author" content="{{ application.authors }}">
+        <meta name="keywords" content="{{ application.keywords }}">
+        <meta name="description" content="{{ application.description }}">
+
+        <meta name="robots" content="index, nofollow">
+
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Material+Icons" rel="stylesheet">
+        <link href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css" rel="stylesheet">
+
+        {% if run_mode == "PRODU" %}
+            <link href="https://cdn.jsdelivr.net/npm/vuetify@2.0.5/dist/vuetify.min.css" rel="stylesheet">
+        {% else %}
+            <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+        {% endif %}
+
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+        <link href="../assets/images/logo.png" rel="icon" type="image/png">
+        <link href="../assets/css/app.css" rel="stylesheet">
+
+        <title>{{ application.title }}</title>
+    </head>
+    <body>
+        <div id="edge">
+            <v-app>
+                <container :showloading="showloading"></container>
+            </v-app>
+        </div>
+
+        {% if run_mode == "PRODU" %}
+            <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/vuetify@2.0.5/dist/vuetify.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/vue-router@3.1.2/dist/vue-router.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/axios@0.19.0/dist/axios.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/vee-validate@2.2.14/dist/vee-validate.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8.15.3/dist/sweetalert2.all.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/moment.min.js"></script>
+        {% else %}
+            <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+            <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+            <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/vee-validate@latest/dist/vee-validate.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+            <script src="https://momentjs.com/downloads/moment.min.js"></script>
+        {% endif %}
+
+        <script src="../assets/js/httpVueLoader.js"></script>
+        <script src="../assets/js/utils.js"></script>
+
+        <script>
+
+            var lang = document.documentElement.lang;
+
+            Vue.use(VeeValidate, { locale: lang });
+            Vue.use(Vuetify);
+            Vue.use(VueRouter)
+            Vue.config.productionTip = false;
+
+            const router = new VueRouter();
+
+            const Edge = new Vue({
+                el: '#edge',
+                data:{
+                    showloading: false
+                },
+                router,
+                vuetify: new Vuetify(),
+                components: {
+                    'container': httpVueLoader('../app/shareds/Container.vue')
+                }
+            })
+        </script>
+    </body>
+</html>
