@@ -32,8 +32,8 @@
         },
 
         {
-            "title": "App setup",
-            "subtitle": "Download and configuration",
+            "title": "Crunz setup",
+            "subtitle": "Setup crunz tasks",
             "allowed": ["admin"],
             "visible": true,
             "layout": {
@@ -45,54 +45,54 @@
             },
             "subMenuItems":[
                 {
-                    "title": "Scaffolding setup",
-                    "subtitle": "hot to install",
+                    "title": "Data table",
+                    "subtitle": "Show tasks list",
                     "allowed": ["admin"],
                     "visible": true,
 
                     "action":{
-                        "path": "/doc/scaffoldingSetup",
-                        "component": "../../app/sections/documentation/ScaffoldingSetup.vue"
+                        "path": "/menu/DataTable",
+                        "component": "../../app/sections/menu/DataTable.vue"
                     },
 
                     "layout":{
-                        "icon": "mdi-settings-outline",
+                        "icon": "assignment",
                         "disabled": false,
                         "color": false,
                         "class": false
                     }
                 },
                 {
-                    "title": "User configuration",
-                    "subtitle": "Navigation setup",
+                    "title": "Monthly calendar",
+                    "subtitle": "Show monthly tasks",
                     "allowed": ["admin"],
                     "visible": true,
 
                     "action":{
-                        "path": "/doc/userSetup",
-                        "component": "../../app/sections/documentation/UsersSetup.vue"
+                        "path": "/menu/MonthlyCalendar",
+                        "component": "../../app/sections/menu/MonthlyCalendar.vue"
                     },
 
                     "layout":{
-                        "icon": "mdi-account-multiple",
+                        "icon": "calendar_today",
                         "disabled": false,
                         "color": false,
                         "class": false
                     }
                 },
                 {
-                    "title": "Menu configuration",
-                    "subtitle": "Navigation setup",
+                    "title": "Daily calendar",
+                    "subtitle": "Show daily tasks",
                     "allowed": ["admin"],
                     "visible": true,
 
                     "action":{
-                        "path": "/doc/navigationSetup",
-                        "component": "../../app/sections/documentation/NavigationSetup.vue"
+                        "path": "/menu/DailyCalendar",
+                        "component": "../../app/sections/menu/DailyCalendar.vue"
                     },
 
                     "layout":{
-                        "icon": "mdi-dots-vertical-circle",
+                        "icon": "assignment_turned_in",
                         "disabled": false,
                         "color": false,
                         "class": false
