@@ -20,7 +20,7 @@
                                     <v-icon color="#607d8b" href="#" @click="editItem(item)">
                                         edit
                                     </v-icon>
-                                    <v-icon color="red" href="#" @click="prova()">
+                                    <v-icon color="red" href="#" @click="deleteItem(item)">
                                         delete
                                     </v-icon>
                                 </center>
@@ -40,7 +40,7 @@
                         <td>
                             {{ item.next_execution }}
                         </td>
-                        <td>
+                        <td :class="item.last_execution_status.toUpperCase()=='OK' ? 'green--text' : 'red--text'" >
                             {{ item.last_execution_status }}
                         </td>
                         </tr>
@@ -95,6 +95,14 @@ module.exports = {
                     next_execution: "12:30",
                     last_execution_status: "OK",
                 },
+                {
+                    file: 'Task2.php',
+                    description: "Task di prova",
+                    execution_frequency: "5",
+                    execution_time: "1:00",
+                    next_execution: "12:30",
+                    last_execution_status: "KO",
+                },
             ]
         }
     },
@@ -117,6 +125,53 @@ module.exports = {
             this.showEditModal = false;
             // this.form.formdata = false;
             // this.readData();
+        },
+        deleteItem: function (rowdata) {
+            var self = this;
+            // self.activeRow = rowdata.ENCA_IDASOL;
+            Swal.fire({
+                title: 'Cancellazione record',
+                text: "Vuoi procedere con la cancellazione ?",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f86c6b',
+                cancelButtonColor: '#20a8d8',
+                confirmButtonText: 'CANCELLA',
+                cancelButtonText: 'Annulla'
+            }).then( function (result) {
+                // self.activeRow = 0;
+                if (result.value) {
+                    // var params = {
+                    //     "p_uid": Util.jwtDecodeAccount("UID"),
+                    //     // "p_codcli": Util.jwtDecodeAccount("CODCLI"),
+                    //     "p_id": rowdata.ENCA_IDASOL,
+                    // };
+                    // ApiService.post("/index.php/anno-accademico/delete",params)
+                    // .then(function (response) {
+                    //     var apiCallResult = response.data;
+                    //     if(apiCallResult.status == 'OK'){
+                    //         Swal(
+                    //             'Cancellazione!',
+                    //             'Operazione effettuata correttamente.',
+                    //             'success'
+                    //         );
+                    //         self.readData();
+                    //     } else {
+                    //         Swal(
+                    //             'Cancellazione!',
+                    //             'Errori nello svolgimento dell\'operazione: '+apiCallResult.error,
+                    //             'warning'
+                    //         );
+                    //     }
+                    // }).catch(function () {
+                    //     Swal(
+                    //         'Cancellazione!',
+                    //         'Errori nello svolgimento dell\'operazione.',
+                    //         'warning'
+                    //     );
+                    // });
+                }
+            });
         },
     },
     components:{
