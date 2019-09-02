@@ -1,5 +1,10 @@
 <template>
     <div>
+        <!-- Task edit modal -->
+        <task-edit
+            v-if="showEditModal"
+            @on-close-edit-modal="closeEditModal"
+        ></task-edit>
         <v-card>
 
             <v-data-table
@@ -12,7 +17,7 @@
                         <tr v-for="(item,i) in items" :key="i">
                             <td>
                                 <center>
-                                    <v-icon color="#607d8b" href="#" @click="prova()">
+                                    <v-icon color="#607d8b" href="#" @click="editItem(item)">
                                         edit
                                     </v-icon>
                                     <v-icon color="red" href="#" @click="prova()">
@@ -56,6 +61,7 @@
             fab
             dark
             color="#607d8b"
+            @click="newItem()"
             >
             <v-icon>add</v-icon>
         </v-btn>
@@ -66,6 +72,7 @@
 module.exports = {
     data:function(){
         return{
+            showEditModal:false,
             headers: [
                 {
                     text: 'Operations',
@@ -94,7 +101,26 @@ module.exports = {
     methods: {
         prova:function(){
             console.log("dfdf")
-        }
+        },
+        newItem: function () {
+            // this.activeRow = 0;
+            this.showEditModal = true;
+            // this.form.formdata = false;
+        },
+        editItem: function (rowdata) {
+            // this.activeRow = rowdata.ENCA_IDASOL;
+            this.showEditModal = true;
+            // this.form.formdata = rowdata;
+        },
+        closeEditModal: function () {
+            // this.activeRow = 0;
+            this.showEditModal = false;
+            // this.form.formdata = false;
+            // this.readData();
+        },
     },
+    components:{
+        'task-edit': httpVueLoader('../../shareds/TaskEdit.vue')
+    }
 }
 </script>
