@@ -7,6 +7,12 @@ use Ramsey\Uuid\Uuid;
 use Firebase\JWT\JWT;
 use Tuupola\Base62;
 
+use Crunz\Configuration\Configuration;
+use Crunz\Schedule;
+use Crunz\Task\Collection;
+use Crunz\Task\WrongTaskInstanceException;
+
+
 $app->group('/task', function () use ($app) {
 
     $app->get('/', function ($request, $response, $args) {
@@ -32,34 +38,116 @@ $app->group('/task', function () use ($app) {
             \iterator_to_array($regexIterator)
         );
 
+
+        $aTASKs = [];
         foreach ($files as $taskFile) {
 
-            print_r($taskFile->pathName);
-            die();
+            $schedule = require $taskFile->getRealPath();
+            if (!$schedule instanceof Schedule) {
+                continue;
+            }
+
+            $aEVENTs = $schedule->events();
+
+            foreach ($aEVENTs as $oEVENT) {
+                $row = [];
+
+                //$aTASKs[] = array($taskFile->getPathname(), $taskFile->getFilename(), $taskFile->getRealPath());
+
+                $row["filename"] = $taskFile->getFilename();
+                $row["pathname"] = $taskFile->getPathname();
+                $row["realpath"] = $taskFile->getRealPath();
+                $row["task_decription"] = $oEVENT->description;
 
 
-            // $schedule = require
+                // $row["INFO1"] = $oEVENT->getExpression();
+                // $row["INFO2"] = $oEVENT->getCommandForDisplay();
+                // $row["INFO3"] = $oEVENT->getSummaryForDisplay();
+                // $row["INFO4"] = $oEVENT->every();
 
-        }
+                $file_content = file_get_contents($taskFile->getRealPath(), true);
+                $file_content = str_replace(array(" ","\t","\n","\r"), '', $file_content);
 
-
-
-
-
-
-
-
-        print_r($files);
-        die();
-
+                $task_configuration = '';
+                $start_pos = strpos($file_content, '$task->');
+                $end_pos = strpos($file_content, ');', $start_pos);
+                $task_configuration = substr($file_content, $start_pos+1, ($end_pos+1)-$start_pos);
 
 
-        $data = $files;
+                $row["task_configuration"] = $task_configuration;
 
 
-        // $data["navMap"] = $navigation_map;
-        // $data["bootstrapPage"] = $bootstrapPage;
-        // $data["routes"] = $routes;
+                // $start_pos = strpos($haystack,$start_limiter);
+                // if ($start_pos === FALSE)
+                // {
+                //     return FALSE;
+                // }
+
+                // $end_pos = strpos($haystack,$end_limiter,$start_pos);
+
+                // if ($end_pos === FALSE)
+                // {
+                //    return FALSE;
+                // }
+
+                // return substr($haystack, $start_pos+1, ($end_pos-1)-$start_pos);
+
+                //hourly
+                //daily
+                //weekly
+                //weeklyOn
+                //monthly
+                //quarterly
+                //yearly
+                //( at midnight)
+                //^every([A-Z][a-zA-Z]+)?(Minute|Hour|Day|Month)s?$/
+
+                //dailyAt
+
+                //on / at()
+                // on('13:30'); at('13:30'); on('13:30 2016-03-01');
+
+
+
+
+                //twiceDaily
+                //weekdays
+                //mondays
+                //tuesdays
+                //wednesdays
+                //thursdays
+                //fridays
+                //saturdays
+                //sundays
+
+
+                //between
+                //from
+                //to
+
+
+
+                //days
+                //hour
+                //minute
+                //dayOfMonth
+                //month
+                //dayOfWeek
+
+
+
+
+                $aTASKs[] = $row;
+            }
+        };
+
+
+
+
+
+        $data = $aTASKs;
+
+
 
         return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")

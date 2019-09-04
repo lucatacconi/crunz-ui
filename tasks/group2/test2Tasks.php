@@ -5,10 +5,10 @@ use Crunz\Schedule;
 
 $schedule = new Schedule();
 
-$task = $schedule->run('cp project project-bk');
+$task = $schedule->run('/usr/bin/php email2.php');
 $task
-    ->daily()
-    ->description('Create a backup of the project directory.');
+    ->yearly()
+    ->description('Test Mail 2');
 
 // ...
 
