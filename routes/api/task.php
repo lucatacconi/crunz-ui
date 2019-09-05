@@ -60,7 +60,7 @@ $app->group('/task', function () use ($app) {
                 $row["task_decription"] = $oEVENT->description;
 
 
-                // $row["INFO1"] = $oEVENT->getExpression();
+                $row["expression"] = $oEVENT->getExpression();
                 // $row["INFO2"] = $oEVENT->getCommandForDisplay();
                 // $row["INFO3"] = $oEVENT->getSummaryForDisplay();
                 // $row["INFO4"] = $oEVENT->every();
@@ -75,6 +75,29 @@ $app->group('/task', function () use ($app) {
 
 
                 $row["task_configuration"] = $task_configuration;
+
+
+                $cron = Cron\CronExpression::factory($row["expression"]);
+                //$cron->isDue();
+                $row["next_run"] = $cron->getNextRunDate()->format('Y-m-d H:i:s');
+
+
+                $row["next_run_lst"] = [];
+                $aRUNs = $cron->getMultipleRunDates(30, date("Y-m-01 00:00:00"), false, true);
+                foreach($aRUNs as $aRUN_key => $aRUN){
+                    $row["next_run_lst"][] = $aRUN->format('Y-m-d H:i:s');
+                }
+
+
+
+
+                //$row["next_run_lst"][] = $cron->getMultipleRunDates(30, date("Y-m-01 00:00:00"), false, true);
+
+
+
+                // $cron = Cron\CronExpression::factory('@daily');
+                // $cron->isDue();
+                // die ($cron->getNextRunDate()->format('Y-m-d H:i:s'));
 
 
                 // $start_pos = strpos($haystack,$start_limiter);
