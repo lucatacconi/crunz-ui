@@ -4,6 +4,8 @@
         <task-edit
             v-if="showEditModal"
             @on-close-edit-modal="closeEditModal"
+            :data="form.formdata"
+            :row="activeRow"
         ></task-edit>
         <v-card>
 
@@ -17,10 +19,10 @@
                         <tr v-for="(item,i) in items" :key="i">
                             <td>
                                 <center>
-                                    <v-icon color="#607d8b" href="#" @click="editItem(item)">
+                                    <v-icon color="#607d8b" href="#" @click="editItem(item,i)">
                                         edit
                                     </v-icon>
-                                    <v-icon color="red" href="#" @click="deleteItem(item)">
+                                    <v-icon color="red" href="#" @click="deleteItem(item,i)">
                                         delete
                                     </v-icon>
                                 </center>
@@ -88,7 +90,11 @@ module.exports = {
                 { text: 'Next execution', value: 'next_run' },
                 { text: 'Last execution status', value: 'last_execution_status' },
             ],
-            files: []
+            files: [],
+            activeRow:-1,
+            form:{
+                formdata:{}
+            }
         }
     },
     methods: {
@@ -97,7 +103,6 @@ module.exports = {
             Utils.apiCall("get", "/task/")
             .then(function (response) {
                 if(response.data.length!=0){
-                    console.log(response)
                     self.files=response.data
                 }else{
                     Swal.fire({
@@ -108,18 +113,15 @@ module.exports = {
                 }
             });
         },
-        prova:function(){
-            console.log("dfdf")
-        },
         newItem: function () {
-            // this.activeRow = 0;
+            this.activeRow = -1;
             this.showEditModal = true;
-            // this.form.formdata = false;
+            this.form.formdata = false;
         },
-        editItem: function (rowdata) {
-            // this.activeRow = rowdata.ENCA_IDASOL;
+        editItem: function (rowdata,i) {
+            this.activeRow = i;
             this.showEditModal = true;
-            // this.form.formdata = rowdata;
+            this.form.formdata = rowdata;
         },
         closeEditModal: function () {
             // this.activeRow = 0;
@@ -127,7 +129,7 @@ module.exports = {
             // this.form.formdata = false;
             // this.readData();
         },
-        deleteItem: function (rowdata) {
+        deleteItem: function (rowdata,i) {
             var self = this;
             // self.activeRow = rowdata.ENCA_IDASOL;
             Swal.fire({

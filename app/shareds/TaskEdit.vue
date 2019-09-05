@@ -23,7 +23,14 @@
             </v-toolbar>
 
             <v-card-text class="pt-5">
-                fdssdf
+                <v-text-field
+                    label="Filename"
+                    v-model="formdata.filename"
+                ></v-text-field>
+                <v-textarea
+                    label="Description"
+                    v-model="formdata.task_description"
+                ></v-textarea>
             </v-card-text>
 
         </v-card>
@@ -34,16 +41,29 @@
     module.exports = {
         data: function() {
             return {
-                modalTitle:"Modifica riga"
+                formdata:{
+                    filename:null,
+                    task_description:null
+                }
             }
         },
-        props: [],
+        props: ['data','row'],
+        computed: {
+            modalTitle:function(){
+                return this.row==-1 ? 'Inserisci nuova riga' : 'Modifica riga'
+            }
+        },
         methods: {
             closeModal: function () {
                 var self = this;
                 self.$emit('on-close-edit-modal');
             },
-        }
+        },
+        created:function() {
+            if(this.data){
+                this.formdata=JSON.parse(JSON.stringify(this.data))
+            }
+        },
     }
 </script>
 
