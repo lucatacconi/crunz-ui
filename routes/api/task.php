@@ -52,18 +52,13 @@ $app->group('/task', function () use ($app) {
             foreach ($aEVENTs as $oEVENT) {
                 $row = [];
 
-                //$aTASKs[] = array($taskFile->getPathname(), $taskFile->getFilename(), $taskFile->getRealPath());
-
                 $row["filename"] = $taskFile->getFilename();
                 $row["pathname"] = $taskFile->getPathname();
                 $row["realpath"] = $taskFile->getRealPath();
-                $row["task_description"] = $oEVENT->description;
-
-
+                $row["task_decription"] = $oEVENT->description;
+                $row["subdir"] = str_replace( array($pathtotasks, $row["filename"]),'',$taskFile->getPathname());
                 $row["expression"] = $oEVENT->getExpression();
-                // $row["INFO2"] = $oEVENT->getCommandForDisplay();
-                // $row["INFO3"] = $oEVENT->getSummaryForDisplay();
-                // $row["INFO4"] = $oEVENT->every();
+
 
                 $file_content = file_get_contents($taskFile->getRealPath(), true);
                 $file_content = str_replace(array(" ","\t","\n","\r"), '', $file_content);
@@ -76,10 +71,11 @@ $app->group('/task', function () use ($app) {
 
                 $row["task_configuration"] = $task_configuration;
 
-
+                unset($cron);
                 $cron = Cron\CronExpression::factory($row["expression"]);
-                //$cron->isDue();
                 $row["next_run"] = $cron->getNextRunDate()->format('Y-m-d H:i:s');
+
+
 
 
                 $row["next_run_lst"] = [];

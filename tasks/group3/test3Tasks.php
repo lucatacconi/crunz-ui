@@ -8,6 +8,7 @@ $schedule = new Schedule();
 $task = $schedule->run('/usr/bin/php email3.php');
 $task
     ->mondays()
+    ->on('12:00')
     ->description('Test Mail 3');
 
 // ...
