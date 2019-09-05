@@ -26,23 +26,25 @@
                                 </center>
                             </td>
                         <td>
-                            {{ item.file }}
+                            {{ item.filename }}
                         </td>
                         <td>
-                            {{ item.description }}
+                            {{ item.task_description }}
                         </td>
                         <td>
-                            {{ item.execution_frequency }}
+                            <!-- {{ item.execution_frequency }} -->
                         </td>
                         <td>
-                            {{ item.execution_time }}
+                            <!-- {{ item.execution_time }} -->
                         </td>
                         <td>
-                            {{ item.next_execution }}
+                            {{ item.next_run }}
                         </td>
-                        <td :class="item.last_execution_status.toUpperCase()=='OK' ? 'green--text' : 'red--text'" >
+                        <td>
+                        </td>
+                        <!-- <td :class="item.last_execution_status.toUpperCase()=='OK' ? 'green--text' : 'red--text'" >
                             {{ item.last_execution_status }}
-                        </td>
+                        </td> -->
                         </tr>
                     </tbody>
                 </template>
@@ -79,34 +81,33 @@ module.exports = {
                     sortable: false,
                     value: ''
                 },
-                { text: 'File', value: 'file' },
-                { text: 'Description', value: 'description' },
+                { text: 'File', value: 'filename' },
+                { text: 'Description', value: 'task_description' },
                 { text: 'Execution frequency', value: 'execution_frequency' },
                 { text: 'Execution time', value: 'execution_time' },
-                { text: 'Next execution', value: 'next_execution' },
+                { text: 'Next execution', value: 'next_run' },
                 { text: 'Last execution status', value: 'last_execution_status' },
             ],
-            files: [
-                {
-                    file: 'Task1.php',
-                    description: "Task di prova",
-                    execution_frequency: "5",
-                    execution_time: "1:00",
-                    next_execution: "12:30",
-                    last_execution_status: "OK",
-                },
-                {
-                    file: 'Task2.php',
-                    description: "Task di prova",
-                    execution_frequency: "5",
-                    execution_time: "1:00",
-                    next_execution: "12:30",
-                    last_execution_status: "KO",
-                },
-            ]
+            files: []
         }
     },
     methods: {
+        readData:function(){
+            var self=this
+            Utils.apiCall("get", "/task/")
+            .then(function (response) {
+                if(response.data.length!=0){
+                    console.log(response)
+                    self.files=response.data
+                }else{
+                    Swal.fire({
+                        title: 'Tasks not found',
+                        text: "Tasks not found",
+                        type: 'warning'
+                    })
+                }
+            });
+        },
         prova:function(){
             console.log("dfdf")
         },
@@ -130,14 +131,14 @@ module.exports = {
             var self = this;
             // self.activeRow = rowdata.ENCA_IDASOL;
             Swal.fire({
-                title: 'Cancellazione record',
-                text: "Vuoi procedere con la cancellazione ?",
+                title: 'Delete record',
+                text: "Do you want delete record?",
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#f86c6b',
                 cancelButtonColor: '#20a8d8',
-                confirmButtonText: 'CANCELLA',
-                cancelButtonText: 'Annulla'
+                confirmButtonText: 'DELETE',
+                cancelButtonText: 'Back'
             }).then( function (result) {
                 // self.activeRow = 0;
                 if (result.value) {
@@ -173,6 +174,9 @@ module.exports = {
                 }
             });
         },
+    },
+    created:function() {
+        this.readData()
     },
     components:{
         'task-edit': httpVueLoader('../../shareds/TaskEdit.vue')
