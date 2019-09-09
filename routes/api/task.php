@@ -19,6 +19,24 @@ $app->group('/task', function () use ($app) {
 
         $data = [];
 
+        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+
+        $date_ref = date("Y-m-d H:i:s");
+        if(!empty($params["DATE_REF"])){
+            $date_ref = date($params["INTERVAL_FROM"]);
+        }
+
+        $interval_from = date("Y-m-01 00:00:00");
+        if(!empty($params["DATE_REF"])){
+            $interval_from = date($params["INTERVAL_FROM"]);
+        }
+
+        $interval_to = date("Y-m-t 23:59:59");
+        if(!empty($params["INTERVAL_TO"])){
+            $interval_to = date($params["INTERVAL_TO"]);
+        }
+
+
         if(empty(getenv("TASK_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
@@ -58,6 +76,7 @@ $app->group('/task', function () use ($app) {
                 $row["task_decription"] = $oEVENT->description;
                 $row["subdir"] = str_replace( array($pathtotasks, $row["filename"]),'',$taskFile->getPathname());
                 $row["expression"] = $oEVENT->getExpression();
+                //$row["commnad"] = $oEVENT->getCommandForDisplay();
 
 
                 $file_content = file_get_contents($taskFile->getRealPath(), true);
@@ -66,50 +85,54 @@ $app->group('/task', function () use ($app) {
                 $task_configuration = '';
                 $start_pos = strpos($file_content, '$task->');
                 $end_pos = strpos($file_content, ');', $start_pos);
+
+                if ($start_pos === false || $end_pos === false){
+                    throw new Exception("ERROR - Wrong tasks file format");
+                }
+
                 $task_configuration = substr($file_content, $start_pos+1, ($end_pos+1)-$start_pos);
-
-
+                $task_configuration = preg_replace('(\->description.*?\'\))', '', $task_configuration);
+                $task_configuration = str_replace("//", '', $task_configuration);
                 $row["task_configuration"] = $task_configuration;
+
+                if(substr($row["expression"], 0, 3) == '* *' && substr($row["expression"], 4) != '* * *'){
+                    $row["expression"] = '0 0'.substr($row["expression"],3);
+                }
 
                 unset($cron);
                 $cron = Cron\CronExpression::factory($row["expression"]);
-                $row["next_run"] = $cron->getNextRunDate()->format('Y-m-d H:i:s');
 
+                $row["next_run"] = $cron->getNextRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
 
+                //Calculeted but not necessarily executed
+                $row["last_run"] = $cron->getPreviousRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
 
+                //Calculating run list of the interval
+                $row["interval_run_lst"] = [];
+                $nincrement = 0;
+                $calc_run = false;
 
-                $row["next_run_lst"] = [];
-                $aRUNs = $cron->getMultipleRunDates(30, date("Y-m-01 00:00:00"), false, true);
-                foreach($aRUNs as $aRUN_key => $aRUN){
-                    $row["next_run_lst"][] = $aRUN->format('Y-m-d H:i:s');
+                while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+                    $calc_run = $cron->getNextRunDate($interval_from, $nincrement, true)->format('Y-m-d H:i:s');
+                    if($calc_run > $interval_to){
+                        break;
+                    }
+
+                    $row["interval_run_lst"][] = $calc_run;
+                    $nincrement++;
                 }
 
+                $row["average_duration"] = 0;
+                $row["last_outcome"] = '';
+                $row["last_outcome_message"] = '';
 
-
-
-                //$row["next_run_lst"][] = $cron->getMultipleRunDates(30, date("Y-m-01 00:00:00"), false, true);
-
-
-
-                // $cron = Cron\CronExpression::factory('@daily');
-                // $cron->isDue();
-                // die ($cron->getNextRunDate()->format('Y-m-d H:i:s'));
-
-
-                // $start_pos = strpos($haystack,$start_limiter);
-                // if ($start_pos === FALSE)
-                // {
-                //     return FALSE;
-                // }
-
-                // $end_pos = strpos($haystack,$end_limiter,$start_pos);
-
-                // if ($end_pos === FALSE)
-                // {
-                //    return FALSE;
-                // }
-
-                // return substr($haystack, $start_pos+1, ($end_pos-1)-$start_pos);
+                $task_status = $row["filename"]."_status";
+                $row["status"] = 'active';
+                if(isset($$task_status)){
+                    if(!$$task_status){
+                        $row["status"] = 'paused';
+                    }
+                }
 
                 //hourly
                 //daily
@@ -126,9 +149,6 @@ $app->group('/task', function () use ($app) {
                 //on / at()
                 // on('13:30'); at('13:30'); on('13:30 2016-03-01');
 
-
-
-
                 //twiceDaily
                 //weekdays
                 //mondays
@@ -139,12 +159,9 @@ $app->group('/task', function () use ($app) {
                 //saturdays
                 //sundays
 
-
                 //between
                 //from
                 //to
-
-
 
                 //days
                 //hour
@@ -153,24 +170,36 @@ $app->group('/task', function () use ($app) {
                 //month
                 //dayOfWeek
 
-
-
-
                 $aTASKs[] = $row;
             }
         };
 
-
-
-
-
         $data = $aTASKs;
-
-
 
         return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
 
+    $app->post('/', function ($request, $response, $args) {
+
+        $data = [];
+
+        $data = $aTASKs;
+
+        return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    });
+
+    $app->delete('/', function ($request, $response, $args) {
+
+        $data = [];
+
+        $data = $aTASKs;
+
+        return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    });
 });

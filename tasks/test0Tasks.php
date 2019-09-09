@@ -8,7 +8,7 @@ $schedule = new Schedule();
 $task = $schedule->run('/usr/bin/php email0.php');
 $task
     ->saturdays()
-    ->on('13:30')
+    // ->on('13:30')
     ->description('Test Mail 0');
 
 // ...
