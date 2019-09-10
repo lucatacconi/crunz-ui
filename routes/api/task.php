@@ -78,7 +78,7 @@ $app->group('/task', function () use ($app) {
                 $row["filename"] = $taskFile->getFilename();
                 $row["pathname"] = $taskFile->getPathname();
                 $row["realpath"] = $taskFile->getRealPath();
-                $row["task_decription"] = $oEVENT->description;
+                $row["task_description"] = $oEVENT->description;
                 $row["subdir"] = str_replace( array($pathtotasks, $row["filename"]),'',$taskFile->getPathname());
                 $row["expression"] = $oEVENT->getExpression();
                 //$row["commnad"] = $oEVENT->getCommandForDisplay();

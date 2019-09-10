@@ -37,16 +37,16 @@
                             <!-- {{ item.execution_frequency }} -->
                         </td>
                         <td>
-                            <!-- {{ item.execution_time }} -->
+                            {{ item.average_duration }}
                         </td>
                         <td>
                             {{ item.next_run }}
                         </td>
                         <td>
                         </td>
-                        <!-- <td :class="item.last_execution_status.toUpperCase()=='OK' ? 'green--text' : 'red--text'" >
-                            {{ item.last_execution_status }}
-                        </td> -->
+                        <td :class="item.last_outcome.toUpperCase()=='OK' ? 'green--text' : 'red--text'" >
+                            {{ item.last_outcome }}
+                        </td>
                         </tr>
                     </tbody>
                 </template>
@@ -103,6 +103,7 @@ module.exports = {
             Utils.apiCall("get", "/task/")
             .then(function (response) {
                 if(response.data.length!=0){
+                    console.log(response.data)
                     self.files=response.data
                 }else{
                     Swal.fire({
@@ -133,8 +134,8 @@ module.exports = {
             var self = this;
             // self.activeRow = rowdata.ENCA_IDASOL;
             Swal.fire({
-                title: 'Delete record',
-                text: "Do you want delete record?",
+                title: 'Delete task',
+                text: "Do you want delete task?",
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#f86c6b',
@@ -144,35 +145,23 @@ module.exports = {
             }).then( function (result) {
                 // self.activeRow = 0;
                 if (result.value) {
-                    // var params = {
-                    //     "p_uid": Util.jwtDecodeAccount("UID"),
-                    //     // "p_codcli": Util.jwtDecodeAccount("CODCLI"),
-                    //     "p_id": rowdata.ENCA_IDASOL,
-                    // };
-                    // ApiService.post("/index.php/anno-accademico/delete",params)
-                    // .then(function (response) {
-                    //     var apiCallResult = response.data;
-                    //     if(apiCallResult.status == 'OK'){
-                    //         Swal(
-                    //             'Cancellazione!',
-                    //             'Operazione effettuata correttamente.',
-                    //             'success'
-                    //         );
-                    //         self.readData();
-                    //     } else {
-                    //         Swal(
-                    //             'Cancellazione!',
-                    //             'Errori nello svolgimento dell\'operazione: '+apiCallResult.error,
-                    //             'warning'
-                    //         );
-                    //     }
-                    // }).catch(function () {
-                    //     Swal(
-                    //         'Cancellazione!',
-                    //         'Errori nello svolgimento dell\'operazione.',
-                    //         'warning'
-                    //     );
-                    // });
+                    var self=this
+                    Utils.apiCall("delete", "/task/")
+                    .then(function (response) {
+                        if(response.statusText=='OK'){
+                            Swal.fire({
+                                title: 'Task deleted',
+                                text: "Task deleted",
+                                type: 'success'
+                            })
+                        }else{
+                            Swal.fire({
+                                title: 'Error deleted task',
+                                text: "Error deleted task",
+                                type: 'error'
+                            })
+                        }
+                    });
                 }
             });
         },

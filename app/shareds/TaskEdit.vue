@@ -50,7 +50,7 @@
         props: ['data','row'],
         computed: {
             modalTitle:function(){
-                return this.row==-1 ? 'Inserisci nuova riga' : 'Modifica riga'
+                return this.row==-1 ? 'New task' : 'Modify task - '+this.data.filename
             }
         },
         methods: {
@@ -61,6 +61,7 @@
         },
         created:function() {
             if(this.data){
+                console.log(this.data)
                 this.formdata=JSON.parse(JSON.stringify(this.data))
             }
         },
