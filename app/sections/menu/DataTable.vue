@@ -1,12 +1,20 @@
 <template>
     <div>
+
         <!-- Task edit modal -->
         <task-edit
             v-if="showEditModal"
             @on-close-edit-modal="closeEditModal"
-            :data="form.formdata"
-            :row="activeRow"
+            :rowdata="editData"
         ></task-edit>
+
+        <!-- Upload file modal -->
+        <task-upload
+            v-if="showUploadModal"
+            @on-close-edit-modal="closeUploadModal"
+            :rowdata="uploadData"
+        ></task-upload>
+
         <v-card>
 
             <v-data-table
@@ -19,7 +27,7 @@
                         <tr v-for="(item,i) in items" :key="i">
                             <td>
                                 <center>
-                                    <v-icon color="#607d8b" href="#" @click="editItem(item,i)">
+                                    <v-icon color="#607d8b" href="#" @click="opendEditModal(item,i)">
                                         edit
                                     </v-icon>
                                     <v-icon color="red" href="#" @click="deleteItem(item,i)">
@@ -58,17 +66,56 @@
             </v-data-table>
 
         </v-card>
-        <v-btn
+
+        <v-speed-dial
             absolute
             bottom
-            right
-            fab
-            dark
-            color="#607d8b"
-            @click="newItem()"
-            >
-            <v-icon>add</v-icon>
-        </v-btn>
+            left
+            direction="right"
+            open-on-hover
+            transition="slide-y-reverse-transition"
+        >
+            <template v-slot:activator>
+                <v-btn
+                    color="blue darken-2"
+                    dark
+                    fab
+                    small
+                >
+                    <v-icon>fa fa-cog</v-icon>
+                </v-btn>
+            </template>
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                    <v-btn
+                        fab
+                        dark
+                        small
+                        color="green"
+                        @click="openUploadModal()"
+                        v-on="on"
+                    >
+                        <v-icon>mdi-upload</v-icon>
+                    </v-btn>
+                </template>
+                <span>Upload file</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                    <v-btn
+                        fab
+                        dark
+                        small
+                        color="indigo"
+                        @click="opendEditModal()"
+                        v-on="on"
+                    >
+                        <v-icon>mdi-plus</v-icon>
+                    </v-btn>
+                </template>
+                <span>Add new task</span>
+            </v-tooltip>
+        </v-speed-dial>
     </div>
 </template>
 
@@ -76,6 +123,7 @@
 module.exports = {
     data:function(){
         return{
+            showUploadModal:false,
             showEditModal:false,
             headers: [
                 {
@@ -91,10 +139,8 @@ module.exports = {
                 { text: 'Last execution status', value: 'last_execution_status' },
             ],
             files: [],
-            activeRow:-1,
-            form:{
-                formdata:{}
-            }
+            editData:false,
+            uploadData:false,
         }
     },
     methods: {
@@ -103,7 +149,6 @@ module.exports = {
             Utils.apiCall("get", "/task/")
             .then(function (response) {
                 if(response.data.length!=0){
-                    console.log(response.data)
                     self.files=response.data
                 }else{
                     Swal.fire({
@@ -114,25 +159,26 @@ module.exports = {
                 }
             });
         },
-        newItem: function () {
-            this.activeRow = -1;
+        opendEditModal: function (rowdata) {
             this.showEditModal = true;
-            this.form.formdata = false;
-        },
-        editItem: function (rowdata,i) {
-            this.activeRow = i;
-            this.showEditModal = true;
-            this.form.formdata = rowdata;
+            this.editData = rowdata!=undefined ? rowdata : false;
         },
         closeEditModal: function () {
-            // this.activeRow = 0;
             this.showEditModal = false;
-            // this.form.formdata = false;
+            // this.form. = false;
             // this.readData();
         },
-        deleteItem: function (rowdata,i) {
+         openUploadModal: function (rowdata) {
+            this.showUploadModal = true;
+            // this.editData = rowdata!=undefined ? rowdata : false;
+        },
+        closeUploadModal: function () {
+            this.showUploadModal = false;
+            // this.form. = false;
+            // this.readData();
+        },
+        deleteItem: function (rowdata) {
             var self = this;
-            // self.activeRow = rowdata.ENCA_IDASOL;
             Swal.fire({
                 title: 'Delete task',
                 text: "Do you want delete task?",
@@ -143,7 +189,6 @@ module.exports = {
                 confirmButtonText: 'DELETE',
                 cancelButtonText: 'Back'
             }).then( function (result) {
-                // self.activeRow = 0;
                 if (result.value) {
                     var self=this
                     Utils.apiCall("delete", "/task/")
@@ -170,7 +215,8 @@ module.exports = {
         this.readData()
     },
     components:{
-        'task-edit': httpVueLoader('../../shareds/TaskEdit.vue')
+        'task-edit': httpVueLoader('../../shareds/TaskEdit.vue'),
+        'task-upload': httpVueLoader('../../shareds/FileUpload.vue')
     }
 }
 </script>

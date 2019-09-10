@@ -47,10 +47,10 @@
                 }
             }
         },
-        props: ['data','row'],
+        props: ['rowdata'],
         computed: {
             modalTitle:function(){
-                return this.row==-1 ? 'New task' : 'Modify task - '+this.data.filename
+                return !this.rowdata ? 'New task' : 'Modify task - '+this.rowdata.filename
             }
         },
         methods: {
@@ -60,9 +60,8 @@
             },
         },
         created:function() {
-            if(this.data){
-                console.log(this.data)
-                this.formdata=JSON.parse(JSON.stringify(this.data))
+            if(this.rowdata){
+                this.formdata=JSON.parse(JSON.stringify(this.rowdata))
             }
         },
     }
