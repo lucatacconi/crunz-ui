@@ -12,6 +12,11 @@ use Crunz\Schedule;
 use Crunz\Task\Collection;
 use Crunz\Task\WrongTaskInstanceException;
 
+foreach (glob(__DIR__ . '/../classes/*.php') as $filename){
+    require_once $filename;
+}
+
+use CrunzUI\Task\CrunzUITaskGenerator;
 
 $app->group('/task', function () use ($app) {
 
@@ -181,22 +186,109 @@ $app->group('/task', function () use ($app) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
 
+
     $app->post('/', function ($request, $response, $args) {
 
         $data = [];
 
-        $data = $aTASKs;
+        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+
+        if(empty(getenv("TASK_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
+
+        if(empty(getenv("TASK_NAME"))) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty(getenv("SUBDIR"))) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty(getenv("TASK_DECRIPTION"))) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty(getenv("STATUS"))) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty(getenv("COMMAND"))) throw new Exception("ERROR - Wrong tasks configuration");
+
+
+
+
+
+
+
+
+        $test = new \CrunzUI\Task\CrunzUITaskGenerator();
+
+
+
+        print_r($test);
+        die();
+
+        $data = [];
+
+        $data[] = __DIR__;
+
+        //$data = $aTASKs;
 
         return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
 
+    $app->post('/upload', function ($request, $response, $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+
+
+
+
+
+
+        $test = new \CrunzUI\Task\CrunzUITaskGenerator();
+
+
+
+        print_r($test);
+        die();
+
+        $data = [];
+
+        $data[] = __DIR__;
+
+        //$data = $aTASKs;
+
+        return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    });
+
+
     $app->delete('/', function ($request, $response, $args) {
 
         $data = [];
 
-        $data = $aTASKs;
+        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+
+        if(empty(getenv("TASK_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
+
+        if(empty($params["TASK_PATH"])) throw new Exception("ERROR - No task file to delete submitted");
+
+        if(
+            substr($params["TASK_PATH"], -strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
+            strpos($params["TASK_PATH"], getenv("TASK_DIR") === false)
+        ){
+            if(empty($params["TASK_PATH"])) throw new Exception("ERROR - Task path out of range");
+        }
+
+        $data["path"] = $params["TASK_PATH"];
+
+        try {
+            if(!is_writable($params["TASK_PATH"])) throw new Exception('ERROR - File not writable');
+
+            unlink($params["TASK_PATH"]);
+
+            $data["result"] = true;
+            $data["result_msg"] = '';
+
+        } catch(Exception $e) {
+            $data["result"] = false;
+            $data["result_msg"] = $e->getMessage();
+        }
 
         return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
