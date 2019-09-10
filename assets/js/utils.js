@@ -110,6 +110,7 @@ var Utils = {
                     Utils.doLogoutAndGoHome();
                 }).catch(swal.noop);
             }else{
+                Utils.hideLoading();
                 Swal.fire({
                     type: 'error',
                     title: error.response.data.status,
