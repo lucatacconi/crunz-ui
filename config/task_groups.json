@@ -1,0 +1,27 @@
+[
+    {
+        "subdir":"",
+        "description":"Main task",
+        "visible": true
+    },
+    {
+        "subdir":"group1",
+        "description":"Group 1",
+        "visible": true
+    },
+    {
+        "subdir":"group2",
+        "description":"Group 2",
+        "visible": true
+    },
+    {
+        "subdir":"group3",
+        "description":"Group 3",
+        "visible": true
+    },
+    {
+        "subdir":"group4",
+        "description":"Group 4",
+        "visible": false
+    }
+]

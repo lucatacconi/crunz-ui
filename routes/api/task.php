@@ -9,6 +9,7 @@ use Tuupola\Base62;
 
 use Crunz\Configuration\Configuration;
 use Crunz\Schedule;
+use Crunz\Filesystem;
 use Crunz\Task\Collection;
 use Crunz\Task\WrongTaskInstanceException;
 
@@ -19,6 +20,33 @@ foreach (glob(__DIR__ . '/../classes/*.php') as $filename){
 use CrunzUI\Task\CrunzUITaskGenerator;
 
 $app->group('/task', function () use ($app) {
+
+    $app->get('/group', function ($request, $response, $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+
+        $only_active = "Y";
+        if(!empty($params["ONLY_ACTIVE"])){
+            $only_active = $params["ONLY_ACTIVE"];
+        }
+
+        $app_configs = $this->get('app_configs');
+
+        foreach($app_configs["task_groups"] as $row_cnt => $row_data){
+            if($only_active == 'Y' && !$row_data["visible"]){
+                continue;
+            }
+
+            unset($row_data["visible"]);
+            $data[] = $row_data;
+        }
+
+        return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    });
 
     $app->get('/', function ($request, $response, $args) {
 
@@ -45,9 +73,10 @@ $app->group('/task', function () use ($app) {
         if(empty(getenv("TASK_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
-        $pathtotasks = '..'.getenv("TASK_DIR");
+        $app_configs = $this->get('app_configs');
+        $base_tasks_path = $app_configs["paths"]["base_path"] . getenv("TASK_DIR");
 
-        $directoryIterator = new \RecursiveDirectoryIterator($pathtotasks);
+        $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
         $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
 
 
@@ -76,13 +105,13 @@ $app->group('/task', function () use ($app) {
                 $row = [];
 
                 $row["filename"] = $taskFile->getFilename();
-                $row["pathname"] = $taskFile->getPathname();
-                $row["realpath"] = $taskFile->getRealPath();
+                $row["real_path"] = $taskFile->getRealPath();
+                $row["subdir"] = str_replace( array( $row["filename"]),'',$taskFile->getPathname());
+                $row["task_path"] = getenv("TASK_DIR") . str_replace($base_tasks_path, '', $row["real_path"]);
                 $row["task_description"] = $oEVENT->description;
-                $row["subdir"] = str_replace( array($pathtotasks, $row["filename"]),'',$taskFile->getPathname());
+
                 $row["expression"] = $oEVENT->getExpression();
                 //$row["commnad"] = $oEVENT->getCommandForDisplay();
-
 
                 $file_content = file_get_contents($taskFile->getRealPath(), true);
                 $file_content = str_replace(array(" ","\t","\n","\r"), '', $file_content);
@@ -191,34 +220,90 @@ $app->group('/task', function () use ($app) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
-
         if(empty(getenv("TASK_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
-        if(empty(getenv("TASK_NAME"))) throw new Exception("ERROR - Wrong tasks configuration");
-        if(empty(getenv("SUBDIR"))) throw new Exception("ERROR - Wrong tasks configuration");
-        if(empty(getenv("TASK_DECRIPTION"))) throw new Exception("ERROR - Wrong tasks configuration");
-        if(empty(getenv("STATUS"))) throw new Exception("ERROR - Wrong tasks configuration");
-        if(empty(getenv("COMMAND"))) throw new Exception("ERROR - Wrong tasks configuration");
+        $app_configs = $this->get('app_configs');
+        $base_tasks_path = $app_configs["paths"]["base_path"] . getenv("TASK_DIR");
+
+        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+
+        if(empty($params["OP_TYPE"])) throw new Exception("ERROR - Wrong operation type (1)");
+
+        //Check task file name
+        if(empty($params["TASK_NAME"])){
+            throw new Exception("ERROR - Empty task name");
+        }else{
+            if(preg_match('/[^a-z_.\/0-9]/i', $params["TASK_NAME"]) || strtoupper( substr($params["TASK_NAME"], -3) ) != "PHP" ){
+                throw new Exception("ERROR - Wrong task name format (a-zA-Z0-9_./)");
+            }
+        }
+
+
+
+        if($params["OP_TYPE"] == 'INS'){
+
+        }else if($params["OP_TYPE"] == 'MOD'){
+
+        }else{
+            throw new Exception("ERROR - Wrong operation type (2)");
+        }
 
 
 
 
 
+        // if(empty(getenv("TASK_NAME"))) throw new Exception("ERROR - Wrong tasks configuration");
+        // if(empty(getenv("SUBDIR"))) throw new Exception("ERROR - Wrong tasks configuration");
+        // if(empty(getenv("TASK_DECRIPTION"))) throw new Exception("ERROR - Wrong tasks configuration");
+        // if(empty(getenv("STATUS"))) throw new Exception("ERROR - Wrong tasks configuration");
+        // if(empty(getenv("COMMAND"))) throw new Exception("ERROR - Wrong tasks configuration");
 
 
 
-        $test = new \CrunzUI\Task\CrunzUITaskGenerator();
+        // while (!\file_exists($path->toString())) {
+
+
+        // $test = new \Crunz\Filesystem\Filesystem();
+        // $pippo = $test->projectRootDirectory();
+
+        // print_r($pippo);
+        // die("----");
 
 
 
-        print_r($test);
-        die();
+        // public function projectRootDirectory()
+        // {
+        //     if (null === $this->projectRootDir) {
+        //         $dir = $rootDir = \dirname(__DIR__);
+        //         $path = Path::fromStrings($dir, 'composer.json');
 
-        $data = [];
+        //         while (!\file_exists($path->toString())) {
+        //             if ($dir === \dirname($dir)) {
+        //                 return $this->projectRootDir = $rootDir;
+        //             }
+        //             $dir = \dirname($dir);
+        //             $path = Path::fromStrings($dir, 'composer.json');
+        //         }
 
-        $data[] = __DIR__;
+        //         $this->projectRootDir = $dir;
+        //     }
+
+        //     return $this->projectRootDir;
+        // }
+
+
+
+        // $test = new \CrunzUI\Task\CrunzUITaskGenerator();
+
+
+
+        // print_r($test);
+        // die();
+
+        // $data = [];
+
+        // $data[] = __DIR__;
 
         //$data = $aTASKs;
 
@@ -234,22 +319,42 @@ $app->group('/task', function () use ($app) {
         $params = array_change_key_case($request->getParams(), CASE_UPPER);
 
 
+        $errors = []; // Store all foreseen and unforseen errors here
 
+        $fileExtensions = ['php','PHP']; // Get all the file extensions
 
+        $fileName = $_FILES['myfile']['name'];
+        $fileSize = $_FILES['myfile']['size'];
+        $fileTmpName  = $_FILES['myfile']['tmp_name'];
+        $fileType = $_FILES['myfile']['type'];
+        $fileExtension = strtolower(end(explode('.',$fileName)));
 
+        $uploadPath = $currentDir . $uploadDirectory . basename($fileName);
 
-        $test = new \CrunzUI\Task\CrunzUITaskGenerator();
+        if (isset($_POST['submit'])) {
 
+            if (! in_array($fileExtension,$fileExtensions)) {
+                $errors[] = "This file extension is not allowed. Please upload a JPEG or PNG file";
+            }
 
+            if ($fileSize > 2000000) {
+                $errors[] = "This file is more than 2MB. Sorry, it has to be less than or equal to 2MB";
+            }
 
-        print_r($test);
-        die();
+            // if (empty($errors)) {
+            //     $didUpload = move_uploaded_file($fileTmpName, $uploadPath);
 
-        $data = [];
-
-        $data[] = __DIR__;
-
-        //$data = $aTASKs;
+            //     if ($didUpload) {
+            //         echo "The file " . basename($fileName) . " has been uploaded";
+            //     } else {
+            //         echo "An error occurred somewhere. Try again or contact the admin";
+            //     }
+            // } else {
+            //     foreach ($errors as $error) {
+            //         echo $error . "These are the errors" . "\n";
+            //     }
+            // }
+        }
 
         return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
@@ -266,21 +371,25 @@ $app->group('/task', function () use ($app) {
         if(empty(getenv("TASK_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
+        $app_configs = $this->get('app_configs');
+        $base_tasks_path = $app_configs["paths"]["base_path"] . getenv("TASK_DIR");
+
         if(empty($params["TASK_PATH"])) throw new Exception("ERROR - No task file to delete submitted");
 
         if(
+            strpos($params["TASK_PATH"], '.') !== false ||
             substr($params["TASK_PATH"], -strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
             strpos($params["TASK_PATH"], getenv("TASK_DIR") === false)
         ){
-            if(empty($params["TASK_PATH"])) throw new Exception("ERROR - Task path out of range");
+            throw new Exception("ERROR - Task path out of range");
         }
 
         $data["path"] = $params["TASK_PATH"];
 
         try {
-            if(!is_writable($params["TASK_PATH"])) throw new Exception('ERROR - File not writable');
+            if(!is_writable($base_tasks_path . $params["TASK_PATH"])) throw new Exception('ERROR - File not writable');
 
-            unlink($params["TASK_PATH"]);
+            unlink($base_tasks_path . $params["TASK_PATH"]);
 
             $data["result"] = true;
             $data["result_msg"] = '';

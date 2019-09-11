@@ -42,8 +42,22 @@ class CrunzUITaskGenerator
      *
      * @return string
      */
-    protected function getTaskTemplate($pippo)
+    protected function getTaskTemplate()
     {
-        return $this->options['type'];
+
+        $task_content = '';
+        $task_content .= '<?php\n\n';
+        $task_content .= 'use Crunz\Schedule;\n\n';
+        $task_content .= '$schedule = new Schedule();\n\n';
+
+
+
+        $task_content .= 'return $schedule;';
+
+
+
+
+
+        return $task_content;
     }
 }

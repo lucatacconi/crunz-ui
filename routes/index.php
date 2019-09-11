@@ -23,6 +23,18 @@ foreach (glob($config_path."*.json") as $filename) {
     }
 }
 
+//Base application path calculation
+$adir = explode("/", __DIR__);
+$dir = implode("/", $adir);
+
+while (!\file_exists($dir.'/'.'composer.json')) {
+    array_pop($adir);
+    $dir = implode("/", $adir);
+}
+
+$container_config["app_configs"]["paths"] = [];
+$container_config["app_configs"]["paths"]["base_path"] = $dir;
+
 $container = new \Slim\Container($container_config);
 
 $container['errorHandler'] = function ($container) {
