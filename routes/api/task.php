@@ -62,11 +62,17 @@ $app->group('/task', function () use ($app) {
         $interval_from = date("Y-m-01 00:00:00");
         if(!empty($params["DATE_REF"])){
             $interval_from = date($params["INTERVAL_FROM"]);
+            if(strlen($interval_to) == 10){
+                $interval_from .= " 00:00:00";
+            }
         }
 
         $interval_to = date("Y-m-t 23:59:59");
         if(!empty($params["INTERVAL_TO"])){
             $interval_to = date($params["INTERVAL_TO"]);
+            if(strlen($interval_to) == 10){
+                $interval_to .= " 23:59:59";
+            }
         }
 
 
@@ -115,9 +121,9 @@ $app->group('/task', function () use ($app) {
 
                 $file_content = file_get_contents($taskFile->getRealPath(), true);
                 $file_content = preg_replace('/(\/\/.*\\n)/', '', $file_content); //Remove commented lines
-                $file_content = str_replace(array(" ","\t","\n","\r"), '', $file_content);
+                $file_content = str_replace(array("\t","\n","\r"), '', $file_content);
 
-                $row["file_content"] = $file_content;
+                //$row["file_content"] = $file_content;
 
                 $task_configuration = '';
                 $start_pos = strpos($file_content, '$task->');
@@ -128,7 +134,6 @@ $app->group('/task', function () use ($app) {
                 }
 
                 $task_configuration = substr($file_content, $start_pos+1, ($end_pos+1)-$start_pos);
-                $task_configuration = preg_replace('(\->description.*?\'\))', '', $task_configuration);
                 $row["task_configuration"] = $task_configuration;
 
                 if(substr($row["expression"], 0, 3) == '* *' && substr($row["expression"], 4) != '* * *'){
@@ -136,65 +141,65 @@ $app->group('/task', function () use ($app) {
                 }
 
                 $aCONFIGURATION = explode("->", $task_configuration = str_replace(array('task->',';'), '', $row["task_configuration"]));
-                $row["task_configuration_exploded"] = $aCONFIGURATION;
+                $row["task_configuration_exploded"] = json_encode($aCONFIGURATION);
 
-                $crunzUITaskGenerator = new \CrunzUI\Task\CrunzUITaskGenerator();
+                // $crunzUITaskGenerator = new \CrunzUI\Task\CrunzUITaskGenerator();
 
-                $row["task_configuration_explained"] = [];
-                $row["task_configuration_explained"]["configuration_type"] = '';
-                $row["task_configuration_explained"]["cron"] = '';
-                $row["task_configuration_explained"]["frequency"] = '';
-                $row["task_configuration_explained"]["individualFieldsSettings"] = array("days" => "", "hour" => "", "minute" => "", "dayOfMonth" => "", "month" => "", "dayOfWeek" => "",);
+                // $row["task_configuration_explained"] = [];
+                // $row["task_configuration_explained"]["configuration_type"] = '';
+                // $row["task_configuration_explained"]["cron"] = '';
+                // $row["task_configuration_explained"]["frequency"] = '';
+                // $row["task_configuration_explained"]["individualFieldsSettings"] = array("days" => "", "hour" => "", "minute" => "", "dayOfMonth" => "", "month" => "", "dayOfWeek" => "",);
 
-                $row["task_configuration_explained"]["timeSet"] = array("configured" => false, "time" => "");
-                $row["task_configuration_explained"]["lifeTime"] = array("configured" => false, "from" => "", "to" => "");
+                // $row["task_configuration_explained"]["timeSet"] = array("configured" => false, "time" => "");
+                // $row["task_configuration_explained"]["lifeTime"] = array("configured" => false, "from" => "", "to" => "");
 
-                $run_configuration_type = false;
-                foreach($aCONFIGURATION as $aCONFIGURATION_key => $configuration){
+                // $run_configuration_type = false;
+                // foreach($aCONFIGURATION as $aCONFIGURATION_key => $configuration){
 
-                    if(!$run_configuration_type){
-                        if(strpos($configuration, "cron") !== false){
-                            $run_configuration_type = "CRON";
-                        }
-                    }
+                //     if(!$run_configuration_type){
+                //         if(strpos($configuration, "cron") !== false){
+                //             $run_configuration_type = "CRON";
+                //         }
+                //     }
 
-                    if(!$run_configuration_type){
-                        foreach($crunzUITaskGenerator->getFrequencyDictionary() as $aFrequency_key => $frequency){
-                            if(substr($configuration, 0, strlen($frequency)) == $frequency){
-                                $run_configuration_type = "LITERAL";
-                                $row["task_configuration_explained"]["frequency"] = $configuration;
-                                break;
-                            }
-                        }
-                    }
+                //     if(!$run_configuration_type){
+                //         foreach($crunzUITaskGenerator->getFrequencyDictionary() as $aFrequency_key => $frequency){
+                //             if(substr($configuration, 0, strlen($frequency)) == $frequency){
+                //                 $run_configuration_type = "LITERAL";
+                //                 $row["task_configuration_explained"]["frequency"] = $configuration;
+                //                 break;
+                //             }
+                //         }
+                //     }
 
-                    if(!$run_configuration_type){
-                        foreach($crunzUITaskGenerator->getIindividualFieldsSettingsDictionary() as $aIindividualFieldsSettings_key => $individualFieldsSettings){
-                            if(substr($configuration, 0, strlen($individualFieldsSettings)) == $individualFieldsSettings){
-                                $run_configuration_type = "INDIVIDUAL";
-                                break;
-                            }
-                        }
-                    }
+                //     if(!$run_configuration_type){
+                //         foreach($crunzUITaskGenerator->getIindividualFieldsSettingsDictionary() as $aIindividualFieldsSettings_key => $individualFieldsSettings){
+                //             if(substr($configuration, 0, strlen($individualFieldsSettings)) == $individualFieldsSettings){
+                //                 $run_configuration_type = "INDIVIDUAL";
+                //                 break;
+                //             }
+                //         }
+                //     }
 
-                    foreach($crunzUITaskGenerator->getTimeSetDictionary() as $aTimeSet_key => $timeSet){
-                        if(substr($configuration, 0, strlen($timeSet)) == $timeSet){
-                            $row["task_configuration_explained"]["timeSet"]["configured"] = true;
-                            $row["task_configuration_explained"]["timeSet"]["time"] = str_replace(array($timeSet."('", "')"),'', $configuration);
-                            break;
-                        }
-                    }
+                //     foreach($crunzUITaskGenerator->getTimeSetDictionary() as $aTimeSet_key => $timeSet){
+                //         if(substr($configuration, 0, strlen($timeSet)) == $timeSet){
+                //             $row["task_configuration_explained"]["timeSet"]["configured"] = true;
+                //             $row["task_configuration_explained"]["timeSet"]["time"] = str_replace(array($timeSet."('", "')"),'', $configuration);
+                //             break;
+                //         }
+                //     }
 
-                    foreach($crunzUITaskGenerator->getLifeTimeDictionary() as $aLifeTime_key => $lifeTime){
-                        if(substr($configuration, 0, strlen($lifeTime)) == $lifeTime){
-                            $row["task_configuration_explained"]["lifeTime"]["configured"] = true;
-                            //$row["task_configuration_explained"]["timeSetConf"] = str_replace(array($timeSet."('", "')"),'', $configuration);
-                            break;
-                        }
-                    }
-                }
+                //     foreach($crunzUITaskGenerator->getLifeTimeDictionary() as $aLifeTime_key => $lifeTime){
+                //         if(substr($configuration, 0, strlen($lifeTime)) == $lifeTime){
+                //             $row["task_configuration_explained"]["lifeTime"]["configured"] = true;
+                //             //$row["task_configuration_explained"]["timeSetConf"] = str_replace(array($timeSet."('", "')"),'', $configuration);
+                //             break;
+                //         }
+                //     }
+                // }
 
-                $row["task_configuration_explained"]["configuration_type"] = $run_configuration_type;
+                // $row["task_configuration_explained"]["configuration_type"] = $run_configuration_type;
 
                 unset($cron);
                 $cron = Cron\CronExpression::factory($row["expression"]);
