@@ -115,6 +115,21 @@
                 </template>
                 <span>Add new task</span>
             </v-tooltip>
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                    <v-btn
+                        fab
+                        dark
+                        small
+                        color="indigo"
+                        @click="readData()"
+                        v-on="on"
+                    >
+                        <v-icon>mdi-refresh</v-icon>
+                    </v-btn>
+                </template>
+                <span>Refresh</span>
+            </v-tooltip>
         </v-speed-dial>
     </div>
 </template>
