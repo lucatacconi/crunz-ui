@@ -89,11 +89,6 @@ module.exports = {
             items: [],
         }
     },
-    watch: {
-        'formData.file':function(){
-            console.log(this.formData.file)
-        }
-    },
     methods: {
         closeModal: function () {
             var self = this;
@@ -110,40 +105,47 @@ module.exports = {
         uploadFile:function(){
             console.log(this.formData.file)
             console.log(this.selectFolder)
-            if(this.selectFolder&&this.formData.file!=null){
+            if(this.selectFolder&&this.formData.file!=null&&this.formData.file.type=="application/x-php"){
+
+
+                var result = this.getChildren(this.items,this.selectFolder)
+                console.log(result);
 
                 // var text=new FormData();
                 // text.append("file", this.formData.file, this.formData.name);
 
-                var formData = new FormData();
-                var imagefile = this.formData.file
-                formData.append("image", this.formData.file);
-                Utils.apiCall("post", "/task/upload",formData, {
-                    headers: {
-                    'Content-Type': 'multipart/form-data'
-                    }
-                })
-                .then(function (response) {
-                    console.log(response)
-                });
+                //------------CORRECT CODE
+                // var formData = new FormData();
+                // var imagefile = this.formData.file
+                // formData.append("image", this.formData.file);
+                // Utils.apiCall("post", "/task/upload",formData, {
+                //     headers: {
+                //     'Content-Type': 'multipart/form-data'
+                //     }
+                // })
+                // .then(function (response) {
+                //     console.log(response)
+                // });
 
-                var formData = new FormData();
-                var imagefile = this.formData.file
-                formData.append("image", this.formData.file);
-                axios.post('http://localhost/sviluppo/crunz-ui(luca)/routes/task/upload', formData, {
-                    headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjgzODY1MTgsImV4cCI6MTU2ODM5MzcxOCwianRpIjoiNXJOMjhUekZKdEVzVmFFWUpmVHRkbCIsInVzZXJuYW1lIjoiYWRtaW4iLCJuYW1lIjoiQWRtaW4gVXNlciIsInVzZXJUeXBlIjoiYWRtaW4ifQ.3_dccmC8y3DkM7MNY3B2Qdp2AANQ4a-S6l951qfFOHM'
-                    }
-                })
+                // var formData = new FormData();
+                // var imagefile = this.formData.file
+                // formData.append("image", this.formData.file);
+                // axios.post('http://localhost/sviluppo/crunz-ui(luca)/routes/task/upload', formData, {
+                //     headers: {
+                //     'Content-Type': 'multipart/form-data',
+                //     'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjgzODY1MTgsImV4cCI6MTU2ODM5MzcxOCwianRpIjoiNXJOMjhUekZKdEVzVmFFWUpmVHRkbCIsInVzZXJuYW1lIjoiYWRtaW4iLCJuYW1lIjoiQWRtaW4gVXNlciIsInVzZXJUeXBlIjoiYWRtaW4ifQ.3_dccmC8y3DkM7MNY3B2Qdp2AANQ4a-S6l951qfFOHM'
+                //     }
+                // })
 
             }else{
                 var txt=""
                 if(!this.selectFolder){
-                    txt+="Folder not selected<br>"
+                    txt+="Folder not selected"
                 }
                 if(this.formData.file==null){
-                    txt+="File not selected"
+                    txt+="<br>File not selected"
+                }else if(this.formData.file.type!='application/x-php'){
+                    txt+="<br>Type file wrong"
                 }
                 Swal.fire({
                     title:"Upload error",
@@ -152,42 +154,6 @@ module.exports = {
                 })
             }
         },
-        test:function(){
-            var treeDataSource = [
-                {
-                    id: 1,
-                    Name: "Test1",
-                    items: [
-                        {
-                            id: 2,
-                            Name: "Test2",
-                            items: [
-                                {
-                                    id: 3,
-                                    Name: "Test3"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ];
-
-            var getSubMenuItem = function (subMenuItems, id) {
-                if (subMenuItems) {
-                    for (var i = 0; i < subMenuItems.length; i++) {
-                        if (subMenuItems[i].id == id) {
-                            return subMenuItems[i];
-                        }
-                        var found = getSubMenuItem(subMenuItems[i].items, id);
-                        if (found) return found;
-                    }
-                }
-            };
-
-            var searchedItem = getSubMenuItem(treeDataSource, 3);
-            alert(searchedItem.id);
-        },
-
         getChildren:function(tree, description){
             if (tree) {
                 for (var i = 0; i < tree.length; i++) {
@@ -201,15 +167,11 @@ module.exports = {
         }
     },
     created:function() {
-
-
         var self=this
         Utils.apiCall("get", "/task/group")
         .then(function (response) {
             console.log(response)
             self.items=response.data
-            var prova = self.getChildren(self.items,'SubGroup 2')
-            alert(prova.description);
         });
     },
 }
