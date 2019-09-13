@@ -350,43 +350,45 @@ $app->group('/task', function () use ($app) {
 
         $params = array_change_key_case($request->getParams(), CASE_UPPER);
 
+        $data["PARAM"] = print_r($params, true);
+        $data["FILE"] = print_r($_FILES, true);
 
-        $errors = []; // Store all foreseen and unforseen errors here
+        // $errors = []; // Store all foreseen and unforseen errors here
 
-        $fileExtensions = ['php','PHP']; // Get all the file extensions
+        // $fileExtensions = ['php','PHP']; // Get all the file extensions
 
-        $fileName = $_FILES['myfile']['name'];
-        $fileSize = $_FILES['myfile']['size'];
-        $fileTmpName  = $_FILES['myfile']['tmp_name'];
-        $fileType = $_FILES['myfile']['type'];
-        $fileExtension = strtolower(end(explode('.',$fileName)));
+        // $fileName = $_FILES['myfile']['name'];
+        // $fileSize = $_FILES['myfile']['size'];
+        // $fileTmpName  = $_FILES['myfile']['tmp_name'];
+        // $fileType = $_FILES['myfile']['type'];
+        // $fileExtension = strtolower(end(explode('.',$fileName)));
 
-        $uploadPath = $currentDir . $uploadDirectory . basename($fileName);
+        // $uploadPath = $currentDir . $uploadDirectory . basename($fileName);
 
-        if (isset($_POST['submit'])) {
+        // if (isset($_POST['submit'])) {
 
-            if (! in_array($fileExtension,$fileExtensions)) {
-                $errors[] = "This file extension is not allowed. Please upload a JPEG or PNG file";
-            }
+        //     if (! in_array($fileExtension,$fileExtensions)) {
+        //         $errors[] = "This file extension is not allowed. Please upload a JPEG or PNG file";
+        //     }
 
-            if ($fileSize > 2000000) {
-                $errors[] = "This file is more than 2MB. Sorry, it has to be less than or equal to 2MB";
-            }
+        //     if ($fileSize > 2000000) {
+        //         $errors[] = "This file is more than 2MB. Sorry, it has to be less than or equal to 2MB";
+        //     }
 
-            // if (empty($errors)) {
-            //     $didUpload = move_uploaded_file($fileTmpName, $uploadPath);
+        //     // if (empty($errors)) {
+        //     //     $didUpload = move_uploaded_file($fileTmpName, $uploadPath);
 
-            //     if ($didUpload) {
-            //         echo "The file " . basename($fileName) . " has been uploaded";
-            //     } else {
-            //         echo "An error occurred somewhere. Try again or contact the admin";
-            //     }
-            // } else {
-            //     foreach ($errors as $error) {
-            //         echo $error . "These are the errors" . "\n";
-            //     }
-            // }
-        }
+        //     //     if ($didUpload) {
+        //     //         echo "The file " . basename($fileName) . " has been uploaded";
+        //     //     } else {
+        //     //         echo "An error occurred somewhere. Try again or contact the admin";
+        //     //     }
+        //     // } else {
+        //     //     foreach ($errors as $error) {
+        //     //         echo $error . "These are the errors" . "\n";
+        //     //     }
+        //     // }
+        // }
 
         return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
