@@ -60,7 +60,7 @@
                 </template>
 
                 <template v-slot:no-data>
-                    NESSUN DATO
+                    TASKS NOT FOUND
                 </template>
 
             </v-data-table>
