@@ -2,26 +2,41 @@
     {
         "subdir":"",
         "description":"Main task",
-        "visible": true
-    },
-    {
-        "subdir":"group1",
-        "description":"Group 1",
-        "visible": true
-    },
-    {
-        "subdir":"group2",
-        "description":"Group 2",
-        "visible": true
-    },
-    {
-        "subdir":"group3",
-        "description":"Group 3",
-        "visible": true
-    },
-    {
-        "subdir":"group4",
-        "description":"Group 4",
-        "visible": false
+        "disabled": false,
+        "children":[
+            {
+                "subdir":"group1",
+                "description":"Group 1",
+                "disabled": false,
+                "children":[
+                    {
+                        "subdir":"group1/subGroup1",
+                        "description":"SubGroup 1",
+                        "disabled": false
+                    },
+                    {
+
+                        "subdir":"group1/subGroup2",
+                        "description":"SubGroup 2",
+                        "disabled": false
+                    }
+                ]
+            },
+            {
+                "subdir":"group2",
+                "description":"Group 2",
+                "disabled": false
+            },
+            {
+                "subdir":"group3",
+                "description":"Group 3",
+                "disabled": true
+            },
+            {
+                "subdir":"group4",
+                "description":"Group 4",
+                "disabled": false
+            }
+        ]
     }
 ]

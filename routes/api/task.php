@@ -35,11 +35,11 @@ $app->group('/task', function () use ($app) {
         $app_configs = $this->get('app_configs');
 
         foreach($app_configs["task_groups"] as $row_cnt => $row_data){
-            if($only_active == 'Y' && !$row_data["visible"]){
-                continue;
-            }
+            // if($only_active == 'Y' && !$row_data["disabled"]){
+            //     continue;
+            // }
 
-            unset($row_data["visible"]);
+            // unset($row_data["disabled"]);
             $data[] = $row_data;
         }
 

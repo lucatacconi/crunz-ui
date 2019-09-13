@@ -60,7 +60,7 @@
                 </template>
 
                 <template v-slot:no-data>
-                    NESSUN DATO
+                    TASKS NOT FOUND
                 </template>
 
             </v-data-table>
@@ -150,12 +150,6 @@ module.exports = {
             .then(function (response) {
                 if(response.data.length!=0){
                     self.files=response.data
-                }else{
-                    Swal.fire({
-                        title: 'Tasks not found',
-                        text: "Tasks not found",
-                        type: 'warning'
-                    })
                 }
             });
         },
