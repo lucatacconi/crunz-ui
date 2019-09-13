@@ -353,6 +353,8 @@ $app->group('/task', function () use ($app) {
         $data["PARAM"] = print_r($params, true);
         $data["FILE"] = print_r($_FILES, true);
 
+        print file_get_contents ($_FILES['image']['tmp_name']);
+
         // $errors = []; // Store all foreseen and unforseen errors here
 
         // $fileExtensions = ['php','PHP']; // Get all the file extensions

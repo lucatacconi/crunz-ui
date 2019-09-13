@@ -89,6 +89,11 @@ module.exports = {
             items: [],
         }
     },
+    watch: {
+        'formData.file':function(){
+            console.log(this.formData.file)
+        }
+    },
     methods: {
         closeModal: function () {
             var self = this;
@@ -107,12 +112,31 @@ module.exports = {
             console.log(this.selectFolder)
             if(this.selectFolder&&this.formData.file!=null){
 
+                // var text=new FormData();
+                // text.append("file", this.formData.file, this.formData.name);
 
-
-                Utils.apiCall("post", "/task/upload",this.formData)
+                var formData = new FormData();
+                var imagefile = this.formData.file
+                formData.append("image", this.formData.file);
+                Utils.apiCall("post", "/task/upload",formData, {
+                    headers: {
+                    'Content-Type': 'multipart/form-data'
+                    }
+                })
                 .then(function (response) {
                     console.log(response)
                 });
+
+                var formData = new FormData();
+                var imagefile = this.formData.file
+                formData.append("image", this.formData.file);
+                axios.post('http://localhost/sviluppo/crunz-ui(luca)/routes/task/upload', formData, {
+                    headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjgzODY1MTgsImV4cCI6MTU2ODM5MzcxOCwianRpIjoiNXJOMjhUekZKdEVzVmFFWUpmVHRkbCIsInVzZXJuYW1lIjoiYWRtaW4iLCJuYW1lIjoiQWRtaW4gVXNlciIsInVzZXJUeXBlIjoiYWRtaW4ifQ.3_dccmC8y3DkM7MNY3B2Qdp2AANQ4a-S6l951qfFOHM'
+                    }
+                })
+
             }else{
                 var txt=""
                 if(!this.selectFolder){
