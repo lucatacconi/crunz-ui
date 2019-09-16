@@ -21,6 +21,8 @@
                 dense
                 :headers="headers"
                 :items="files"
+                :sort-by="headers"
+                :sort-desc="[false, true]"
             >
                 <template v-if="files.length!=0" v-slot:body="{ items }">
                     <tbody>
@@ -164,7 +166,7 @@ module.exports = {
             Utils.apiCall("get", "/task/")
             .then(function (response) {
                 if(response.data.length!=0){
-                    self.files=response.data
+                    self.files=JSON.parse(JSON.stringify(response.data))
                 }
             });
         },
