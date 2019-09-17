@@ -28,9 +28,6 @@
                             <v-list-item @click="type = 'day'">
                                 <v-list-item-title>Day</v-list-item-title>
                             </v-list-item>
-                            <v-list-item @click="type = 'week'">
-                                <v-list-item-title>Week</v-list-item-title>
-                            </v-list-item>
                             <v-list-item @click="type = 'month'">
                                 <v-list-item-title>Month</v-list-item-title>
                             </v-list-item>
@@ -56,6 +53,7 @@
                     @click:date="viewDay"
                     @change="updateRange"
                     locale="en-EN"
+                    :weekdays="[1, 2, 3, 4, 5, 6, 0]"
                 ></v-calendar>
                 <v-menu
                     v-model="selectedOpen"
@@ -113,7 +111,6 @@ module.exports = {
             type: 'month',
             typeToLabel: {
                 month: 'Month',
-                week: 'Week',
                 day: 'Day',
                 '4day': '4 Days',
             },
@@ -270,12 +267,11 @@ module.exports = {
 
             switch (this.type) {
                 case 'month':
-                return `${startMonth} ${startYear}`
-                case 'week':
+                    return `${startMonth} ${startYear}`
                 case '4day':
-                return `${startMonth} ${startDay} ${startYear} - ${suffixMonth} ${endDay} ${suffixYear}`
+                    return `${startMonth} ${startDay} ${startYear} - ${suffixMonth} ${endDay} ${suffixYear}`
                 case 'day':
-                return `${startMonth} ${startDay} ${startYear}`
+                    return `${startMonth} ${startDay} ${startYear}`
             }
             return ''
         },
