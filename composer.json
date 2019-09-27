@@ -13,6 +13,11 @@
             "email": "luca.tacconi@monolite.net",
             "homepage": "http://www.monolite.net",
             "role": "Developer"
+        },
+        {
+            "name": "Emanuele Marchesotti",
+            "homepage": "https://github.com/flagellarmirror",
+            "role": "Developer"
         }
     ],
 
@@ -24,6 +29,7 @@
         "tuupola/slim-basic-auth": "^3.0",
         "vlucas/phpdotenv": "^2.4",
         "twig/twig": "^2.0",
-        "lavary/crunz": "^2.0"
+        "lavary/crunz": "^2.0",
+        "lorisleiva/cron-translator": ">=0.1.0"
     }
 }
