@@ -99,6 +99,7 @@ $app->group('/task', function () use ($app) {
 
 
         $aTASKs = [];
+        $task_counter = 0;
         foreach ($files as $taskFile) {
 
             $schedule = require $taskFile->getRealPath();
@@ -110,13 +111,14 @@ $app->group('/task', function () use ($app) {
 
             foreach ($aEVENTs as $oEVENT) {
                 $row = [];
-
+                $task_counter++;
 
                 $row["filename"] = $taskFile->getFilename();
                 $row["real_path"] = $taskFile->getRealPath();
                 $row["subdir"] = str_replace( array( $row["filename"]),'',$taskFile->getPathname());
                 $row["task_path"] = getenv("TASK_DIR") . str_replace($base_tasks_path, '', $row["real_path"]);
-                $row["event_id"] = $taskFile->getFilename();
+                $row["event_id"] = $oEVENT->getId();
+                $row["event_launch_id"] = $task_counter;
                 $row["task_description"] = $oEVENT->description;
                 $row["expression"] = $row["expression_orig"] = $oEVENT->getExpression();
 

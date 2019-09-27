@@ -32,73 +32,60 @@
         },
 
         {
-            "title": "Crunz setup",
-            "subtitle": "Setup crunz tasks",
-            "allowed": ["admin"],
+            "title": "Tasks table",
+            "subtitle": "Show tasks list",
+            "allowed":["admin"],
             "visible": true,
-            "layout": {
-                "icon": "mdi-menu",
-                "expanded": true,
+
+            "action":{
+                "path": "/menu/DataTable",
+                "component": "../../app/sections/menu/DataTable.vue"
+            },
+
+            "layout":{
+                "icon": "assignment",
                 "disabled": false,
                 "color": false,
                 "class": false
+            }
+        },
+
+        {
+            "title": "Daily calendar",
+            "subtitle": "Show daily tasks",
+            "allowed":["admin"],
+            "visible": true,
+
+            "action":{
+                "path": "/menu/DailyCalendar",
+                "component": "../../app/sections/menu/DailyCalendar.vue"
             },
-            "subMenuItems":[
-                {
-                    "title": "Data table",
-                    "subtitle": "Show tasks list",
-                    "allowed": ["admin"],
-                    "visible": true,
 
-                    "action":{
-                        "path": "/menu/DataTable",
-                        "component": "../../app/sections/menu/DataTable.vue"
-                    },
+            "layout":{
+                "icon": "assignment_turned_in",
+                "disabled": false,
+                "color": false,
+                "class": false
+            }
+        },
 
-                    "layout":{
-                        "icon": "assignment",
-                        "disabled": false,
-                        "color": false,
-                        "class": false
-                    }
-                },
-                {
-                    "title": "Monthly calendar",
-                    "subtitle": "Show monthly tasks",
-                    "allowed": ["admin"],
-                    "visible": true,
+        {
+            "title": "Monthly calendar",
+            "subtitle": "Show monthly tasks",
+            "allowed":["admin"],
+            "visible": true,
 
-                    "action":{
-                        "path": "/menu/MonthlyCalendar",
-                        "component": "../../app/sections/menu/MonthlyCalendar.vue"
-                    },
+            "action":{
+                "path": "/menu/MonthlyCalendar",
+                "component": "../../app/sections/menu/MonthlyCalendar.vue"
+            },
 
-                    "layout":{
-                        "icon": "calendar_today",
-                        "disabled": false,
-                        "color": false,
-                        "class": false
-                    }
-                },
-                {
-                    "title": "Daily calendar",
-                    "subtitle": "Show daily tasks",
-                    "allowed": ["admin"],
-                    "visible": true,
-
-                    "action":{
-                        "path": "/menu/DailyCalendar",
-                        "component": "../../app/sections/menu/DailyCalendar.vue"
-                    },
-
-                    "layout":{
-                        "icon": "assignment_turned_in",
-                        "disabled": false,
-                        "color": false,
-                        "class": false
-                    }
-                }
-            ]
+            "layout":{
+                "icon": "calendar_today",
+                "disabled": false,
+                "color": false,
+                "class": false
+            }
         }
     ]
 }

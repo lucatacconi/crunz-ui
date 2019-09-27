@@ -16,9 +16,7 @@
         ></task-upload>
 
         <v-card>
-
             <v-data-table
-                dense
                 :headers="headers"
                 :items="files"
                 :sort-by="headers"
@@ -28,35 +26,62 @@
                     <tbody>
                         <tr v-for="(item,i) in items" :key="i">
                             <td>
-                                <center>
-                                    <v-icon color="#607d8b" href="#" @click="opendEditModal(item,i)">
-                                        edit
-                                    </v-icon>
-                                    <v-icon color="red" href="#" @click="deleteItem(item,i)">
-                                        delete
-                                    </v-icon>
-                                </center>
+
+                                <div class="text-center">
+                                    <v-menu offset-y>
+                                        <template v-slot:activator="{ on }">
+                                            <v-icon v-on="on" small>fa fa-ellipsis-h</v-icon>
+                                        </template>
+                                        <v-list subheader dense>
+                                            <v-subheader class="pl-4 blue-grey white--text font-weight-bold white">
+                                                TASK ACTION MENU
+                                            </v-subheader>
+                                            <v-list-item-group color="primary">
+                                                <v-list-item>
+                                                    <v-list-item-icon><v-icon small>fa fa-exclamation-circle</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>Execute task</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item>
+                                                    <v-list-item-icon><v-icon small>fa fa-folder-open</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>View task execution result</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item @click="opendEditModal(item,i)">
+                                                    <v-list-item-icon><v-icon small>fa fa-edit</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>Edit task configuration</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item @click="deleteItem(item,i)">
+                                                    <v-list-item-icon><v-icon small>fa fa-trash</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>Delete task</v-list-item-title>
+                                                </v-list-item>
+                                            </v-list-item-group>
+                                        </v-list>
+                                    </v-menu>
+                                </div>
                             </td>
-                        <td>
-                            {{ item.filename }}
-                        </td>
-                        <td>
-                            {{ item.task_description }}
-                        </td>
-                        <td>
-                            <!-- {{ item.execution_frequency }} -->
-                        </td>
-                        <td>
-                            {{ item.average_duration }}
-                        </td>
-                        <td>
-                            {{ item.next_run }}
-                        </td>
-                        <td>
-                        </td>
-                        <td :class="item.last_outcome.toUpperCase()=='OK' ? 'green--text' : 'red--text'" >
-                            {{ item.last_outcome }}
-                        </td>
+                            <td class="text-center">
+                                {{ item.event_launch_id }}
+                            </td>
+                            <td>
+                                {{ item.task_path }}
+                            </td>
+                            <td>
+                                {{ item.task_description }}
+                            </td>
+                            <td>
+                                {{ cronstrue.toString(item.expression) }}
+                            </td>
+                            <td>
+                                {{ item.next_run }}
+                            </td>
+                            <td class="text-center">
+                                {{ item.average_duration }}
+                            </td>
+                            <td>
+                                {{ item.last_run }}
+                            </td>
+                            <td :class="item.last_outcome.toUpperCase()=='OK' ? 'green--text' : 'red--text'" >
+                                {{ item.last_outcome }}
+                            </td>
                         </tr>
                     </tbody>
                 </template>
@@ -144,16 +169,18 @@ module.exports = {
             showEditModal:false,
             headers: [
                 {
-                    text: 'Operations',
+                    text: '',
                     sortable: false,
                     value: ''
                 },
-                { text: 'File', value: 'filename' },
+                { text: '#', value: 'event_launch_id', align: 'center' },
+                { text: 'Task', value: 'task_path' },
                 { text: 'Description', value: 'task_description' },
-                { text: 'Execution frequency', value: 'execution_frequency' },
-                { text: 'Execution time', value: 'execution_time' },
+                { text: 'Execution', value: 'expression' },
                 { text: 'Next execution', value: 'next_run' },
-                { text: 'Last execution status', value: 'last_execution_status' },
+                { text: 'Average duration(min.)', value: 'average_duration', align: 'center' },
+                { text: 'Last execution', value: 'last_run' },
+                { text: 'Last execution status', value: 'last_outcome', align: 'center' },
             ],
             files: [],
             editData:false,
