@@ -55,6 +55,11 @@ $app->group('/task', function () use ($app) {
 
         $params = array_change_key_case($request->getParams(), CASE_UPPER);
 
+        $calc_run_lst = "N";
+        if(!empty($params["CALC_RUN_LST"])){
+            $calc_run_lst = $params["CALC_RUN_LST"];
+        }
+
         $date_ref = date("Y-m-d H:i:s");
         if(!empty($params["DATE_REF"])){
             $date_ref = date($params["INTERVAL_FROM"]);
@@ -147,14 +152,16 @@ $app->group('/task', function () use ($app) {
                 $nincrement = 0;
                 $calc_run = false;
 
-                while($nincrement < 1000){ //Use the same hard limit of cron-expression library
-                    $calc_run = $cron->getNextRunDate($interval_from, $nincrement, true)->format('Y-m-d H:i:s');
-                    if($calc_run > $interval_to){
-                        break;
-                    }
+                if($calc_run_lst == "Y"){
+                    while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+                        $calc_run = $cron->getNextRunDate($interval_from, $nincrement, true)->format('Y-m-d H:i:s');
+                        if($calc_run > $interval_to){
+                            break;
+                        }
 
-                    $row["interval_run_lst"][] = $calc_run;
-                    $nincrement++;
+                        $row["interval_run_lst"][] = $calc_run;
+                        $nincrement++;
+                    }
                 }
 
                 $row["average_duration"] = 0;

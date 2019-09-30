@@ -38,8 +38,8 @@
             "visible": true,
 
             "action":{
-                "path": "/menu/DataTable",
-                "component": "../../app/sections/menu/DataTable.vue"
+                "path": "/taskTable/TaskTable",
+                "component": "../../app/sections/taskTable/TaskTable.vue"
             },
 
             "layout":{
