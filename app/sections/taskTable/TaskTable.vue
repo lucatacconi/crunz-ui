@@ -262,9 +262,14 @@ module.exports = {
             }).then( function (result) {
                 if (result.value) {
                     var self=this
+
+                    console.log(JSON.stringify(rowdata));
+                    return false;
+
+
                     Utils.apiCall("post", "/task/execute")
                     .then(function (response) {
-                        if(response.statusText=='OK'){
+                        if(response != null && typeof response !== "undefined" && response.statusText=='OK'){
                             Swal.fire({
                                 title: 'Task EXECUTED',
                                 text: "Task EXECUTED",
