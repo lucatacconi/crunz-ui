@@ -17,5 +17,4 @@ var/logs/*
 
 
 /vendor/*
-/tasks/*
 composer.lock
