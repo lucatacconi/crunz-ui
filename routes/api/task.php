@@ -66,7 +66,7 @@ $app->group('/task', function () use ($app) {
         }
 
         $interval_from = date("Y-m-01 00:00:00");
-        if(!empty($params["DATE_REF"])){
+        if(!empty($params["INTERVAL_FROM"])){
             $interval_from = date($params["INTERVAL_FROM"]);
             if(strlen($interval_to) == 10){
                 $interval_from .= " 00:00:00";
