@@ -68,7 +68,7 @@ $app->group('/task', function () use ($app) {
         $interval_from = date("Y-m-01 00:00:00");
         if(!empty($params["INTERVAL_FROM"])){
             $interval_from = date($params["INTERVAL_FROM"]);
-            if(strlen($interval_to) == 10){
+            if(strlen($interval_from) == 10){
                 $interval_from .= " 00:00:00";
             }
         }
@@ -189,10 +189,28 @@ $app->group('/task', function () use ($app) {
 
     $app->post('/execute', function ($request, $response, $args) {
 
+        $data = [];
+
+        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+
+        if(empty(getenv("TASK_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
+
+        $app_configs = $this->get('app_configs');
+        $base_tasks_path = getenv("TASK_DIR"); //Must be absolute path on server
+
+        if(empty($params["TASK_PATH"])) throw new Exception("ERROR - No task file to execute submitted");
+
+        if(
+            strpos($params["TASK_PATH"], '.') !== false ||
+            substr($params["TASK_PATH"], -strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
+            strpos($params["TASK_PATH"], getenv("TASK_DIR") === false)
+        ){
+            throw new Exception("ERROR - Task path out of range");
+        }
 
 
-
-
+        throw new Exception("ERROR - qui ci sono");
 
         return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")

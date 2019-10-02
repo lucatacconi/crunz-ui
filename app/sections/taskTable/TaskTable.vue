@@ -37,15 +37,15 @@
                                                 TASK ACTION MENU
                                             </v-subheader>
                                             <v-list-item-group color="primary">
-                                                <v-list-item>
+                                                <v-list-item @click="executeItem(item,i)">
                                                     <v-list-item-icon><v-icon small>fa fa-exclamation-circle</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Execute task</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item>
+                                                <v-list-item class="d-none">
                                                     <v-list-item-icon><v-icon small>fa fa-folder-open</v-icon></v-list-item-icon>
                                                     <v-list-item-title>View task execution result</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="opendEditModal(item,i)">
+                                                <v-list-item @click="opendEditModal(item,i)" class="d-none">
                                                     <v-list-item-icon><v-icon small>fa fa-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task configuration</v-list-item-title>
                                                 </v-list-item>
@@ -248,6 +248,39 @@ module.exports = {
                 }
             });
         },
+        executeItem: function (rowdata) {
+            var self = this;
+            Swal.fire({
+                title: 'Execute task',
+                text: "Do you want execute task?",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f86c6b',
+                cancelButtonColor: '#20a8d8',
+                confirmButtonText: 'EXECUTE',
+                cancelButtonText: 'Back'
+            }).then( function (result) {
+                if (result.value) {
+                    var self=this
+                    Utils.apiCall("post", "/task/execute")
+                    .then(function (response) {
+                        if(response.statusText=='OK'){
+                            Swal.fire({
+                                title: 'Task EXECUTED',
+                                text: "Task EXECUTED",
+                                type: 'success'
+                            })
+                        }else{
+                            Swal.fire({
+                                title: 'Error executing task',
+                                text: "Error executing task",
+                                type: 'error'
+                            })
+                        }
+                    });
+                }
+            });
+        }
     },
     created:function() {
         this.readData()
