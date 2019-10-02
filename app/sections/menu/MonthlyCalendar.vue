@@ -43,7 +43,7 @@
                     ref="calendar"
                     v-model="focus"
                     color="primary"
-                    :events="events"
+                    :events="tasks"
                     :event-color="getEventColor"
                     :event-margin-bottom="3"
                     :now="today"
@@ -106,8 +106,9 @@
 module.exports = {
     data:function(){
         return{
-            today: '2019-01-01',
-            focus: '2019-01-01',
+            today: moment().format('YYYY-MM-DD'),
+            focus: moment().format('YYYY-MM-DD'),
+            navigationDate: moment().format('YYYY-MM-DD'),
             type: 'month',
             typeToLabel: {
                 month: 'Month',
@@ -119,6 +120,7 @@ module.exports = {
             selectedEvent: {},
             selectedElement: null,
             selectedOpen: false,
+            tasks:[],
             events: [
                 {
                     name: 'Vacation',
@@ -297,14 +299,13 @@ module.exports = {
         },
         prev () {
             this.$refs.calendar.prev()
-            this.loadEvent()
+            this.navigationDate=moment(this.navigationDate,'YYYY-MM-DD').subtract(1, 'M').format('YYYY-MM-DD').toString();
+            this.readData()
         },
         next () {
             this.$refs.calendar.next()
-            this.loadEvent()
-        },
-        loadEvent:function(){
-            console.log("carico eventi")
+            this.navigationDate=moment(this.navigationDate,'YYYY-MM-DD').add(1, 'M').format('YYYY-MM-DD').toString();
+            this.readData()
         },
         showEvent ({ nativeEvent, event }) {
             const open = () => {
@@ -333,20 +334,28 @@ module.exports = {
                 : ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'][d % 10]
         },
         readData:function(){
+            console.log("carico eventi")
             var self=this
-            var params={}
-            Utils.apiCall("get", "/task/")
+            var from= moment(self.navigationDate,'YYYY-MM-DD').set('date',1).format('YYYY-MM-DD').toString()
+            var to= moment(self.navigationDate,'YYYY-MM-DD').endOf('month').format('YYYY-MM-DD').toString()
+            var params={
+                CALC_RUN_LST:'Y',
+                INTERVAL_FROM:from,
+                INTERVAL_TO:to
+            }
+            Utils.apiCall("get", "/task/",params)
             .then(function (response) {
                 console.log(response)
-                if(response.data.length!=0){
-                    self.files=JSON.parse(JSON.stringify(response.data))
-                }
+                // if(response.data.length!=0){
+                //     self.files=JSON.parse(JSON.stringify(response.data))
+                // }
             });
         },
     },
     mounted () {
         this.$refs.calendar.checkChange()
         this.readData()
+        console.log(moment().format('YYYY-MM-DD'))
     },
 }
 </script>
