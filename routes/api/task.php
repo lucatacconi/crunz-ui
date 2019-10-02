@@ -187,6 +187,19 @@ $app->group('/task', function () use ($app) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
 
+    $app->post('/execute', function ($request, $response, $args) {
+
+
+
+
+
+
+        return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    });
+
+
     $app->post('/', function ($request, $response, $args) {
 
         $data = [];
@@ -347,7 +360,7 @@ $app->group('/task', function () use ($app) {
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
         $app_configs = $this->get('app_configs');
-        $base_tasks_path = $app_configs["paths"]["base_path"] . getenv("TASK_DIR");
+        $base_tasks_path = getenv("TASK_DIR"); //Must be absolute path on server
 
         if(empty($params["TASK_PATH"])) throw new Exception("ERROR - No task file to delete submitted");
 
