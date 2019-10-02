@@ -51,25 +51,6 @@
         },
 
         {
-            "title": "Daily calendar",
-            "subtitle": "Show daily tasks",
-            "allowed":["admin"],
-            "visible": true,
-
-            "action":{
-                "path": "/menu/DailyCalendar",
-                "component": "../../app/sections/menu/DailyCalendar.vue"
-            },
-
-            "layout":{
-                "icon": "assignment_turned_in",
-                "disabled": false,
-                "color": false,
-                "class": false
-            }
-        },
-
-        {
             "title": "Monthly calendar",
             "subtitle": "Show monthly tasks",
             "allowed":["admin"],
@@ -82,6 +63,25 @@
 
             "layout":{
                 "icon": "calendar_today",
+                "disabled": false,
+                "color": false,
+                "class": false
+            }
+        },
+
+        {
+            "title": "Daily calendar",
+            "subtitle": "Show daily tasks",
+            "allowed":["admin"],
+            "visible": true,
+
+            "action":{
+                "path": "/menu/DailyCalendar",
+                "component": "../../app/sections/menu/DailyCalendar.vue"
+            },
+
+            "layout":{
+                "icon": "assignment_turned_in",
                 "disabled": false,
                 "color": false,
                 "class": false
