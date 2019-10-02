@@ -86,7 +86,7 @@ $app->group('/task', function () use ($app) {
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
         $app_configs = $this->get('app_configs');
-        $base_tasks_path = $app_configs["paths"]["base_path"] . getenv("TASK_DIR");
+        $base_tasks_path = getenv("TASK_DIR"); //Must be absolute path on server
 
         $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
         $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
@@ -186,7 +186,6 @@ $app->group('/task', function () use ($app) {
         ->withHeader("Content-Type", "application/json")
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
-
 
     $app->post('/', function ($request, $response, $args) {
 
