@@ -13,7 +13,7 @@
                         <v-icon small>mdi-chevron-right</v-icon>
                     </v-btn>
                     <v-toolbar-title>{{ title }}</v-toolbar-title>
-                    <div class="flex-grow-1"></div>
+                    <!-- <div class="flex-grow-1"></div>
                     <v-menu bottom right>
                         <template v-slot:activator="{ on }">
                             <v-btn
@@ -35,7 +35,7 @@
                                 <v-list-item-title>4 days</v-list-item-title>
                             </v-list-item>
                         </v-list>
-                    </v-menu>
+                    </v-menu> -->
                 </v-toolbar>
             </v-sheet>
             <v-sheet height="600">
@@ -281,13 +281,13 @@ module.exports = {
             })
         }
     },
-    mounted () {
-        this.$refs.calendar.checkChange()
-    },
     methods: {
         viewDay ({ date }) {
-            this.focus = date
-            this.type = 'day'
+            console.log("qui")
+            if(date!=undefined){
+                this.focus = date
+            }
+            // this.type = 'day'
         },
         getEventColor (event) {
             return event.color
@@ -297,9 +297,14 @@ module.exports = {
         },
         prev () {
             this.$refs.calendar.prev()
+            this.loadEvent()
         },
         next () {
             this.$refs.calendar.next()
+            this.loadEvent()
+        },
+        loadEvent:function(){
+            console.log("carico eventi")
         },
         showEvent ({ nativeEvent, event }) {
             const open = () => {
@@ -327,6 +332,21 @@ module.exports = {
                 ? 'th'
                 : ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'][d % 10]
         },
-    }
+        readData:function(){
+            var self=this
+            var params={}
+            Utils.apiCall("get", "/task/")
+            .then(function (response) {
+                console.log(response)
+                if(response.data.length!=0){
+                    self.files=JSON.parse(JSON.stringify(response.data))
+                }
+            });
+        },
+    },
+    mounted () {
+        this.$refs.calendar.checkChange()
+        this.readData()
+    },
 }
 </script>
