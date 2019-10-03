@@ -140,6 +140,20 @@ module.exports = {
             }
             return color;
         },
+        hashCode:function(str) {
+            var hash = 0;
+            for (var i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return hash;
+        },
+        intToRGB:function(i){
+            var c = (i & 0x00FFFFFF)
+                .toString(16)
+                .toUpperCase();
+
+            return "00000".substring(0, 6 - c.length) + c;
+        },
         readData:function(){
             var self=this
             var from= moment(self.focus,'YYYY-MM-DD').format('YYYY-MM-DD').toString()+" 00:00:00"
@@ -160,7 +174,7 @@ module.exports = {
                                 details:response.data[i].task_description,
                                 start:response.data[i].interval_run_lst[k],
                                 end:moment(response.data[i].interval_run_lst[k],'YYYY-MM-DD h:mm:ss').add(1,'h').format('YYYY-MM-DD h:mm:ss').toString(),
-                                color: self.getRandomColor()
+                                color: "#"+self.intToRGB(self.hashCode(response.data[i].filename))
                             }
                             arr_temp.push(obj_temp)
                         }
