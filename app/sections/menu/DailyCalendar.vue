@@ -97,11 +97,9 @@ module.exports = {
     },
     methods: {
         viewDay ({ date }) {
-            console.log("qui")
             if(date!=undefined){
                 this.focus = date
             }
-            // this.type = 'day'
         },
         getEventColor (event) {
             return event.color
@@ -134,6 +132,14 @@ module.exports = {
 
             nativeEvent.stopPropagation()
         },
+        getRandomColor:function() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        },
         readData:function(){
             var self=this
             var from= moment(self.focus,'YYYY-MM-DD').format('YYYY-MM-DD').toString()+" 00:00:00"
@@ -145,7 +151,6 @@ module.exports = {
             }
             Utils.apiCall("get", "/task/",params)
             .then(function (response) {
-                console.log(response)
                 if(response.data.length!=0){
                     var arr_temp=[]
                     for(var i=0;i<response.data.length;i++){
@@ -155,7 +160,7 @@ module.exports = {
                                 details:response.data[i].task_description,
                                 start:response.data[i].interval_run_lst[k],
                                 end:moment(response.data[i].interval_run_lst[k],'YYYY-MM-DD h:mm:ss').add(1,'h').format('YYYY-MM-DD h:mm:ss').toString(),
-                                color: 'blue'
+                                color: self.getRandomColor()
                             }
                             arr_temp.push(obj_temp)
                         }

@@ -98,7 +98,6 @@ module.exports = {
     },
     methods: {
         viewDay ({ date }) {
-            console.log(date)
             if(date!=undefined){
                 this.focus = date
             }
@@ -139,6 +138,14 @@ module.exports = {
 
             nativeEvent.stopPropagation()
         },
+        getRandomColor:function() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        },
         readData:function(){
             // console.log("carico eventi")
             var self=this
@@ -161,7 +168,7 @@ module.exports = {
                                 details:response.data[i].task_description,
                                 start:response.data[i].interval_run_lst[k],
                                 end:moment(response.data[i].interval_run_lst[k],'YYYY-MM-DD h:mm:ss').add(1,'h').format('YYYY-MM-DD h:mm:ss').toString(),
-                                color: 'blue'
+                                color: self.getRandomColor()
                             }
                             arr_temp.push(obj_temp)
                         }
