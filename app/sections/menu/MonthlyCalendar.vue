@@ -9,33 +9,10 @@
                     <v-btn fab text small @click="prev">
                         <v-icon small>mdi-chevron-left</v-icon>
                     </v-btn>
+                    <v-toolbar-title>{{ title }}</v-toolbar-title>
                     <v-btn fab text small @click="next">
                         <v-icon small>mdi-chevron-right</v-icon>
                     </v-btn>
-                    <v-toolbar-title>{{ title }}</v-toolbar-title>
-                    <!-- <div class="flex-grow-1"></div>
-                    <v-menu bottom right>
-                        <template v-slot:activator="{ on }">
-                            <v-btn
-                                outlined
-                                v-on="on"
-                            >
-                                <span>{{ typeToLabel[type] }}</span>
-                                <v-icon right>mdi-menu-down</v-icon>
-                            </v-btn>
-                        </template>
-                        <v-list>
-                            <v-list-item @click="type = 'day'">
-                                <v-list-item-title>Day</v-list-item-title>
-                            </v-list-item>
-                            <v-list-item @click="type = 'month'">
-                                <v-list-item-title>Month</v-list-item-title>
-                            </v-list-item>
-                            <v-list-item @click="type = '4day'">
-                                <v-list-item-title>4 days</v-list-item-title>
-                            </v-list-item>
-                        </v-list>
-                    </v-menu> -->
                 </v-toolbar>
             </v-sheet>
             <v-sheet height="600">
@@ -47,11 +24,10 @@
                     :event-color="getEventColor"
                     :event-margin-bottom="3"
                     :now="today"
-                    :type="type"
+                    type="month"
                     @click:event="showEvent"
                     @click:more="viewDay"
                     @click:date="viewDay"
-                    @change="updateRange"
                     locale="en-EN"
                     :weekdays="[1, 2, 3, 4, 5, 6, 0]"
                 ></v-calendar>
@@ -109,178 +85,15 @@ module.exports = {
             today: moment().format('YYYY-MM-DD'),
             focus: moment().format('YYYY-MM-DD'),
             navigationDate: moment().format('YYYY-MM-DD'),
-            type: 'month',
-            typeToLabel: {
-                month: 'Month',
-                day: 'Day',
-                '4day': '4 Days',
-            },
-            start: null,
-            end: null,
             selectedEvent: {},
             selectedElement: null,
             selectedOpen: false,
             tasks:[],
-            events: [
-                {
-                    name: 'Vacation',
-                    details: 'Going to the beach!',
-                    start: '2018-12-29',
-                    end: '2019-01-01',
-                    color: 'blue',
-                },
-                {
-                    name: 'Meeting',
-                    details: 'Spending time on how we do not have enough time',
-                    start: '2019-01-07 09:00',
-                    end: '2019-01-07 09:30',
-                    color: 'indigo',
-                },
-                {
-                    name: 'Large Event',
-                    details: 'This starts in the middle of an event and spans over multiple events',
-                    start: '2018-12-31',
-                    end: '2019-01-04',
-                    color: 'deep-purple',
-                },
-                {
-                    name: '3rd to 7th',
-                    details: 'Testing',
-                    start: '2019-01-03',
-                    end: '2019-01-07',
-                    color: 'cyan',
-                },
-                {
-                    name: 'Big Meeting',
-                    details: 'A very important meeting about nothing',
-                    start: '2019-01-07 08:00',
-                    end: '2019-01-07 11:30',
-                    color: 'red',
-                },
-                {
-                    name: 'Another Meeting',
-                    details: 'Another important meeting about nothing',
-                    start: '2019-01-07 10:00',
-                    end: '2019-01-07 13:30',
-                    color: 'brown',
-                },
-                {
-                    name: '7th to 8th',
-                    start: '2019-01-07',
-                    end: '2019-01-08',
-                    color: 'blue',
-                },
-                {
-                    name: 'Lunch',
-                    details: 'Time to feed',
-                    start: '2019-01-07 12:00',
-                    end: '2019-01-07 15:00',
-                    color: 'deep-orange',
-                },
-                {
-                    name: '30th Birthday',
-                    details: 'Celebrate responsibly',
-                    start: '2019-01-03',
-                    color: 'teal',
-                },
-                {
-                    name: 'New Year',
-                    details: 'Eat chocolate until you pass out',
-                    start: '2019-01-01',
-                    end: '2019-01-02',
-                    color: 'green',
-                },
-                {
-                    name: 'Conference',
-                    details: 'The best time of my life',
-                    start: '2019-01-21',
-                    end: '2019-01-28',
-                    color: 'grey darken-1',
-                },
-                {
-                    name: 'Hackathon',
-                    details: 'Code like there is no tommorrow',
-                    start: '2019-01-30 23:00',
-                    end: '2019-02-01 08:00',
-                    color: 'black',
-                },
-                {
-                    name: 'event 1',
-                    start: '2019-01-14 18:00',
-                    end: '2019-01-14 19:00',
-                    color: '#4285F4',
-                },
-                {
-                    name: 'event 2',
-                    start: '2019-01-14 18:00',
-                    end: '2019-01-14 19:00',
-                    color: '#4285F4',
-                },
-                {
-                    name: 'event 5',
-                    start: '2019-01-14 18:00',
-                    end: '2019-01-14 19:00',
-                    color: '#4285F4',
-                },
-                {
-                    name: 'event 3',
-                    start: '2019-01-14 18:30',
-                    end: '2019-01-14 20:30',
-                    color: '#4285F4',
-                },
-                {
-                    name: 'event 4',
-                    start: '2019-01-14 19:00',
-                    end: '2019-01-14 20:00',
-                    color: '#4285F4',
-                },
-                {
-                    name: 'event 6',
-                    start: '2019-01-14 21:00',
-                    end: '2019-01-14 23:00',
-                    color: '#4285F4',
-                },
-                {
-                    name: 'event 7',
-                    start: '2019-01-14 22:00',
-                    end: '2019-01-14 23:00',
-                    color: '#4285F4',
-                },
-            ],
         }
     },
     computed: {
         title () {
-            const { start, end } = this
-            if (!start || !end) {
-                return ''
-            }
-
-            const startMonth = this.monthFormatter(start)
-            const endMonth = this.monthFormatter(end)
-            const suffixMonth = startMonth === endMonth ? '' : endMonth
-
-            const startYear = start.year
-            const endYear = end.year
-            const suffixYear = startYear === endYear ? '' : endYear
-
-            const startDay = start.day + this.nth(start.day)
-            const endDay = end.day + this.nth(end.day)
-
-            switch (this.type) {
-                case 'month':
-                    return `${startMonth} ${startYear}`
-                case '4day':
-                    return `${startMonth} ${startDay} ${startYear} - ${suffixMonth} ${endDay} ${suffixYear}`
-                case 'day':
-                    return `${startMonth} ${startDay} ${startYear}`
-            }
-            return ''
-        },
-        monthFormatter () {
-            return this.$refs.calendar.getFormatter({
-                timeZone: 'UTC', month: 'long',
-            })
+            return moment(this.navigationDate, 'YYYY-MM-DD').format('MMMM YYYY').toString()
         }
     },
     methods: {
@@ -296,6 +109,8 @@ module.exports = {
         },
         setToday () {
             this.focus = this.today
+            this.navigationDate=this.today
+            this.readData()
         },
         prev () {
             this.$refs.calendar.prev()
@@ -323,18 +138,8 @@ module.exports = {
 
             nativeEvent.stopPropagation()
         },
-        updateRange ({ start, end }) {
-            // You could load events from an outside source (like database) now that we have the start and end dates on the calendar
-            this.start = start
-            this.end = end
-        },
-        nth (d) {
-            return d > 3 && d < 21
-                ? 'th'
-                : ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'][d % 10]
-        },
         readData:function(){
-            console.log("carico eventi")
+            // console.log("carico eventi")
             var self=this
             var from= moment(self.navigationDate,'YYYY-MM-DD').set('date',1).format('YYYY-MM-DD').toString()
             var to= moment(self.navigationDate,'YYYY-MM-DD').endOf('month').format('YYYY-MM-DD').toString()
@@ -345,17 +150,29 @@ module.exports = {
             }
             Utils.apiCall("get", "/task/",params)
             .then(function (response) {
-                console.log(response)
-                // if(response.data.length!=0){
-                //     self.files=JSON.parse(JSON.stringify(response.data))
-                // }
+                // console.log(response)
+                if(response.data.length!=0){
+                    var arr_temp=[]
+                    for(var i=0;i<response.data.length;i++){
+                        for(var k=0;k<response.data[i].interval_run_lst.length;k++){
+                            var obj_temp={
+                                name:response.data[i].filename,
+                                details:response.data[i].task_description,
+                                start:response.data[i].interval_run_lst[k],
+                                end:moment(response.data[i].interval_run_lst[k],'YYYY-MM-DD h:mm:ss').add(1,'h').format('YYYY-MM-DD h:mm:ss').toString(),
+                                color: 'blue'
+                            }
+                            arr_temp.push(obj_temp)
+                        }
+                    }
+                    self.tasks=arr_temp
+                }
             });
         },
     },
     mounted () {
         this.$refs.calendar.checkChange()
         this.readData()
-        console.log(moment().format('YYYY-MM-DD'))
     },
 }
 </script>
