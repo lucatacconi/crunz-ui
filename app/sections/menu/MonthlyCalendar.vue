@@ -98,11 +98,12 @@ module.exports = {
     },
     methods: {
         viewDay ({ date }) {
-            console.log("qui")
+            console.log(date)
             if(date!=undefined){
                 this.focus = date
             }
-            // this.type = 'day'
+            sessionStorage.setItem('date',date)
+            this.$router.push({ path: '/menu/DailyCalendar' });
         },
         getEventColor (event) {
             return event.color
