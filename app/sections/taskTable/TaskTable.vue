@@ -74,13 +74,41 @@
                                 {{ item.next_run }}
                             </td>
                             <td class="text-center">
-                                {{ item.average_duration }}
+                                {{ item.average_duration==0 ? '--' : item.average_duration }}
                             </td>
                             <td>
                                 {{ item.last_run }}
                             </td>
                             <td :class="item.last_outcome.toUpperCase()=='OK' ? 'green--text' : 'red--text'" >
-                                {{ item.last_outcome }}
+                                <v-tooltip
+                                    left
+                                    v-if="item.last_outcome=='OK'"
+                                >
+                                    <template v-slot:activator="{ on }">
+                                            <v-icon
+                                                v-on="on"
+                                                color="green"
+                                            >
+                                                fa fa-circle
+                                            </v-icon>
+                                    </template>
+                                    <span>OK</span>
+                                </v-tooltip>
+                                <v-tooltip
+                                    left
+                                    v-if="item.last_outcome=='KO'"
+                                >
+                                    <template v-slot:activator="{ on }">
+                                            <v-icon
+                                                v-on="on"
+                                                color="red"
+                                            >
+                                                fa fa-circle
+                                            </v-icon>
+                                    </template>
+                                    <span>KO</span>
+                                </v-tooltip>
+                                <span v-else>--</span>
                             </td>
                         </tr>
                     </tbody>
