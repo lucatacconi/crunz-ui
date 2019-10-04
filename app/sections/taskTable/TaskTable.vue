@@ -91,73 +91,13 @@
                 </template>
 
             </v-data-table>
+            <v-card-actions style="padding-top:50px;"></v-card-actions>
 
         </v-card>
 
-        <v-speed-dial
-            absolute
-            bottom
-            left
-            direction="right"
-            open-on-hover
-            transition="slide-y-reverse-transition"
-        >
-            <template v-slot:activator>
-                <v-btn
-                    color="blue darken-2"
-                    dark
-                    fab
-                    small
-                >
-                    <v-icon>fa fa-cog</v-icon>
-                </v-btn>
-            </template>
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                    <v-btn
-                        fab
-                        dark
-                        small
-                        color="green"
-                        @click="openUploadModal()"
-                        v-on="on"
-                    >
-                        <v-icon>mdi-upload</v-icon>
-                    </v-btn>
-                </template>
-                <span>Upload file</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                    <v-btn
-                        fab
-                        dark
-                        small
-                        color="indigo"
-                        @click="opendEditModal()"
-                        v-on="on"
-                    >
-                        <v-icon>mdi-plus</v-icon>
-                    </v-btn>
-                </template>
-                <span>Add new task</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                    <v-btn
-                        fab
-                        dark
-                        small
-                        color="indigo"
-                        @click="readData()"
-                        v-on="on"
-                    >
-                        <v-icon>mdi-refresh</v-icon>
-                    </v-btn>
-                </template>
-                <span>Refresh</span>
-            </v-tooltip>
-        </v-speed-dial>
+        <!-- Actions buttons -->
+        <actions-buttons v-on:read-data="readData()" v-on:edit-modal="opendEditModal()" v-on:upload-modal="openUploadModal()"></actions-buttons>
+
     </div>
 </template>
 
@@ -291,6 +231,7 @@ module.exports = {
         this.readData()
     },
     components:{
+        'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue'),
         'task-edit': httpVueLoader('../../shareds/TaskEdit.vue'),
         'task-upload': httpVueLoader('../../shareds/FileUpload.vue')
     }
