@@ -15,6 +15,5 @@ var/logs/*
 *.tar
 *.zip
 
-.env
 /vendor/*
 composer.lock
