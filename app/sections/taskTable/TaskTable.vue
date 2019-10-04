@@ -68,7 +68,7 @@
                                 {{ item.task_description }}
                             </td>
                             <td>
-                                {{ cronstrue.toString(item.expression) }}
+                                {{ item.expression!=undefined&&item.expression!='' ? cronstrue.toString(item.expression) : '' }}
                             </td>
                             <td>
                                 {{ item.next_run }}

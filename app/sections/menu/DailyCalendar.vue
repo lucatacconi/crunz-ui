@@ -1,5 +1,20 @@
 <template>
     <div>
+
+        <!-- Task edit modal -->
+        <task-edit
+            v-if="showEditModal"
+            @on-close-edit-modal="closeEditModal"
+            :rowdata="editData"
+        ></task-edit>
+
+        <!-- Upload file modal -->
+        <task-upload
+            v-if="showUploadModal"
+            @on-close-edit-modal="closeUploadModal"
+            :rowdata="uploadData"
+        ></task-upload>
+
         <v-card>
             <v-row class="fill-height">
                 <v-col>
@@ -92,12 +107,16 @@
 module.exports = {
     data:function(){
         return{
+            showUploadModal:false,
+            showEditModal:false,
             today: moment().format('YYYY-MM-DD'),
             focus: moment().format('YYYY-MM-DD'),
             selectedEvent: {},
             selectedElement: null,
             selectedOpen: false,
-            tasks:[]
+            tasks:[],
+            editData:false,
+            uploadData:false,
         }
     },
     computed: {
@@ -106,6 +125,24 @@ module.exports = {
         }
     },
     methods: {
+        opendEditModal: function (rowdata) {
+            this.showEditModal = true;
+            this.editData = rowdata!=undefined ? rowdata : false;
+        },
+        closeEditModal: function () {
+            this.showEditModal = false;
+            // this.form. = false;
+            // this.readData();
+        },
+         openUploadModal: function (rowdata) {
+            this.showUploadModal = true;
+            // this.editData = rowdata!=undefined ? rowdata : false;
+        },
+        closeUploadModal: function () {
+            this.showUploadModal = false;
+            // this.form. = false;
+            // this.readData();
+        },
         viewDay ({ date }) {
             if(date!=undefined){
                 this.focus = date
@@ -203,7 +240,9 @@ module.exports = {
         this.readData()
     },
     components:{
-        'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue')
+        'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue'),
+        'task-edit': httpVueLoader('../../shareds/TaskEdit.vue'),
+        'task-upload': httpVueLoader('../../shareds/FileUpload.vue')
     }
 }
 </script>
