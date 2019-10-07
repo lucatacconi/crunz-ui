@@ -38,7 +38,7 @@
                                             </v-subheader>
                                             <v-list-item-group color="primary">
                                                 <v-list-item @click="executeItem(item,i)">
-                                                    <v-list-item-icon><v-icon small>fa fa-exclamation-circle</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon small>fa fa-play</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Execute task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item class="d-none">
@@ -115,7 +115,7 @@
                 </template>
 
                 <template v-slot:no-data>
-                    TASKS NOT FOUND
+                    {{ message }}
                 </template>
 
             </v-data-table>
@@ -153,15 +153,19 @@ module.exports = {
             files: [],
             editData:false,
             uploadData:false,
+            message:'LOADING TASKS'
         }
     },
     methods: {
         readData:function(){
             var self=this
+            self.message="LOADING TASKS"
             Utils.apiCall("get", "/task/")
             .then(function (response) {
                 if(response.data.length!=0){
                     self.files=JSON.parse(JSON.stringify(response.data))
+                }else{
+                    self.message="TASKS NOT FOUND"
                 }
             });
         },
