@@ -22,7 +22,7 @@
                 </v-toolbar-items>
             </v-toolbar>
             <v-card-title>Select folder</v-card-title>
-            <v-treeview
+            <!-- <v-treeview
                 dense
                 item-disabled="disabled"
                 color="blue"
@@ -42,7 +42,12 @@
                 <template v-slot:label="{ item }">
                     {{item.description}}
                 </template>
-            </v-treeview>
+            </v-treeview> -->
+            <v-select
+            class="pl-4 pr-4"
+                solo
+                :items="['folder 1','folder 2','folder 3']"
+            ></v-select>
             <v-card-title>Select file</v-card-title>
                 <v-file-input
                     class="pl-4 pr-4"
