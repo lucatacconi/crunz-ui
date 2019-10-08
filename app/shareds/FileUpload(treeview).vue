@@ -22,11 +22,27 @@
                 </v-toolbar-items>
             </v-toolbar>
             <v-card-title>Select folder</v-card-title>
-            <v-select
-                class="pl-4 pr-4"
-                solo
-                :items="['folder 1','folder 2','folder 3']"
-            ></v-select>
+            <v-treeview
+                dense
+                item-disabled="disabled"
+                color="blue"
+                :items="items"
+                item-key="description"
+                activatable
+                @update:active="checkFolder($event)"
+            >
+                <template v-slot:prepend="{ item, open }">
+                    <v-icon v-if="!item.file">
+                        {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+                    </v-icon>
+                    <v-icon v-else>
+                        {{ files[item.file] }}
+                    </v-icon>
+                </template>
+                <template v-slot:label="{ item }">
+                    {{item.description}}
+                </template>
+            </v-treeview>
             <v-card-title>Select file</v-card-title>
                 <v-file-input
                     class="pl-4 pr-4"
