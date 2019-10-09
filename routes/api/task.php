@@ -120,8 +120,8 @@ $app->group('/task', function () use ($app) {
 
                 $row["filename"] = $taskFile->getFilename();
                 $row["real_path"] = $taskFile->getRealPath();
-                $row["subdir"] = str_replace( array( $row["filename"]),'',$taskFile->getPathname());
-                $row["task_path"] = getenv("TASK_DIR") . str_replace($base_tasks_path, '', $row["real_path"]);
+                $row["subdir"] = str_replace( array( getenv("TASK_DIR"), $row["filename"]),'',$row["real_path"]);
+                $row["task_path"] = str_replace(getenv("TASK_DIR"), '', $row["real_path"]);
                 $row["event_id"] = $oEVENT->getId();
                 $row["event_launch_id"] = $task_counter;
                 $row["task_description"] = $oEVENT->description;
@@ -197,24 +197,64 @@ $app->group('/task', function () use ($app) {
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
         $app_configs = $this->get('app_configs');
+        $base_path =$app_configs["paths"]["base_path"];
         $base_tasks_path = getenv("TASK_DIR"); //Must be absolute path on server
 
-        if(empty($params["TASK_PATH"])) throw new Exception("ERROR - No task file to execute submitted");
+        if( empty($params["TASK_PATH"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No task path or task ID to execute submitted");
 
-        if(
-            strpos($params["TASK_PATH"], '.') !== false ||
-            substr($params["TASK_PATH"], -strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
-            strpos($params["TASK_PATH"], getenv("TASK_DIR") === false)
-        ){
-            throw new Exception("ERROR - Task path out of range");
+
+        $output = false;
+        if( !empty($params["TASK_ID"]) ){
+            $task_id = $params["TASK_ID"];
+            $task_founded = true;
+        }else{
+
+            //File compliance check
+            $path_check = str_replace(".php", '', $params["TASK_PATH"]);
+
+            if(
+                strpos($path_check, '.') !== false ||
+                substr($params["TASK_PATH"], - strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
+                strpos($path_check, getenv("TASK_DIR") === false)
+            ){
+                throw new Exception("ERROR - Task path out of range");
+            }
+
+            //List of all file with the same order used by Crunz
+            $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
+            $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
+
+
+            $quotedSuffix = \preg_quote(getenv("TASK_SUFFIX"), '/');
+            $regexIterator = new \RegexIterator( $recursiveIterator, "/^.+{$quotedSuffix}$/i", \RecursiveRegexIterator::GET_MATCH );
+
+            $files = \array_map(
+                static function (array $file) {
+                    return new \SplFileInfo(\reset($file));
+                },
+                \iterator_to_array($regexIterator)
+            );
+
+            $task_id = 1;
+            $task_founded = false;
+            foreach($files as $task_path => $task_data){
+                //echo ($task_path." == ".$base_tasks_path."/".$params["TASK_PATH"])."\n";
+                if($task_path == $base_tasks_path."/".ltrim($params["TASK_PATH"],"/")){
+                    $task_founded = true;
+                    break;
+                }
+
+                $task_id++;
+            }
         }
 
-
-        throw new Exception("ERROR - qui ci sono");
+        if($task_founded){
+            $output = shell_exec("cd $base_tasks_path && cd .. && ./vendor/bin/crunz schedule:run -t$task_id -f");
+        }
 
         return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        ->write(json_encode($output, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
 
 
