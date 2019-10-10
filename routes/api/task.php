@@ -252,9 +252,17 @@ $app->group('/task', function () use ($app) {
             $output = shell_exec("cd $base_tasks_path && cd .. && ./vendor/bin/crunz schedule:run -t$task_id -f");
         }
 
+        if($task_founded){
+            $data["result"] = true;
+            $data["result_msg"] = $output;
+        }else{
+            $data["result"] = false;
+            $data["result_msg"] = '';
+        }
+
         return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($output, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
 
 
@@ -422,10 +430,13 @@ $app->group('/task', function () use ($app) {
 
         if(empty($params["TASK_PATH"])) throw new Exception("ERROR - No task file to delete submitted");
 
+        //File compliance check
+        $path_check = str_replace(".php", '', $params["TASK_PATH"]);
+
         if(
-            strpos($params["TASK_PATH"], '.') !== false ||
-            substr($params["TASK_PATH"], -strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
-            strpos($params["TASK_PATH"], getenv("TASK_DIR") === false)
+            strpos($path_check, '.') !== false ||
+            substr($params["TASK_PATH"], - strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
+            strpos($path_check, getenv("TASK_DIR") === false)
         ){
             throw new Exception("ERROR - Task path out of range");
         }
