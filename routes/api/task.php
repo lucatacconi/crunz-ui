@@ -256,8 +256,7 @@ $app->group('/task', function () use ($app) {
             $data["result"] = true;
             $data["result_msg"] = $output;
         }else{
-            $data["result"] = false;
-            $data["result_msg"] = '';
+            throw new Exception("ERROR - Execution path error");
         }
 
         return $response->withStatus(200)
