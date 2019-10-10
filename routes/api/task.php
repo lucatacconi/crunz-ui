@@ -442,11 +442,12 @@ $app->group('/task', function () use ($app) {
         }
 
         $data["path"] = $params["TASK_PATH"];
+        $delete_path = $base_tasks_path."/".ltrim($params["TASK_PATH"],"/");
 
         try {
-            if(!is_writable($base_tasks_path . $params["TASK_PATH"])) throw new Exception('ERROR - File not writable');
+            if(!is_writable($delete_path)) throw new Exception('ERROR - File not writable');
 
-            unlink($base_tasks_path . $params["TASK_PATH"]);
+            unlink($delete_path);
 
             $data["result"] = true;
             $data["result_msg"] = '';
