@@ -276,101 +276,14 @@ $app->group('/task', function () use ($app) {
     });
 
 
-    $app->post('/', function ($request, $response, $args) {
+    // $app->post('/', function ($request, $response, $args) {
 
-        $data = [];
+    //     $data = [];
 
-        if(empty(getenv("TASK_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
-        if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
-
-        $app_configs = $this->get('app_configs');
-        $base_tasks_path = $app_configs["paths"]["base_path"] . getenv("TASK_DIR");
-
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
-
-        if(empty($params["OP_TYPE"])) throw new Exception("ERROR - Wrong operation type (1)");
-
-        //Check task file name
-        if(empty($params["TASK_NAME"])){
-            throw new Exception("ERROR - Empty task name");
-        }else{
-            if(preg_match('/[^a-z_.\/0-9]/i', $params["TASK_NAME"]) || strtoupper( substr($params["TASK_NAME"], -3) ) != "PHP" ){
-                throw new Exception("ERROR - Wrong task name format (a-zA-Z0-9_./)");
-            }
-        }
-
-
-
-        if($params["OP_TYPE"] == 'INS'){
-
-        }else if($params["OP_TYPE"] == 'MOD'){
-
-        }else{
-            throw new Exception("ERROR - Wrong operation type (2)");
-        }
-
-
-
-
-
-        // if(empty(getenv("TASK_NAME"))) throw new Exception("ERROR - Wrong tasks configuration");
-        // if(empty(getenv("SUBDIR"))) throw new Exception("ERROR - Wrong tasks configuration");
-        // if(empty(getenv("TASK_DECRIPTION"))) throw new Exception("ERROR - Wrong tasks configuration");
-        // if(empty(getenv("STATUS"))) throw new Exception("ERROR - Wrong tasks configuration");
-        // if(empty(getenv("COMMAND"))) throw new Exception("ERROR - Wrong tasks configuration");
-
-
-
-        // while (!\file_exists($path->toString())) {
-
-
-        // $test = new \Crunz\Filesystem\Filesystem();
-        // $pippo = $test->projectRootDirectory();
-
-        // print_r($pippo);
-        // die("----");
-
-
-
-        // public function projectRootDirectory()
-        // {
-        //     if (null === $this->projectRootDir) {
-        //         $dir = $rootDir = \dirname(__DIR__);
-        //         $path = Path::fromStrings($dir, 'composer.json');
-
-        //         while (!\file_exists($path->toString())) {
-        //             if ($dir === \dirname($dir)) {
-        //                 return $this->projectRootDir = $rootDir;
-        //             }
-        //             $dir = \dirname($dir);
-        //             $path = Path::fromStrings($dir, 'composer.json');
-        //         }
-
-        //         $this->projectRootDir = $dir;
-        //     }
-
-        //     return $this->projectRootDir;
-        // }
-
-
-
-        // $test = new \CrunzUI\Task\CrunzUITaskGenerator();
-
-
-
-        // print_r($test);
-        // die();
-
-        // $data = [];
-
-        // $data[] = __DIR__;
-
-        //$data = $aTASKs;
-
-        return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-    });
+    //     return $response->withStatus(200)
+    //     ->withHeader("Content-Type", "application/json")
+    //     ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    // });
 
     $app->post('/upload', function ($request, $response, $args) {
 
