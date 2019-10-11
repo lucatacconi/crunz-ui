@@ -193,6 +193,11 @@ $app->group('/task', function () use ($app) {
 
         $params = array_change_key_case($request->getParams(), CASE_UPPER);
 
+        $exec_and_wait = "N";
+        if(!empty($params["EXEC_AND_WAIT"])){
+            $exec_and_wait = $params["EXEC_AND_WAIT"];
+        }
+
         if(empty(getenv("TASK_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
@@ -249,11 +254,17 @@ $app->group('/task', function () use ($app) {
         }
 
         if($task_founded){
-            $output = shell_exec("cd $base_tasks_path && cd .. && ./vendor/bin/crunz schedule:run -t$task_id -f");
+            if($exec_and_wait == 'Y'){
+                $output = shell_exec("cd $base_tasks_path && cd .. && ./vendor/bin/crunz schedule:run -t$task_id -f");
+            }else{
+                $output = shell_exec("cd $base_tasks_path && cd .. && ./vendor/bin/crunz schedule:run -t$task_id -f > /dev/null 2>&1 & ");
+            }
+
         }
 
         if($task_founded){
             $data["result"] = true;
+            $data["exec_and_wait"] = $exec_and_wait;
             $data["result_msg"] = $output;
         }else{
             throw new Exception("ERROR - Execution path error");
@@ -367,10 +378,15 @@ $app->group('/task', function () use ($app) {
 
         $params = array_change_key_case($request->getParams(), CASE_UPPER);
 
-        $data["PARAM"] = print_r($params, true);
-        $data["FILE"] = print_r($_FILES, true);
+        print_r($response);
+        print_r($params);
+        print_r($_FILES);
+        die();
 
-        print file_get_contents ($_FILES['image']['tmp_name']);
+        // $data["PARAM"] = print_r($params, true);
+        // $data["FILE"] = print_r($_FILES, true);
+
+        // print file_get_contents ($_FILES['image']['tmp_name']);
 
         // $errors = []; // Store all foreseen and unforseen errors here
 
