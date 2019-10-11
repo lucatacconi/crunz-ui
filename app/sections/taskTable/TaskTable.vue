@@ -200,19 +200,22 @@ module.exports = {
                 cancelButtonText: 'Back'
             }).then( function (result) {
                 if (result.value) {
-                    var self=this
-                    Utils.apiCall("delete", "/task/")
+                    var params={
+                        TASK_PATH:rowdata.task_path
+                    }
+                    Utils.apiCall("delete", "/task/",params)
                     .then(function (response) {
-                        if(response.statusText=='OK'){
+                        if(response.data.result){
                             Swal.fire({
-                                title: 'Task deleted',
-                                text: "Task deleted",
+                                title: 'Task DELETED',
+                                text: response.data.result_msg,
                                 type: 'success'
                             })
+                            self.readData()
                         }else{
                             Swal.fire({
-                                title: 'Error deleted task',
-                                text: "Error deleted task",
+                                title: 'ERROR',
+                                text: response.data.result_msg,
                                 type: 'error'
                             })
                         }
@@ -234,23 +237,21 @@ module.exports = {
             }).then( function (result) {
                 if (result.value) {
                     var self=this
-
-                    console.log(JSON.stringify(rowdata));
-                    return false;
-
-
-                    Utils.apiCall("post", "/task/execute")
+                    var params={
+                        TASK_PATH:rowdata.task_path
+                    }
+                    Utils.apiCall("post", "/task/execute",params)
                     .then(function (response) {
-                        if(response != null && typeof response !== "undefined" && response.statusText=='OK'){
+                        if(response.data.result){
                             Swal.fire({
                                 title: 'Task EXECUTED',
-                                text: "Task EXECUTED",
+                                text: response.data.result_msg,
                                 type: 'success'
                             })
                         }else{
                             Swal.fire({
-                                title: 'Error executing task',
-                                text: "Error executing task",
+                                title: 'ERROR',
+                                text: response.data.result_msg,
                                 type: 'error'
                             })
                         }
