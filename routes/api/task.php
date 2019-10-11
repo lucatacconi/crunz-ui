@@ -389,7 +389,12 @@ $app->group('/task', function () use ($app) {
         //Check destination
         if( empty($params["TASK_DESTINATION_PATH"]) ) throw new Exception("ERROR - No task path destination submitted");
 
-        $destination_path = $base_tasks_path . "/".trim($params["TASK_DESTINATION_PATH"],"/");
+        if(trim($params["TASK_DESTINATION_PATH"],"/") == ""){
+            $destination_path = $base_tasks_path;
+        }else{
+            $destination_path = $base_tasks_path . "/".trim($params["TASK_DESTINATION_PATH"],"/");
+        }
+
         if(!is_dir($destination_path)) throw new Exception('ERROR - Destination path not exist');
         if(!is_writable($destination_path)) throw new Exception('ERROR - File not writable');
 
