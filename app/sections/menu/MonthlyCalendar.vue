@@ -67,27 +67,28 @@
                                     <v-btn icon>
                                         <v-icon>mdi-pencil</v-icon>
                                     </v-btn>
-                                    <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
-                                    <div class="flex-grow-1"></div>
                                     <v-btn icon>
-                                        <v-icon>mdi-heart</v-icon>
+                                        <v-icon>mdi-delete</v-icon>
                                     </v-btn>
+                                    <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
+                                    <v-spacer></v-spacer>
                                     <v-btn icon>
-                                        <v-icon>mdi-dots-vertical</v-icon>
+                                        <v-icon>fas fa-file-alt</v-icon>
+                                    </v-btn>
+                                    <v-btn
+                                        icon
+                                        @click="selectedOpen = false"
+                                    >
+                                        <v-icon>mdi-close</v-icon>
                                     </v-btn>
                                 </v-toolbar>
                                 <v-card-text>
-                                    <span v-html="selectedEvent.details"></span>
+                                    <span>{{ selectedEvent.details }}</span>
+                                    <br>
+                                    <span>{{ selectedEvent.data!=undefined ? selectedEvent.data.expression_readable : '' }}</span>
+                                    <br>
+                                    <span>{{ selectedEvent.start }}</span>
                                 </v-card-text>
-                                <v-card-actions>
-                                    <v-btn
-                                        text
-                                        color="secondary"
-                                        @click="selectedOpen = false"
-                                    >
-                                        Cancel
-                                    </v-btn>
-                                </v-card-actions>
                             </v-card>
                         </v-menu>
                     </v-sheet>
@@ -219,17 +220,19 @@ module.exports = {
             }
             Utils.apiCall("get", "/task/",params)
             .then(function (response) {
-                // console.log(response)
                 if(response.data.length!=0){
                     var arr_temp=[]
                     for(var i=0;i<response.data.length;i++){
                         for(var k=0;k<response.data[i].interval_run_lst.length;k++){
+                            var tmp=JSON.parse(JSON.stringify(response.data[i]))
+                            delete tmp.interval_run_lst
                             var obj_temp={
                                 name:response.data[i].filename,
                                 details:response.data[i].task_description,
                                 start:response.data[i].interval_run_lst[k],
                                 end:moment(response.data[i].interval_run_lst[k],'YYYY-MM-DD h:mm:ss').add(1,'h').format('YYYY-MM-DD h:mm:ss').toString(),
-                                color: "#"+self.intToRGB(self.hashCode(response.data[i].filename))
+                                color: "#"+self.intToRGB(self.hashCode(response.data[i].filename)),
+                                data: tmp
                             }
                             arr_temp.push(obj_temp)
                         }
