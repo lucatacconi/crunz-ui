@@ -376,54 +376,51 @@ $app->group('/task', function () use ($app) {
 
         $data = [];
 
+        if(empty(getenv("TASK_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
+
+        $app_configs = $this->get('app_configs');
+        $base_path =$app_configs["paths"]["base_path"];
+        $base_tasks_path = getenv("TASK_DIR"); //Must be absolute path on server
+
+
         $params = array_change_key_case($request->getParams(), CASE_UPPER);
 
-        print_r($response);
-        print_r($params);
-        print_r($_FILES);
-        die();
+        //Check destination
+        if( empty($params["TASK_DESTINATION_PATH"]) ) throw new Exception("ERROR - No task path destination submitted");
 
-        // $data["PARAM"] = print_r($params, true);
-        // $data["FILE"] = print_r($_FILES, true);
+        $destination_path = $base_tasks_path . "/".trim($params["TASK_DESTINATION_PATH"],"/");
+        if(!is_dir($destination_path)) throw new Exception('ERROR - Destination path not exist');
+        if(!is_writable($destination_path)) throw new Exception('ERROR - File not writable');
 
-        // print file_get_contents ($_FILES['image']['tmp_name']);
+        //Check task file
+        if(
+            empty($_FILES) ||
+            empty($_FILES["TASK_UPLOAD"]) ||
+            !is_uploaded_file($_FILES["TASK_UPLOAD"]["tmp_name"]) ||
+            $_FILES["TASK_UPLOAD"]["error"] > 0
+        ) throw new Exception("ERROR - No task file submitted or error uploading file");
 
-        // $errors = []; // Store all foreseen and unforseen errors here
+        if( empty($_FILES["TASK_UPLOAD"]["name"]) ) throw new Exception("ERROR - No task file name submitted");
 
-        // $fileExtensions = ['php','PHP']; // Get all the file extensions
+        if( substr($_FILES["TASK_UPLOAD"]["name"], - strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ) throw new Exception("ERROR - Task file must end with '".getenv("TASK_SUFFIX")."'");
 
-        // $fileName = $_FILES['myfile']['name'];
-        // $fileSize = $_FILES['myfile']['size'];
-        // $fileTmpName  = $_FILES['myfile']['tmp_name'];
-        // $fileType = $_FILES['myfile']['type'];
-        // $fileExtension = strtolower(end(explode('.',$fileName)));
 
-        // $uploadPath = $currentDir . $uploadDirectory . basename($fileName);
+        $accepted_file_ext = ["php"];
+        $aFILENAME = explode('.', $_FILES["TASK_UPLOAD"]["name"]);
+        if(!in_array( strtolower( end ( $aFILENAME )),$accepted_file_ext)){
+            throw new Exception("ERROR - Wrong task file extension");
+        }
 
-        // if (isset($_POST['submit'])) {
+        if( empty($_FILES["TASK_UPLOAD"]["size"]) ) throw new Exception("ERROR - Zero byte task file submitted");
 
-        //     if (! in_array($fileExtension,$fileExtensions)) {
-        //         $errors[] = "This file extension is not allowed. Please upload a JPEG or PNG file";
-        //     }
+        //All check done.. Can upload
+        if(!move_uploaded_file($_FILES["TASK_UPLOAD"]["tmp_name"], $destination_path."/".$_FILES["TASK_UPLOAD"]["name"])){
+            throw new Exception("ERROR - Error uploading task file");
+        }
 
-        //     if ($fileSize > 2000000) {
-        //         $errors[] = "This file is more than 2MB. Sorry, it has to be less than or equal to 2MB";
-        //     }
-
-        //     // if (empty($errors)) {
-        //     //     $didUpload = move_uploaded_file($fileTmpName, $uploadPath);
-
-        //     //     if ($didUpload) {
-        //     //         echo "The file " . basename($fileName) . " has been uploaded";
-        //     //     } else {
-        //     //         echo "An error occurred somewhere. Try again or contact the admin";
-        //     //     }
-        //     // } else {
-        //     //     foreach ($errors as $error) {
-        //     //         echo $error . "These are the errors" . "\n";
-        //     //     }
-        //     // }
-        // }
+        $data["result"] = true;
+        $data["result_msg"] = '';
 
         return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
