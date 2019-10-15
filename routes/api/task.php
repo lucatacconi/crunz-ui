@@ -107,7 +107,7 @@ $app->group('/task', function () use ($app) {
         $task_counter = 0;
         foreach ($files as $taskFile) {
 
-            $schedule = require $taskFile->getRealPath();
+            require $taskFile->getRealPath();
             if (!$schedule instanceof Schedule) {
                 continue;
             }
@@ -122,10 +122,84 @@ $app->group('/task', function () use ($app) {
                 $row["real_path"] = $taskFile->getRealPath();
                 $row["subdir"] = str_replace( array( getenv("TASK_DIR"), $row["filename"]),'',$row["real_path"]);
                 $row["task_path"] = str_replace(getenv("TASK_DIR"), '', $row["real_path"]);
+
+                if(!empty($params["TASK_PATH"])){
+                    if($row["task_path"] != $params["TASK_PATH"]){
+                        continue;
+                    }
+                }
+
                 $row["event_id"] = $oEVENT->getId();
                 $row["event_launch_id"] = $task_counter;
                 $row["task_description"] = $oEVENT->description;
                 $row["expression"] = $row["expression_orig"] = $oEVENT->getExpression();
+
+                $file_content = file_get_contents($taskFile->getRealPath(), true);
+                $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content);
+
+
+                //Check task lifetime
+                $from = '';
+                $to = '';
+
+                $delimiter = '#';
+                $startTag = '->between(';
+                $endTag = ')';
+                $regex = $delimiter . preg_quote($startTag, $delimiter)
+                                    . '(.*?)'
+                                    . preg_quote($endTag, $delimiter)
+                                    . $delimiter
+                                    . 's';
+                preg_match($regex, $file_content, $matches);
+                if(!empty($matches) and strpos($matches[1], ',') !== false){
+                    $aTIMELIFE = explode(",", $matches[1]);
+                    $lifetime_from = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[0] ));
+                    $lifetime_to = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[1] ));
+                }
+
+                if(empty($from)){
+                    $delimiter = '#';
+                    $startTag = '->from(';
+                    $endTag = ')';
+                    $regex = $delimiter . preg_quote($startTag, $delimiter)
+                                        . '(.*?)'
+                                        . preg_quote($endTag, $delimiter)
+                                        . $delimiter
+                                        . 's';
+                    preg_match($regex, $file_content,$matches);
+                    if(!empty($matches)){
+                        $lifetime_from = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
+                    }
+                }
+
+                if(!empty($to)){
+                    $delimiter = '#';
+                    $startTag = '->to(';
+                    $endTag = ')';
+                    $regex = $delimiter . preg_quote($startTag, $delimiter)
+                                        . '(.*?)'
+                                        . preg_quote($endTag, $delimiter)
+                                        . $delimiter
+                                        . 's';
+                    preg_match($regex, $file_content,$matches);
+                    if(!empty($matches)){
+                        $lifetime_to = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
+                    }
+                }
+
+                if(!empty($lifetime_from)){
+                    $row["lifetime_from"] = date('Y-m-d H:i:s', $lifetime_from);
+                    if($interval_from <  $row["lifetime_from"]){
+                        $interval_from = $row["lifetime_from"];
+                    }
+                }
+                if(!empty($lifetime_to)){
+                    $row["lifetime_to"] = date('Y-m-d H:i:s', $lifetime_to);
+                    if($interval_to >  $row["lifetime_to"]){
+                        $interval_to = $row["lifetime_to"];
+                    }
+                }
+
 
                 try {
                     $row["expression_readable"] = CronTranslator::translate($row["expression"]);
@@ -141,6 +215,9 @@ $app->group('/task', function () use ($app) {
 
                 unset($cron);
                 $cron = Cron\CronExpression::factory($row["expression"]);
+
+                //print_r(->format('Y-m-d H:i:s'));
+
 
                 $row["next_run"] = $cron->getNextRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
 
@@ -177,6 +254,12 @@ $app->group('/task', function () use ($app) {
                 }
 
                 $aTASKs[] = $row;
+
+                if(!empty($params["TASK_PATH"])){
+                    if($row["task_path"] == $params["TASK_PATH"]){
+                        break;
+                    }
+                }
             }
         };
 
