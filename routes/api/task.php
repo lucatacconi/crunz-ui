@@ -82,11 +82,12 @@ $app->group('/task', function () use ($app) {
         }
 
 
-        if(empty(getenv("TASK_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty(getenv("TASKS_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
         $app_configs = $this->get('app_configs');
-        $base_tasks_path = getenv("TASK_DIR"); //Must be absolute path on server
+        $base_tasks_path = getenv("TASKS_DIR"); //Must be absolute path on server
 
         $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
         $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
@@ -118,10 +119,16 @@ $app->group('/task', function () use ($app) {
                 $row = [];
                 $task_counter++;
 
+                if(!empty($params["TASK_ID"])){
+                    if($task_counter != $params["TASK_ID"]){
+                        continue;
+                    }
+                }
+
                 $row["filename"] = $taskFile->getFilename();
                 $row["real_path"] = $taskFile->getRealPath();
-                $row["subdir"] = str_replace( array( getenv("TASK_DIR"), $row["filename"]),'',$row["real_path"]);
-                $row["task_path"] = str_replace(getenv("TASK_DIR"), '', $row["real_path"]);
+                $row["subdir"] = str_replace( array( getenv("TASKS_DIR"), $row["filename"]),'',$row["real_path"]);
+                $row["task_path"] = str_replace(getenv("TASKS_DIR"), '', $row["real_path"]);
 
                 if(!empty($params["TASK_PATH"])){
                     if($row["task_path"] != $params["TASK_PATH"]){
@@ -241,7 +248,19 @@ $app->group('/task', function () use ($app) {
                     }
                 }
 
+
+
+                //Log evaluations
+                $log_name = rtrim( ltrim($row["task_path"],"/"), ".php" );
+                $log_name = str_replace("/", "-", $log_name);
+
+
+                $log_files = glob(getenv("LOGS_DIR")."/".$log_name."*.log"); //task-OK-20191001100-20191001110.log | task-KO-20191001100-20191001110.log
+                usort( $log_files, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
+
                 $row["average_duration"] = 0;
+
+
                 $row["last_outcome"] = '';
                 $row["last_outcome_message"] = '';
 
@@ -254,6 +273,12 @@ $app->group('/task', function () use ($app) {
                 }
 
                 $aTASKs[] = $row;
+
+                if(!empty($params["TASK_ID"])){
+                    if($task_counter == $params["TASK_ID"]){
+                        break;
+                    }
+                }
 
                 if(!empty($params["TASK_PATH"])){
                     if($row["task_path"] == $params["TASK_PATH"]){
@@ -281,14 +306,19 @@ $app->group('/task', function () use ($app) {
             $exec_and_wait = $params["EXEC_AND_WAIT"];
         }
 
-        if(empty(getenv("TASK_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty(getenv("TASKS_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
         $app_configs = $this->get('app_configs');
         $base_path =$app_configs["paths"]["base_path"];
-        $base_tasks_path = getenv("TASK_DIR"); //Must be absolute path on server
+        $base_tasks_path = getenv("TASKS_DIR"); //Must be absolute path on server
 
         if( empty($params["TASK_PATH"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No task path or task ID to execute submitted");
+
+        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(!is_dir(getenv("LOGS_DIR"))) throw new Exception('ERROR - Log destination path not exist');
+        if(!is_writable(getenv("LOGS_DIR"))) throw new Exception('ERROR - Log directory not writable');
 
 
         $output = false;
@@ -303,7 +333,7 @@ $app->group('/task', function () use ($app) {
             if(
                 strpos($path_check, '.') !== false ||
                 substr($params["TASK_PATH"], - strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
-                strpos($path_check, getenv("TASK_DIR") === false)
+                strpos($path_check, getenv("TASKS_DIR") === false)
             ){
                 throw new Exception("ERROR - Task path out of range");
             }
@@ -337,11 +367,29 @@ $app->group('/task', function () use ($app) {
         }
 
         if($task_founded){
-            if($exec_and_wait == 'Y'){
-                $output = shell_exec("cd $base_tasks_path && cd .. && ./vendor/bin/crunz schedule:run -t$task_id -f");
-            }else{
-                $output = shell_exec("cd $base_tasks_path && cd .. && ./vendor/bin/crunz schedule:run -t$task_id -f > /dev/null 2>&1 & ");
-            }
+
+            $log_start = date("YmdHi");
+
+            $log_name = rtrim( ltrim($params["TASK_PATH"],"/"), ".php" );
+            $log_name = str_replace("/", "-", $log_name);
+            $log_name_tmp = '.'.$log_name.'-'.$log_start.'log';
+            $log_name = $log_name.'-'.$log_start;
+
+            //die($log_name);
+
+            // $log_files = glob(getenv("LOGS_DIR")."/".$log_name."*.log"); //task-OK-20191001100-20191001110.log | task-KO-20191001100-20191001110.log
+
+
+            //if($exec_and_wait == 'Y'){
+                $output = shell_exec("cd $base_tasks_path &&
+                                      cd .. &&
+                                      ./vendor/bin/crunz schedule:run -t$task_id -f -vvv > ". rtrim(getenv("LOGS_DIR")."/","/") . $log_name_tmp ."  &&
+                                      END_DATA_LOG=date +%Y+%m+%d+%H+%M
+                                      mv ". rtrim(getenv("LOGS_DIR")."/","/") . $log_name_tmp ." ". rtrim(getenv("LOGS_DIR")."/","/") . $log_name_tmp ."
+                                      ");
+            // }else{
+            //     $output = shell_exec("cd $base_tasks_path && cd .. && ./vendor/bin/crunz schedule:run -t$task_id -f > /dev/null 2>&1 & ");
+            // }
 
         }
 
@@ -372,12 +420,12 @@ $app->group('/task', function () use ($app) {
 
         $data = [];
 
-        if(empty(getenv("TASK_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty(getenv("TASKS_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
         $app_configs = $this->get('app_configs');
         $base_path =$app_configs["paths"]["base_path"];
-        $base_tasks_path = getenv("TASK_DIR"); //Must be absolute path on server
+        $base_tasks_path = getenv("TASKS_DIR"); //Must be absolute path on server
 
 
         $params = array_change_key_case($request->getParams(), CASE_UPPER);
@@ -435,11 +483,11 @@ $app->group('/task', function () use ($app) {
 
         $params = array_change_key_case($request->getParams(), CASE_UPPER);
 
-        if(empty(getenv("TASK_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty(getenv("TASKS_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
         $app_configs = $this->get('app_configs');
-        $base_tasks_path = getenv("TASK_DIR"); //Must be absolute path on server
+        $base_tasks_path = getenv("TASKS_DIR"); //Must be absolute path on server
 
         if(empty($params["TASK_PATH"])) throw new Exception("ERROR - No task file to delete submitted");
 
@@ -449,7 +497,7 @@ $app->group('/task', function () use ($app) {
         if(
             strpos($path_check, '.') !== false ||
             substr($params["TASK_PATH"], - strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
-            strpos($path_check, getenv("TASK_DIR") === false)
+            strpos($path_check, getenv("TASKS_DIR") === false)
         ){
             throw new Exception("ERROR - Task path out of range");
         }
