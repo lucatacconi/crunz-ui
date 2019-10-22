@@ -2,14 +2,14 @@
 # sysinfo_page - Execute Crunz tasks, calculate execution duration, outcome e write specific log. Compatibile with Crunz version v2.0.2
 
 usage="
-./$(basename "$0") [-h] [-d tasks_path ] [ -l logs_path] [-tn] [-f]
+./$(basename "$0") [-h] [-d tasks_path ] [ -l logs_path] [-t n] [-f]
 execute Crunz tasks, calculate execution duration, outcome e write specific log. Use Crunz configuration file to set task path and task.
 
 Usage:
     -h: show this help text
     -d <tasks_path>: set tasks directory to tasks_path (default: ./tasks; Read Crunz configuration file crunz.yml)
     -l <logs path>: set logs directory to logs_path (default: ./logs; Read Crunz configuration file crunz.yml)
-    -t<n>: Configure Crunz to run only specified task (Wait for task's execution end)
+    -t <n>: Configure Crunz to run only specified task (Wait for task's execution end)
     -f: Forces Crunz to run task even if not programmed
 
 "
@@ -96,7 +96,10 @@ function runTask() {
         executed_task=$(echo $executed_task_row | grep -oP "(?<=$start_task_path).*?(?=$end_task_path)")
         executed_task=${executed_task/".php"/""}
 
-        log_task_name=${executed_task/"$absolute_tasks_path"/''}
+        task_container=$absolute_tasks_path""${p_tasks_path/"./"/''}
+
+        log_task_name=${executed_task/"$task_container"/''}
+        log_task_name=${log_task_name/"/"/''}
         log_task_name=${log_task_name//"/"/'_'}
 
         #I'm reading the outcome of task execution
