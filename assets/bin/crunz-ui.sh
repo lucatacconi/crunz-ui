@@ -1,19 +1,19 @@
 #!/bin/bash
-# sysinfo_page - A script to produce a system information HTML file
+# sysinfo_page - Execute Crunz tasks, calculate execution duration, outcome e write specific log. Compatibile with Crunz version v2.0.2
 
 usage="
-./$(basename "$0") [-h] [-d tasks_path ] [ -l logs_path] [-tn] [-f] -- execute Crunz tasks, calculate execution duration, outcome e write specific log.
+./$(basename "$0") [-h] [-d tasks_path ] [ -l logs_path] [-tn] [-f]
+execute Crunz tasks, calculate execution duration, outcome e write specific log. Use Crunz configuration file to set task path and task.
 
 Usage:
     -h: show this help text
-    -d <tasks_path>: set tasks directory to tasks_path (default: ./tasks)
-    -l <logs path>: set logs directory to logs_path (default: ./logs)
+    -d <tasks_path>: set tasks directory to tasks_path (default: ./tasks; Read Crunz configuration file crunz.yml)
+    -l <logs path>: set logs directory to logs_path (default: ./logs; Read Crunz configuration file crunz.yml)
     -t<n>: Configure Crunz to run only specified task (Wait for task's execution end)
     -f: Forces Crunz to run task even if not programmed
 
 "
-tasks_path="./tasks"
-tasks_suffix="Tasks.php"
+
 absolute_tasks_contaniner_path="$( cd "$(dirname "$0")" ; pwd -P )"
 absolute_tasks_path="$( cd "$(dirname "$0")" ; pwd -P )/${tasks_path#"./"}"
 
@@ -23,6 +23,24 @@ id_task=-1
 
 a_no_due=["No event is due!"]
 a_task_outcome=["success","fail"]
+
+
+function parse_yaml {
+   local prefix=$2
+   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
+   sed -ne "s|^\($s\):|\1|" \
+        -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
+        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
+   awk -F$fs '{
+      indent = length($1)/2;
+      vname[indent] = $2;
+      for (i in vname) {if (i > indent) {delete vname[i]}}
+      if (length($3) > 0) {
+         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
+         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
+      }
+   }'
+}
 
 
 function runTask() {
@@ -78,9 +96,8 @@ function runTask() {
         executed_task=$(echo $executed_task_row | grep -oP "(?<=$start_task_path).*?(?=$end_task_path)")
         executed_task=${executed_task/".php"/""}
 
-        log_task_name=${executed_task/"$absolute_tasks_path/"/''}
-        log_task_name=${log_task_name/"/"/'_'}
-
+        log_task_name=${executed_task/"$absolute_tasks_path"/''}
+        log_task_name=${log_task_name//"/"/'_'}
 
         #I'm reading the outcome of task execution
         start_task_outcome="php status: "
@@ -100,6 +117,28 @@ function runTask() {
         rm $p_logs_path/$file_uuid.log
     fi
 }
+
+# ========================================================================================
+
+tasks_path="./tasks"
+tasks_suffix="Tasks.php"
+
+if [ ! -f "./crunz.yml" ]; then
+    echo "Crunz configuration file (./crunz.yml) doesn't exist."
+    exit 1
+fi
+
+eval $(parse_yaml ./crunz.yml "CONF_")
+
+if [ -n "$CONF_source" ]
+then
+    tasks_path="./"${CONF_source/"./"/''}
+fi
+
+if [ -n "$CONF_suffix" ]
+then
+    tasks_suffix=$CONF_suffix
+fi
 
 while [[ $# -gt 0 ]]
 do
@@ -129,6 +168,13 @@ do
             exit 1
     esac
 done
+
+logs_path="./"${logs_path/"./"/''}
+
+if [ ! -w $logs_path ]; then
+    echo "Logdir $logs_path doesn't exist or is not writable. Check directory and permitions."
+    exit 1
+fi
 
 if [ $id_task -gt 0 ]; then
     runTask $id_task "$forced_execution" "$tasks_path" "$logs_path"
