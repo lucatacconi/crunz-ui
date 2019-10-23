@@ -231,6 +231,36 @@ $app->group('/task', function () use ($app) {
                 $cron = Cron\CronExpression::factory($row["expression"]);
 
 
+                //Check log file configured by user appendOutputTo() or sendOutputTo()
+                $custom_log = '';
+                $delimiter = '#';
+                $startTag = '->appendOutputTo(';
+                $startTag2 = '->sendOutputTo(';
+                $endTag = ')';
+                $regex = $delimiter . preg_quote($startTag, $delimiter)
+                                    . '(.*?)'
+                                    . preg_quote($endTag, $delimiter)
+                                    . $delimiter
+                                    . 's';
+                $regex2 = $delimiter . preg_quote($startTag2, $delimiter)
+                                    . '(.*?)'
+                                    . preg_quote($endTag, $delimiter)
+                                    . $delimiter
+                                    . 's';
+
+                preg_match($regex, $file_content,$matches);
+                if(!empty($matches) && empty($custom_log)){
+                    $custom_log = strtotime( str_replace(array("\"","'", "\""), '', $matches[1] ));
+                }
+
+                preg_match($regex2, $file_content,$matches);
+                if(!empty($matches) && empty($custom_log)){
+                    $custom_log = strtotime( str_replace(array("\"","'", "\""), '', $matches[1] ));
+                }
+
+                $row["custom_log"] = $custom_log;
+
+
                 //Log evaluations
                 $row["last_duration"] = 0;
                 $row["last_outcome"] = '';
