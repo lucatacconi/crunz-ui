@@ -71,7 +71,7 @@
                                 {{ item !=undefined && item.expression != undefined && item.expression!='' ? cronstrue.toString(item.expression) : '' }}
                             </td>
                             <td class="text-center">
-                                {{ item.next_run }}
+                                {{ moment(item.next_run).format('YY-MM-DD HH:mm') }}
                             </td>
                             <td class="text-center">
                                 <span v-if="item.last_outcome != ''">
@@ -80,41 +80,11 @@
                                 <span v-else>--</span>
                             </td>
                             <td class="text-center">
-                                {{ item.last_run == "" ? "--" : item.last_run }}
+                                {{ item.last_run == "" ? "--" : moment(item.last_run).format('YY-MM-DD HH:mm') }}
                             </td>
                             <td class="text-center" >
-                                <v-tooltip
-                                    left
-                                    v-if="item.last_outcome=='OK'"
-                                >
-                                    <template v-slot:activator="{ on }">
-                                        <center>
-                                            <v-icon
-                                                v-on="on"
-                                                color="green"
-                                            >
-                                                fa fa-circle
-                                            </v-icon>
-                                        </center>
-                                    </template>
-                                    <span>OK</span>
-                                </v-tooltip>
-                                <v-tooltip
-                                    left
-                                    v-else-if="item.last_outcome=='KO'"
-                                >
-                                    <template v-slot:activator="{ on }">
-                                        <center>
-                                            <v-icon
-                                                v-on="on"
-                                                color="red"
-                                            >
-                                                fa fa-circle
-                                            </v-icon>
-                                        </center>
-                                    </template>
-                                    <span>KO</span>
-                                </v-tooltip>
+                                <v-icon v-if="item.last_outcome=='OK'" color="green darken-2">fas fa-check-circle</v-icon>
+                                <v-icon v-else-if="item.last_outcome=='KO'" color="red">fas fa-exclamation-triangle</v-icon>
                                 <span v-else>--</span>
                             </td>
                         </tr>
