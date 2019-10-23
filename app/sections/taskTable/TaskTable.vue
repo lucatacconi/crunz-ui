@@ -82,32 +82,36 @@
                             <td class="text-center">
                                 {{ item.last_run == "" ? "--" : item.last_run }}
                             </td>
-                            <td :class="item.last_outcome.toUpperCase()=='OK' ? 'green--text' : 'red--text'" >
+                            <td class="text-center" >
                                 <v-tooltip
                                     left
                                     v-if="item.last_outcome=='OK'"
                                 >
                                     <template v-slot:activator="{ on }">
+                                        <center>
                                             <v-icon
                                                 v-on="on"
                                                 color="green"
                                             >
                                                 fa fa-circle
                                             </v-icon>
+                                        </center>
                                     </template>
                                     <span>OK</span>
                                 </v-tooltip>
                                 <v-tooltip
                                     left
-                                    v-if="item.last_outcome=='KO'"
+                                    v-else-if="item.last_outcome=='KO'"
                                 >
                                     <template v-slot:activator="{ on }">
+                                        <center>
                                             <v-icon
                                                 v-on="on"
                                                 color="red"
                                             >
                                                 fa fa-circle
                                             </v-icon>
+                                        </center>
                                     </template>
                                     <span>KO</span>
                                 </v-tooltip>
