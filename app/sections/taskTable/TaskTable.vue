@@ -75,7 +75,7 @@
                             </td>
                             <td class="text-center">
                                 <span v-if="item.last_outcome != ''">
-                                    {{ item.last_duration == 0 ? "<1" : item.last_duration }}
+                                    {{ item.last_duration == 0 ? "&lt;1" : item.last_duration }}
                                 </span>
                                 <span v-else>--</span>
                             </td>

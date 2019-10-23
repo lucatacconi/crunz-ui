@@ -265,6 +265,7 @@ $app->group('/task', function () use ($app) {
                 $row["last_duration"] = 0;
                 $row["last_outcome"] = '';
                 $row["last_run"] = '';
+                $row["executed_task_lst"] = [];
 
                 $log_name = rtrim( ltrim($row["task_path"],"/"), ".php" );
                 $log_name = str_replace("/", "", $log_name);
@@ -290,6 +291,14 @@ $app->group('/task', function () use ($app) {
                     $row["last_duration"] = $interval->format('%i');
                     $row["last_run"] = $task_start->format('Y-m-d H:i:s');
 
+                    if($calc_run_lst == "Y"){
+                        foreach( $aLOGNAME as $aLOGNAME_key => $LOGFOCUS ){
+                            $aLOGFOCUS =explode('_', str_replace(getenv("LOGS_DIR")."/", "", $LOGFOCUS));
+                            $task_start = DateTime::createFromFormat('YmdHi', $aLOGFOCUS[2]);
+                            $row["executed_task_lst"][] = $task_start->format('Y-m-d H:i:s');
+                        }
+                    }
+
                     $aFIRSTLOG = explode('_', str_replace(getenv("LOGS_DIR")."/", "", end($aLOGNAME)));
                     $task_start = DateTime::createFromFormat('YmdHi', $aFIRSTLOG[2]);
 
@@ -297,7 +306,7 @@ $app->group('/task', function () use ($app) {
                         $interval_from = $task_start->format('Y-m-d H:i:s');
                     }
                 }else{
-                    $interval_from = date('Y-m-d H:i:s');
+                    $interval_from = date('Y-m-d 00:00:00');
                 }
 
 
@@ -321,6 +330,14 @@ $app->group('/task', function () use ($app) {
                         $row["interval_run_lst"][] = $calc_run;
                         $nincrement++;
                     }
+
+                    foreach($row["executed_task_lst"] as $exec_task_key => $exec_task_date){
+                        if(!in_array($exec_task_date, $row["interval_run_lst"])){
+                            $row["interval_run_lst"][] = $exec_task_date;
+                        }
+                    }
+
+                    sort($row["interval_run_lst"]);
                 }
 
                 $aTASKs[] = $row;
