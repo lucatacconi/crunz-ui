@@ -14,6 +14,11 @@ Usage:
 
 "
 
+usage_def="
+Wrong parameters used.
+$usage
+"
+
 absolute_tasks_contaniner_path="$( cd "$(dirname "$0")" ; pwd -P )"
 absolute_tasks_path="$( cd "$(dirname "$0")" ; pwd -P )/${tasks_path#"./"}"
 
@@ -168,6 +173,10 @@ do
         ;;
         -h)
             echo "$usage" >&2
+            exit 1
+        ;;
+        *)
+            echo "$usage_def" >&2
             exit 1
     esac
 done
