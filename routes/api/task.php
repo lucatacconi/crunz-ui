@@ -266,7 +266,7 @@ $app->group('/task', function () use ($app) {
                 $row["last_outcome"] = '';
 
                 $log_name = rtrim( ltrim($row["task_path"],"/"), ".php" );
-                $log_name = str_replace("/", "_", $log_name);
+                $log_name = str_replace("/", "", $log_name);
                 $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name."*.log"); //task_OK_20191001100_20191001110_XXXX.log | task_KO_20191001100_20191001110_XXXX.log
 
                 if(!empty($aLOGNAME)){
@@ -295,7 +295,7 @@ $app->group('/task', function () use ($app) {
                         $interval_from = $task_start->format('Y-m-d H:i:s');
                     }
                 }else{
-                    $interval_from = $date('Y-m-d H:i:s');
+                    $interval_from = date('Y-m-d H:i:s');
                 }
 
 
