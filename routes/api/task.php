@@ -250,12 +250,12 @@ $app->group('/task', function () use ($app) {
 
                 preg_match($regex, $file_content,$matches);
                 if(!empty($matches) && empty($custom_log)){
-                    $custom_log = strtotime( str_replace(array("\"","'", "\""), '', $matches[1] ));
+                    $custom_log = str_replace(array("'", "\""), '', $matches[1] );
                 }
 
                 preg_match($regex2, $file_content,$matches);
                 if(!empty($matches) && empty($custom_log)){
-                    $custom_log = strtotime( str_replace(array("\"","'", "\""), '', $matches[1] ));
+                    $custom_log = str_replace(array("'", "\""), '', $matches[1] );
                 }
 
                 $row["custom_log"] = $custom_log;
