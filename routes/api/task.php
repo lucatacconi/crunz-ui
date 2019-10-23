@@ -290,7 +290,12 @@ $app->group('/task', function () use ($app) {
 
                     $aFIRSTLOG = explode('_', str_replace(getenv("LOGS_DIR")."/", "", end($aLOGNAME)));
                     $task_start = DateTime::createFromFormat('YmdHi', $aFIRSTLOG[2]);
-                    $interval_from = $task_start->format('Y-m-d H:i:s');
+
+                    if($interval_from < $task_start->format('Y-m-d H:i:s')){
+                        $interval_from = $task_start->format('Y-m-d H:i:s');
+                    }
+                }else{
+                    $interval_from = $date('Y-m-d H:i:s');
                 }
 
 
