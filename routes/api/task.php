@@ -49,6 +49,13 @@ $app->group('/task', function () use ($app) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
 
+    // CALC_RUN_LST Y | N
+    // DATE_REF
+    // INTERVAL_FROM
+    // INTERVAL_TO
+    // TASK_ID
+    // TASK_PATH
+
     $app->get('/', function ($request, $response, $args) {
 
         $data = [];
@@ -62,7 +69,7 @@ $app->group('/task', function () use ($app) {
 
         $date_ref = date("Y-m-d H:i:s");
         if(!empty($params["DATE_REF"])){
-            $date_ref = date($params["INTERVAL_FROM"]);
+            $date_ref = date($params["DATE_REF"]);
         }
 
         $interval_from = date("Y-m-01 00:00:00");
@@ -225,98 +232,57 @@ $app->group('/task', function () use ($app) {
 
 
                 //Log evaluations
-                // $log_name = rtrim( ltrim($row["task_path"],"/"), ".php" );
-                // $log_name = str_replace("/", "_", $log_name);
-                // $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name."*.log"); //task_OK_20191001100_20191001110_XXXX.log | task_KO_20191001100_20191001110_XXXX.log
-
-                // if(!empty($aLOGNAME)){
-                //     usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
-
-                //     foreach($aLOGNAME as $aLOGNAME_key => $LOGNAME){
-                //         $LOGNAME = rtrim( $LOGNAME, ".log" );
-
-                //         $LOGNAME_exp =explode('_', $LOGNAME);
-                //         //0 Path + name
-                //         //1 Outcome
-                //         //2 Start datetime
-                //         //3 End datetime
-                //         //4 Seed
-
-                //         $task_start = DateTime::createFromFormat('YmdHi', $LOGNAME_exp[2]);
-                //         $task_stop = DateTime::createFromFormat('YmdHi', $LOGNAME_exp[3]);
-                //         $interval = $task_start->diff($task_stop);
-
-                //         $interval->format('%i');
-
-                //         if($aLOGNAME_key == 0){
-
-                //         }
-
-
-
-
-                //     }
-                // }
-
-
-
-
-
-
-
-
-
-                // $row["pippo2"] = $aLOGNAME;
-
                 $row["last_duration"] = 0;
-
-
                 $row["last_outcome"] = '';
-                $row["last_outcome_message"] = '';
+
+                $log_name = rtrim( ltrim($row["task_path"],"/"), ".php" );
+                $log_name = str_replace("/", "_", $log_name);
+                $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name."*.log"); //task_OK_20191001100_20191001110_XXXX.log | task_KO_20191001100_20191001110_XXXX.log
+
+                if(!empty($aLOGNAME)){
+                    usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
+
+                    //0 Path + name
+                    //1 Outcome
+                    //2 Start datetime
+                    //3 End datetime
+                    //4 Seed
+
+                    $aLASTLOG =explode('_', $aLOGNAME[0]);
+
+                    $row["last_outcome"] = $aLASTLOG[1];
+
+                    $task_start = DateTime::createFromFormat('YmdHi', $LOGNAME_exp[2]);
+                    $task_stop = DateTime::createFromFormat('YmdHi', $LOGNAME_exp[3]);
+                    $interval = $task_start->diff($task_stop);
+
+                    $row["last_duration"] = $interval->format('%i');
+
+                    $aFIRSTLOG = end($aLASTLOG);
+                    $task_start = DateTime::createFromFormat('YmdHi', $aFIRSTLOG[2]);
+                    $interval_from = $task_start->format('Y-m-d H:i:s');
+                }
 
 
+                $row["next_run"] = $cron->getNextRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
 
+                //Calculeted but not necessarily executed
+                $row["last_run"] = $cron->getPreviousRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
 
+                //Calculating run list of the interval
+                $row["interval_run_lst"] = [];
+                $nincrement = 0;
+                $calc_run = false;
 
+                if($calc_run_lst == "Y"){
+                    while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+                        $calc_run = $cron->getNextRunDate($interval_from, $nincrement, true)->format('Y-m-d H:i:s');
+                        if($calc_run > $interval_to){
+                            break;
+                        }
 
-
-
-
-
-
-
-
-                // $row["next_run"] = $cron->getNextRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
-
-                // //Calculeted but not necessarily executed
-                // $row["last_run"] = $cron->getPreviousRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
-
-                // //Calculating run list of the interval
-                // $row["interval_run_lst"] = [];
-                // $nincrement = 0;
-                // $calc_run = false;
-
-                // if($calc_run_lst == "Y"){
-                //     while($nincrement < 1000){ //Use the same hard limit of cron-expression library
-                //         $calc_run = $cron->getNextRunDate($interval_from, $nincrement, true)->format('Y-m-d H:i:s');
-                //         if($calc_run > $interval_to){
-                //             break;
-                //         }
-
-                //         $row["interval_run_lst"][] = $calc_run;
-                //         $nincrement++;
-                //     }
-                // }
-
-
-
-
-
-                $task_status = $row["filename"]."_status";
-                $row["status"] = 'active';
-                if(isset($$task_status)){
-                    if(!$$task_status){
-                        $row["status"] = 'paused';
+                        $row["interval_run_lst"][] = $calc_run;
+                        $nincrement++;
                     }
                 }
 
