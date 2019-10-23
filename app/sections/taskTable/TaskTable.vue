@@ -86,6 +86,7 @@
                             <td class="text-center">
                                 <span v-if="item.last_outcome != ''">
                                     {{ item.last_duration == 0 ? "&lt;1" : item.last_duration }}
+                                    min.
                                 </span>
                                 <span v-else>--</span>
                             </td>
@@ -132,7 +133,7 @@ module.exports = {
                 { text: 'Execution', value: 'expression' },
                 { text: 'Next execution', value: 'next_run', align: 'center' },
                 { text: 'Last execution', value: 'last_run', align: 'center' },
-                { text: 'Last duration(min.)', value: 'last_duration', align: 'center' },
+                { text: 'Last duration', value: 'last_duration', align: 'center' },
                 { text: 'Last execution status', value: 'last_outcome', align: 'center' },
             ],
             files: [],
