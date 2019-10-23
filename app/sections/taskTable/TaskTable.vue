@@ -68,16 +68,19 @@
                                 {{ item.task_description }}
                             </td>
                             <td>
-                                {{ item!=undefined&&item.expression!=undefined&&item.expression!='' ? cronstrue.toString(item.expression) : '' }}
+                                {{ item !=undefined && item.expression != undefined && item.expression!='' ? cronstrue.toString(item.expression) : '' }}
                             </td>
-                            <td>
+                            <td class="text-center">
                                 {{ item.next_run }}
                             </td>
                             <td class="text-center">
-                                {{ item.average_duration==0 ? '--' : item.average_duration }}
+                                <span v-if="item.last_outcome != ''">
+                                    {{ item.last_duration == 0 ? "<1" : item.last_duration }}
+                                </span>
+                                <span v-else>--</span>
                             </td>
-                            <td>
-                                {{ item.last_run }}
+                            <td class="text-center">
+                                {{ item.last_run == "" ? "--" : item.last_run }}
                             </td>
                             <td :class="item.last_outcome.toUpperCase()=='OK' ? 'green--text' : 'red--text'" >
                                 <v-tooltip
@@ -146,7 +149,7 @@ module.exports = {
                 { text: 'Description', value: 'task_description' },
                 { text: 'Execution', value: 'expression' },
                 { text: 'Next execution', value: 'next_run' },
-                { text: 'Average duration(min.)', value: 'average_duration', align: 'center' },
+                { text: 'Last duration(min.)', value: 'last_duration', align: 'center' },
                 { text: 'Last execution', value: 'last_run' },
                 { text: 'Last execution status', value: 'last_outcome', align: 'center' },
             ],

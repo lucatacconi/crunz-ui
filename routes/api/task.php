@@ -264,6 +264,7 @@ $app->group('/task', function () use ($app) {
                 //Log evaluations
                 $row["last_duration"] = 0;
                 $row["last_outcome"] = '';
+                $row["last_run"] = '';
 
                 $log_name = rtrim( ltrim($row["task_path"],"/"), ".php" );
                 $log_name = str_replace("/", "", $log_name);
@@ -287,6 +288,7 @@ $app->group('/task', function () use ($app) {
                     $interval = $task_start->diff($task_stop);
 
                     $row["last_duration"] = $interval->format('%i');
+                    $row["last_run"] = $task_start->format('Y-m-d H:i:s');
 
                     $aFIRSTLOG = explode('_', str_replace(getenv("LOGS_DIR")."/", "", end($aLOGNAME)));
                     $task_start = DateTime::createFromFormat('YmdHi', $aFIRSTLOG[2]);
@@ -302,7 +304,7 @@ $app->group('/task', function () use ($app) {
                 $row["next_run"] = $cron->getNextRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
 
                 //Calculeted but not necessarily executed
-                $row["last_run"] = $cron->getPreviousRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
+                $row["calculeted_last_run"] = $cron->getPreviousRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
 
                 //Calculating run list of the interval
                 $row["interval_run_lst"] = [];
