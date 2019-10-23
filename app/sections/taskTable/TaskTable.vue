@@ -15,6 +15,13 @@
             :rowdata="uploadData"
         ></task-upload>
 
+        <!-- Log modal -->
+        <task-log
+            v-if="showLogModal"
+            @on-close-edit-modal="closeLogModal"
+            :rowdata="logData"
+        ></task-log>
+
         <v-card>
             <v-data-table
                 :headers="headers"
@@ -41,7 +48,7 @@
                                                     <v-list-item-icon><v-icon small>fa fa-play</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Execute task</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item class="d-none">
+                                                <v-list-item @click="openLogModal(item,i)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
                                                     <v-list-item-icon><v-icon small>fa fa-folder-open</v-icon></v-list-item-icon>
                                                     <v-list-item-title>View task execution result</v-list-item-title>
                                                 </v-list-item>
@@ -142,6 +149,7 @@ module.exports = {
         return{
             showUploadModal:false,
             showEditModal:false,
+            showLogModal:false,
             headers: [
                 {
                     text: '',
@@ -160,6 +168,7 @@ module.exports = {
             files: [],
             editData:false,
             uploadData:false,
+            logData:false,
             message:'LOADING TASKS'
         }
     },
@@ -185,12 +194,21 @@ module.exports = {
             // this.form. = false;
             // this.readData();
         },
-         openUploadModal: function (rowdata) {
+        openUploadModal: function (rowdata) {
             this.showUploadModal = true;
             // this.editData = rowdata!=undefined ? rowdata : false;
         },
         closeUploadModal: function () {
             this.showUploadModal = false;
+            // this.form. = false;
+            // this.readData();
+        },
+        openLogModal: function (rowdata) {
+            this.showLogModal = true;
+            // this.editData = rowdata!=undefined ? rowdata : false;
+        },
+        closeLogModal: function () {
+            this.showLogModal = false;
             // this.form. = false;
             // this.readData();
         },
@@ -273,7 +291,8 @@ module.exports = {
     components:{
         'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue'),
         'task-edit': httpVueLoader('../../shareds/TaskEdit.vue'),
-        'task-upload': httpVueLoader('../../shareds/FileUpload.vue')
+        'task-upload': httpVueLoader('../../shareds/FileUpload.vue'),
+        'task-log': httpVueLoader('../../shareds/Log.vue')
     }
 }
 </script>
