@@ -100,7 +100,7 @@ function runTask() {
 
         log_task_name=${executed_task/"$task_container"/''}
         log_task_name=${log_task_name/"/"/''}
-        log_task_name=${log_task_name//"/"/'_'}
+        log_task_name=${log_task_name//"/"/''}
 
         #I'm reading the outcome of task execution
         start_task_outcome="php status: "

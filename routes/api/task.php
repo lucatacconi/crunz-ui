@@ -248,17 +248,17 @@ $app->group('/task', function () use ($app) {
                     //3 End datetime
                     //4 Seed
 
-                    $aLASTLOG =explode('_', $aLOGNAME[0]);
+                    $aLASTLOG =explode('_', str_replace(getenv("LOGS_DIR")."/", "", $aLOGNAME[0]));
 
                     $row["last_outcome"] = $aLASTLOG[1];
 
-                    $task_start = DateTime::createFromFormat('YmdHi', $LOGNAME_exp[2]);
-                    $task_stop = DateTime::createFromFormat('YmdHi', $LOGNAME_exp[3]);
+                    $task_start = \DateTime::createFromFormat('YmdHi', $aLASTLOG[2]);
+                    $task_stop = \DateTime::createFromFormat('YmdHi', $aLASTLOG[3]);
                     $interval = $task_start->diff($task_stop);
 
                     $row["last_duration"] = $interval->format('%i');
 
-                    $aFIRSTLOG = end($aLASTLOG);
+                    $aFIRSTLOG = explode('_', str_replace(getenv("LOGS_DIR")."/", "", end($aLOGNAME)));
                     $task_start = DateTime::createFromFormat('YmdHi', $aFIRSTLOG[2]);
                     $interval_from = $task_start->format('Y-m-d H:i:s');
                 }
