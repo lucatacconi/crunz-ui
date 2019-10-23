@@ -81,13 +81,13 @@
                                 {{ moment(item.next_run).format('YY-MM-DD HH:mm') }}
                             </td>
                             <td class="text-center">
+                                {{ item.last_run == "" ? "--" : moment(item.last_run).format('YY-MM-DD HH:mm') }}
+                            </td>
+                            <td class="text-center">
                                 <span v-if="item.last_outcome != ''">
                                     {{ item.last_duration == 0 ? "&lt;1" : item.last_duration }}
                                 </span>
                                 <span v-else>--</span>
-                            </td>
-                            <td class="text-center">
-                                {{ item.last_run == "" ? "--" : moment(item.last_run).format('YY-MM-DD HH:mm') }}
                             </td>
                             <td class="text-center" >
                                 <v-icon v-if="item.last_outcome=='OK'" color="green darken-2">fas fa-check-circle</v-icon>
@@ -131,8 +131,8 @@ module.exports = {
                 { text: 'Description', value: 'task_description' },
                 { text: 'Execution', value: 'expression' },
                 { text: 'Next execution', value: 'next_run', align: 'center' },
-                { text: 'Last duration(min.)', value: 'last_duration', align: 'center' },
                 { text: 'Last execution', value: 'last_run', align: 'center' },
+                { text: 'Last duration(min.)', value: 'last_duration', align: 'center' },
                 { text: 'Last execution status', value: 'last_outcome', align: 'center' },
             ],
             files: [],
