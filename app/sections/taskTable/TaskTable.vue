@@ -176,7 +176,8 @@ module.exports = {
         },
         openLogModal: function (rowdata) {
             this.showLogModal = true;
-            // this.editData = rowdata!=undefined ? rowdata : false;
+            this.logData = rowdata!=undefined ? rowdata : false;
+            //console.log(JSON.stringify(this.logData));
         },
         closeLogModal: function () {
             this.showLogModal = false;
