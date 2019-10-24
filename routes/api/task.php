@@ -419,7 +419,7 @@ $app->group('/task', function () use ($app) {
                 $task_path = str_replace(getenv("TASKS_DIR"), '', $task_real_path);
 
                 if(!empty($params["TASK_PATH"])){
-                    if($task_real_path != $params["TASK_PATH"]){
+                    if($task_path != $params["TASK_PATH"]){
                         continue;
                     }
                 }
