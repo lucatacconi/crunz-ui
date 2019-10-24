@@ -363,6 +363,181 @@ $app->group('/task', function () use ($app) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
 
+    $app->get('/exec-outcome', function ($request, $response, $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+
+        if(empty(getenv("TASKS_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+        if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
+
+        $app_configs = $this->get('app_configs');
+        $base_tasks_path = getenv("TASKS_DIR"); //Must be absolute path on server
+
+        if( empty($params["TASK_PATH"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No task path or task ID submitted");
+
+
+        $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
+        $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
+
+
+        $quotedSuffix = \preg_quote(getenv("TASK_SUFFIX"), '/');
+        $regexIterator = new \RegexIterator( $recursiveIterator, "/^.+{$quotedSuffix}$/i", \RecursiveRegexIterator::GET_MATCH );
+
+        $files = \array_map(
+            static function (array $file) {
+                return new \SplFileInfo(\reset($file));
+            },
+            \iterator_to_array($regexIterator)
+        );
+
+        $aEXEC = [];
+        $task_counter = 0;
+        foreach ($files as $taskFile) {
+
+            require $taskFile->getRealPath();
+            if (!$schedule instanceof Schedule) {
+                continue;
+            }
+
+            $aEVENTs = $schedule->events();
+
+            foreach ($aEVENTs as $oEVENT) {
+                $task_counter++;
+
+                if(!empty($params["TASK_ID"])){
+                    if($task_counter != $params["TASK_ID"]){
+                        continue;
+                    }
+                }
+
+                $task_filename = $taskFile->getFilename();
+                $task_real_path = $taskFile->getRealPath();
+                $task_subdir = str_replace( array( getenv("TASKS_DIR"), $task_filename),'',$task_real_path);
+                $task_path = str_replace(getenv("TASKS_DIR"), '', $task_real_path);
+
+                if(!empty($params["TASK_PATH"])){
+                    if($task_real_path != $params["TASK_PATH"]){
+                        continue;
+                    }
+                }
+
+                $aEXEC["task_path"] = $task_path;
+                $aEXEC["task_id"] = $task_counter;
+
+
+                //Get Crunz-ui log content
+                $log_name = rtrim( ltrim($task_path,"/"), ".php" );
+                $log_name = str_replace("/", "", $log_name);
+
+                if(!empty($params["DATETIME_REF"])){
+
+                    $datetime_ref = strtotime($params["DATETIME_REF"]);
+                    if(!$datetime_ref) throw new Exception("ERROR - Date and time filter wrong format");
+
+                    $datetime_ref = date('YmdHi', $datetime_ref);
+
+                    $log_name_filter = $log_name."_*_".$datetime_ref."_*_*";
+                    $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name_filter.".log");
+
+                }else{
+                    $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name."*.log");
+                }
+
+                if(!empty($aLOGNAME)){
+                    usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
+
+                    //0 Path + name
+                    //1 Outcome
+                    //2 Start datetime
+                    //3 End datetime
+                    //4 Seed
+
+                    $aFOCUSLOG =explode('_', str_replace(getenv("LOGS_DIR")."/", "", $aLOGNAME[0]));
+
+                    $absolute_path = $aLOGNAME[0];
+                    $outcome = $aFOCUSLOG[1];
+                    $task_start = \DateTime::createFromFormat('YmdHi', $aFOCUSLOG[2]);
+                    $task_stop = \DateTime::createFromFormat('YmdHi', $aFOCUSLOG[3]);
+                    $interval = $task_start->diff($task_stop);
+                    $duration = $interval->format('%i');
+
+                }else{
+                    throw new Exception("ERROR - No log file founded on server");
+                }
+
+                $aEXEC["outcome"] = $outcome;
+                $aEXEC["task_start"] = $task_start->format('Y-m-d H:i');
+                $aEXEC["task_stop"] = $task_stop->format('Y-m-d H:i');
+                $aEXEC["duration"] = $duration;
+
+                $aEXEC["log_path"] = $absolute_path;
+
+                $file_content = file_get_contents($taskFile->getRealPath(), true);
+                $aEXEC["log_content"] = base64_encode($file_content);
+
+
+                //Check log file configured by user appendOutputTo() or sendOutputTo()
+                $custom_log = '';
+                $delimiter = '#';
+                $startTag = '->appendOutputTo(';
+                $startTag2 = '->sendOutputTo(';
+                $endTag = ')';
+                $regex = $delimiter . preg_quote($startTag, $delimiter)
+                                    . '(.*?)'
+                                    . preg_quote($endTag, $delimiter)
+                                    . $delimiter
+                                    . 's';
+                $regex2 = $delimiter . preg_quote($startTag2, $delimiter)
+                                    . '(.*?)'
+                                    . preg_quote($endTag, $delimiter)
+                                    . $delimiter
+                                    . 's';
+
+                preg_match($regex, $file_content,$matches);
+                if(!empty($matches) && empty($custom_log)){
+                    $custom_log_path = str_replace(array("'", "\""), '', $matches[1] );
+                }
+
+                preg_match($regex2, $file_content,$matches);
+                if(!empty($matches) && empty($custom_log)){
+                    $custom_log_path = str_replace(array("'", "\""), '', $matches[1] );
+                }
+
+                if(!empty($custom_log)){
+                    $aEXEC["custom_log_path"] = $custom_log;
+
+                    $file_content = file_get_contents($custom_log_path, true);
+                    $aEXEC["custom_log_content"] = base64_encode($file_content);
+
+                }else{
+                    $aEXEC["custom_log_path"] = "";
+                    $aEXEC["custom_log_content"] = "";
+                }
+
+                if(!empty($params["TASK_ID"])){
+                    if($task_counter == $params["TASK_ID"]){
+                        break;
+                    }
+                }
+
+                if(!empty($params["TASK_PATH"])){
+                    if($task_real_path == $params["TASK_PATH"]){
+                        break;
+                    }
+                }
+            }
+        }
+
+        $data = $aEXEC;
+
+        return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    });
+
     $app->post('/execute', function ($request, $response, $args) {
 
         $data = [];
