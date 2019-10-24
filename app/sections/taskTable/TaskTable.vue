@@ -107,7 +107,7 @@
                                                 </v-list-item>
                                                 <v-list-item @click="openLogModal(item,i)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
                                                     <v-list-item-icon><v-icon small>fa fa-folder-open</v-icon></v-list-item-icon>
-                                                    <v-list-item-title>View task execution result</v-list-item-title>
+                                                    <v-list-item-title>View execution log</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="opendEditModal(item,i)" class="d-none">
                                                     <v-list-item-icon><v-icon small>fa fa-edit</v-icon></v-list-item-icon>
@@ -148,8 +148,8 @@
                                 <span v-else>--</span>
                             </td>
                             <td class="text-center" >
-                                <v-icon v-if="item.last_outcome=='OK'" color="green darken-2">fas fa-check-circle</v-icon>
-                                <v-icon v-else-if="item.last_outcome=='KO'" color="red">fas fa-exclamation-triangle</v-icon>
+                                <v-icon v-if="item.last_outcome=='OK'" color="green darken-2" @click="openLogModal(item,i)" small>fas fa-folder-open</v-icon>
+                                <v-icon v-else-if="item.last_outcome=='KO'" color="red" @click="openLogModal(item,i)" small>fas fa-folder-open</v-icon>
                                 <span v-else>--</span>
                             </td>
                         </tr>
@@ -192,7 +192,7 @@ module.exports = {
                 { text: 'Next execution', value: 'next_run', align: 'center' },
                 { text: 'Last execution', value: 'last_run', align: 'center' },
                 { text: 'Last duration', value: 'last_duration', align: 'center' },
-                { text: 'Last execution status', value: 'last_outcome', align: 'center' },
+                { text: 'Last exec. outcome', value: 'last_outcome', align: 'center' },
             ],
             files: [],
             chooseData:false,
