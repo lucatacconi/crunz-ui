@@ -28,13 +28,13 @@
                         <v-row>
                             <v-col cols="12">
                                 <strong>Crunz log</strong>
-                                <div id="crunz-log">{{ crunzLog }}</div>
+                                <div id="crunz-log"> {{ logdata.crunzLog_content }} </div>
                             </v-col>
                         </v-row>
                         <v-row>
                             <v-col cols="12">
                                 <strong>Custom log</strong>
-                                <div id="custom-log">{{ customLog }}</div>
+                                <div id="custom-log"> {{ logdata.customLog_content }} </div>
                             </v-col>
                         </v-row>
                     </v-container>
@@ -49,9 +49,12 @@ module.exports = {
     data:function(){
         return{
             modalTitle:"Log",
-            logdata: [],
-            crunzLog : 'Test crunz log',
-            customLog : 'Test custom log'
+            logdata: {
+                "crunzLog_content" : "Test crunz log",
+                "customLog_content" : "Test custom log"
+            },
+            crunzLog : null,
+            customLog : null
         }
     },
 
@@ -75,6 +78,8 @@ module.exports = {
             fontSize: 14
         });
 
+        // self.crunzLog.session.setValue("self.crunzLog");
+
 
         self.customLog = ace.edit("custom-log");
         // self.customLog.setTheme("ace/theme/eclipse");
@@ -84,6 +89,8 @@ module.exports = {
             showPrintMargin: false,
             fontSize: 14
         });
+
+        // self.customLog.session.setValue("self.customLog");
 
     },
 
