@@ -27,14 +27,40 @@
                     <v-container>
                         <v-row>
                             <v-col cols="12">
-                                <strong>Crunz log</strong>
-                                <div id="crunz-log"> {{ logdata.crunzLog_content }} </div>
+                                <v-card>
+                                    <strong>Crunz log</strong>
+                                    <div id="crunz-log"> {{ logdata.crunzLog_content }} </div>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn
+                                            color="blue"
+                                            dark
+                                            x-small
+                                            @click="copy('crunz log')"
+                                        >
+                                            Copy to clipboard
+                                        </v-btn>
+                                    </v-card-actions>
+                                </v-card>
                             </v-col>
                         </v-row>
                         <v-row>
                             <v-col cols="12">
-                                <strong>Custom log</strong>
-                                <div id="custom-log"> {{ logdata.customLog_content }} </div>
+                                <v-card>
+                                    <strong>Custom log</strong>
+                                    <div id="custom-log"> {{ logdata.customLog_content }} </div>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn
+                                            color="blue"
+                                            dark
+                                            x-small
+                                            @click="copy('custom log')"
+                                        >
+                                            Copy to clipboard
+                                        </v-btn>
+                                    </v-card-actions>
+                                </v-card>
                             </v-col>
                         </v-row>
                     </v-container>
@@ -100,7 +126,23 @@ module.exports = {
             var self = this;
             self.$emit('on-close-edit-modal');
         },
-
+        copy:function(editor){
+            var ed=""
+            if(editor=="crunz log"){
+                ed=this.crunzLog
+            }
+            if(editor=="custom log"){
+                ed=this.customLog
+            }
+            if(ed!=""){
+                var sel = ed.selection.toJSON();
+                ed.selectAll();
+                ed.focus();
+                // console.log(ed.session.getTextRange(ed.getSelectionRange()))
+                document.execCommand('copy');
+                ed.selection.fromJSON(sel);
+            }
+        },
         readData:function(){
             // var self=this
             // Utils.apiCall("get", "/task/")
