@@ -126,6 +126,9 @@ $app->group('/task', function () use ($app) {
                 $row = [];
                 $task_counter++;
 
+                $event_interval_from = $interval_from;
+                $event_interval_to = $interval_to;
+
                 if(!empty($params["TASK_ID"])){
                     if($task_counter != $params["TASK_ID"]){
                         continue;
@@ -203,14 +206,14 @@ $app->group('/task', function () use ($app) {
 
                 if(!empty($lifetime_from)){
                     $row["lifetime_from"] = date('Y-m-d H:i:s', $lifetime_from);
-                    if($interval_from <  $row["lifetime_from"]){
-                        $interval_from = $row["lifetime_from"];
+                    if($event_interval_from <  $row["lifetime_from"]){
+                        $event_interval_from = $row["lifetime_from"];
                     }
                 }
                 if(!empty($lifetime_to)){
                     $row["lifetime_to"] = date('Y-m-d H:i:s', $lifetime_to);
-                    if($interval_to >  $row["lifetime_to"]){
-                        $interval_to = $row["lifetime_to"];
+                    if($event_interval_to >  $row["lifetime_to"]){
+                        $event_interval_to = $row["lifetime_to"];
                     }
                 }
 
@@ -302,11 +305,11 @@ $app->group('/task', function () use ($app) {
                     $aFIRSTLOG = explode('_', str_replace(getenv("LOGS_DIR")."/", "", end($aLOGNAME)));
                     $task_start = DateTime::createFromFormat('YmdHi', $aFIRSTLOG[2]);
 
-                    if($interval_from < $task_start->format('Y-m-d H:i:s')){
-                        $interval_from = $task_start->format('Y-m-d H:i:s');
+                    if($event_interval_from < $task_start->format('Y-m-d H:i:s')){
+                        $event_interval_from = $task_start->format('Y-m-d H:i:s');
                     }
                 }else{
-                    $interval_from = date('Y-m-d 00:00:00');
+                    $event_interval_from = date('Y-m-d 00:00:00');
                 }
 
 
@@ -322,13 +325,20 @@ $app->group('/task', function () use ($app) {
 
                 if($calc_run_lst == "Y"){
                     while($nincrement < 1000){ //Use the same hard limit of cron-expression library
-                        $calc_run = $cron->getNextRunDate($interval_from, $nincrement, true)->format('Y-m-d H:i:s');
-                        if($calc_run > $interval_to){
+                        $calc_run = $cron->getNextRunDate($event_interval_from, $nincrement, true)->format('Y-m-d H:i:s');
+                        if($calc_run > $event_interval_to){
                             break;
                         }
 
-                        $row["interval_run_lst"][] = $calc_run;
                         $nincrement++;
+
+                        if($calc_run < $date_ref){
+                            if(in_array($calc_run, $row["executed_task_lst"])){
+                                $row["interval_run_lst"][] = $calc_run;
+                            }
+                        }else{
+                            $row["interval_run_lst"][] = $calc_run;
+                        }
                     }
 
                     foreach($row["executed_task_lst"] as $exec_task_key => $exec_task_date){
