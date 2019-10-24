@@ -11,6 +11,7 @@
                 color="blue darken-2"
                 dark
                 fab
+                style="margin-right:26px;margin-bottom:12px;"
             >
                 <v-icon>fa fa-cog</v-icon>
             </v-btn>

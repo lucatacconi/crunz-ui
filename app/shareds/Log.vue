@@ -29,14 +29,14 @@
                             <v-col cols="12">
                                 <v-card>
                                     <strong>Crunz log</strong>
-                                    <div id="crunz-log"> {{ logdata.crunzLog_content }} </div>
+                                    <div id="crunz-log"></div>
                                     <v-card-actions>
                                         <v-spacer></v-spacer>
                                         <v-btn
                                             color="blue"
                                             dark
                                             x-small
-                                            @click="copy('crunz log')"
+                                            @click="copyToClipboard('crunz-log')"
                                         >
                                             Copy to clipboard
                                         </v-btn>
@@ -44,18 +44,18 @@
                                 </v-card>
                             </v-col>
                         </v-row>
-                        <v-row>
+                        <v-row v-if="logdata.customLog_content!=''">
                             <v-col cols="12">
                                 <v-card>
                                     <strong>Custom log</strong>
-                                    <div id="custom-log"> {{ logdata.customLog_content }} </div>
+                                    <div id="custom-log"></div>
                                     <v-card-actions>
                                         <v-spacer></v-spacer>
                                         <v-btn
                                             color="blue"
                                             dark
                                             x-small
-                                            @click="copy('custom log')"
+                                            @click="copyToClipboard('custom-log')"
                                         >
                                             Copy to clipboard
                                         </v-btn>
@@ -76,8 +76,8 @@ module.exports = {
         return{
             modalTitle:"Log",
             logdata: {
-                "crunzLog_content" : "Test crunz log",
-                "customLog_content" : "Test custom log"
+                crunzLog_content : "",
+                customLog_content : ""
             },
             crunzLog : null,
             customLog : null
@@ -87,34 +87,34 @@ module.exports = {
     props: ['rowdata'],
 
     created:function() {
-        // this.readData()
-        // console.log(JSON.stringify(this.rowdata));
+        this.readData()
+        console.log(this.rowdata)
     },
 
     mounted: function () {
         var self = this;
 
 
-        self.crunzLog = ace.edit("crunz-log");
-        // self.crunzLog.setTheme("ace/theme/eclipse");
-        self.crunzLog.getSession().setMode("ace/mode/text");
+        // self.crunzLog = ace.edit("crunz-log");
+        // // self.crunzLog.setTheme("ace/theme/eclipse");
+        // self.crunzLog.getSession().setMode("ace/mode/text");
 
-        self.crunzLog.setOptions({
-            showPrintMargin: false,
-            fontSize: 14
-        });
+        // self.crunzLog.setOptions({
+        //     showPrintMargin: false,
+        //     fontSize: 14
+        // });
 
-        // self.crunzLog.session.setValue("self.crunzLog");
+        // // self.crunzLog.session.setValue("self.crunzLog");
 
 
-        self.customLog = ace.edit("custom-log");
-        // self.customLog.setTheme("ace/theme/eclipse");
-        self.customLog.getSession().setMode("ace/mode/text");
+        // self.customLog = ace.edit("custom-log");
+        // // self.customLog.setTheme("ace/theme/eclipse");
+        // self.customLog.getSession().setMode("ace/mode/text");
 
-        self.customLog.setOptions({
-            showPrintMargin: false,
-            fontSize: 14
-        });
+        // self.customLog.setOptions({
+        //     showPrintMargin: false,
+        //     fontSize: 14
+        // });
 
         // self.customLog.session.setValue("self.customLog");
 
@@ -126,12 +126,34 @@ module.exports = {
             var self = this;
             self.$emit('on-close-edit-modal');
         },
-        copy:function(editor){
+        initEditor:function(editor){
             var ed=""
-            if(editor=="crunz log"){
+            var content=""
+            if(editor=="crunz-log"){
+                ed=this.crunzLog
+                content=this.logdata.crunzLog_content
+            }
+            if(editor=="custom-log"){
+                ed=this.customLog
+                content=this.logdata.customLog_content
+            }
+            ed = ace.edit(editor);
+            // ed.setTheme("ace/theme/eclipse");
+            ed.getSession().setMode("ace/mode/text");
+
+            ed.setOptions({
+                showPrintMargin: false,
+                fontSize: 14
+            });
+
+            ed.session.setValue(content);
+        },
+        copyToClipboard:function(editor){
+            var ed=""
+            if(editor=="crunz-log"){
                 ed=this.crunzLog
             }
-            if(editor=="custom log"){
+            if(editor=="custom-log"){
                 ed=this.customLog
             }
             if(ed!=""){
@@ -144,13 +166,23 @@ module.exports = {
             }
         },
         readData:function(){
-            // var self=this
-            // Utils.apiCall("get", "/task/")
-            // .then(function (response) {
-            //     if(response.data.length!=0){
-            //         self.logdata=JSON.parse(JSON.stringify(response.data))
-            //     }
-            // });
+            var self=this
+            var params={
+                TASK_ID:self.rowdata.event_launch_id
+            }
+            Utils.apiCall("get", "/task/exec-outcome",params)
+            .then(function (response) {
+                if(response.data.log_content!=""){
+                    self.logdata.crunzLog_content=window.atob(response.data.log_content)
+                    self.initEditor('crunz-log')
+                }
+                if(response.data.custom_log_content!=""){
+                    self.logdata.customLog_content=window.atob(response.data.custom_log_content)
+                    setTimeout(function(){
+                        self.initEditor('custom-log')
+                    }, 200);
+                }
+            });
         },
     },
 }

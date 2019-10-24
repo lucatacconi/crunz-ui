@@ -94,7 +94,7 @@
                     </v-sheet>
                 </v-col>
             </v-row>
-            <v-card-actions style="padding-top:50px;"></v-card-actions>
+            <v-card-actions style="padding-top:70px;"></v-card-actions>
 
         </v-card>
 
