@@ -168,7 +168,7 @@ module.exports = {
         readData:function(){
             var self=this
             var params={
-                TASK_ID:self.rowdata.event_launch_id
+                TASK_PATH:self.rowdata.task_path
             }
             Utils.apiCall("get", "/task/exec-outcome",params)
             .then(function (response) {
