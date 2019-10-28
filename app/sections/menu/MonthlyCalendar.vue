@@ -15,6 +15,13 @@
             :rowdata="uploadData"
         ></task-upload>
 
+        <!-- Log modal -->
+        <task-log
+            v-if="showLogModal"
+            @on-close-edit-modal="closeLogModal"
+            :rowdata="logData"
+        ></task-log>
+
         <v-card>
             <v-row class="fill-height">
                 <v-col>
@@ -64,15 +71,23 @@
                                     :color="selectedEvent.color"
                                     dark
                                 >
-                                    <v-btn icon>
+                                    <v-btn
+                                        icon
+                                    >
                                         <v-icon>mdi-pencil</v-icon>
                                     </v-btn>
-                                    <v-btn icon>
+                                    <v-btn
+                                        icon
+                                    >
                                         <v-icon>mdi-delete</v-icon>
                                     </v-btn>
                                     <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
                                     <v-spacer></v-spacer>
-                                    <v-btn icon>
+                                    <v-btn
+                                        icon
+                                        @click="openLogModal(selectedEvent)"
+                                        v-if="selectedEvent.data!=undefined ? checkLog(selectedEvent) : false"
+                                    >
                                         <v-icon>fas fa-file-alt</v-icon>
                                     </v-btn>
                                     <v-btn
@@ -110,6 +125,7 @@ module.exports = {
         return{
             showUploadModal:false,
             showEditModal:false,
+            showLogModal:false,
             today: moment().format('YYYY-MM-DD'),
             focus: moment().format('YYYY-MM-DD'),
             navigationDate: moment().format('YYYY-MM-DD'),
@@ -119,6 +135,7 @@ module.exports = {
             tasks:[],
             editData:false,
             uploadData:false,
+            logData:false,
         }
     },
     computed: {
@@ -127,6 +144,14 @@ module.exports = {
         }
     },
     methods: {
+        checkLog:function(event){
+            for(var i=0;i<event.data.executed_task_lst.length;i++){
+                if(event.start==event.data.executed_task_lst[i]){
+                    return true
+                }
+            }
+            return false
+        },
         opendEditModal: function (rowdata) {
             this.showEditModal = true;
             this.editData = rowdata!=undefined ? rowdata : false;
@@ -142,6 +167,16 @@ module.exports = {
         },
         closeUploadModal: function () {
             this.showUploadModal = false;
+            // this.form. = false;
+            // this.readData();
+        },
+        openLogModal: function (event) {
+            this.showLogModal = true;
+            this.logData = event.data!=undefined ? event.data : false;
+            //console.log(JSON.stringify(this.logData));
+        },
+        closeLogModal: function () {
+            this.showLogModal = false;
             // this.form. = false;
             // this.readData();
         },
@@ -209,7 +244,6 @@ module.exports = {
             return "00000".substring(0, 6 - c.length) + c;
         },
         readData:function(){
-            // console.log("carico eventi")
             var self=this
             var from= moment(self.navigationDate,'YYYY-MM-DD').set('date',1).format('YYYY-MM-DD').toString()
             var to= moment(self.navigationDate,'YYYY-MM-DD').endOf('month').format('YYYY-MM-DD').toString()
@@ -274,7 +308,8 @@ module.exports = {
     components:{
         'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue'),
         'task-edit': httpVueLoader('../../shareds/TaskEdit.vue'),
-        'task-upload': httpVueLoader('../../shareds/FileUpload.vue')
+        'task-upload': httpVueLoader('../../shareds/FileUpload.vue'),
+        'task-log': httpVueLoader('../../shareds/Log.vue')
     }
 }
 </script>
