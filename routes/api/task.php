@@ -72,6 +72,8 @@ $app->group('/task', function () use ($app) {
             $date_ref = date($params["DATE_REF"]);
         }
 
+        $date_now = date("Y-m-d H:i:s");
+
         $interval_from = date("Y-m-01 00:00:00");
         if(!empty($params["INTERVAL_FROM"])){
             $interval_from = date($params["INTERVAL_FROM"]);
@@ -270,6 +272,9 @@ $app->group('/task', function () use ($app) {
                 $row["last_run"] = '';
                 $row["executed_task_lst"] = [];
 
+
+
+
                 $log_name = rtrim( ltrim($row["task_path"],"/"), ".php" );
                 $log_name = str_replace("/", "", $log_name);
                 $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name."*.log"); //task_OK_20191001100_20191001110_XXXX.log | task_KO_20191001100_20191001110_XXXX.log
@@ -298,7 +303,8 @@ $app->group('/task', function () use ($app) {
                         foreach( $aLOGNAME as $aLOGNAME_key => $LOGFOCUS ){
                             $aLOGFOCUS =explode('_', str_replace(getenv("LOGS_DIR")."/", "", $LOGFOCUS));
                             $task_start = DateTime::createFromFormat('YmdHi', $aLOGFOCUS[2]);
-                            $row["executed_task_lst"][] = $task_start->format('Y-m-d H:i:s');
+                            $task_stop = DateTime::createFromFormat('YmdHi', $aLOGFOCUS[3]);
+                            $row["executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $task_stop->format('Y-m-d H:i:s');
                         }
                     }
 
@@ -309,7 +315,7 @@ $app->group('/task', function () use ($app) {
                         $event_interval_from = $task_start->format('Y-m-d H:i:s');
                     }
                 }else{
-                    $event_interval_from = date('Y-m-d 00:00:00');
+                    $event_interval_from = $date_now;
                 }
 
 
@@ -332,22 +338,22 @@ $app->group('/task', function () use ($app) {
 
                         $nincrement++;
 
-                        if($calc_run < $date_ref){
-                            if(in_array($calc_run, $row["executed_task_lst"])){
-                                $row["interval_run_lst"][] = $calc_run;
+                        if($calc_run < $date_now){
+                            if(array_key_exists($calc_run, $row["executed_task_lst"])){
+                                $row["interval_run_lst"][$calc_run] = $row["executed_task_lst"][$calc_run];
                             }
                         }else{
-                            $row["interval_run_lst"][] = $calc_run;
+                            $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + ".$row["last_duration"]." minute"));
                         }
                     }
 
-                    foreach($row["executed_task_lst"] as $exec_task_key => $exec_task_date){
-                        if(!in_array($exec_task_date, $row["interval_run_lst"])){
-                            $row["interval_run_lst"][] = $exec_task_date;
+                    foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
+                        if(!array_key_exists($exec_task_start, $row["interval_run_lst"])){
+                            $row["interval_run_lst"][$exec_task_start] = $exec_task_end;
                         }
                     }
 
-                    sort($row["interval_run_lst"]);
+                    ksort($row["interval_run_lst"]);
                 }
 
                 $aTASKs[] = $row;

@@ -216,19 +216,41 @@ module.exports = {
                 if(response.data.length!=0){
                     var arr_temp=[]
                     for(var i=0;i<response.data.length;i++){
-                        for(var k=0;k<response.data[i].interval_run_lst.length;k++){
+
+                        for (var interval_data_start in response.data[i].interval_run_lst) {
+                            // console.log(response.data[i].interval_run_lst[interval_data_start]);
+
                             var tmp=JSON.parse(JSON.stringify(response.data[i]))
                             delete tmp.interval_run_lst
+
                             var obj_temp={
                                 name:response.data[i].filename,
                                 details:response.data[i].task_description,
-                                start:response.data[i].interval_run_lst[k],
-                                end:moment(response.data[i].interval_run_lst[k],'YYYY-MM-DD h:mm:ss').add(1,'h').format('YYYY-MM-DD h:mm:ss').toString(),
+                                start:interval_data_start,
+                                end:response.data[i].interval_run_lst[interval_data_start],
                                 color: "#"+self.intToRGB(self.hashCode(response.data[i].filename)),
                                 data: tmp
                             }
                             arr_temp.push(obj_temp)
+
+
                         }
+
+
+
+                        // for(var k=0;k<response.data[i].interval_run_lst.length;k++){
+                        //     var tmp=JSON.parse(JSON.stringify(response.data[i]))
+                        //     delete tmp.interval_run_lst
+                        //     var obj_temp={
+                        //         name:response.data[i].filename,
+                        //         details:response.data[i].task_description,
+                        //         start:response.data[i].interval_run_lst[k],
+                        //         end:moment(response.data[i].interval_run_lst[k],'YYYY-MM-DD h:mm:ss').add(1,'h').format('YYYY-MM-DD h:mm:ss').toString(),
+                        //         color: "#"+self.intToRGB(self.hashCode(response.data[i].filename)),
+                        //         data: tmp
+                        //     }
+                        //     arr_temp.push(obj_temp)
+                        // }
                     }
                     self.tasks=arr_temp
                 }
