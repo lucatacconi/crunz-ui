@@ -340,10 +340,14 @@ $app->group('/task', function () use ($app) {
 
                         if($calc_run < $date_now){
                             if(array_key_exists($calc_run, $row["executed_task_lst"])){
-                                $row["interval_run_lst"][$calc_run] = $row["executed_task_lst"][$calc_run];
+                                if($calc_run == $row["executed_task_lst"][$calc_run]){
+                                    $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + 1 minute"));
+                                }else{
+                                    $row["interval_run_lst"][$calc_run] = $row["executed_task_lst"][$calc_run];
+                                }
                             }
                         }else{
-                            $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + ".$row["last_duration"]." minute"));
+                            $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
                         }
                     }
 
