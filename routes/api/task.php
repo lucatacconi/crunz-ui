@@ -495,7 +495,7 @@ $app->group('/task', function () use ($app) {
 
                 $aEXEC["log_path"] = $absolute_path;
 
-                $file_content = file_get_contents($taskFile->getRealPath(), true);
+                $file_content = file_get_contents($aEXEC["log_path"], true);
                 $aEXEC["log_content"] = base64_encode($file_content);
 
 
