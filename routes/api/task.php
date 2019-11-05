@@ -160,6 +160,8 @@ $app->group('/task', function () use ($app) {
                 //Check task lifetime
                 $from = '';
                 $to = '';
+                $lifetime_from = '';
+                $lifetime_to = '';
 
                 $delimiter = '#';
                 $startTag = '->between(';
@@ -584,85 +586,156 @@ $app->group('/task', function () use ($app) {
         if(!is_writable(getenv("LOGS_DIR"))) throw new Exception('ERROR - Log directory not writable');
 
 
-        $output = false;
-        if( !empty($params["TASK_ID"]) ){
-            $task_id = $params["TASK_ID"];
-            $task_founded = true;
-        }else{
+        //List of all file with the same order used by Crunz
+        $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
+        $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
+
+
+        $quotedSuffix = \preg_quote(getenv("TASK_SUFFIX"), '/');
+        $regexIterator = new \RegexIterator( $recursiveIterator, "/^.+{$quotedSuffix}$/i", \RecursiveRegexIterator::GET_MATCH );
+
+        $files = \array_map(
+            static function (array $file) {
+                return new \SplFileInfo(\reset($file));
+            },
+            \iterator_to_array($regexIterator)
+        );
+
+        $task_id = 1;
+        $task_founded = false;
+        $task_path_founded = '';
+
+        foreach($files as $task_path => $task_data){
+
+            $task_path =  str_replace(getenv("TASKS_DIR"), '', $task_path);
+
+            if(!empty($params["TASK_ID"])){
+                if($params["TASK_ID"] == $task_id){
+                    $task_founded = true;
+                    $task_path_founded = $task_path;
+                    break;
+                }
+            }else{
+                if($task_path == "/".ltrim($params["TASK_PATH"],"/")){
+                    $task_founded = true;
+                    $task_path_founded = $task_path;
+                    break;
+                }
+            }
+
+            $task_id++;
+        }
+
+        if($task_founded){
 
             //File compliance check
-            $path_check = str_replace(".php", '', $params["TASK_PATH"]);
+            $path_check = str_replace(".php", '', $task_path);
 
             if(
                 strpos($path_check, '.') !== false ||
-                substr($params["TASK_PATH"], - strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
+                substr($task_path, - strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
                 strpos($path_check, getenv("TASKS_DIR") === false)
             ){
                 throw new Exception("ERROR - Task path out of range");
             }
 
-            //List of all file with the same order used by Crunz
-            $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
-            $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
+            $log_name = rtrim( ltrim($path_check,"/"), ".php" );
+            $log_name = str_replace("/", "", $log_name);
 
 
-            $quotedSuffix = \preg_quote(getenv("TASK_SUFFIX"), '/');
-            $regexIterator = new \RegexIterator( $recursiveIterator, "/^.+{$quotedSuffix}$/i", \RecursiveRegexIterator::GET_MATCH );
 
-            $files = \array_map(
-                static function (array $file) {
-                    return new \SplFileInfo(\reset($file));
-                },
-                \iterator_to_array($regexIterator)
-            );
-
-            $task_id = 1;
-            $task_founded = false;
-            foreach($files as $task_path => $task_data){
-                //echo ($task_path." == ".$base_tasks_path."/".$params["TASK_PATH"])."\n";
-                if($task_path == $base_tasks_path."/".ltrim($params["TASK_PATH"],"/")){
-                    $task_founded = true;
-                    break;
-                }
-
-                $task_id++;
-            }
-        }
-
-        if($task_founded){
-
-            $log_start = date("YmdHi");
-
-            $log_name = rtrim( ltrim($params["TASK_PATH"],"/"), ".php" );
-            $log_name = str_replace("/", "-", $log_name);
-            $log_name_tmp = '.'.$log_name.'-'.$log_start.'log';
-            $log_name = $log_name.'-'.$log_start;
-
-            //die($log_name);
-
-            // $log_files = glob(getenv("LOGS_DIR")."/".$log_name."*.log"); //task-OK-20191001100-20191001110.log | task-KO-20191001100-20191001110.log
+            $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name."*.log"); //task_OK_20191001100_20191001110_XXXX.log | task_KO_20191001100_20191001110_XXXX.log
 
 
-            //if($exec_and_wait == 'Y'){
-                $output = shell_exec("cd $base_tasks_path &&
-                                      cd .. &&
-                                      ./vendor/bin/crunz schedule:run -t$task_id -f -vvv > ". rtrim(getenv("LOGS_DIR")."/","/") . $log_name_tmp ."  &&
-                                      END_DATA_LOG=date +%Y+%m+%d+%H+%M
-                                      mv ". rtrim(getenv("LOGS_DIR")."/","/") . $log_name_tmp ." ". rtrim(getenv("LOGS_DIR")."/","/") . $log_name_tmp ."
-                                      ");
+            // if(!empty($aLOGNAME)){
+            //     usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
+
+            //     //0 Path + name
+            //     //1 Outcome
+            //     //2 Start datetime
+            //     //3 End datetime
+            //     //4 Seed
+
+            //     $aFOCUSLOG =explode('_', str_replace(getenv("LOGS_DIR")."/", "", $aLOGNAME[0]));
+
+            //     $absolute_path = $aLOGNAME[0];
+            //     $outcome = $aFOCUSLOG[1];
+            //     $task_start = \DateTime::createFromFormat('YmdHi', $aFOCUSLOG[2]);
+            //     $task_stop = \DateTime::createFromFormat('YmdHi', $aFOCUSLOG[3]);
+            //     $interval = $task_start->diff($task_stop);
+            //     $duration = $interval->format('%i');
+
             // }else{
-            //     $output = shell_exec("cd $base_tasks_path && cd .. && ./vendor/bin/crunz schedule:run -t$task_id -f > /dev/null 2>&1 & ");
+            //     throw new Exception("ERROR - No log file founded on server");
             // }
 
-        }
 
-        if($task_founded){
-            $data["result"] = true;
-            $data["exec_and_wait"] = $exec_and_wait;
-            $data["result_msg"] = $output;
+
+
+            // print_r($aLOGNAME);
+
+            // die($log_name);
+
+            // if($exec_and_wait == 'Y'){
+
+            // }else{
+
+            // }
+
+
         }else{
             throw new Exception("ERROR - Execution path error");
         }
+
+
+
+        throw new Exception("....");
+
+
+        //     $log_name = rtrim( ltrim($row["task_path"],"/"), ".php" );
+        //     $log_name = str_replace("/", "", $log_name);
+        //     $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name."*.log"); //task_OK_20191001100_20191001110_XXXX.log | task_KO_20191001100_20191001110_XXXX.log
+
+
+
+
+        //     $log_start = date("YmdHi");
+
+        //     $log_name = rtrim( ltrim($params["TASK_PATH"],"/"), ".php" );
+        //     $log_name = str_replace("/", "-", $log_name);
+        //     $log_name_tmp = '.'.$log_name.'-'.$log_start.'log';
+        //     $log_name = $log_name.'-'.$log_start;
+
+        //     //die($log_name);
+
+        //     // $log_files = glob(getenv("LOGS_DIR")."/".$log_name."*.log"); //task-OK-20191001100-20191001110.log | task-KO-20191001100-20191001110.log
+
+
+        //     //if($exec_and_wait == 'Y'){
+        //         // $output = shell_exec("cd $base_tasks_path &&
+        //         //                       cd .. &&
+        //         //                       ./vendor/bin/crunz schedule:run -t$task_id -f -vvv > ". rtrim(getenv("LOGS_DIR")."/","/") . $log_name_tmp ."  &&
+        //         //                       END_DATA_LOG=date +%Y+%m+%d+%H+%M
+        //         //                       mv ". rtrim(getenv("LOGS_DIR")."/","/") . $log_name_tmp ." ". rtrim(getenv("LOGS_DIR")."/","/") . $log_name_tmp ."
+        //         //                       ");
+
+
+        //         shell_exec(" cd $base_tasks_path && cd .. && ./crunz-ui.sh -f -t $task_id ");
+
+
+        //     // }else{
+        //     //     $output = shell_exec("cd $base_tasks_path && cd .. && ./vendor/bin/crunz schedule:run -t$task_id -f > /dev/null 2>&1 & ");
+        //     // }
+
+        // }
+
+        // if($task_founded){
+        //     $data["result"] = true;
+        //     $data["exec_and_wait"] = $exec_and_wait;
+        //     $data["result_msg"] = $output;
+        // }else{
+        //     throw new Exception("ERROR - Execution path error");
+        // }
 
         return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
