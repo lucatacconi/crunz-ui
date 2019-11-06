@@ -768,6 +768,11 @@ $app->group('/task', function () use ($app) {
         $base_path =$app_configs["paths"]["base_path"];
         $base_tasks_path = getenv("TASKS_DIR"); //Must be absolute path on server
 
+        $can_rewrite = "N";
+        if(!empty($params["CAN_REWRITE"])){
+            $can_rewrite = $params["CAN_REWRITE"];
+        }
+
 
         //Check destination
         if( empty($params["TASK_DESTINATION_PATH"]) ) throw new Exception("ERROR - No task path destination submitted");
@@ -802,7 +807,11 @@ $app->group('/task', function () use ($app) {
 
         if( empty($_FILES["TASK_UPLOAD"]["size"]) ) throw new Exception("ERROR - Zero byte task file submitted");
 
-        //All check done.. Can upload
+        if($can_rewrite != "Y"){
+            if (file_exists($destination_path."/".$_FILES["TASK_UPLOAD"]["name"])) throw new Exception("ERROR - Same task file in the same position fouded. Can't overwrite");
+        }
+
+        //All check done.. Can upload task file
         if(!move_uploaded_file($_FILES["TASK_UPLOAD"]["tmp_name"], $destination_path."/".$_FILES["TASK_UPLOAD"]["name"])){
             throw new Exception("ERROR - Error uploading task file");
         }
