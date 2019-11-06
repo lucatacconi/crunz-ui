@@ -756,15 +756,18 @@ $app->group('/task', function () use ($app) {
 
         $data = [];
 
+        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+
         if(empty(getenv("TASKS_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
+
+        if(!is_writable(getenv("TASKS_DIR"))) throw new Exception('ERROR - Tasks directory not writable');
+        if(!is_writable(getenv("LOGS_DIR"))) throw new Exception('ERROR - Logs directory not writable');
 
         $app_configs = $this->get('app_configs');
         $base_path =$app_configs["paths"]["base_path"];
         $base_tasks_path = getenv("TASKS_DIR"); //Must be absolute path on server
 
-
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
 
         //Check destination
         if( empty($params["TASK_DESTINATION_PATH"]) ) throw new Exception("ERROR - No task path destination submitted");
@@ -821,6 +824,9 @@ $app->group('/task', function () use ($app) {
 
         if(empty(getenv("TASKS_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
+
+        if(!is_writable(getenv("TASKS_DIR"))) throw new Exception('ERROR - Tasks directory not writable');
+        if(!is_writable(getenv("LOGS_DIR"))) throw new Exception('ERROR - Logs directory not writable');
 
         $app_configs = $this->get('app_configs');
         $base_tasks_path = getenv("TASKS_DIR"); //Must be absolute path on server
