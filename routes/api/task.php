@@ -842,6 +842,8 @@ $app->group('/task', function () use ($app) {
         $delete_path = $base_tasks_path."/".ltrim($params["TASK_PATH"],"/");
 
         try {
+            if(!file_exists($delete_path)) throw new Exception('ERROR - File not present');
+
             if(!is_writable($delete_path)) throw new Exception('ERROR - File not writable');
 
             unlink($delete_path);
