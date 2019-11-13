@@ -55,8 +55,8 @@ function runTask() {
     p_tasks_path=$3
     p_logs_path=$4
 
-    file_uuid="."$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-    file_seed=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 4 | head -n 1)
+    file_uuid="."$(echo {A..Z} {a..z} {0..9} {0..9} | tr ' ' "\n" | shuf | xargs | tr -d ' ' | cut -b 1-32)
+    file_seed=$(echo {A..Z} {a..z} {0..9} {0..9} | tr ' ' "\n" | shuf | xargs | tr -d ' ' | cut -b 1-4)
 
     task_start_datetime=$(date +"%Y%m%d%H%M")
 
@@ -202,4 +202,5 @@ else
     done
 fi
 
+# echo "Executed"
 exit 0
