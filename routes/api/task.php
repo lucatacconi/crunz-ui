@@ -385,6 +385,7 @@ $app->group('/task', function () use ($app) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
 
+
     $app->get('/exec-outcome', function ($request, $response, $args) {
 
         $data = [];
@@ -560,6 +561,7 @@ $app->group('/task', function () use ($app) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
 
+
     $app->post('/execute', function ($request, $response, $args) {
 
         $data = [];
@@ -581,9 +583,23 @@ $app->group('/task', function () use ($app) {
         if( empty($params["TASK_PATH"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No task path or task ID to execute submitted");
 
         if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
-
         if(!is_dir(getenv("LOGS_DIR"))) throw new Exception('ERROR - Log destination path not exist');
         if(!is_writable(getenv("LOGS_DIR"))) throw new Exception('ERROR - Log directory not writable');
+
+
+        //File compliance check
+        if(!empty($params["TASK_PATH"])){
+
+            $path_check = str_replace(".php", '', $params["TASK_PATH"]);
+
+            if(
+                strpos($path_check, '.') !== false ||
+                substr($params["TASK_PATH"], - strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
+                strpos($path_check, getenv("TASKS_DIR") === false)
+            ){
+                throw new Exception("ERROR - Task path out of range");
+            }
+        }
 
 
         //List of all file with the same order used by Crunz
@@ -604,6 +620,7 @@ $app->group('/task', function () use ($app) {
         $task_id = 1;
         $task_founded = false;
         $task_path_founded = '';
+        $aEXEC = [];
 
         foreach($files as $task_path => $task_data){
 
@@ -626,131 +643,67 @@ $app->group('/task', function () use ($app) {
             $task_id++;
         }
 
-        if($task_founded){
+         if($task_founded && !empty($task_path_founded)){
 
-            //File compliance check
-            $path_check = str_replace(".php", '', $task_path);
+            $aEXEC["task_path"] = $task_path;
+            $aEXEC["task_id"] = $task_id;
+            $aEXEC["task_founded"] = $task_founded;
+            $aEXEC["task_wait"] = $exec_and_wait;
 
-            if(
-                strpos($path_check, '.') !== false ||
-                substr($task_path, - strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
-                strpos($path_check, getenv("TASKS_DIR") === false)
-            ){
-                throw new Exception("ERROR - Task path out of range");
+            shell_exec("cd $base_tasks_path && cd .. && ./crunz-ui.sh -f -t $task_id > /dev/null 2>&1 & ");
+
+            if($exec_and_wait == 'Y'){
+
+                $log_file_ready = false;
+                $log_file_name = '';
+                $round_cnt = 0;
+                $max_round = 100;
+                $datetime_init = date('YmdHis');
+                $datetime_ref = date('YmdHi');
+
+                $log_name_filter = str_replace("/", "", rtrim(ltrim($task_path_founded, "/"), ".php")) . "_*_" . $datetime_ref . "_*_*";
+
+                while(!$log_file_ready && $round_cnt < $max_round){
+
+                    $round_cnt++;
+
+                    $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name_filter.".log");
+
+                    if(!empty($aLOGNAME)){
+                        usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
+
+                        if(date ("YmdHis", filemtime($aLOGNAME[0])) >= $datetime_init){
+                            $log_file_ready = true;
+                            $log_file_name = $aLOGNAME[0];
+                            break;
+                        }
+                    }
+
+                    sleep(5);
+                }
+
+                if(empty($log_file_name)){
+                    throw new Exception("ERROR - Task execution error");
+                }
+
+
+                $aEXEC["log_path"] = $log_file_name;
+
+                $file_content = file_get_contents($aEXEC["log_path"], true);
+                $aEXEC["log_content"] = base64_encode($file_content);
             }
 
-            $log_name = rtrim( ltrim($path_check,"/"), ".php" );
-            $log_name = str_replace("/", "", $log_name);
-
-
-
-            $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name."*.log"); //task_OK_20191001100_20191001110_XXXX.log | task_KO_20191001100_20191001110_XXXX.log
-
-
-            // if(!empty($aLOGNAME)){
-            //     usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
-
-            //     //0 Path + name
-            //     //1 Outcome
-            //     //2 Start datetime
-            //     //3 End datetime
-            //     //4 Seed
-
-            //     $aFOCUSLOG =explode('_', str_replace(getenv("LOGS_DIR")."/", "", $aLOGNAME[0]));
-
-            //     $absolute_path = $aLOGNAME[0];
-            //     $outcome = $aFOCUSLOG[1];
-            //     $task_start = \DateTime::createFromFormat('YmdHi', $aFOCUSLOG[2]);
-            //     $task_stop = \DateTime::createFromFormat('YmdHi', $aFOCUSLOG[3]);
-            //     $interval = $task_start->diff($task_stop);
-            //     $duration = $interval->format('%i');
-
-            // }else{
-            //     throw new Exception("ERROR - No log file founded on server");
-            // }
-
-
-
-
-            // print_r($aLOGNAME);
-
-            // die($log_name);
-
-            // if($exec_and_wait == 'Y'){
-
-            // }else{
-
-            // }
-
+            $data = $aEXEC;
 
         }else{
-            throw new Exception("ERROR - Execution path error");
+            throw new Exception("ERROR - Task to execute not found");
         }
-
-
-
-        throw new Exception("....");
-
-
-        //     $log_name = rtrim( ltrim($row["task_path"],"/"), ".php" );
-        //     $log_name = str_replace("/", "", $log_name);
-        //     $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name."*.log"); //task_OK_20191001100_20191001110_XXXX.log | task_KO_20191001100_20191001110_XXXX.log
-
-
-
-
-        //     $log_start = date("YmdHi");
-
-        //     $log_name = rtrim( ltrim($params["TASK_PATH"],"/"), ".php" );
-        //     $log_name = str_replace("/", "-", $log_name);
-        //     $log_name_tmp = '.'.$log_name.'-'.$log_start.'log';
-        //     $log_name = $log_name.'-'.$log_start;
-
-        //     //die($log_name);
-
-        //     // $log_files = glob(getenv("LOGS_DIR")."/".$log_name."*.log"); //task-OK-20191001100-20191001110.log | task-KO-20191001100-20191001110.log
-
-
-        //     //if($exec_and_wait == 'Y'){
-        //         // $output = shell_exec("cd $base_tasks_path &&
-        //         //                       cd .. &&
-        //         //                       ./vendor/bin/crunz schedule:run -t$task_id -f -vvv > ". rtrim(getenv("LOGS_DIR")."/","/") . $log_name_tmp ."  &&
-        //         //                       END_DATA_LOG=date +%Y+%m+%d+%H+%M
-        //         //                       mv ". rtrim(getenv("LOGS_DIR")."/","/") . $log_name_tmp ." ". rtrim(getenv("LOGS_DIR")."/","/") . $log_name_tmp ."
-        //         //                       ");
-
-
-        //         shell_exec(" cd $base_tasks_path && cd .. && ./crunz-ui.sh -f -t $task_id ");
-
-
-        //     // }else{
-        //     //     $output = shell_exec("cd $base_tasks_path && cd .. && ./vendor/bin/crunz schedule:run -t$task_id -f > /dev/null 2>&1 & ");
-        //     // }
-
-        // }
-
-        // if($task_founded){
-        //     $data["result"] = true;
-        //     $data["exec_and_wait"] = $exec_and_wait;
-        //     $data["result_msg"] = $output;
-        // }else{
-        //     throw new Exception("ERROR - Execution path error");
-        // }
 
         return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
 
-
-    // $app->post('/', function ($request, $response, $args) {
-
-    //     $data = [];
-
-    //     return $response->withStatus(200)
-    //     ->withHeader("Content-Type", "application/json")
-    //     ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-    // });
 
     $app->post('/upload', function ($request, $response, $args) {
 
