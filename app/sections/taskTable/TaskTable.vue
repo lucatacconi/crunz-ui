@@ -101,9 +101,13 @@
                                                 TASK ACTION MENU
                                             </v-subheader>
                                             <v-list-item-group color="primary">
-                                                <v-list-item @click="openChooseModal(item,i)">
+                                                <v-list-item @click="executeItem(item,false)">
                                                     <v-list-item-icon><v-icon small>fa fa-play</v-icon></v-list-item-icon>
-                                                    <v-list-item-title>Execute task</v-list-item-title>
+                                                    <v-list-item-title>Execute</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item @click="executeItem(item,true)">
+                                                    <v-list-item-icon><v-icon small>fas fa-file-alt</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>Execute and wait log</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="openLogModal(item,i)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
                                                     <v-list-item-icon><v-icon small>fa fa-folder-open</v-icon></v-list-item-icon>
@@ -290,27 +294,32 @@ module.exports = {
                 }
             });
         },
-        executeItem: function () {
+        executeItem: function (item,wait) {
             var self=this
             var params={
-                TASK_PATH:self.chooseData.task_path
+                TASK_PATH:item.task_path,
+                EXEC_AND_WAIT:wait ? 'Y' : 'N'
             }
-            // Utils.apiCall("post", "/task/execute",params)
-            // .then(function (response) {
-            //     if(response.data.result){
-            //         Swal.fire({
-            //             title: 'Task EXECUTED',
-            //             text: response.data.result_msg,
-            //             type: 'success'
-            //         })
-            //     }else{
-            //         Swal.fire({
-            //             title: 'ERROR',
-            //             text: response.data.result_msg,
-            //             type: 'error'
-            //         })
-            //     }
-            // });
+            Utils.apiCall("post", "/task/execute",params)
+            .then(function (response) {
+                if(response.data.result){
+                    if(wait){
+                        self.openLogModal(response.data.log_content)
+                    }else{
+                        Swal.fire({
+                            title: 'Task EXECUTED',
+                            text: response.data.result_msg,
+                            type: 'success'
+                        })
+                    }
+                }else{
+                    Swal.fire({
+                        title: 'ERROR',
+                        text: response.data.result_msg,
+                        type: 'error'
+                    })
+                }
+            });
         }
     },
     created:function() {

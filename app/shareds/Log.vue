@@ -87,8 +87,9 @@ module.exports = {
     props: ['rowdata'],
 
     created:function() {
-        this.readData()
-        console.log(this.rowdata)
+        if(this.rowdata){
+            this.readData()
+        }
     },
 
     mounted: function () {
@@ -167,22 +168,29 @@ module.exports = {
         },
         readData:function(){
             var self=this
-            var params={
-                TASK_PATH:self.rowdata.task_path
-            }
-            Utils.apiCall("get", "/task/exec-outcome",params)
-            .then(function (response) {
-                if(response.data.log_content!=""){
-                    self.logdata.crunzLog_content=window.atob(response.data.log_content)
+            if(self.rowdata.task_path!=undefined){
+                var params={
+                    TASK_PATH:self.rowdata.task_path
+                }
+                Utils.apiCall("get", "/task/exec-outcome",params)
+                .then(function (response) {
+                    if(response.data.log_content!=""){
+                        self.logdata.crunzLog_content=window.atob(response.data.log_content)
+                        self.initEditor('crunz-log')
+                    }
+                    if(response.data.custom_log_content!=""){
+                        self.logdata.customLog_content=window.atob(response.data.custom_log_content)
+                        setTimeout(function(){
+                            self.initEditor('custom-log')
+                        }, 200);
+                    }
+                });
+            }else{
+                self.logdata.crunzLog_content=window.atob(self.rowdata)
+                setTimeout(function(){
                     self.initEditor('crunz-log')
-                }
-                if(response.data.custom_log_content!=""){
-                    self.logdata.customLog_content=window.atob(response.data.custom_log_content)
-                    setTimeout(function(){
-                        self.initEditor('custom-log')
-                    }, 200);
-                }
-            });
+                }, 200);
+            }
         },
     },
 }
