@@ -650,7 +650,18 @@ $app->group('/task', function () use ($app) {
             $aEXEC["task_founded"] = $task_founded;
             $aEXEC["task_wait"] = $exec_and_wait;
 
-            shell_exec("cd $base_tasks_path && cd .. && ./crunz-ui.sh -f -t $task_id > /dev/null 2>&1 & ");
+
+            try {
+                shell_exec("cd $base_tasks_path && cd .. && ./crunz-ui.sh -f -t $task_id > /dev/null 2>&1 & ");
+
+                $aEXEC["result"] = true;
+                $aEXEC["result_msg"] = '';
+
+            } catch(Exception $e) {
+
+                $aEXEC["result"] = false;
+                $aEXEC["result_msg"] = $e->getMessage();
+            }
 
             if($exec_and_wait == 'Y'){
 
