@@ -305,6 +305,7 @@ module.exports = {
                 if(response.data.result){
                     if(wait){
                         self.openLogModal(response.data.log_content)
+                        self.readData()
                     }else{
                         Swal.fire({
                             title: 'Task EXECUTED',
