@@ -22,63 +22,6 @@
             :rowdata="logData"
         ></task-log>
 
-        <!-- Choose modal -->
-        <v-dialog
-            persistent
-            max-width="600px"
-            v-model="showChooseModal"
-        >
-            <v-card>
-                <v-toolbar
-                    dense
-                    dark
-                    color="#607d8b"
-                >
-                    <v-toolbar-title>
-                        Execution mode
-                    </v-toolbar-title>
-                </v-toolbar>
-                <center>
-                    <p>
-                        Choose execution mode for the task
-                    </p>
-                </center>
-                <v-card-actions>
-                    <v-layout class="mr-0 ml-0" row wrap>
-                        <v-flex xs4 class="pl-2">
-                            <v-btn
-                                block
-                                dark
-                                color="blue"
-                            >
-                                Execute and wait log
-                            </v-btn>
-                        </v-flex>
-                        <v-flex xs4 class="pr-2 pl-2">
-                            <v-btn
-                                block
-                                dark
-                                color="red"
-                                @click="closeChooseModal()"
-                            >
-                                Back
-                            </v-btn>
-                        </v-flex>
-                        <v-flex xs4 class="pr-2">
-                            <v-btn
-                                block
-                                dark
-                                color="blue"
-                                @click="executeItem()"
-                            >
-                                Execute
-                            </v-btn>
-                        </v-flex>
-                    </v-layout>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-
         <v-card>
             <v-data-table
                 :headers="headers"
@@ -179,7 +122,6 @@
 module.exports = {
     data:function(){
         return{
-            showChooseModal:false,
             showUploadModal:false,
             showEditModal:false,
             showLogModal:false,
@@ -199,7 +141,6 @@ module.exports = {
                 { text: 'Last exec. outcome', value: 'last_outcome', align: 'center' },
             ],
             files: [],
-            chooseData:false,
             editData:false,
             uploadData:false,
             logData:false,
@@ -244,17 +185,6 @@ module.exports = {
         },
         closeLogModal: function () {
             this.showLogModal = false;
-            // this.form. = false;
-            // this.readData();
-        },
-        openChooseModal: function (rowdata) {
-            this.chooseData=rowdata
-            this.showChooseModal = true;
-            // this.editData = rowdata!=undefined ? rowdata : false;
-        },
-        closeChooseModal: function () {
-            this.showChooseModal = false;
-            this.chooseData=false
             // this.form. = false;
             // this.readData();
         },
