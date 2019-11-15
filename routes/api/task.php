@@ -494,6 +494,11 @@ $app->group('/task', function () use ($app) {
                 $aEXEC["outcome"] = $outcome;
                 $aEXEC["task_start"] = $task_start->format('Y-m-d H:i');
                 $aEXEC["task_stop"] = $task_stop->format('Y-m-d H:i');
+
+                if($aEXEC["task_start"] == $aEXEC["task_stop"]){
+                    $aEXEC["task_stop"] = date("H:i", strtotime('+1 minutes', $aEXEC["task_stop"]));
+                }
+
                 $aEXEC["duration"] = $duration;
 
                 $aEXEC["log_path"] = $absolute_path;
