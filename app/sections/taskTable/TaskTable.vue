@@ -1,13 +1,6 @@
 <template>
     <div>
 
-        <!-- Task edit modal -->
-        <task-edit
-            v-if="showEditModal"
-            @on-close-edit-modal="closeEditModal"
-            :rowdata="editData"
-        ></task-edit>
-
         <!-- Upload file modal -->
         <task-upload
             v-if="showUploadModal"
@@ -41,26 +34,22 @@
                                         </template>
                                         <v-list subheader dense>
                                             <v-subheader class="pl-4 blue-grey white--text font-weight-bold white">
-                                                TASK ACTION MENU
+                                                Task Action Menu
                                             </v-subheader>
                                             <v-list-item-group color="primary">
-                                                <v-list-item @click="executeItem(item,false)">
+                                                <v-list-item @click="executeItem(item, false)">
                                                     <v-list-item-icon><v-icon small>fa fa-play</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Execute</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="executeItem(item,true)">
+                                                <v-list-item @click="executeItem(item, true)">
                                                     <v-list-item-icon><v-icon small>fas fa-file-alt</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Execute and wait log</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="openLogModal(item,i)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
+                                                <v-list-item @click="openLogModal(item, i)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
                                                     <v-list-item-icon><v-icon small>fa fa-folder-open</v-icon></v-list-item-icon>
-                                                    <v-list-item-title>View execution log</v-list-item-title>
+                                                    <v-list-item-title>View last log</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="opendEditModal(item,i)" class="d-none">
-                                                    <v-list-item-icon><v-icon small>fa fa-edit</v-icon></v-list-item-icon>
-                                                    <v-list-item-title>Edit task configuration</v-list-item-title>
-                                                </v-list-item>
-                                                <v-list-item @click="deleteItem(item,i)">
+                                                <v-list-item @click="deleteItem(item, i)">
                                                     <v-list-item-icon><v-icon small>fa fa-trash</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Delete task</v-list-item-title>
                                                 </v-list-item>
@@ -144,60 +133,49 @@ module.exports = {
             editData:false,
             uploadData:false,
             logData:false,
-            message:'LOADING TASKS'
+            message:'Loading tasks'
         }
     },
     methods: {
         readData:function(){
             var self=this
-            self.message="LOADING TASKS"
+            self.message="Loading tasks"
             Utils.apiCall("get", "/task/")
             .then(function (response) {
                 if(response.data.length!=0){
                     self.files=JSON.parse(JSON.stringify(response.data))
                 }else{
-                    self.message="TASKS NOT FOUND"
+                    self.message="No tasks found on server. Check tasks directory path."
                 }
             });
         },
-        opendEditModal: function (rowdata) {
-            this.showEditModal = true;
-            this.editData = rowdata!=undefined ? rowdata : false;
-        },
-        closeEditModal: function () {
-            this.showEditModal = false;
-            // this.form. = false;
-            // this.readData();
-        },
+
         openUploadModal: function (rowdata) {
             this.showUploadModal = true;
-            // this.editData = rowdata!=undefined ? rowdata : false;
         },
         closeUploadModal: function () {
             this.showUploadModal = false;
-            // this.form. = false;
-            // this.readData();
+            this.readData();
         },
+
         openLogModal: function (rowdata) {
             this.showLogModal = true;
             this.logData = rowdata!=undefined ? rowdata : false;
-            //console.log(JSON.stringify(this.logData));
         },
         closeLogModal: function () {
             this.showLogModal = false;
-            // this.form. = false;
-            // this.readData();
         },
+
         deleteItem: function (rowdata) {
             var self = this;
             Swal.fire({
                 title: 'Delete task',
-                text: "Do you want delete task?",
+                text: "Are you sure you want to delete task?",
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#f86c6b',
                 cancelButtonColor: '#20a8d8',
-                confirmButtonText: 'DELETE',
+                confirmButtonText: 'Delete',
                 cancelButtonText: 'Back'
             }).then( function (result) {
                 if (result.value) {
@@ -208,7 +186,7 @@ module.exports = {
                     .then(function (response) {
                         if(response.data.result){
                             Swal.fire({
-                                title: 'Task DELETED',
+                                title: 'Task deleted',
                                 text: response.data.result_msg,
                                 type: 'success'
                             })
@@ -224,13 +202,15 @@ module.exports = {
                 }
             });
         },
-        executeItem: function (item,wait) {
-            var self=this
+
+        executeItem: function (item, wait) {
+            var self=this;
             var params={
-                TASK_PATH:item.task_path,
-                EXEC_AND_WAIT:wait ? 'Y' : 'N'
+                TASK_PATH: item.task_path,
+                EXEC_AND_WAIT: wait ? 'Y' : 'N'
             }
-            Utils.apiCall("post", "/task/execute",params)
+
+            Utils.apiCall("post", "/task/execute", params)
             .then(function (response) {
                 if(response.data.result){
                     if(wait){
@@ -238,7 +218,7 @@ module.exports = {
                         self.readData()
                     }else{
                         Swal.fire({
-                            title: 'Task EXECUTED',
+                            title: 'Task launched. Execution in progress.',
                             text: response.data.result_msg,
                             type: 'success'
                         })
@@ -253,12 +233,13 @@ module.exports = {
             });
         }
     },
+
     created:function() {
         this.readData()
     },
+
     components:{
         'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue' + '?v=' + new Date().getTime()),
-        'task-edit': httpVueLoader('../../shareds/TaskEdit.vue' + '?v=' + new Date().getTime()),
         'task-upload': httpVueLoader('../../shareds/FileUpload.vue' + '?v=' + new Date().getTime()),
         'task-log': httpVueLoader('../../shareds/Log.vue' + '?v=' + new Date().getTime())
     }
