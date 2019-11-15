@@ -23,9 +23,9 @@
         },
         props: ['showloading'],
         components: {
-            'loading': httpVueLoader('../../app/shareds/Loading.vue'),
-            'login': httpVueLoader('../../app/sections/login/Login.vue'),
-            'navigator': httpVueLoader('../../app/shareds/Navigator.vue')
+            'loading': httpVueLoader('../../app/shareds/Loading.vue' + '?v=' + new Date().getTime()),
+            'login': httpVueLoader('../../app/sections/login/Login.vue' + '?v=' + new Date().getTime()),
+            'navigator': httpVueLoader('../../app/shareds/Navigator.vue' + '?v=' + new Date().getTime())
         },
         methods: {
             checkSession: function(){

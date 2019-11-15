@@ -39,7 +39,7 @@
             }
         },
         components: {
-            'taskedit': httpVueLoader('../../app/shareds/TaskEdit.vue')
+            'taskedit': httpVueLoader('../../app/shareds/TaskEdit.vue' + '?v=' + new Date().getTime())
         },
     }
 </script>

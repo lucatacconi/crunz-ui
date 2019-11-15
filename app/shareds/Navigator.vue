@@ -39,7 +39,7 @@
                 if (typeof response.data.routes !== 'undefined' && response.data.routes.length > 0) {
                     for(var i=0; i<response.data.routes.length; i++){
                         self.$router.addRoutes([
-                            { path: response.data.routes[i].path, component: httpVueLoader(response.data.routes[i].component) },
+                            { path: response.data.routes[i].path, component: httpVueLoader(response.data.routes[i].component + '?v=' + new Date().getTime()) },
                         ])
                     }
                 }
@@ -56,9 +56,9 @@
         },
 
         components: {
-            'navbar': httpVueLoader('../../app/shareds/NavBar.vue'),
-            'navdrawer': httpVueLoader('../../app/shareds/NavDrawer.vue'),
-            'appfooter': httpVueLoader('../../app/shareds/Footer.vue')
+            'navbar': httpVueLoader('../../app/shareds/NavBar.vue' + '?v=' + new Date().getTime()),
+            'navdrawer': httpVueLoader('../../app/shareds/NavDrawer.vue' + '?v=' + new Date().getTime()),
+            'appfooter': httpVueLoader('../../app/shareds/Footer.vue' + '?v=' + new Date().getTime())
         },
 
         methods: {

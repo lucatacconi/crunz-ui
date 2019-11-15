@@ -297,10 +297,10 @@ module.exports = {
         this.readData()
     },
     components:{
-        'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue'),
-        'task-edit': httpVueLoader('../../shareds/TaskEdit.vue'),
-        'task-upload': httpVueLoader('../../shareds/FileUpload.vue'),
-        'task-log': httpVueLoader('../../shareds/Log.vue')
+        'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue' + '?v=' + new Date().getTime()),
+        'task-edit': httpVueLoader('../../shareds/TaskEdit.vue' + '?v=' + new Date().getTime()),
+        'task-upload': httpVueLoader('../../shareds/FileUpload.vue' + '?v=' + new Date().getTime()),
+        'task-log': httpVueLoader('../../shareds/Log.vue' + '?v=' + new Date().getTime())
     }
 }
 </script>

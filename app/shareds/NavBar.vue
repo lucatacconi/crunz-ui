@@ -29,8 +29,8 @@
             }
         },
         components: {
-            'userinfo': httpVueLoader('../../app/shareds/UserInfo.vue'),
-            'navbartools': httpVueLoader('../../app/shareds/NavBarTools.vue')
+            'userinfo': httpVueLoader('../../app/shareds/UserInfo.vue' + '?v=' + new Date().getTime()),
+            'navbartools': httpVueLoader('../../app/shareds/NavBarTools.vue' + '?v=' + new Date().getTime())
         },
         mounted: function(){
         }
