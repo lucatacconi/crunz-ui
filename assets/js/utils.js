@@ -36,6 +36,15 @@ var Utils = {
         window.location.href = "index.php";
         return;
     },
+    showConnError: function () {
+        Swal.fire({
+            type: 'error',
+            title: "Connection Error",
+            text: "Check you connection status and try again",
+        }).then((result) => {
+            return;
+        })
+    },
 
     apiCall: function (method, url, parameters, config) {
 
