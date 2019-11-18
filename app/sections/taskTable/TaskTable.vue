@@ -26,7 +26,6 @@
                     <tbody>
                         <tr v-for="(item,i) in items" :key="i">
                             <td>
-
                                 <div class="text-center">
                                     <v-menu offset-y>
                                         <template v-slot:activator="{ on }">
@@ -180,7 +179,7 @@ module.exports = {
             }).then( function (result) {
                 if (result.value) {
                     var params={
-                        TASK_PATH:rowdata.task_path
+                        "task_path": rowdata.task_path
                     }
                     Utils.apiCall("delete", "/task/",params)
                     .then(function (response) {
@@ -206,8 +205,8 @@ module.exports = {
         executeItem: function (item, wait) {
             var self=this;
             var params={
-                TASK_PATH: item.task_path,
-                EXEC_AND_WAIT: wait ? 'Y' : 'N'
+                "task_path": item.task_path,
+                "exec_and_wait": wait ? 'Y' : 'N'
             }
 
             Utils.apiCall("post", "/task/execute", params)

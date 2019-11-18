@@ -626,6 +626,7 @@ $app->group('/task', function () use ($app) {
         $task_founded = false;
         $task_path_founded = '';
         $aEXEC = [];
+        $task_start = date("Y-m-d H:i");
 
         foreach($files as $task_path => $task_data){
 
@@ -707,6 +708,9 @@ $app->group('/task', function () use ($app) {
 
                 $file_content = file_get_contents($aEXEC["log_path"], true);
                 $aEXEC["log_content"] = base64_encode($file_content);
+
+            }else{
+                $aEXEC["result_msg"] = 'Task has been started at '.$task_start;
             }
 
             $data = $aEXEC;

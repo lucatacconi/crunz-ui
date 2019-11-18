@@ -38,21 +38,6 @@
                     dark
                     small
                     color="indigo"
-                    @click="opendEditModal()"
-                    v-on="on"
-                >
-                    <v-icon>mdi-plus</v-icon>
-                </v-btn>
-            </template>
-            <span>Add new task</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-                <v-btn
-                    fab
-                    dark
-                    small
-                    color="indigo"
                     @click="readData()"
                     v-on="on"
                 >
@@ -72,9 +57,6 @@ module.exports = {
     methods: {
         readData:function(){
             this.$emit('read-data',true)
-        },
-        opendEditModal:function(){
-            this.$emit('edit-modal',true)
         },
         openUploadModal:function(){
             this.$emit('upload-modal',true)
