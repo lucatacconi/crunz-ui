@@ -21,22 +21,30 @@
                     </v-btn>
                 </v-toolbar-items>
             </v-toolbar>
-            <v-card-title>Select folder</v-card-title>
-            <v-select
-                class="pl-4 pr-4"
-                solo
-                :items="['folder 1','folder 2','folder 3']"
-            ></v-select>
-            <v-card-title>Select file</v-card-title>
-                <v-file-input
-                    class="pl-4 pr-4"
+            <v-card-text class="pb-0">
+                <v-select
                     solo
-                    accept=".php"
-                    prepend-icon=""
-                    append-icon="mdi-folder"
-                    v-model="formData.file"
-                ></v-file-input>
-            <v-card-actions>
+                    dense
+                    label="Select folder"
+                    v-model="formData.path"
+                    :items="items"
+                ></v-select>
+                    <v-file-input
+                        solo
+                        dense
+                        accept=".php"
+                        label="Select file"
+                        prepend-icon=""
+                        append-icon="mdi-folder"
+                        v-model="formData.file"
+                    ></v-file-input>
+                    <v-checkbox
+                        class="pt-0 mt-0"
+                        v-model="formData.rewrite"
+                        label="Rewrite file"
+                    ></v-checkbox>
+            </v-card-text>
+            <v-card-actions class="pt-0">
                 <v-spacer></v-spacer>
                 <v-btn
                     dark
@@ -56,9 +64,9 @@ module.exports = {
         return{
             formData:{
                 file:null,
-                path:"",
+                path:"/",
+                rewrite:true
             },
-            selectFolder:false,
             modalTitle:"File upload",
             files: {
                 html: 'mdi-language-html5',
@@ -78,38 +86,26 @@ module.exports = {
             var self = this;
             self.$emit('on-close-edit-modal');
         },
-        checkFolder:function(event) {
-            if(event.length!=0){
-                this.selectFolder=event[0]
-            }else{
-                this.selectFolder=false
-            }
-
-        },
         uploadFile:function(){
+            console.log(this.formData.path)
             console.log(this.formData.file)
-            console.log(this.selectFolder)
-            if(this.selectFolder&&this.formData.file!=null&&this.formData.file.type=="application/x-php"){
-
-
-                var result = this.getChildren(this.items,this.selectFolder)
-                console.log(result);
+            if(this.formData.file!=null&&this.formData.file.type=="application/x-php"){
 
                 // var text=new FormData();
                 // text.append("file", this.formData.file, this.formData.name);
 
                 //------------CORRECT CODE
-                // var formData = new FormData();
-                // var imagefile = this.formData.file
-                // formData.append("image", this.formData.file);
-                // Utils.apiCall("post", "/task/upload",formData, {
-                //     headers: {
-                //     'Content-Type': 'multipart/form-data'
-                //     }
-                // })
-                // .then(function (response) {
-                //     console.log(response)
-                // });
+                var formData = new FormData();
+                var imagefile = this.formData.file
+                formData.append("TASK_UPLOAD", this.formData.file);
+                formData.append("TASK_DESTINATION_PATH", this.formData.path);
+                formData.append("CAN_REWRITE", 'N');
+                Utils.apiCall("post", "/task/upload",formData, {
+                    'Content-Type': 'multipart/form-data'
+                })
+                .then(function (response) {
+                    console.log(response)
+                });
 
                 // var formData = new FormData();
                 // var imagefile = this.formData.file
@@ -123,9 +119,6 @@ module.exports = {
 
             }else{
                 var txt=""
-                if(!this.selectFolder){
-                    txt+="Folder not selected"
-                }
                 if(this.formData.file==null){
                     txt+="<br>File not selected"
                 }else if(this.formData.file.type!='application/x-php'){
@@ -138,14 +131,22 @@ module.exports = {
                 })
             }
         },
-        getChildren:function(tree, description){
+        searchChildren:function(tree, value, key){ //cerco il valore di una determinata chiave nell'array tree
             if (tree) {
                 for (var i = 0; i < tree.length; i++) {
-                    if (tree[i].description == description) {
+                    if (tree[i][key] == value) {
                         return tree[i];
                     }
-                    var found = this.getChildren(tree[i].children, description);
+                    var found = this.searchChildren(tree[i].children, value, key);
                     if (found) return found;
+                }
+            }
+        },
+        getChildren:function(data,result){
+            if(data.children!=undefined){
+                for(var i=0;i<data.children.length;i++){
+                    this.getChildren(data.children[i],result)
+                    result.push(data.children[i].subdir)
                 }
             }
         }
@@ -155,7 +156,11 @@ module.exports = {
         Utils.apiCall("get", "/task/group")
         .then(function (response) {
             console.log(response)
-            self.items=response.data
+            self.items.push('/')
+            if(response.data.length==1){
+                self.getChildren(response.data[0],self.items)
+            }
+            console.log(self.items)
         });
     },
 }

@@ -731,6 +731,9 @@ $app->group('/task', function () use ($app) {
 
         $params = array_change_key_case($request->getParams(), CASE_UPPER);
 
+        var_dump($params);
+        die();
+
         if(empty(getenv("TASKS_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
