@@ -131,11 +131,9 @@ module.exports = {
             var ed=""
             var content=""
             if(editor=="crunz-log"){
-                ed=this.crunzLog
                 content=this.logdata.crunzLog_content
             }
             if(editor=="custom-log"){
-                ed=this.customLog
                 content=this.logdata.customLog_content
             }
             ed = ace.edit(editor);
@@ -148,6 +146,13 @@ module.exports = {
             });
 
             ed.session.setValue(content);
+
+            if(editor=="crunz-log"){
+                this.crunzLog=ed
+            }
+            if(editor=="custom-log"){
+                this.customLog=ed
+            }
         },
         copyToClipboard:function(editor){
             var ed=""
