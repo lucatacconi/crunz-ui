@@ -97,6 +97,11 @@ var Utils = {
             }
         }
 
+        //Content type
+        if(config != null && typeof config['Content-Type'] !== "undefined"){
+            call_config.headers['Content-Type'] = config['Content-Type'];
+        }
+
         //if i'm showing loading calling api i need to hide it once had the result
         if(this.showLoadingConf && this.hideLoadingConf){
             axios.interceptors.response.use(function (response) {
