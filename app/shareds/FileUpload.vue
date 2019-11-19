@@ -138,7 +138,9 @@ module.exports = {
             if(data.children!=undefined){
                 for(var i=0;i<data.children.length;i++){
                     this.getChildren(data.children[i],result)
-                    result.push(data.children[i].subdir)
+                    if(!data.children[i].disabled){
+                        result.push(data.children[i].subdir)
+                    }
                 }
             }
         }
