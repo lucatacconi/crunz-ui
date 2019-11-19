@@ -117,6 +117,17 @@ $app->group('/task', function () use ($app) {
         $task_counter = 0;
         foreach ($files as $taskFile) {
 
+            $file_content = file_get_contents($taskFile->getRealPath(), true);
+            $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content);
+
+            if(
+                strpos($file_content, 'use Crunz\Schedule;') === false ||
+                strpos($file_content, '= new Schedule()') === false ||
+                strpos($file_content, '->run(') === false
+            ){
+                continue;
+            }
+
             require $taskFile->getRealPath();
             if (!$schedule instanceof Schedule) {
                 continue;
@@ -152,10 +163,6 @@ $app->group('/task', function () use ($app) {
                 $row["event_launch_id"] = $task_counter;
                 $row["task_description"] = $oEVENT->description;
                 $row["expression"] = $row["expression_orig"] = $oEVENT->getExpression();
-
-                $file_content = file_get_contents($taskFile->getRealPath(), true);
-                $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content);
-
 
                 //Check task lifetime
                 $from = '';
@@ -787,6 +794,20 @@ $app->group('/task', function () use ($app) {
         if($can_rewrite != "Y"){
             if (file_exists($destination_path."/".$_FILES["TASK_UPLOAD"]["name"])) throw new Exception("ERROR - Same task file in the same position fouded. Can't overwrite");
         }
+
+
+        //Check if file is a task file
+        $file_content = file_get_contents($_FILES["TASK_UPLOAD"]["tmp_name"], true);
+        $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content);
+
+        if(
+            strpos($file_content, 'use Crunz\Schedule;') === false ||
+            strpos($file_content, '= new Schedule()') === false ||
+            strpos($file_content, '->run(') === false
+        ){
+            throw new Exception("ERROR - Wrong task configuration in task file");
+        }
+
 
         //All check done.. Can upload task file
         if(!move_uploaded_file($_FILES["TASK_UPLOAD"]["tmp_name"], $destination_path."/".$_FILES["TASK_UPLOAD"]["name"])){
