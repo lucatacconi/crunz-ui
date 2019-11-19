@@ -731,9 +731,6 @@ $app->group('/task', function () use ($app) {
 
         $params = array_change_key_case($request->getParams(), CASE_UPPER);
 
-        var_dump($params);
-        die();
-
         if(empty(getenv("TASKS_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
         if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
@@ -763,6 +760,10 @@ $app->group('/task', function () use ($app) {
         if(!is_writable($destination_path)) throw new Exception('ERROR - File not writable');
 
         //Check task file
+        if(!empty($_FILES)){
+            $_FILES = array_change_key_case($_FILES, CASE_UPPER);
+        }
+
         if(
             empty($_FILES) ||
             empty($_FILES["TASK_UPLOAD"]) ||
