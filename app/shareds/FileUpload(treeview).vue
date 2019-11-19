@@ -41,7 +41,7 @@
                             {{ files[item.file] }}
                         </v-icon>
                     </template>
-                    <template :class="item.subdir=='/' ? 'v-treeview-node--active' : ''" v-slot:label="{ item }">
+                    <template v-slot:label="{ item }">
                         {{item.description}}
                     </template>
                 </v-treeview>
