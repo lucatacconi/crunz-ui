@@ -22,7 +22,7 @@
                 </v-toolbar-items>
             </v-toolbar>
             <v-card-text class="px-8 pb-0">
-                <v-card-title class="pa-0">Destination path</v-card-title>
+                <span class="subtitle-1">Destination path</span>
                 <v-treeview
                     dense
                     item-disabled="disabled"
