@@ -21,33 +21,27 @@
                     </v-btn>
                 </v-toolbar-items>
             </v-toolbar>
-            <v-card-text class="pb-0">
+            <v-card-text class="px-12 pb-0">
                 <v-select
-                    solo
                     dense
                     label="Select folder"
                     v-model="formData.path"
                     :items="items"
                 ></v-select>
-                    <v-file-input
-                        solo
-                        dense
-                        accept=".php"
-                        label="Select file"
-                        prepend-icon=""
-                        append-icon="mdi-folder"
-                        v-model="formData.file"
-                    ></v-file-input>
-                    <v-checkbox
-                        class="pt-0 mt-0"
-                        v-model="formData.rewrite"
-                        label="Rewrite file"
-                    ></v-checkbox>
+                <v-file-input
+                    accept=".php"
+                    label="Select file"
+                    prepend-icon=""
+                    append-icon="mdi-folder"
+                    v-model="formData.file"
+                ></v-file-input>
+                <v-switch v-model="formData.rewrite" inset :label="`Rewrite task file if present in destination path`"></v-switch>
             </v-card-text>
-            <v-card-actions class="pt-0">
+            <v-card-actions class="">
                 <v-spacer></v-spacer>
                 <v-btn
                     dark
+                    dense
                     color="blue"
                     @click="uploadFile"
                 >
@@ -87,35 +81,22 @@ module.exports = {
             self.$emit('on-close-edit-modal');
         },
         uploadFile:function(){
-            console.log(this.formData.path)
-            console.log(this.formData.file)
+
             if(this.formData.file!=null&&this.formData.file.type=="application/x-php"){
 
-                // var text=new FormData();
-                // text.append("file", this.formData.file, this.formData.name);
+                var config = {
+                    "Content-Type": 'multipart/form-data'
+                }
 
-                //------------CORRECT CODE
                 var formData = new FormData();
-                var imagefile = this.formData.file
-                formData.append("TASK_UPLOAD", this.formData.file);
-                formData.append("TASK_DESTINATION_PATH", this.formData.path);
-                formData.append("CAN_REWRITE", 'N');
-                Utils.apiCall("post", "/task/upload",formData, {
-                    'Content-Type': 'multipart/form-data'
-                })
+                formData.append("task_upload", this.formData.file);
+                formData.append("task_destination_path", this.formData.path);
+                formData.append("can_rewrite", this.formData.rewrite);
+
+                Utils.fileUpload("/task/upload", formData)
                 .then(function (response) {
                     console.log(response)
                 });
-
-                // var formData = new FormData();
-                // var imagefile = this.formData.file
-                // formData.append("image", this.formData.file);
-                // axios.post('http://localhost/sviluppo/crunz-ui(luca)/routes/task/upload', formData, {
-                //     headers: {
-                //     'Content-Type': 'multipart/form-data',
-                //     'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjgzODY1MTgsImV4cCI6MTU2ODM5MzcxOCwianRpIjoiNXJOMjhUekZKdEVzVmFFWUpmVHRkbCIsInVzZXJuYW1lIjoiYWRtaW4iLCJuYW1lIjoiQWRtaW4gVXNlciIsInVzZXJUeXBlIjoiYWRtaW4ifQ.3_dccmC8y3DkM7MNY3B2Qdp2AANQ4a-S6l951qfFOHM'
-                //     }
-                // })
 
             }else{
                 var txt=""
@@ -155,12 +136,12 @@ module.exports = {
         var self=this
         Utils.apiCall("get", "/task/group")
         .then(function (response) {
-            console.log(response)
+            // console.log(response)
             self.items.push('/')
             if(response.data.length==1){
                 self.getChildren(response.data[0],self.items)
             }
-            console.log(self.items)
+            // console.log(self.items)
         });
     },
 }
