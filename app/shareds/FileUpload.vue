@@ -35,7 +35,7 @@
                     append-icon="mdi-folder"
                     v-model="formData.file"
                 ></v-file-input>
-                <v-switch v-model="formData.rewrite" inset :label="`Rewrite task file if present in destination path`"></v-switch>
+                <v-switch class="pt-0" v-model="formData.rewrite" inset :label="`Rewrite task file if present in destination path`"></v-switch>
             </v-card-text>
             <v-card-actions class="pt-0 pb-5 pr-5">
                 <v-spacer></v-spacer>
