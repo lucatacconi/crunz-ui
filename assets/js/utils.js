@@ -176,7 +176,7 @@ var Utils = {
             }
         }
 
-        return axios.post('../routes/task/upload', formdata, {
+        return axios.post(url, formdata, {
             headers: {
             'Content-Type': 'multipart/form-data',
             'Authorization': authorization

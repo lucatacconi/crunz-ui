@@ -7,7 +7,7 @@
                 color="#607d8b"
             >
                 <v-toolbar-title>
-                    {{modalTitle}}
+                    Task file upload
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-toolbar-items>
@@ -21,7 +21,7 @@
                     </v-btn>
                 </v-toolbar-items>
             </v-toolbar>
-            <v-card-text class="px-12 pb-0">
+            <v-card-text class="px-8 pb-0">
                 <v-select
                     dense
                     label="Select folder"
@@ -37,15 +37,16 @@
                 ></v-file-input>
                 <v-switch v-model="formData.rewrite" inset :label="`Rewrite task file if present in destination path`"></v-switch>
             </v-card-text>
-            <v-card-actions class="">
+            <v-card-actions class="pt-0 pb-5 pr-5">
                 <v-spacer></v-spacer>
                 <v-btn
+                    small
                     dark
                     dense
-                    color="blue"
+                    color="#607d8b"
                     @click="uploadFile"
                 >
-                    Upload
+                    Upload file
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -61,7 +62,6 @@ module.exports = {
                 path:"/",
                 rewrite:true
             },
-            modalTitle:"File upload",
             files: {
                 html: 'mdi-language-html5',
                 js: 'mdi-nodejs',
