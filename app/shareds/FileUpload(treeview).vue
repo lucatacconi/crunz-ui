@@ -22,13 +22,14 @@
                 </v-toolbar-items>
             </v-toolbar>
             <v-card-text class="px-8 pb-0">
-                <v-card-title class="pa-0">Select folder</v-card-title>
+                <!-- <v-card-title class="pa-0">Select folder</v-card-title> -->
                 <v-treeview
                     dense
                     item-disabled="disabled"
                     color="blue"
                     :items="items"
-                    item-key="description"
+                    item-key="subdir"
+                    :active="selectFolder==null ? ['/'] : selectFolder"
                     activatable
                     @update:active="checkFolder($event)"
                 >
@@ -40,7 +41,7 @@
                             {{ files[item.file] }}
                         </v-icon>
                     </template>
-                    <template v-slot:label="{ item }">
+                    <template :class="item.subdir=='/' ? 'v-treeview-node--active' : ''" v-slot:label="{ item }">
                         {{item.description}}
                     </template>
                 </v-treeview>
@@ -79,7 +80,7 @@ module.exports = {
                 path:"",
                 rewrite:true
             },
-            selectFolder:false,
+            selectFolder:null,
             modalTitle:"File upload",
             files: {
                 html: 'mdi-language-html5',
@@ -101,22 +102,21 @@ module.exports = {
         },
         checkFolder:function(event) {
             if(event.length!=0){
-                this.selectFolder=event[0]
+                this.selectFolder=event
             }else{
-                this.selectFolder=false
+                this.selectFolder=['/']
             }
 
         },
         uploadFile:function(){
             var self=this
+            if(this.formData.file!=null&&this.formData.file.type=="application/x-php"){
 
-            if(this.selectFolder&&this.formData.file!=null&&this.formData.file.type=="application/x-php"){
-
-                var result = this.searchChildren(this.items,this.selectFolder,'description')
+                // var result = this.searchChildren(this.items,this.selectFolder,'description')
 
                 var formData = new FormData();
                 formData.append("task_upload", this.formData.file);
-                formData.append("task_destination_path", result.subdir);
+                formData.append("task_destination_path", this.selectFolder==null ? '/' : this.selectFolder[0]);
                 formData.append("can_rewrite", this.formData.rewrite ? 'Y' : 'N');
 
                 Utils.fileUpload("/task/upload", formData)
@@ -141,9 +141,6 @@ module.exports = {
 
             }else{
                 var txt=""
-                if(!this.selectFolder){
-                    txt+="Folder not selected"
-                }
                 if(this.formData.file==null){
                     txt+="<br>File not selected"
                 }else if(this.formData.file.type!='application/x-php'){
