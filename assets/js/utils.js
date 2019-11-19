@@ -97,11 +97,6 @@ var Utils = {
             }
         }
 
-        //Content type
-        if(config != null && typeof config['Content-Type'] !== "undefined"){
-            call_config.headers['Content-Type'] = config['Content-Type'];
-        }
-
         //if i'm showing loading calling api i need to hide it once had the result
         if(this.showLoadingConf && this.hideLoadingConf){
             axios.interceptors.response.use(function (response) {
@@ -115,6 +110,78 @@ var Utils = {
 
         return axios(call_config).catch(function (error) {
 
+            if(error.response.status == 401){
+                Swal.fire({
+                    type: 'error',
+                    title: 'Account error',
+                    text: "Login error or session expired",
+                }).then((result) => {
+                    Utils.doLogoutAndGoHome();
+                }).catch(swal.noop);
+            }else{
+                Utils.hideLoading();
+                Swal.fire({
+                    type: 'error',
+                    title: error.response.data.status,
+                    text: error.response.data.message,
+                }).then((result) => {
+                    return;
+                })
+                .catch(swal.noop);
+            }
+        });
+    },
+
+    fileUpload: function (url, formdata, config) {
+
+        if (!formdata || !url) {
+            console.error('Function apiCall missing arguments');
+            return;
+        }
+
+        if(typeof config === "undefined"){ config = null; }
+
+        this.showLoadingConf = true;
+        if(config != null && typeof config.showLoading !== "undefined" && config.showLoading == false){
+            this.showLoadingConf = false;
+        }
+
+        this.hideLoadingConf = true;
+        if(config != null && typeof config.hideLoading !== "undefined" && config.hideLoading == false){
+            this.hideLoadingConf = false;
+        }
+
+        if(this.showLoadingConf){
+            Utils.showLoading();
+        }
+
+        //If url start with http or https I'll use url to call api. Api called is external
+        //If url start with /xxxx it means that api is internal
+        if ( url.indexOf("https") == -1 && url.indexOf("http") == -1 ) {
+            if(url.substr(0, 1) == '/'){
+                url = '../routes' + url;
+            }else{
+                url = '../routes' + '/' + url;
+            }
+        }
+
+
+        //Security check
+        if(config != null && typeof config.apikey !== "undefined"){
+            authorization = "Bearer " + config.apikey;
+        }else{
+            if(localStorage.getItem("token") != '' && localStorage.getItem("token") != null && localStorage.getItem("token") != 'undefined'){
+                apikey = localStorage.getItem("token");
+                authorization = "Bearer " + apikey;
+            }
+        }
+
+        return axios.post('../routes/task/upload', formdata, {
+            headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': authorization
+            }
+        }).catch(function (error) {
             if(error.response.status == 401){
                 Swal.fire({
                     type: 'error',
