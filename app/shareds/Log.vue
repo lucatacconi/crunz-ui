@@ -24,9 +24,24 @@
 
             <v-card-text class="pt-5">
                 <v-form>
-                    <v-container>
+                    <v-container class="pt-0">
                         <v-row>
-                            <v-col cols="12">
+                            <v-col class="pa-0" cols="12">
+                                <span class="subtitle-1">
+                                    Path: {{logdata.task_path}}
+                                </span>
+                                <br>
+                                <span class="subtitle-1">
+                                    Execution: {{logdata.execution}}
+                                </span>
+                                <br>
+                                <span class="subtitle-1">
+                                    Duration: {{logdata.duration}}
+                                </span>
+                                <br>
+                                <span class="subtitle-1">
+                                    Execution outcome: {{logdata.outcome}}
+                                </span>
                                 <v-card>
                                     <strong>Crunz log</strong>
                                     <div id="crunz-log"></div>
@@ -74,8 +89,12 @@
 module.exports = {
     data:function(){
         return{
-            modalTitle:"Log",
+            modalTitle:"Task execution log",
             logdata: {
+                path:"",
+                execution:"",
+                duration:"",
+                outcome:"",
                 crunzLog_content : "",
                 customLog_content : ""
             },
@@ -179,6 +198,10 @@ module.exports = {
                 }
                 Utils.apiCall("get", "/task/exec-outcome",params)
                 .then(function (response) {
+                    response.data.task_path=self.logdata.path
+                    response.data.task_start=self.logdata.execution
+                    response.data.task_stop=self.logdata.duration
+                    response.data.outcome=self.logdata.outcome
                     if(response.data.log_content!=""){
                         self.logdata.crunzLog_content=window.atob(response.data.log_content)
                         self.initEditor('crunz-log')
