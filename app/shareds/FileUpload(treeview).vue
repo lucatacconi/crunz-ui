@@ -1,5 +1,5 @@
 <template>
-    <v-dialog :value="true" persistent max-width="600px" @on-close="closeModal()">
+    <v-dialog :value="true" persistent max-width="600px" @on-close="closeModal(false)">
         <v-card>
             <v-toolbar
                 dense
@@ -13,7 +13,7 @@
                 <v-toolbar-items>
                     <v-btn
                         icon
-                        @click="closeModal()"
+                        @click="closeModal(false)"
                     >
                         <v-icon>
                             close
@@ -21,42 +21,46 @@
                     </v-btn>
                 </v-toolbar-items>
             </v-toolbar>
-            <v-card-title>Select folder</v-card-title>
-            <v-treeview
-                dense
-                item-disabled="disabled"
-                color="blue"
-                :items="items"
-                item-key="description"
-                activatable
-                @update:active="checkFolder($event)"
-            >
-                <template v-slot:prepend="{ item, open }">
-                    <v-icon v-if="!item.file">
-                        {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
-                    </v-icon>
-                    <v-icon v-else>
-                        {{ files[item.file] }}
-                    </v-icon>
-                </template>
-                <template v-slot:label="{ item }">
-                    {{item.description}}
-                </template>
-            </v-treeview>
-            <v-card-title>Select file</v-card-title>
-                <v-file-input
-                    class="pl-4 pr-4"
-                    solo
-                    accept=".php"
-                    prepend-icon=""
-                    append-icon="mdi-folder"
-                    v-model="formData.file"
-                ></v-file-input>
-            <v-card-actions>
+            <v-card-text class="px-8 pb-0">
+                <v-card-title class="pa-0">Select folder</v-card-title>
+                <v-treeview
+                    dense
+                    item-disabled="disabled"
+                    color="blue"
+                    :items="items"
+                    item-key="description"
+                    activatable
+                    @update:active="checkFolder($event)"
+                >
+                    <template v-slot:prepend="{ item, open }">
+                        <v-icon v-if="!item.file">
+                            {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+                        </v-icon>
+                        <v-icon v-else>
+                            {{ files[item.file] }}
+                        </v-icon>
+                    </template>
+                    <template v-slot:label="{ item }">
+                        {{item.description}}
+                    </template>
+                </v-treeview>
+                    <v-file-input
+                        class="mt-0"
+                        label="Select file"
+                        accept=".php"
+                        prepend-icon=""
+                        append-icon="mdi-folder"
+                        v-model="formData.file"
+                    ></v-file-input>
+                    <v-switch class="pt-0" v-model="formData.rewrite" inset :label="`Rewrite task file if present in destination path`"></v-switch>
+            </v-card-text>
+            <v-card-actions class="pt-0 pb-5 pr-5">
                 <v-spacer></v-spacer>
                 <v-btn
+                    small
+                    dense
                     dark
-                    color="blue"
+                    color="#607d8b"
                     @click="uploadFile"
                 >
                     Upload
@@ -73,6 +77,7 @@ module.exports = {
             formData:{
                 file:null,
                 path:"",
+                rewrite:true
             },
             selectFolder:false,
             modalTitle:"File upload",
@@ -90,9 +95,9 @@ module.exports = {
         }
     },
     methods: {
-        closeModal: function () {
+        closeModal: function (result) {
             var self = this;
-            self.$emit('on-close-edit-modal');
+            self.$emit('on-close-edit-modal',result);
         },
         checkFolder:function(event) {
             if(event.length!=0){
@@ -103,39 +108,36 @@ module.exports = {
 
         },
         uploadFile:function(){
-            console.log(this.formData.file)
-            console.log(this.selectFolder)
+            var self=this
+
             if(this.selectFolder&&this.formData.file!=null&&this.formData.file.type=="application/x-php"){
 
+                var result = this.searchChildren(this.items,this.selectFolder,'description')
 
-                var result = this.getChildren(this.items,this.selectFolder)
-                console.log(result);
+                var formData = new FormData();
+                formData.append("task_upload", this.formData.file);
+                formData.append("task_destination_path", result.subdir);
+                formData.append("can_rewrite", this.formData.rewrite ? 'Y' : 'N');
 
-                // var text=new FormData();
-                // text.append("file", this.formData.file, this.formData.name);
-
-                //------------CORRECT CODE
-                // var formData = new FormData();
-                // var imagefile = this.formData.file
-                // formData.append("image", this.formData.file);
-                // Utils.apiCall("post", "/task/upload",formData, {
-                //     headers: {
-                //     'Content-Type': 'multipart/form-data'
-                //     }
-                // })
-                // .then(function (response) {
-                //     console.log(response)
-                // });
-
-                // var formData = new FormData();
-                // var imagefile = this.formData.file
-                // formData.append("image", this.formData.file);
-                // axios.post('http://localhost/sviluppo/crunz-ui(luca)/routes/task/upload', formData, {
-                //     headers: {
-                //     'Content-Type': 'multipart/form-data',
-                //     'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjgzODY1MTgsImV4cCI6MTU2ODM5MzcxOCwianRpIjoiNXJOMjhUekZKdEVzVmFFWUpmVHRkbCIsInVzZXJuYW1lIjoiYWRtaW4iLCJuYW1lIjoiQWRtaW4gVXNlciIsInVzZXJUeXBlIjoiYWRtaW4ifQ.3_dccmC8y3DkM7MNY3B2Qdp2AANQ4a-S6l951qfFOHM'
-                //     }
-                // })
+                Utils.fileUpload("/task/upload", formData)
+                .then(function (response) {
+                    if(response.data.result){
+                        Swal.fire({
+                            title: 'Task uploaded',
+                            text: response.data.result_msg,
+                            type: 'success',
+                            onClose: () => {
+                                self.closeModal(true)
+                            }
+                        })
+                    }else{
+                        Swal.fire({
+                            title: 'ERROR',
+                            text: response.data.result_msg,
+                            type: 'error'
+                        })
+                    }
+                });
 
             }else{
                 var txt=""
@@ -154,23 +156,22 @@ module.exports = {
                 })
             }
         },
-        getChildren:function(tree, description){
+        searchChildren:function(tree, value, key){ //cerco il valore di una determinata chiave nell'array tree
             if (tree) {
                 for (var i = 0; i < tree.length; i++) {
-                    if (tree[i].description == description) {
+                    if (tree[i][key] == value) {
                         return tree[i];
                     }
-                    var found = this.getChildren(tree[i].children, description);
+                    var found = this.searchChildren(tree[i].children, value, key);
                     if (found) return found;
                 }
             }
-        }
+        },
     },
     created:function() {
         var self=this
         Utils.apiCall("get", "/task/group")
         .then(function (response) {
-            console.log(response)
             self.items=response.data
         });
     },

@@ -241,7 +241,7 @@ module.exports = {
 
     components:{
         'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue' + '?v=' + new Date().getTime()),
-        'task-upload': httpVueLoader('../../shareds/FileUpload.vue' + '?v=' + new Date().getTime()),
+        'task-upload': httpVueLoader('../../shareds/FileUpload(treeview).vue' + '?v=' + new Date().getTime()),
         'task-log': httpVueLoader('../../shareds/Log.vue' + '?v=' + new Date().getTime())
     }
 }
