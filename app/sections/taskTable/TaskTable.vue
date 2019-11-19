@@ -4,7 +4,7 @@
         <!-- Upload file modal -->
         <task-upload
             v-if="showUploadModal"
-            @on-close-edit-modal="closeUploadModal"
+            @on-close-edit-modal="closeUploadModal($event)"
             :rowdata="uploadData"
         ></task-upload>
 
@@ -152,9 +152,11 @@ module.exports = {
         openUploadModal: function (rowdata) {
             this.showUploadModal = true;
         },
-        closeUploadModal: function () {
+        closeUploadModal: function (result) {
             this.showUploadModal = false;
-            this.readData();
+            if(result){
+                this.readData();
+            }
         },
 
         openLogModal: function (rowdata) {

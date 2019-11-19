@@ -1,5 +1,5 @@
 <template>
-    <v-dialog :value="true" persistent max-width="600px" @on-close="closeModal()">
+    <v-dialog :value="true" persistent max-width="600px" @on-close="closeModal(false)">
         <v-card>
             <v-toolbar
                 dense
@@ -13,7 +13,7 @@
                 <v-toolbar-items>
                     <v-btn
                         icon
-                        @click="closeModal()"
+                        @click="closeModal(false)"
                     >
                         <v-icon>
                             close
@@ -76,26 +76,37 @@ module.exports = {
         }
     },
     methods: {
-        closeModal: function () {
+        closeModal: function (result) {
             var self = this;
-            self.$emit('on-close-edit-modal');
+            self.$emit('on-close-edit-modal',result);
         },
         uploadFile:function(){
-
+            var self=this
             if(this.formData.file!=null&&this.formData.file.type=="application/x-php"){
-
-                var config = {
-                    "Content-Type": 'multipart/form-data'
-                }
 
                 var formData = new FormData();
                 formData.append("task_upload", this.formData.file);
                 formData.append("task_destination_path", this.formData.path);
-                formData.append("can_rewrite", this.formData.rewrite);
+                formData.append("can_rewrite", this.formData.rewrite ? 'Y' : 'N');
 
                 Utils.fileUpload("/task/upload", formData)
                 .then(function (response) {
-                    console.log(response)
+                    if(response.data.result){
+                        Swal.fire({
+                            title: 'Task uploaded',
+                            text: response.data.result_msg,
+                            type: 'success',
+                            onClose: () => {
+                                self.closeModal(true)
+                            }
+                        })
+                    }else{
+                        Swal.fire({
+                            title: 'ERROR',
+                            text: response.data.result_msg,
+                            type: 'error'
+                        })
+                    }
                 });
 
             }else{
@@ -136,12 +147,10 @@ module.exports = {
         var self=this
         Utils.apiCall("get", "/task/group")
         .then(function (response) {
-            // console.log(response)
             self.items.push('/')
             if(response.data.length==1){
                 self.getChildren(response.data[0],self.items)
             }
-            // console.log(self.items)
         });
     },
 }
