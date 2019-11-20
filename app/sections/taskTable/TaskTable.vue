@@ -96,7 +96,6 @@
                 </template>
 
             </v-data-table>
-            <v-card-actions style="padding-top:50px;"></v-card-actions>
 
         </v-card>
 

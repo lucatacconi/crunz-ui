@@ -1,17 +1,18 @@
 <template>
     <v-speed-dial
         absolute
+        fixed
         bottom
         right
         direction="left"
         transition="slide-y-reverse-transition"
+        style="margin-bottom:30px;"
     >
         <template v-slot:activator>
             <v-btn
                 color="blue darken-2"
                 dark
                 fab
-                style="margin-right:26px;margin-bottom:12px;"
             >
                 <v-icon>fa fa-cog</v-icon>
             </v-btn>
