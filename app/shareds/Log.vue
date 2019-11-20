@@ -28,7 +28,7 @@
                         <v-row>
                             <v-col class="pa-0" cols="12">
                                 <span class="subtitle-1">
-                                    Path: {{logdata.task_path}}
+                                    Path: {{logdata.path}}
                                 </span>
                                 <br>
                                 <span class="subtitle-1">
@@ -198,10 +198,10 @@ module.exports = {
                 }
                 Utils.apiCall("get", "/task/exec-outcome",params)
                 .then(function (response) {
-                    response.data.task_path=self.logdata.path
-                    response.data.task_start=self.logdata.execution
-                    response.data.task_stop=self.logdata.duration
-                    response.data.outcome=self.logdata.outcome
+                    self.logdata.path=response.data.task_path
+                    self.logdata.execution=response.data.task_start
+                    self.logdata.duration=response.data.task_stop
+                    self.logdata.outcome=response.data.outcome
                     if(response.data.log_content!=""){
                         self.logdata.crunzLog_content=window.atob(response.data.log_content)
                         self.initEditor('crunz-log')
