@@ -24,7 +24,7 @@
 
         <v-card>
             <v-row class="fill-height">
-                <v-col>
+                <v-col class="pt-0 pb-0">
                     <v-sheet height="64">
                         <v-toolbar flat color="white">
                             <v-btn outlined class="mr-4" @click="setToday">
@@ -109,7 +109,6 @@
                     </v-sheet>
                 </v-col>
             </v-row>
-            <v-card-actions style="padding-top:70px;"></v-card-actions>
 
         </v-card>
 
