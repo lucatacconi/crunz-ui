@@ -503,7 +503,7 @@ $app->group('/task', function () use ($app) {
                 $aEXEC["task_stop"] = $task_stop->format('Y-m-d H:i');
 
                 if($aEXEC["task_start"] == $aEXEC["task_stop"]){
-                    $aEXEC["task_stop"] = date("H:i", strtotime('+1 minutes', $aEXEC["task_stop"]));
+                    $aEXEC["task_stop"] = date("Y-m-d H:i", strtotime($aEXEC["task_stop"]. '+1 minutes'));
                 }
 
                 $aEXEC["duration"] = $duration;
