@@ -82,7 +82,7 @@
                                     <v-btn
                                         icon
                                         @click="openLogModal(selectedEvent)"
-                                        v-if="selectedEvent.data!=undefined ? checkLog(selectedEvent) : false"
+                                        v-if="checkLog(selectedEvent)"
                                     >
                                         <v-icon>fas fa-file-alt</v-icon>
                                     </v-btn>
@@ -139,10 +139,8 @@ module.exports = {
     },
     methods: {
         checkLog:function(event){
-            for(var i=0;i<event.data.executed_task_lst.length;i++){
-                if(event.start==event.data.executed_task_lst[i]){
-                    return true
-                }
+            if(event.start<moment().format('YYYY-MM-DD HH:mm:ss')){
+                return true
             }
             return false
         },
