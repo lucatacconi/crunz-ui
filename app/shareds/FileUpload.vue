@@ -21,6 +21,7 @@
                     </v-btn>
                 </v-toolbar-items>
             </v-toolbar>
+
             <v-card-text class="px-8 pb-0">
                 <v-select
                     dense
@@ -49,6 +50,7 @@
                     Upload file
                 </v-btn>
             </v-card-actions>
+
         </v-card>
     </v-dialog>
 </template>
@@ -82,7 +84,7 @@ module.exports = {
         },
         uploadFile:function(){
             var self=this
-            if(this.formData.file!=null&&this.formData.file.type=="application/x-php"){
+            if(this.formData.file != null && this.formData.file.type == "application/x-php"){
 
                 var formData = new FormData();
                 formData.append("task_upload", this.formData.file);
@@ -111,9 +113,9 @@ module.exports = {
 
             }else{
                 var txt=""
-                if(this.formData.file==null){
+                if(this.formData.file == null){
                     txt+="<br>File not selected"
-                }else if(this.formData.file.type!='application/x-php'){
+                }else if(this.formData.file.type != 'application/x-php'){
                     txt+="<br>Type file wrong"
                 }
                 Swal.fire({
@@ -135,8 +137,8 @@ module.exports = {
             }
         },
         getChildren:function(data,result){
-            if(data.children!=undefined){
-                for(var i=0;i<data.children.length;i++){
+            if(data.children != undefined){
+                for(var i=0; i<data.children.length; i++){
                     this.getChildren(data.children[i],result)
                     if(!data.children[i].disabled){
                         result.push(data.children[i].subdir)
@@ -150,7 +152,7 @@ module.exports = {
         Utils.apiCall("get", "/task/group")
         .then(function (response) {
             self.items.push('/')
-            if(response.data.length==1){
+            if(response.data.length == 1){
                 self.getChildren(response.data[0],self.items)
             }
         });

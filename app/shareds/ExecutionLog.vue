@@ -7,7 +7,7 @@
                 color="#607d8b"
             >
                 <v-toolbar-title>
-                    {{modalTitle}}
+                    Task execution log
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-toolbar-items>
@@ -22,62 +22,107 @@
                 </v-toolbar-items>
             </v-toolbar>
 
-            <v-card-text class="pt-5">
+            <v-card-text class="pt-0">
                 <v-form>
-                    <v-container class="pt-0">
+                    <v-container>
+
                         <v-row>
-                            <v-col class="pa-0" cols="12">
-                                <span class="subtitle-1">
-                                    Path: {{logdata.path}}
-                                </span>
-                                <br>
-                                <span class="subtitle-1">
-                                    Execution: {{logdata.execution}}
-                                </span>
-                                <br>
-                                <span class="subtitle-1">
-                                    Duration: {{logdata.duration}}
-                                </span>
-                                <br>
-                                <span class="subtitle-1">
-                                    Execution outcome: {{logdata.outcome}}
-                                </span>
-                                <v-card>
-                                    <strong>Crunz log</strong>
-                                    <div id="crunz-log"></div>
-                                    <v-card-actions>
+                            <v-col cols="6" class="py-0">
+                                <v-text-field
+                                    label="Path:"
+                                    :value="logdata.path"
+                                    readonly
+                                    dense
+                                    hide-details
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="6" class="py-0">
+                                <v-text-field
+                                    label="Execution date and time:"
+                                    :value="logdata.execution"
+                                    readonly
+                                    dense
+                                    hide-details
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols="6" class="py-0">
+                                <v-text-field
+                                    label="Duration (minutes):"
+                                    :value="( logdata.duration == 0 ? '&lt;1' : logdata.duration )"
+                                    readonly
+                                    dense
+                                    hide-details
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="6" class="py-0">
+                                <v-text-field
+                                    label="Execution outcome:"
+                                    :value="( logdata.outcome == 'OK' ? 'Success' : 'Failed')"
+                                    readonly
+                                    dense
+                                    hide-details
+                                    :error="( logdata.outcome == 'OK' ? false : true)"
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col class="py-0 pt-5" cols="12">
+                                <v-card
+                                    outlined
+                                >
+                                    <v-toolbar
+                                        dense
+                                        flat
+                                        tile
+                                    >
+                                        <v-toolbar-title>Standard log content</v-toolbar-title>
                                         <v-spacer></v-spacer>
                                         <v-btn
-                                            color="blue"
-                                            dark
-                                            x-small
+                                            icon
                                             @click="copyToClipboard('crunz-log')"
                                         >
-                                            Copy to clipboard
+                                            <v-icon>mdi-content-duplicate</v-icon>
                                         </v-btn>
-                                    </v-card-actions>
+                                    </v-toolbar>
+
+                                    <v-card-text class="pa-0">
+                                        <div id="crunz-log"></div>
+                                    </v-card-text>
                                 </v-card>
                             </v-col>
                         </v-row>
+
                         <v-row v-if="logdata.customLog_content!=''">
                             <v-col cols="12">
-                                <v-card>
-                                    <strong>Custom log</strong>
-                                    <div id="custom-log"></div>
-                                    <v-card-actions>
+                                <v-card
+                                    outlined
+                                >
+                                    <v-toolbar
+                                        dense
+                                        flat
+                                        tile
+                                    >
+                                        <v-toolbar-title>Custom log content</v-toolbar-title>
                                         <v-spacer></v-spacer>
                                         <v-btn
-                                            color="blue"
-                                            dark
-                                            x-small
+                                            icon
                                             @click="copyToClipboard('custom-log')"
                                         >
-                                            Copy to clipboard
+                                            <v-icon>mdi-content-duplicate</v-icon>
                                         </v-btn>
-                                    </v-card-actions>
+                                    </v-toolbar>
+
+                                    <v-card-text class="pa-0">
+                                        <div id="custom-log"></div>
+                                    </v-card-text>
                                 </v-card>
                             </v-col>
                         </v-row>
+
                     </v-container>
                 <v-form>
             </v-card-text>
@@ -89,7 +134,6 @@
 module.exports = {
     data:function(){
         return{
-            modalTitle:"Task execution log",
             logdata: {
                 path:"",
                 execution:"",
@@ -98,65 +142,38 @@ module.exports = {
                 crunzLog_content : "",
                 customLog_content : ""
             },
-            crunzLog : null,
-            customLog : null
+
+            crunzLogEditor : null,
+            customLogEditor : null
         }
     },
 
     props: ['rowdata'],
 
-    created:function() {
+    mounted:function() {
         if(this.rowdata){
             this.readData()
         }
     },
-
-    mounted: function () {
-        var self = this;
-
-
-        // self.crunzLog = ace.edit("crunz-log");
-        // // self.crunzLog.setTheme("ace/theme/eclipse");
-        // self.crunzLog.getSession().setMode("ace/mode/text");
-
-        // self.crunzLog.setOptions({
-        //     showPrintMargin: false,
-        //     fontSize: 14
-        // });
-
-        // // self.crunzLog.session.setValue("self.crunzLog");
-
-
-        // self.customLog = ace.edit("custom-log");
-        // // self.customLog.setTheme("ace/theme/eclipse");
-        // self.customLog.getSession().setMode("ace/mode/text");
-
-        // self.customLog.setOptions({
-        //     showPrintMargin: false,
-        //     fontSize: 14
-        // });
-
-        // self.customLog.session.setValue("self.customLog");
-
-    },
-
 
     methods: {
         closeModal: function () {
             var self = this;
             self.$emit('on-close-edit-modal');
         },
+
         initEditor:function(editor){
-            var ed=""
-            var content=""
+            var ed = "";
+            var content = "";
+
             if(editor=="crunz-log"){
-                content=this.logdata.crunzLog_content
+                content = this.logdata.crunzLog_content;
             }
             if(editor=="custom-log"){
-                content=this.logdata.customLog_content
+                content = this.logdata.customLog_content;
             }
+
             ed = ace.edit(editor);
-            // ed.setTheme("ace/theme/eclipse");
             ed.getSession().setMode("ace/mode/text");
 
             ed.setOptions({
@@ -167,58 +184,62 @@ module.exports = {
             ed.session.setValue(content);
 
             if(editor=="crunz-log"){
-                this.crunzLog=ed
+                this.crunzLogEditor = ed;
             }
             if(editor=="custom-log"){
-                this.customLog=ed
+                this.customLogEditor = ed;
             }
         },
+
         copyToClipboard:function(editor){
             var ed=""
-            if(editor=="crunz-log"){
-                ed=this.crunzLog
+            if(editor == "crunz-log"){
+                ed = this.crunzLogEditor;
             }
-            if(editor=="custom-log"){
-                ed=this.customLog
+            if(editor == "custom-log"){
+                ed = this.customLogEditor;
             }
             if(ed!=""){
                 var sel = ed.selection.toJSON();
                 ed.selectAll();
                 ed.focus();
-                // console.log(ed.session.getTextRange(ed.getSelectionRange()))
                 document.execCommand('copy');
                 ed.selection.fromJSON(sel);
             }
         },
+
         readData:function(){
-            var self=this
-            if(self.rowdata.task_path!=undefined){
-                var params={
-                    TASK_PATH:self.rowdata.task_path
-                }
-                Utils.apiCall("get", "/task/exec-outcome",params)
-                .then(function (response) {
-                    self.logdata.path=response.data.task_path
-                    self.logdata.execution=response.data.task_start
-                    self.logdata.duration=response.data.task_stop
-                    self.logdata.outcome=response.data.outcome
-                    if(response.data.log_content!=""){
-                        self.logdata.crunzLog_content=window.atob(response.data.log_content)
-                        self.initEditor('crunz-log')
+            var self=this;
+
+            var apiParam = {
+                "task_path": self.rowdata.task_path
+            }
+
+            Utils.apiCall("get", "/task/exec-outcome",apiParam)
+            .then(function (response) {
+
+                if( typeof response === 'undefined' || response === null ){
+                    Utils.showConnError();
+                }else{
+                    self.logdata.path = response.data.task_path;
+                    self.logdata.execution = response.data.task_start;
+                    self.logdata.duration = response.data.duration;
+                    self.logdata.outcome = response.data.outcome;
+
+                    if(response.data.log_content != ""){
+                        self.logdata.crunzLog_content = window.atob(response.data.log_content);
+                        setTimeout(function(){
+                            self.initEditor('crunz-log');
+                        }, 200);
                     }
-                    if(response.data.custom_log_content!=""){
-                        self.logdata.customLog_content=window.atob(response.data.custom_log_content)
+                    if(response.data.custom_log_content != ""){
+                        self.logdata.customLog_content = window.atob(response.data.custom_log_content);
                         setTimeout(function(){
                             self.initEditor('custom-log')
                         }, 200);
                     }
-                });
-            }else{
-                self.logdata.crunzLog_content=window.atob(self.rowdata)
-                setTimeout(function(){
-                    self.initEditor('crunz-log')
-                }, 200);
-            }
+                }
+            });
         },
     },
 }
