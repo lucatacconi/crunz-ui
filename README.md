@@ -1,4 +1,31 @@
-# Crunz-ui
+# Crunz-Ui
+
+Crunz-Ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and is proposed as its graphical interface, to make its use more accessible and easy to use.
+
+## What Crunz is and how Crunz-ui connects to it
+
+Crunz is an application that allows user to schedule tasks natively written in PHP, programming dates and time of start, interval of execution and conditions of execution and init.
+
+You can find details on Crunz and how to write tasks to the following address:
+**https://github.com/lavary/crunz**
+
+```php
+<?php
+// tasks/backupTasks.php
+
+use Crunz\Schedule;
+
+$schedule = new Schedule();
+$task = $schedule->run('cp project project-bk');
+$task->daily();
+
+return $schedule;
+```
+
+Crunz-Ui natively uses Crunz libraries and functions to read and interpret the configured tasks.
+
+Then it presents tasks in a tabular and graphic display.
+
 
 
 ## System Requirements
