@@ -211,11 +211,11 @@ module.exports = {
         readData:function(){
             var self=this;
 
-            var apiParam = {
+            var apiParams = {
                 "task_path": self.rowdata.task_path
             }
 
-            Utils.apiCall("get", "/task/exec-outcome",apiParam)
+            Utils.apiCall("get", "/task/exec-outcome", apiParams)
             .then(function (response) {
 
                 if( typeof response === 'undefined' || response === null ){

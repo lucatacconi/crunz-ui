@@ -148,7 +148,7 @@ module.exports = {
             });
         },
 
-        openUploadModal: function (rowdata) {
+        openUploadModal: function () {
             this.showUploadModal = true;
         },
         closeUploadModal: function (result) {
@@ -214,7 +214,7 @@ module.exports = {
             .then(function (response) {
                 if(response.data.result){
                     if(wait){
-                        self.openLogModal(response.data.log_content)
+                        self.openLogModal(response.data)
                         self.readData()
                     }else{
                         Swal.fire({
