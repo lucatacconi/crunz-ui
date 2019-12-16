@@ -279,7 +279,6 @@ module.exports = {
 
         showEvent ({ nativeEvent, event }) {
             const open = () => {
-                console.log(event)
                 this.selectedEvent = event
                 this.selectedElement = nativeEvent.target
                 setTimeout(() => this.selectedOpen = true, 10)

@@ -55,7 +55,7 @@
                                                     <v-list-item-icon><v-icon small>fa fa-folder-open</v-icon></v-list-item-icon>
                                                     <v-list-item-title>View last log</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="alert('download task')">
+                                                <v-list-item @click="downloadTask(item,i)">
                                                     <v-list-item-icon><v-icon small>fa-download </v-icon></v-list-item-icon>
                                                     <v-list-item-title>Download task</v-list-item-title>
                                                 </v-list-item>
@@ -153,8 +153,11 @@ module.exports = {
     methods: {
         readData:function(){
             var self=this
+            var params={
+                "return_task_cont": "Y",
+            }
             self.message="Loading tasks"
-            Utils.apiCall("get", "/task/")
+            Utils.apiCall("get", "/task/",params)
             .then(function (response) {
                 if(response.data.length!=0){
                     self.files=JSON.parse(JSON.stringify(response.data))
@@ -162,6 +165,29 @@ module.exports = {
                     self.message="No tasks found on server. Check tasks directory path."
                 }
             });
+        },
+
+        downloadTask:function(rowdata){
+            if(rowdata.task_content!=''&&rowdata.filename!=''){
+                if(rowdata.task_content==''){
+                    Swal.fire({
+                        title: 'Task content empty',
+                        text: "Task content is empty",
+                        type: 'error',
+                    })
+                    return
+                }
+                if(rowdata.filename==''){
+                    Swal.fire({
+                        title: 'Filename empty',
+                        text: "Filename is empty",
+                        type: 'error',
+                    })
+                    return
+                }
+                var dec=atob(rowdata.task_content)
+                Utils.downloadFile(dec,rowdata.filename)
+            }
         },
 
         openUploadModal: function () {
