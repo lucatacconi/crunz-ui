@@ -148,7 +148,7 @@ module.exports = {
             }
 
             ed = ace.edit(editor);
-            ed.getSession().setMode("ace/mode/text");
+            ed.getSession().setMode("ace/mode/php");
 
             ed.setOptions({
                 showPrintMargin: false,
