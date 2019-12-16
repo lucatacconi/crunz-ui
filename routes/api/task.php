@@ -67,6 +67,11 @@ $app->group('/task', function () use ($app) {
             $calc_run_lst = $params["CALC_RUN_LST"];
         }
 
+        $return_task_content = "N";
+        if(!empty($params["RETURN_TASK_CONT"])){
+            $return_task_content = $params["RETURN_TASK_CONT"];
+        }
+
         $date_ref = date("Y-m-d H:i:s");
         if(!empty($params["DATE_REF"])){
             $date_ref = date($params["DATE_REF"]);
@@ -117,8 +122,8 @@ $app->group('/task', function () use ($app) {
         $task_counter = 0;
         foreach ($files as $taskFile) {
 
-            $file_content = file_get_contents($taskFile->getRealPath(), true);
-            $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content);
+            $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
+            $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content_orig);
 
             if(
                 strpos($file_content, 'use Crunz\Schedule;') === false ||
@@ -270,6 +275,10 @@ $app->group('/task', function () use ($app) {
                 preg_match($regex2, $file_content,$matches);
                 if(!empty($matches) && empty($custom_log)){
                     $custom_log = str_replace(array("'", "\""), '', $matches[1] );
+                }
+
+                if($return_task_content == "Y"){
+                    $row["task_content"] = base64_encode($file_content_orig);
                 }
 
                 $row["custom_log"] = $custom_log;
