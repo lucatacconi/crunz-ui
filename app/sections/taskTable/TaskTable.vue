@@ -15,6 +15,13 @@
             :rowdata="logData"
         ></task-log>
 
+        <!-- Edit modal -->
+        <task-edit
+            v-if="showEditModal"
+            @on-close-edit-modal="closeEditModal"
+            :rowdata="logData"
+        ></task-edit>
+
         <v-card>
             <v-data-table
                 :headers="headers"
@@ -47,6 +54,14 @@
                                                 <v-list-item @click="openLogModal(item, i)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
                                                     <v-list-item-icon><v-icon small>fa fa-folder-open</v-icon></v-list-item-icon>
                                                     <v-list-item-title>View last log</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item @click="alert('download task')">
+                                                    <v-list-item-icon><v-icon small>fa-download </v-icon></v-list-item-icon>
+                                                    <v-list-item-title>Download task</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item @click="openEditModal(item, i)">
+                                                    <v-list-item-icon><v-icon small>fa fa-search</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>View task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="deleteItem(item, i)">
                                                     <v-list-item-icon><v-icon small>fa fa-trash</v-icon></v-list-item-icon>
@@ -112,6 +127,7 @@ module.exports = {
             showUploadModal:false,
             showEditModal:false,
             showLogModal:false,
+            showEditModal:false,
             headers: [
                 {
                     text: '',
@@ -164,6 +180,14 @@ module.exports = {
         },
         closeLogModal: function () {
             this.showLogModal = false;
+        },
+
+        openEditModal: function (rowdata) {
+            this.showEditModal = true;
+            this.logData = rowdata!=undefined ? rowdata : false;
+        },
+        closeEditModal: function () {
+            this.showEditModal = false;
         },
 
         deleteItem: function (rowdata) {
@@ -241,7 +265,8 @@ module.exports = {
     components:{
         'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue' + '?v=' + new Date().getTime()),
         'task-upload': httpVueLoader('../../shareds/FileUpload(treeview).vue' + '?v=' + new Date().getTime()),
-        'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime())
+        'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime()),
+        'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime())
     }
 }
 </script>
