@@ -43,7 +43,7 @@
                                                 Task Action Menu
                                             </v-subheader>
                                             <v-list-item-group color="primary">
-                                                <v-list-item @click="executeItem(item, false)">
+                                                <v-list-item @click="executeItem(item, false)" class="pt-2">
                                                     <v-list-item-icon><v-icon small>fa fa-play</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Execute</v-list-item-title>
                                                 </v-list-item>
@@ -64,8 +64,8 @@
                                                     <v-list-item-title>View task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="deleteItem(item, i)">
-                                                    <v-list-item-icon><v-icon small>fa fa-trash</v-icon></v-list-item-icon>
-                                                    <v-list-item-title>Delete task</v-list-item-title>
+                                                    <v-list-item-icon><v-icon small color="red">fa fa-trash</v-icon></v-list-item-icon>
+                                                    <v-list-item-title > <span class="red--text">Delete task</span> </v-list-item-title>
                                                 </v-list-item>
                                             </v-list-item-group>
                                         </v-list>
