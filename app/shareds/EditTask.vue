@@ -79,45 +79,18 @@
                                         flat
                                         tile
                                     >
-                                        <v-toolbar-title>Standard log content</v-toolbar-title>
+                                        <v-toolbar-title>Task content</v-toolbar-title>
                                         <v-spacer></v-spacer>
                                         <v-btn
                                             icon
-                                            @click="copyToClipboard('crunz-log')"
+                                            @click="copyToClipboard('task-edit')"
                                         >
                                             <v-icon>mdi-content-duplicate</v-icon>
                                         </v-btn>
                                     </v-toolbar>
 
                                     <v-card-text class="pa-0">
-                                        <div id="crunz-log"></div>
-                                    </v-card-text>
-                                </v-card>
-                            </v-col>
-                        </v-row>
-
-                        <v-row v-if="logdata.customLog_content!=''">
-                            <v-col cols="12">
-                                <v-card
-                                    outlined
-                                >
-                                    <v-toolbar
-                                        dense
-                                        flat
-                                        tile
-                                    >
-                                        <v-toolbar-title>Custom log content</v-toolbar-title>
-                                        <v-spacer></v-spacer>
-                                        <v-btn
-                                            icon
-                                            @click="copyToClipboard('custom-log')"
-                                        >
-                                            <v-icon>mdi-content-duplicate</v-icon>
-                                        </v-btn>
-                                    </v-toolbar>
-
-                                    <v-card-text class="pa-0">
-                                        <div id="custom-log"></div>
+                                        <div id="task-edit"></div>
                                     </v-card-text>
                                 </v-card>
                             </v-col>
@@ -139,20 +112,24 @@ module.exports = {
                 execution:"",
                 duration:"",
                 outcome:"",
-                crunzLog_content : "",
-                customLog_content : ""
+                taskEdit_content : ""
             },
 
-            crunzLogEditor : null,
-            customLogEditor : null
+            taskEditEditor : null,
         }
     },
 
     props: ['rowdata'],
 
     mounted:function() {
+        var self=this
         if(this.rowdata){
-            this.readData()
+            if(this.rowdata.task_content!=''){
+                this.logdata.taskEdit_content=atob(this.rowdata.task_content)
+                setTimeout(function(){
+                    self.initEditor('task-edit');
+                }, 200);
+            }
         }
     },
 
@@ -166,11 +143,8 @@ module.exports = {
             var ed = "";
             var content = "";
 
-            if(editor=="crunz-log"){
-                content = this.logdata.crunzLog_content;
-            }
-            if(editor=="custom-log"){
-                content = this.logdata.customLog_content;
+            if(editor=="task-edit"){
+                content = this.logdata.taskEdit_content;
             }
 
             ed = ace.edit(editor);
@@ -183,21 +157,15 @@ module.exports = {
 
             ed.session.setValue(content);
 
-            if(editor=="crunz-log"){
-                this.crunzLogEditor = ed;
-            }
-            if(editor=="custom-log"){
-                this.customLogEditor = ed;
+            if(editor=="task-edit"){
+                this.taskEditEditor = ed;
             }
         },
 
         copyToClipboard:function(editor){
             var ed=""
-            if(editor == "crunz-log"){
-                ed = this.crunzLogEditor;
-            }
-            if(editor == "custom-log"){
-                ed = this.customLogEditor;
+            if(editor == "task-edit"){
+                ed = this.taskEditEditor;
             }
             if(ed!=""){
                 var sel = ed.selection.toJSON();
@@ -206,50 +174,14 @@ module.exports = {
                 document.execCommand('copy');
                 ed.selection.fromJSON(sel);
             }
-        },
+        }
 
-        readData:function(){
-            var self=this;
-
-            var apiParams = {
-                "task_path": self.rowdata.task_path
-            }
-
-            // Utils.apiCall("get", "/task/exec-outcome", apiParams)
-            // .then(function (response) {
-
-            //     if( typeof response === 'undefined' || response === null ){
-            //         Utils.showConnError();
-            //     }else{
-            //         self.logdata.path = response.data.task_path;
-            //         self.logdata.execution = response.data.task_start;
-            //         self.logdata.duration = response.data.duration;
-            //         self.logdata.outcome = response.data.outcome;
-
-            //         if(response.data.log_content != ""){
-            //             self.logdata.crunzLog_content = window.atob(response.data.log_content);
-            //             setTimeout(function(){
-            //                 self.initEditor('crunz-log');
-            //             }, 200);
-            //         }
-            //         if(response.data.custom_log_content != ""){
-            //             self.logdata.customLog_content = window.atob(response.data.custom_log_content);
-            //             setTimeout(function(){
-            //                 self.initEditor('custom-log')
-            //             }, 200);
-            //         }
-            //     }
-            // });
-        },
-    },
+    }
 }
 </script>
 
 <style>
-    #crunz-log {
-        height: 300px;
-    }
-    #custom-log {
+    #task-edit {
         height: 300px;
     }
 
