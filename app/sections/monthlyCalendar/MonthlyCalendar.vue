@@ -85,39 +85,97 @@
                                     </v-btn>
                                 </v-toolbar>
                                 <v-card-text>
-                                    <v-form>
-                                        <v-container>
-                                            <v-row>
-                                                <!-- <v-col cols="6" class="py-0">
-                                                    <v-text-field
-                                                        label="Path:"
-                                                        :value="selectedEvent.data.task_path"
-                                                        readonly
-                                                        dense
-                                                        hide-details
-                                                    ></v-text-field>
-                                                </v-col> -->
-                                                <!-- <v-col cols="6" class="py-0">
-                                                    <v-text-field
-                                                        label="Execution date and time:"
-                                                        :value="selectedEvent.data.execution"
-                                                        readonly
-                                                        dense
-                                                        hide-details
-                                                    ></v-text-field>
-                                                </v-col> -->
-                                            </v-row>
-                                        </v-container>
-                                    <v-form>
+                                    <v-layout class="pr-3 pl-3" row wrap justify-center>
+                                        <v-flex xs6>
+                                            <v-text-field
+                                            class="pr-1"
+                                            :value="selectedEvent.name"
+                                            label="Name"
+                                            readonly
+                                            ></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs6>
+                                            <v-text-field
+                                            class="pl-1"
+                                            :value="selectedEvent.details"
+                                            label="Details"
+                                            readonly
+                                            ></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs6>
+                                            <v-text-field
+                                            class="pr-1"
+                                            :value="selectedEvent.data!=undefined ? selectedEvent.data.expression_readable : ''"
+                                            label="Rules"
+                                            readonly
+                                            ></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs6>
+                                            <v-text-field
+                                            class="pl-1"
+                                            :value="selectedEvent.data!=undefined ? selectedEvent.data.task_path : ''"
+                                            label="Task path"
+                                            readonly
+                                            ></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs6>
+                                            <v-text-field
+                                            class="pr-1"
+                                            :value="selectedEvent.start"
+                                            label="Task start"
+                                            readonly
+                                            ></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs6>
+                                            <v-text-field
+                                            class="pl-1"
+                                            :value="selectedEvent.data!=undefined ? selectedEvent.data.last_run: ''"
+                                            label="Last run"
+                                            readonly
+                                            ></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs6>
+                                            <v-text-field
+                                            class="pr-1"
+                                            :value="selectedEvent.data!=undefined ? selectedEvent.data.last_duration : ''"
+                                            label="Last duration"
+                                            readonly
+                                            ></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs6>
+                                            <v-text-field
+                                            class="pl-1"
+                                            :value="selectedEvent.data!=undefined ? selectedEvent.data.next_run : ''"
+                                            label="Next run"
+                                            readonly
+                                            ></v-text-field>
+                                        </v-flex>
+                                    </v-layout>
 
-                                    <span>{{ JSON.stringify(selectedEvent) }}</span>
+                                    <!-- <span class="font-weight-black">Name: </span>
+                                    <span>{{ selectedEvent.name }}</span>
                                     <br>
-
+                                    <span>Details: </span>
                                     <span>{{ selectedEvent.details }}</span>
                                     <br>
-                                    <span>{{ selectedEvent.data!=undefined ? selectedEvent.data.expression_readable : '' }} {{ selectedEvent.data!=undefined ? selectedEvent.data.task_path : '' }}</span>
+                                    <span>Rules: </span>
+                                    <span>{{ selectedEvent.data!=undefined ? selectedEvent.data.expression_readable : '' }}</span>
                                     <br>
+                                    <span>Task path: </span>
+                                    <span>{{ selectedEvent.data!=undefined ? selectedEvent.data.task_path : ''}}</span>
+                                    <br>
+                                    <span>Task start: </span>
                                     <span>{{ selectedEvent.start }}</span>
+                                    <br>
+                                    <span>Last run: </span>
+                                    <span>{{ selectedEvent.data!=undefined ? selectedEvent.data.last_run: ''}}</span>
+                                    <br>
+                                    <span>Last duration: </span>
+                                    <span>{{ selectedEvent.data!=undefined ? selectedEvent.data.last_duration : ''}}</span>
+                                    <br>
+                                    <span>Next run: </span>
+                                    <span>{{ selectedEvent.data!=undefined ? selectedEvent.data.next_run : ''}}</span> -->
+
                                 </v-card-text>
                             </v-card>
                         </v-menu>
@@ -221,6 +279,7 @@ module.exports = {
 
         showEvent ({ nativeEvent, event }) {
             const open = () => {
+                console.log(event)
                 this.selectedEvent = event
                 this.selectedElement = nativeEvent.target
                 setTimeout(() => this.selectedOpen = true, 10)
