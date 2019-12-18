@@ -2,6 +2,7 @@
 
 Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and is proposed as its graphical interface, to make its use more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees its elastic and dynamic structure.
 
+
 ## What Crunz is and how Crunz-ui connects to it
 
 Crunz is an application that allows user to schedule tasks natively written in PHP, programming dates and time of start, interval of execution and conditions of execution and init.
@@ -25,6 +26,7 @@ Crunz-ui natively uses Crunz libraries and functions to read and interpret the c
 
 Then it presents tasks in a tabular or graphical display showing them on a monthly or daily view.
 
+
 ## What else can Crunz-ui do?
 
 In addition to displaying tasks in tabular or graphic format, Crunz-ui allows you to:
@@ -35,11 +37,9 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 * Forced run of the task, even outside the scheduled time with eventual display of the log once the execution is completed
 
 
-
-
-
 ## System Requirements
 
+* Linux OS
 * Web server with URL rewriting
 * PHP 7.1.3 or newer
 * Composer
