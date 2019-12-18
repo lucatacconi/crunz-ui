@@ -1,6 +1,6 @@
 # Crunz-Ui
 
-Crunz-Ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and is proposed as its graphical interface, to make its use more accessible and easy to use.
+Crunz-Ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and is proposed as its graphical interface, to make its use more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees its elastic and dynamic structure.
 
 ## What Crunz is and how Crunz-ui connects to it
 
