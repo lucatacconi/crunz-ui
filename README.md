@@ -1,6 +1,6 @@
-# Crunz-Ui
+# Crunz-ui
 
-Crunz-Ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and is proposed as its graphical interface, to make its use more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees its elastic and dynamic structure.
+Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and is proposed as its graphical interface, to make its use more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees its elastic and dynamic structure.
 
 ## What Crunz is and how Crunz-ui connects to it
 
@@ -21,9 +21,20 @@ $task->daily();
 return $schedule;
 ```
 
-Crunz-Ui natively uses Crunz libraries and functions to read and interpret the configured tasks.
+Crunz-ui natively uses Crunz libraries and functions to read and interpret the configured tasks.
 
-Then it presents tasks in a tabular and graphical display.
+Then it presents tasks in a tabular or graphical display showing them on a monthly or daily view.
+
+## What else can Crunz-ui do?
+
+In addition to displaying tasks in tabular or graphic format, Crunz-ui allows you to:
+* Load new tasks with an intuitive and simple file upload system
+* Download or view the content of the task via interface
+* Quick display of the execution result of the tasks that have been executed (Indicator icons easily show the result)
+* Display of the execution log of the tasks performed using the appropriate interface
+* Forced run of the task, even outside the scheduled time with eventual display of the log once the execution is completed
+
+
 
 
 
@@ -50,7 +61,7 @@ In any case it is possible to download the complete package from Github and proc
 
 
 
-## Usage on a prevus installation of Crunz
+## Usage on a previous installation of Crunz
 
 
 ## Never use Crunz before
