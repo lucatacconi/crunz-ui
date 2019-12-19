@@ -8,7 +8,7 @@ require '../vendor/autoload.php';
 $dotenv = new Dotenv\Dotenv("../");
 $dotenv->load();
 
-date_default_timezone_set(getenv("TIMEZONE"));
+// date_default_timezone_set(getenv("TIMEZONE"));
 
 
 $container_config = array();

@@ -1,0 +1,10 @@
+RewriteEngine On
+
+Options All -Indexes
+Options +FollowSymLinks
+ServerSignature Off
+
+<Files "*.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
