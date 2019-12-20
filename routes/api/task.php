@@ -19,6 +19,7 @@ foreach (glob(__DIR__ . '/../classes/*.php') as $filename){
 
 use CrunzUI\Task\CrunzUITaskGenerator;
 use Lorisleiva\CronTranslator\CronTranslator;
+use Symfony\Component\Yaml\Yaml;
 
 $app->group('/task', function () use ($app) {
 
@@ -36,11 +37,12 @@ $app->group('/task', function () use ($app) {
         $app_configs = $this->get('app_configs');
 
         foreach($app_configs["task_groups"] as $row_cnt => $row_data){
-            // if($only_active == 'Y' && !$row_data["disabled"]){
-            //     continue;
-            // }
 
-            // unset($row_data["disabled"]);
+            if($only_active == 'Y' && $row_data["disabled"]){
+                continue;
+            }
+
+            unset($row_data["disabled"]);
             $data[] = $row_data;
         }
 
@@ -96,18 +98,55 @@ $app->group('/task', function () use ($app) {
         }
 
 
-        if(empty(getenv("TASKS_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
-        if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
-
         $app_configs = $this->get('app_configs');
-        $base_tasks_path = getenv("TASKS_DIR"); //Must be absolute path on server
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty(getenv("CRUNZ_BASE_DIR"))){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty($crunz_config["timezone"])) throw new Exception("ERROR - Wrong timezone configuration");
+
+        date_default_timezone_set($crunz_config["timezone"]);
+
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        $TASK_SUFFIX = $crunz_config["suffix"];
+
+        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        }else{
+            $LOGS_DIR = getenv("LOGS_DIR");
+        }
+
+        if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
+        if(!is_writable($LOGS_DIR)) throw new Exception('ERROR - Logs directory not writable');
+
+
+
+        $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
 
         $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
         $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
 
 
-        $quotedSuffix = \preg_quote(getenv("TASK_SUFFIX"), '/');
+        $quotedSuffix = \preg_quote($TASK_SUFFIX, '/');
         $regexIterator = new \RegexIterator( $recursiveIterator, "/^.+{$quotedSuffix}$/i", \RecursiveRegexIterator::GET_MATCH );
 
         $files = \array_map(
@@ -128,8 +167,15 @@ $app->group('/task', function () use ($app) {
             if(
                 strpos($file_content, 'use Crunz\Schedule;') === false ||
                 strpos($file_content, '= new Schedule()') === false ||
-                strpos($file_content, '->run(') === false
+                strpos($file_content, '->run(') === false ||
+                strpos($file_content, 'return $schedule;') === false
             ){
+                continue;
+            }
+
+            $file_check_result = exec("php -l ".$taskFile->getRealPath());
+            if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                //Syntax error in file
                 continue;
             }
 
@@ -155,8 +201,8 @@ $app->group('/task', function () use ($app) {
 
                 $row["filename"] = $taskFile->getFilename();
                 $row["real_path"] = $taskFile->getRealPath();
-                $row["subdir"] = str_replace( array( getenv("TASKS_DIR"), $row["filename"]),'',$row["real_path"]);
-                $row["task_path"] = str_replace(getenv("TASKS_DIR"), '', $row["real_path"]);
+                $row["subdir"] = str_replace( array( $TASKS_DIR, $row["filename"]),'',$row["real_path"]);
+                $row["task_path"] = str_replace($TASKS_DIR, '', $row["real_path"]);
 
                 if(!empty($params["TASK_PATH"])){
                     if($row["task_path"] != $params["TASK_PATH"]){
@@ -291,11 +337,9 @@ $app->group('/task', function () use ($app) {
                 $row["executed_task_lst"] = [];
 
 
-
-
                 $log_name = rtrim( ltrim($row["task_path"],"/"), ".php" );
                 $log_name = str_replace("/", "", $log_name);
-                $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name."*.log"); //task_OK_20191001100_20191001110_XXXX.log | task_KO_20191001100_20191001110_XXXX.log
+                $aLOGNAME = glob($LOGS_DIR."/".$log_name."*.log"); //task_OK_20191001100_20191001110_XXXX.log | task_KO_20191001100_20191001110_XXXX.log
 
                 if(!empty($aLOGNAME)){
                     usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
@@ -306,7 +350,7 @@ $app->group('/task', function () use ($app) {
                     //3 End datetime
                     //4 Seed
 
-                    $aLASTLOG =explode('_', str_replace(getenv("LOGS_DIR")."/", "", $aLOGNAME[0]));
+                    $aLASTLOG =explode('_', str_replace($LOGS_DIR."/", "", $aLOGNAME[0]));
 
                     $row["last_outcome"] = $aLASTLOG[1];
 
@@ -319,14 +363,14 @@ $app->group('/task', function () use ($app) {
 
                     if($calc_run_lst == "Y"){
                         foreach( $aLOGNAME as $aLOGNAME_key => $LOGFOCUS ){
-                            $aLOGFOCUS =explode('_', str_replace(getenv("LOGS_DIR")."/", "", $LOGFOCUS));
+                            $aLOGFOCUS =explode('_', str_replace($LOGS_DIR."/", "", $LOGFOCUS));
                             $task_start = DateTime::createFromFormat('YmdHi', $aLOGFOCUS[2]);
                             $task_stop = DateTime::createFromFormat('YmdHi', $aLOGFOCUS[3]);
                             $row["executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $task_stop->format('Y-m-d H:i:s');
                         }
                     }
 
-                    $aFIRSTLOG = explode('_', str_replace(getenv("LOGS_DIR")."/", "", end($aLOGNAME)));
+                    $aFIRSTLOG = explode('_', str_replace($LOGS_DIR."/", "", end($aLOGNAME)));
                     $task_start = DateTime::createFromFormat('YmdHi', $aFIRSTLOG[2]);
 
                     if($event_interval_from < $task_start->format('Y-m-d H:i:s')){
@@ -408,12 +452,50 @@ $app->group('/task', function () use ($app) {
 
         $params = array_change_key_case($request->getParams(), CASE_UPPER);
 
-        if(empty(getenv("TASKS_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
-        if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
 
         $app_configs = $this->get('app_configs');
-        $base_tasks_path = getenv("TASKS_DIR"); //Must be absolute path on server
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty(getenv("CRUNZ_BASE_DIR"))){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty($crunz_config["timezone"])) throw new Exception("ERROR - Wrong timezone configuration");
+
+        date_default_timezone_set($crunz_config["timezone"]);
+
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        $TASK_SUFFIX = $crunz_config["suffix"];
+
+        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        }else{
+            $LOGS_DIR = getenv("LOGS_DIR");
+        }
+
+        if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
+        if(!is_writable($LOGS_DIR)) throw new Exception('ERROR - Logs directory not writable');
+
+
+
+        $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
 
         if( empty($params["TASK_PATH"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No task path or task ID submitted");
 
@@ -422,7 +504,7 @@ $app->group('/task', function () use ($app) {
         $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
 
 
-        $quotedSuffix = \preg_quote(getenv("TASK_SUFFIX"), '/');
+        $quotedSuffix = \preg_quote($TASK_SUFFIX, '/');
         $regexIterator = new \RegexIterator( $recursiveIterator, "/^.+{$quotedSuffix}$/i", \RecursiveRegexIterator::GET_MATCH );
 
         $files = \array_map(
@@ -454,8 +536,8 @@ $app->group('/task', function () use ($app) {
 
                 $task_filename = $taskFile->getFilename();
                 $task_real_path = $taskFile->getRealPath();
-                $task_subdir = str_replace( array( getenv("TASKS_DIR"), $task_filename),'',$task_real_path);
-                $task_path = str_replace(getenv("TASKS_DIR"), '', $task_real_path);
+                $task_subdir = str_replace( array( $TASKS_DIR, $task_filename),'',$task_real_path);
+                $task_path = str_replace($TASKS_DIR, '', $task_real_path);
 
                 if(!empty($params["TASK_PATH"])){
                     if($task_path != $params["TASK_PATH"]){
@@ -479,10 +561,10 @@ $app->group('/task', function () use ($app) {
                     $datetime_ref = date('YmdHi', $datetime_ref);
 
                     $log_name_filter = $log_name."_*_".$datetime_ref."_*_*";
-                    $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name_filter.".log");
+                    $aLOGNAME = glob($LOGS_DIR."/".$log_name_filter.".log");
 
                 }else{
-                    $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name."*.log");
+                    $aLOGNAME = glob($LOGS_DIR."/".$log_name."*.log");
                 }
 
                 if(!empty($aLOGNAME)){
@@ -494,7 +576,7 @@ $app->group('/task', function () use ($app) {
                     //3 End datetime
                     //4 Seed
 
-                    $aFOCUSLOG =explode('_', str_replace(getenv("LOGS_DIR")."/", "", $aLOGNAME[0]));
+                    $aFOCUSLOG =explode('_', str_replace($LOGS_DIR."/", "", $aLOGNAME[0]));
 
                     $absolute_path = $aLOGNAME[0];
                     $outcome = $aFOCUSLOG[1];
@@ -594,18 +676,51 @@ $app->group('/task', function () use ($app) {
             $exec_and_wait = $params["EXEC_AND_WAIT"];
         }
 
-        if(empty(getenv("TASKS_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
-        if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
-
         $app_configs = $this->get('app_configs');
         $base_path =$app_configs["paths"]["base_path"];
-        $base_tasks_path = getenv("TASKS_DIR"); //Must be absolute path on server
 
-        if( empty($params["TASK_PATH"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No task path or task ID to execute submitted");
+        if(empty(getenv("CRUNZ_BASE_DIR"))){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty($crunz_config["timezone"])) throw new Exception("ERROR - Wrong timezone configuration");
+
+        date_default_timezone_set($crunz_config["timezone"]);
+
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        $TASK_SUFFIX = $crunz_config["suffix"];
 
         if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
-        if(!is_dir(getenv("LOGS_DIR"))) throw new Exception('ERROR - Log destination path not exist');
-        if(!is_writable(getenv("LOGS_DIR"))) throw new Exception('ERROR - Log directory not writable');
+
+        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        }else{
+            $LOGS_DIR = getenv("LOGS_DIR");
+        }
+
+        if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
+        if(!is_writable($LOGS_DIR)) throw new Exception('ERROR - Logs directory not writable');
+
+
+
+        $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
+
+        if( empty($params["TASK_PATH"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No task path or task ID to execute submitted");
 
 
         //File compliance check
@@ -615,8 +730,8 @@ $app->group('/task', function () use ($app) {
 
             if(
                 strpos($path_check, '.') !== false ||
-                substr($params["TASK_PATH"], - strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
-                strpos($path_check, getenv("TASKS_DIR") === false)
+                substr($params["TASK_PATH"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ||
+                strpos($path_check, $TASKS_DIR === false)
             ){
                 throw new Exception("ERROR - Task path out of range");
             }
@@ -628,7 +743,7 @@ $app->group('/task', function () use ($app) {
         $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
 
 
-        $quotedSuffix = \preg_quote(getenv("TASK_SUFFIX"), '/');
+        $quotedSuffix = \preg_quote($TASK_SUFFIX, '/');
         $regexIterator = new \RegexIterator( $recursiveIterator, "/^.+{$quotedSuffix}$/i", \RecursiveRegexIterator::GET_MATCH );
 
         $files = \array_map(
@@ -646,7 +761,7 @@ $app->group('/task', function () use ($app) {
 
         foreach($files as $task_path => $task_data){
 
-            $task_path =  str_replace(getenv("TASKS_DIR"), '', $task_path);
+            $task_path =  str_replace($TASKS_DIR, '', $task_path);
 
             if(!empty($params["TASK_ID"])){
                 if($params["TASK_ID"] == $task_id){
@@ -665,16 +780,15 @@ $app->group('/task', function () use ($app) {
             $task_id++;
         }
 
-         if($task_founded && !empty($task_path_founded)){
+        if($task_founded && !empty($task_path_founded)){
 
             $aEXEC["task_path"] = $task_path;
             $aEXEC["task_id"] = $task_id;
             $aEXEC["task_founded"] = $task_founded;
             $aEXEC["task_wait"] = $exec_and_wait;
 
-
             try {
-                shell_exec("cd $base_tasks_path && cd .. && ./crunz-ui.sh -f -t $task_id > /dev/null 2>&1 & ");
+                shell_exec("cd $base_tasks_path && cd .. && ./crunz-ui.sh -f -t $task_id -l $LOGS_DIR > /dev/null 2>&1 & ");
 
                 $aEXEC["result"] = true;
                 $aEXEC["result_msg"] = '';
@@ -700,7 +814,7 @@ $app->group('/task', function () use ($app) {
 
                     $round_cnt++;
 
-                    $aLOGNAME = glob(getenv("LOGS_DIR")."/".$log_name_filter.".log");
+                    $aLOGNAME = glob($LOGS_DIR."/".$log_name_filter.".log");
 
                     if(!empty($aLOGNAME)){
                         usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
@@ -747,15 +861,52 @@ $app->group('/task', function () use ($app) {
 
         $params = array_change_key_case($request->getParams(), CASE_UPPER);
 
-        if(empty(getenv("TASKS_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
-        if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
-
-        if(!is_writable(getenv("TASKS_DIR"))) throw new Exception('ERROR - Tasks directory not writable');
-        if(!is_writable(getenv("LOGS_DIR"))) throw new Exception('ERROR - Logs directory not writable');
 
         $app_configs = $this->get('app_configs');
         $base_path =$app_configs["paths"]["base_path"];
-        $base_tasks_path = getenv("TASKS_DIR"); //Must be absolute path on server
+
+        if(empty(getenv("CRUNZ_BASE_DIR"))){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty($crunz_config["timezone"])) throw new Exception("ERROR - Wrong timezone configuration");
+
+        date_default_timezone_set($crunz_config["timezone"]);
+
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        $TASK_SUFFIX = $crunz_config["suffix"];
+
+        if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
+
+        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        }else{
+            $LOGS_DIR = getenv("LOGS_DIR");
+        }
+
+        if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
+        if(!is_writable($LOGS_DIR)) throw new Exception('ERROR - Logs directory not writable');
+
+
+        $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
+
 
         $can_rewrite = "N";
         if(!empty($params["CAN_REWRITE"])){
@@ -789,7 +940,7 @@ $app->group('/task', function () use ($app) {
 
         if( empty($_FILES["TASK_UPLOAD"]["name"]) ) throw new Exception("ERROR - No task file name submitted");
 
-        if( substr($_FILES["TASK_UPLOAD"]["name"], - strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ) throw new Exception("ERROR - Task file must end with '".getenv("TASK_SUFFIX")."'");
+        if( substr($_FILES["TASK_UPLOAD"]["name"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ) throw new Exception("ERROR - Task file must end with '".$TASK_SUFFIX."'");
 
 
         $accepted_file_ext = ["php"];
@@ -838,14 +989,50 @@ $app->group('/task', function () use ($app) {
 
         $params = array_change_key_case($request->getParams(), CASE_UPPER);
 
-        if(empty(getenv("TASKS_DIR"))) throw new Exception("ERROR - Tasks directory configuration empty");
-        if(empty(getenv("TASK_SUFFIX"))) throw new Exception("ERROR - Wrong tasks configuration");
-
-        if(!is_writable(getenv("TASKS_DIR"))) throw new Exception('ERROR - Tasks directory not writable');
-        if(!is_writable(getenv("LOGS_DIR"))) throw new Exception('ERROR - Logs directory not writable');
-
         $app_configs = $this->get('app_configs');
-        $base_tasks_path = getenv("TASKS_DIR"); //Must be absolute path on server
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty(getenv("CRUNZ_BASE_DIR"))){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty($crunz_config["timezone"])) throw new Exception("ERROR - Wrong timezone configuration");
+
+        date_default_timezone_set($crunz_config["timezone"]);
+
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        $TASK_SUFFIX = $crunz_config["suffix"];
+
+        if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
+
+        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        }else{
+            $LOGS_DIR = getenv("LOGS_DIR");
+        }
+
+        if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
+        if(!is_writable($LOGS_DIR)) throw new Exception('ERROR - Logs directory not writable');
+
+
+        $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
 
         if(empty($params["TASK_PATH"])) throw new Exception("ERROR - No task file to delete submitted");
 
@@ -854,8 +1041,8 @@ $app->group('/task', function () use ($app) {
 
         if(
             strpos($path_check, '.') !== false ||
-            substr($params["TASK_PATH"], - strlen(getenv("TASK_SUFFIX"))) != getenv("TASK_SUFFIX") ||
-            strpos($path_check, getenv("TASKS_DIR") === false)
+            substr($params["TASK_PATH"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ||
+            strpos($path_check, $TASKS_DIR === false)
         ){
             throw new Exception("ERROR - Task path out of range");
         }

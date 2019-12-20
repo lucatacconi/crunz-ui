@@ -44,12 +44,12 @@
                                             </v-subheader>
                                             <v-list-item-group color="primary">
                                                 <v-list-item @click="executeItem(item, false)" class="pt-2">
-                                                    <v-list-item-icon><v-icon small>fa fa-play</v-icon></v-list-item-icon>
-                                                    <v-list-item-title>Execute</v-list-item-title>
+                                                    <v-list-item-icon><v-icon small color="orange">fa fa-play</v-icon></v-list-item-icon>
+                                                    <v-list-item-title> <span class="orange--text">Execute</span> </v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="executeItem(item, true)">
-                                                    <v-list-item-icon><v-icon small>fas fa-file-alt</v-icon></v-list-item-icon>
-                                                    <v-list-item-title>Execute and wait log</v-list-item-title>
+                                                    <v-list-item-icon><v-icon small color="orange">fas fa-file-alt</v-icon></v-list-item-icon>
+                                                    <v-list-item-title> <span class="orange--text">Execute and wait log</span> </v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="openLogModal(item, i)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
                                                     <v-list-item-icon><v-icon small>fa fa-folder-open</v-icon></v-list-item-icon>
@@ -147,7 +147,7 @@ module.exports = {
             editData:false,
             uploadData:false,
             logData:false,
-            message:'Loading tasks'
+            message:'No tasks found on server. Eventually check tasks directory path.'
         }
     },
     methods: {
@@ -162,7 +162,7 @@ module.exports = {
                 if(response.data.length!=0){
                     self.files=JSON.parse(JSON.stringify(response.data))
                 }else{
-                    self.message="No tasks found on server. Check tasks directory path."
+                    self.message="No tasks found on server. Eventually check tasks directory path."
                 }
             });
         },

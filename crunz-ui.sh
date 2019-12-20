@@ -181,7 +181,8 @@ do
     esac
 done
 
-logs_path="./"${logs_path/"./"/''}
+# logs_path="./"${logs_path/"./"/''}
+logs_path=${logs_path/"./"/''}
 
 if [ ! -w $logs_path ]; then
     echo "Logdir $logs_path doesn't exist or is not writable. Check directory and permitions."
