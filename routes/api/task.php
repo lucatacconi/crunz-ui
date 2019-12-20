@@ -35,28 +35,35 @@ $app->group('/task', function () use ($app) {
         }
 
         $app_configs = $this->get('app_configs');
+        $main_group = $task_groups = $app_configs["task_groups"];
 
-        foreach($app_configs["task_groups"] as $row_cnt => $row_data){
+        unset($main_group["children"]);
+        $data[] = $main_group;
 
-            if($only_active == 'Y' && $row_data["disabled"]){
-                continue;
+        function setChildrenElementView(&$aLSTELEM, $parent, $only_active) {
+
+            if(!empty($parent["children"])){
+                foreach($parent["children"] as $row_cnt => $row_data){
+                    if($only_active == 'Y' && $row_data["disabled"]){
+                        continue;
+                    }
+
+                    unset($row_data["disabled"]);
+                    $sub_parent = $row_data;
+                    unset($sub_parent["children"]);
+                    $aLSTELEM[] = $sub_parent;
+
+                    setChildrenElementView($aLSTELEM, $row_data, $only_active);
+                }
             }
-
-            unset($row_data["disabled"]);
-            $data[] = $row_data;
         }
+
+        setChildrenElementView($data, $task_groups, $only_active);
 
         return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
-
-    // CALC_RUN_LST Y | N
-    // DATE_REF
-    // INTERVAL_FROM
-    // INTERVAL_TO
-    // TASK_ID
-    // TASK_PATH
 
     $app->get('/', function ($request, $response, $args) {
 
