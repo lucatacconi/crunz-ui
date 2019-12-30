@@ -23,7 +23,7 @@ use Symfony\Component\Yaml\Yaml;
 
 $app->group('/task', function () use ($app) {
 
-    $app->get('/group-v2', function ($request, $response, $args) {
+    $app->get('/group', function ($request, $response, $args) {
 
         $data = [];
 
@@ -36,8 +36,6 @@ $app->group('/task', function () use ($app) {
 
         $app_configs = $this->get('app_configs');
         $aGROUPs = $task_groups = $app_configs["task_groups"];
-
-
 
         // function recursiveRemoval(&$array){
         //     if(!empty($array["disabled"]) && $array["disabled"] == true){
@@ -70,7 +68,7 @@ $app->group('/task', function () use ($app) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
 
-    $app->get('/group-v1', function ($request, $response, $args) {
+    $app->get('/group-in-line', function ($request, $response, $args) {
 
         $data = [];
 
@@ -113,22 +111,22 @@ $app->group('/task', function () use ($app) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
 
-    $app->get('/group', function ($request, $response, $args) {
+    // $app->get('/group', function ($request, $response, $args) {
 
-        $data = [];
+    //     $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+    //     $params = array_change_key_case($request->getParams(), CASE_UPPER);
 
-        $app_configs = $this->get('app_configs');
+    //     $app_configs = $this->get('app_configs');
 
-        foreach($app_configs["task_groups"] as $row_cnt => $row_data){
-            $data[] = $row_data;
-        }
+    //     foreach($app_configs["task_groups"] as $row_cnt => $row_data){
+    //         $data[] = $row_data;
+    //     }
 
-        return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-    });
+    //     return $response->withStatus(200)
+    //     ->withHeader("Content-Type", "application/json")
+    //     ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    // });
 
     $app->get('/', function ($request, $response, $args) {
 
