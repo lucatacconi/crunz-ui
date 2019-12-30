@@ -1,11 +1,17 @@
 
-#compiled
+#Ingore all temp, compiled and log but conserve directory structure
 var/logs/*
+!var/logs/.gitignore
 
-# Logs files
+#Ingore all tasks execpt example task and htaccess
+tasks/*
+!tasks/.htaccess
+!tasks/.htaccesstestTasks.php
+
+# Ingore all logs files everywhere
 *.log
 
-# Zipped files
+# Ingore all zipped files
 *.7z
 *.dmg
 *.gz
@@ -15,8 +21,9 @@ var/logs/*
 *.tar
 *.zip
 
+# Ingore all lib e vendor file
 /vendor/*
 composer.lock
 
-#Crunz configuration
+## Ingore all crunz configuration
 crunz.yml
