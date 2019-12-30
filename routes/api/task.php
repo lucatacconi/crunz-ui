@@ -245,7 +245,7 @@ $app->group('/task', function () use ($app) {
                 continue;
             }
 
-            $file_check_result = exec("php -l ".$taskFile->getRealPath());
+            $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
             if(strpos($file_check_result, 'No syntax errors detected in') === false){
                 //Syntax error in file
                 continue;
