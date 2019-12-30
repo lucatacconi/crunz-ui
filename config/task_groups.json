@@ -16,7 +16,7 @@
 
                     "subdir":"/group1/subGroup2",
                     "description":"SubGroup 2",
-                    "disabled": true
+                    "disabled": false
                 },
                 {
 

@@ -37,29 +37,43 @@ $app->group('/task', function () use ($app) {
         $app_configs = $this->get('app_configs');
         $aGROUPs = $task_groups = $app_configs["task_groups"];
 
-        // function recursiveRemoval(&$array){
-        //     if(!empty($array["disabled"]) && $array["disabled"] == true){
-        //         unset($array);
-        //     }
+        function recursiveRemoval(&$array){
+            if(!empty($array["disabled"]) && $array["disabled"] == true){
+                unset($array);
+            }
 
-        //     unset($array["disabled"]);
+            unset($array["disabled"]);
 
-        //     if(!empty($array["children"]) && is_array($array["children"])){
-        //         foreach($array["children"] as $key=>&$arrayElement)
-        //         {
-        //             if(!empty($arrayElement["disabled"]) && $arrayElement["disabled"]){
-        //                 unset($array["children"][$key]);
-        //             }else{
-        //                 unset($array["children"][$key]["disabled"]);
-        //                 recursiveRemoval($arrayElement);
-        //             }
-        //         }
-        //     }
-        // }
+            if(!empty($array["children"]) && is_array($array["children"])){
 
-        // if($only_active == "Y"){
-        //     recursiveRemoval($aGROUPs);
-        // }
+                $at_least_one = "N";
+                foreach($array["children"] as $key=>&$arrayElement)
+                {
+                    if(empty($arrayElement["disabled"]) || $arrayElement["disabled"] == false){
+                        $at_least_one = "Y";
+                    }
+                }
+
+                if($at_least_one == "Y"){
+                    foreach($array["children"] as $key=>&$arrayElement)
+                    {
+                        if(!empty($arrayElement["disabled"]) && $arrayElement["disabled"] == true){
+                            array_splice($array["children"], $key, 1);
+                        }else{
+                            unset($array["children"][$key]["disabled"]);
+                            recursiveRemoval($arrayElement);
+                        }
+                    }
+                }else{
+                    unset($array["children"]);
+                }
+
+            }
+        }
+
+        if($only_active == "Y"){
+            recursiveRemoval($aGROUPs);
+        }
 
         $data = $aGROUPs;
 
