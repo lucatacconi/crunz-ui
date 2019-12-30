@@ -23,7 +23,54 @@ use Symfony\Component\Yaml\Yaml;
 
 $app->group('/task', function () use ($app) {
 
-    $app->get('/group', function ($request, $response, $args) {
+    $app->get('/group-v2', function ($request, $response, $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+
+        $only_active = "Y";
+        if(!empty($params["ONLY_ACTIVE"])){
+            $only_active = $params["ONLY_ACTIVE"];
+        }
+
+        $app_configs = $this->get('app_configs');
+        $aGROUPs = $task_groups = $app_configs["task_groups"];
+
+
+
+        // function recursiveRemoval(&$array){
+        //     if(!empty($array["disabled"]) && $array["disabled"] == true){
+        //         unset($array);
+        //     }
+
+        //     unset($array["disabled"]);
+
+        //     if(!empty($array["children"]) && is_array($array["children"])){
+        //         foreach($array["children"] as $key=>&$arrayElement)
+        //         {
+        //             if(!empty($arrayElement["disabled"]) && $arrayElement["disabled"]){
+        //                 unset($array["children"][$key]);
+        //             }else{
+        //                 unset($array["children"][$key]["disabled"]);
+        //                 recursiveRemoval($arrayElement);
+        //             }
+        //         }
+        //     }
+        // }
+
+        // if($only_active == "Y"){
+        //     recursiveRemoval($aGROUPs);
+        // }
+
+        $data = $aGROUPs;
+
+        return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    });
+
+    $app->get('/group-v1', function ($request, $response, $args) {
 
         $data = [];
 
@@ -50,6 +97,7 @@ $app->group('/task', function () use ($app) {
 
                     unset($row_data["disabled"]);
                     $sub_parent = $row_data;
+
                     unset($sub_parent["children"]);
                     $aLSTELEM[] = $sub_parent;
 
@@ -59,6 +107,23 @@ $app->group('/task', function () use ($app) {
         }
 
         setChildrenElementView($data, $task_groups, $only_active);
+
+        return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    });
+
+    $app->get('/group', function ($request, $response, $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+
+        $app_configs = $this->get('app_configs');
+
+        foreach($app_configs["task_groups"] as $row_cnt => $row_data){
+            $data[] = $row_data;
+        }
 
         return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")

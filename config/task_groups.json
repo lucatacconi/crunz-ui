@@ -1,6 +1,7 @@
 {
     "subdir":"/",
     "description":"Main task",
+    "disabled": false,
     "children":[
         {
             "subdir":"/group1",
@@ -16,6 +17,12 @@
 
                     "subdir":"/group1/subGroup2",
                     "description":"SubGroup 2",
+                    "disabled": true
+                },
+                {
+
+                    "subdir":"/group1/subGroup3",
+                    "description":"SubGroup 3",
                     "disabled": false
                 }
             ]
