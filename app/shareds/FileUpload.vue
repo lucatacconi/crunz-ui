@@ -169,7 +169,7 @@ module.exports = {
         var self=this
         Utils.apiCall("get", "/task/group")
         .then(function (response) {
-            self.items=response.data
+            self.items=[response.data]
         });
     },
 }
