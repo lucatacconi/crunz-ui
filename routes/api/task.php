@@ -125,22 +125,6 @@ $app->group('/task', function () use ($app) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
 
-    // $app->get('/group', function ($request, $response, $args) {
-
-    //     $data = [];
-
-    //     $params = array_change_key_case($request->getParams(), CASE_UPPER);
-
-    //     $app_configs = $this->get('app_configs');
-
-    //     foreach($app_configs["task_groups"] as $row_cnt => $row_data){
-    //         $data[] = $row_data;
-    //     }
-
-    //     return $response->withStatus(200)
-    //     ->withHeader("Content-Type", "application/json")
-    //     ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-    // });
 
     $app->get('/', function ($request, $response, $args) {
 
@@ -749,6 +733,106 @@ $app->group('/task', function () use ($app) {
     });
 
 
+    $app->post('/', function ($request, $response, $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+
+
+        $app_configs = $this->get('app_configs');
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty(getenv("CRUNZ_BASE_DIR"))){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty($crunz_config["timezone"])) throw new Exception("ERROR - Wrong timezone configuration");
+
+        date_default_timezone_set($crunz_config["timezone"]);
+
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        $TASK_SUFFIX = $crunz_config["suffix"];
+
+        if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
+
+        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        }else{
+            $LOGS_DIR = getenv("LOGS_DIR");
+        }
+
+        if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
+        if(!is_writable($LOGS_DIR)) throw new Exception('ERROR - Logs directory not writable');
+
+
+        $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
+
+
+        //Check destination
+        if( empty($params["TASK_FILE_PATH"]) ) throw new Exception("ERROR - No task file path submitted");
+
+        if(trim($params["TASK_FILE_PATH"],"/") == ""){
+            $task_file_path = $base_tasks_path;
+        }else{
+            $task_file_path = $base_tasks_path . "/".trim($params["TASK_FILE_PATH"],"/");
+        }
+
+
+        if(!file_exists($task_file_path)) throw new Exception('ERROR - Task file not exist');
+        if(!is_writable($task_file_path)) throw new Exception('ERROR - File not writable');
+
+
+        $task_handle = fopen($task_file_path, "wb");
+        if($task_handle === false) throw new Exception('ERROR - File open error');
+
+        if( empty($params["TASK_CONTENT"]) ) throw new Exception("ERROR - No task content submitted");
+
+        $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $params["TASK_CONTENT"]);
+
+        if(
+            strpos($file_content, 'use Crunz\Schedule;') === false ||
+            strpos($file_content, '= new Schedule()') === false ||
+            strpos($file_content, '->run(') === false
+        ){
+            throw new Exception("ERROR - Wrong task configuration in task file");
+        }
+
+        try {
+            fwrite($task_handle, $params["TASK_CONTENT"]);
+            fclose($task_handle);
+
+            $data["result"] = true;
+            $data["result_msg"] = '';
+
+        } catch(Exception $e) {
+            $data["result"] = false;
+            $data["result_msg"] = $e->getMessage();
+        }
+
+        return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    });
+
+
     $app->post('/execute', function ($request, $response, $args) {
 
         $data = [];
@@ -931,106 +1015,6 @@ $app->group('/task', function () use ($app) {
 
         }else{
             throw new Exception("ERROR - Task to execute not found");
-        }
-
-        return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-    });
-
-
-    $app->post('/', function ($request, $response, $args) {
-
-        $data = [];
-
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
-
-
-        $app_configs = $this->get('app_configs');
-        $base_path =$app_configs["paths"]["base_path"];
-
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
-            $crunz_base_dir = $base_path;
-        }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
-        }
-
-        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
-        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
-
-        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
-
-        try {
-            $crunz_config = Yaml::parse($crunz_config_yml);
-        } catch (ParseException $exception) {
-            throw new Exception("ERROR - Crunz configuration file error");
-        }
-
-        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
-        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
-        if(empty($crunz_config["timezone"])) throw new Exception("ERROR - Wrong timezone configuration");
-
-        date_default_timezone_set($crunz_config["timezone"]);
-
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
-        $TASK_SUFFIX = $crunz_config["suffix"];
-
-        if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
-
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
-
-        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
-        }else{
-            $LOGS_DIR = getenv("LOGS_DIR");
-        }
-
-        if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
-        if(!is_writable($LOGS_DIR)) throw new Exception('ERROR - Logs directory not writable');
-
-
-        $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
-
-
-        //Check destination
-        if( empty($params["TASK_FILE_PATH"]) ) throw new Exception("ERROR - No task file path submitted");
-
-        if(trim($params["TASK_FILE_PATH"],"/") == ""){
-            $task_file_path = $base_tasks_path;
-        }else{
-            $task_file_path = $base_tasks_path . "/".trim($params["TASK_FILE_PATH"],"/");
-        }
-
-
-        if(!file_exists($task_file_path)) throw new Exception('ERROR - Task file not exist');
-        if(!is_writable($task_file_path)) throw new Exception('ERROR - File not writable');
-
-
-        $task_handle = fopen($task_file_path, "wb");
-        if($task_handle === false) throw new Exception('ERROR - File open error');
-
-        if( empty($params["TASK_CONTENT"]) ) throw new Exception("ERROR - No task content submitted");
-
-        $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $params["TASK_CONTENT"]);
-
-        if(
-            strpos($file_content, 'use Crunz\Schedule;') === false ||
-            strpos($file_content, '= new Schedule()') === false ||
-            strpos($file_content, '->run(') === false
-        ){
-            throw new Exception("ERROR - Wrong task configuration in task file");
-        }
-
-        try {
-            fwrite($task_handle, $params["TASK_CONTENT"]);
-            fclose($task_handle);
-
-            $data["result"] = true;
-            $data["result_msg"] = '';
-
-        } catch(Exception $e) {
-            $data["result"] = false;
-            $data["result_msg"] = $e->getMessage();
         }
 
         return $response->withStatus(200)

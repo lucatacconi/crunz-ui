@@ -18,17 +18,6 @@
                 </v-btn>
             </v-card-text> -->
         </v-card>
-
-        <v-btn
-            absolute
-            bottom
-            right
-            fab
-            dark
-            color="pink"
-            >
-            <v-icon>add</v-icon>
-        </v-btn>
     </div>
 </template>
 
