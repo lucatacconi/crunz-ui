@@ -288,6 +288,11 @@ module.exports = {
         this.readData()
     },
 
+    mounted:function(){
+        var self = this;
+        setInterval(function(){ self.readData(); }, 60000);
+    },
+
     components:{
         'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue' + '?v=' + new Date().getTime()),
         'task-upload': httpVueLoader('../../shareds/FileUpload.vue' + '?v=' + new Date().getTime()),

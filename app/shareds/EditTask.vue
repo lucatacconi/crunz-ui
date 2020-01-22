@@ -126,6 +126,9 @@ module.exports = {
         if(this.rowdata){
             if(this.rowdata.task_content!=''){
                 this.logdata.taskEdit_content=atob(this.rowdata.task_content)
+
+                console.log(this.logdata);
+
                 setTimeout(function(){
                     self.initEditor('task-edit');
                 }, 200);
