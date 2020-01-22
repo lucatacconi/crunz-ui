@@ -29,15 +29,6 @@
                         <v-row>
                             <v-col cols="12" class="py-0">
                                 <v-text-field
-                                    label="File name:"
-                                    :value="logdata.filename"
-                                    readonly
-                                    dense
-                                    hide-details
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="12" class="py-0">
-                                <v-text-field
                                     label="Path:"
                                     :value="logdata.task_path"
                                     readonly
@@ -73,20 +64,32 @@
                                 </v-card>
                             </v-col>
                         </v-row>
+
                     </v-container>
                 <v-form>
             </v-card-text>
-            <v-card-actions class="pt-0 pb-3 pr-3 d-none">
+            <v-card-actions class="pt-0 pb-3 pr-3">
                 <v-spacer></v-spacer>
                 <v-btn
                     small
                     dense
                     dark
                     color="#607d8b"
-                    @click="saveFile"
+                    @click="saveFile(false)"
                 >
                     <v-icon left>mdi-content-save</v-icon>
                     Save
+                </v-btn>
+
+                <v-btn
+                    small
+                    dense
+                    dark
+                    color="#607d8b"
+                    @click="saveFile(true)"
+                >
+                    <v-icon left>mdi-content-save</v-icon>
+                    Save & close
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -154,11 +157,11 @@ module.exports = {
         },
 
         copyToClipboard:function(editor){
-            var ed=""
+            var ed = "";
             if(editor == "task-edit"){
                 ed = this.taskEditEditor;
             }
-            if(ed!=""){
+            if(ed != ""){
                 var sel = ed.selection.toJSON();
                 ed.selectAll();
                 ed.focus();
@@ -167,8 +170,40 @@ module.exports = {
             }
         },
 
-        saveFile: function () {
+        saveFile: function (edit_modal_close) {
+            var self=this;
 
+            var ed = this.taskEditEditor;
+            if(ed != ""){
+                var code = ed.getValue();
+
+                var apiParams = {
+                    "task_file_path": self.rowdata.task_path,
+                    "task_content": code
+                }
+
+                Utils.apiCall("post", "/task/", apiParams)
+                .then(function (response) {
+                    if(response.data.result){
+                        Swal.fire({
+                            title: 'Task updated.',
+                            text: response.data.result_msg,
+                            type: 'success',
+                            onClose: () => {
+                                if(edit_modal_close){
+                                    self.closeModal(true);
+                                }
+                            }
+                        })
+                    }else{
+                        Swal.fire({
+                            title: 'ERROR',
+                            text: response.data.result_msg,
+                            type: 'error'
+                        })
+                    }
+                });
+            }
         }
     }
 }

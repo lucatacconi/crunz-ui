@@ -60,8 +60,8 @@
                                                     <v-list-item-title>Download task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="openEditModal(item, i)">
-                                                    <v-list-item-icon><v-icon small>fa fa-search</v-icon></v-list-item-icon>
-                                                    <v-list-item-title>View task</v-list-item-title>
+                                                    <v-list-item-icon><v-icon small>fa fa-edit</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>Edit task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="deleteItem(item, i)">
                                                     <v-list-item-icon><v-icon small color="red">fa fa-trash</v-icon></v-list-item-icon>
