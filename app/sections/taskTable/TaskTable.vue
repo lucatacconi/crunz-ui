@@ -124,10 +124,10 @@
 module.exports = {
     data:function(){
         return{
-            showUploadModal:false,
-            showEditModal:false,
-            showLogModal:false,
-            showEditModal:false,
+            showUploadModal: false,
+            showEditModal: false,
+            showLogModal: false,
+            showEditModal: false,
             headers: [
                 {
                     text: '',
@@ -144,49 +144,49 @@ module.exports = {
                 { text: 'Last exec. outcome', value: 'last_outcome', align: 'center' },
             ],
             files: [],
-            editData:false,
-            uploadData:false,
-            logData:false,
-            message:'No tasks found on server. Eventually check tasks directory path.'
+            editData: false,
+            uploadData: false,
+            logData: false,
+            message: 'No tasks found on server. Eventually check tasks directory path.'
         }
     },
     methods: {
         readData:function(){
-            var self=this
-            var params={
-                "return_task_cont": "Y",
+            var self = this;
+            var params = {
+                "return_task_cont": "Y"
             }
-            self.message="Loading tasks"
+            self.message = "Loading tasks";
             Utils.apiCall("get", "/task/",params)
             .then(function (response) {
                 if(response.data.length!=0){
-                    self.files=JSON.parse(JSON.stringify(response.data))
+                    self.files = response.data;
                 }else{
-                    self.message="No tasks found on server. Eventually check tasks directory path."
+                    self.message = "No tasks found on server. Eventually check tasks directory path."
                 }
             });
         },
 
         downloadTask:function(rowdata){
-            if(rowdata.task_content!=''&&rowdata.filename!=''){
-                if(rowdata.task_content==''){
+            if(rowdata.task_content != '' && rowdata.filename != ''){
+                if(rowdata.task_content == ''){
                     Swal.fire({
                         title: 'Task content empty',
                         text: "Task content is empty",
-                        type: 'error',
+                        type: 'error'
                     })
-                    return
+                    return;
                 }
-                if(rowdata.filename==''){
+                if(rowdata.filename == ''){
                     Swal.fire({
                         title: 'Filename empty',
                         text: "Filename is empty",
-                        type: 'error',
+                        type: 'error'
                     })
-                    return
+                    return;
                 }
-                var dec=atob(rowdata.task_content)
-                Utils.downloadFile(dec,rowdata.filename)
+                var dec = atob(rowdata.task_content);
+                Utils.downloadFile(dec,rowdata.filename);
             }
         },
 
@@ -202,7 +202,7 @@ module.exports = {
 
         openLogModal: function (rowdata) {
             this.showLogModal = true;
-            this.logData = rowdata!=undefined ? rowdata : false;
+            this.logData = rowdata != undefined ? rowdata : false;
         },
         closeLogModal: function () {
             this.showLogModal = false;
@@ -210,7 +210,7 @@ module.exports = {
 
         openEditModal: function (rowdata) {
             this.showEditModal = true;
-            this.logData = rowdata!=undefined ? rowdata : false;
+            this.logData = rowdata != undefined ? rowdata : false;
         },
         closeEditModal: function () {
             this.showEditModal = false;
@@ -229,7 +229,7 @@ module.exports = {
                 cancelButtonText: 'Back'
             }).then( function (result) {
                 if (result.value) {
-                    var params={
+                    var params = {
                         "task_path": rowdata.task_path
                     }
                     Utils.apiCall("delete", "/task/",params)
@@ -240,7 +240,7 @@ module.exports = {
                                 text: response.data.result_msg,
                                 type: 'success'
                             })
-                            self.readData()
+                            self.readData();
                         }else{
                             Swal.fire({
                                 title: 'ERROR',
@@ -264,8 +264,8 @@ module.exports = {
             .then(function (response) {
                 if(response.data.result){
                     if(wait){
-                        self.openLogModal(response.data)
-                        self.readData()
+                        self.openLogModal(response.data);
+                        self.readData();
                     }else{
                         Swal.fire({
                             title: 'Task launched. Execution in progress.',
@@ -285,7 +285,7 @@ module.exports = {
     },
 
     created:function() {
-        this.readData()
+        this.readData();
     },
 
     mounted:function(){
