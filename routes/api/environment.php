@@ -44,6 +44,7 @@ $app->group('/environment', function () use ($app) {
         $data["LOGS_DIR_CONFIG_PRESENCE"] = false;
         $data["LOGS_DIR_PRESENCE"] = false;
         $data["LOGS_DIR_WRITABLE"] = false;
+        $data["ALL_CHECK"] = false;
 
         //===================================================================================================================================================
 
@@ -109,6 +110,22 @@ $app->group('/environment', function () use ($app) {
                     }
                 }
             }
+        }
+
+        if(
+            $data["YAML_CONFIG_PRESENCE"] == true &&
+            $data["YAML_CONFIG_NOEMPTY"] == true &&
+            $data["YAML_CONFIG_CORRECTNESS"] == true &&
+            $data["YAML_CONFIG_SOURCE_PRESENCE"] == true &&
+            $data["YAML_CONFIG_SUFFIX_PRESENCE"] == true &&
+            $data["YAML_CONFIG_TIMEZONE_PRESENCE"] == true &&
+            $data["TASKS_DIR_PRESENCE"] == true &&
+            $data["TASKS_DIR_WRITABLE"] == true &&
+            $data["LOGS_DIR_CONFIG_PRESENCE"] == true &&
+            $data["LOGS_DIR_PRESENCE"] == true &&
+            $data["LOGS_DIR_WRITABLE"] == true
+        ){
+            $data["ALL_CHECK"] = true;
         }
 
         return $response->withStatus(200)
