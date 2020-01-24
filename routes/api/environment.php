@@ -23,9 +23,11 @@ $app->group('/environment', function () use ($app) {
         if(empty(getenv("CRUNZ_BASE_DIR"))){
             $crunz_base_dir = $base_path;
             $data["TASK_POSITION_EMBEDDED"] = true;
+            $data["TASK_DIR"] = '';
         }else{
             $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
             $data["TASK_POSITION_EMBEDDED"] = false;
+            $data["TASK_DIR"] = $crunz_base_dir;
         }
 
         $data["YAML_CONFIG_PRESENCE"] = false;
