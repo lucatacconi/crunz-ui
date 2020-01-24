@@ -34,7 +34,9 @@ $app->group('/environment', function () use ($app) {
         $data["YAML_CONFIG_NOEMPTY"] = false;
         $data["YAML_CONFIG_CORRECTNESS"] = false;
         $data["YAML_CONFIG_SOURCE_PRESENCE"] = false;
+        $data["YAML_CONFIG_SOURCE"] = false;
         $data["YAML_CONFIG_SUFFIX_PRESENCE"] = false;
+        $data["YAML_CONFIG_SUFFIX"] = false;
         $data["YAML_CONFIG_TIMEZONE_PRESENCE"] = false;
         $data["TIMEZONE_CONFIG"] = '';
         $data["TASKS_DIR_PRESENCE"] = false;
@@ -64,9 +66,11 @@ $app->group('/environment', function () use ($app) {
 
                     if(!empty($crunz_config["source"])){
                         $data["YAML_CONFIG_SOURCE_PRESENCE"] = true;
+                        $data["YAML_CONFIG_SOURCE"] = $crunz_config["source"];
                     }
                     if(!empty($crunz_config["suffix"])){
                         $data["YAML_CONFIG_SUFFIX_PRESENCE"] = true;
+                        $data["YAML_CONFIG_SUFFIX"] = $crunz_config["suffix"];
                     }
                     if(!empty($crunz_config["timezone"])){
                         $data["YAML_CONFIG_TIMEZONE_PRESENCE"] = true;
