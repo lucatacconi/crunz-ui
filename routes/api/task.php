@@ -137,6 +137,23 @@ $app->group('/task', function () use ($app) {
             $calc_run_lst = $params["CALC_RUN_LST"];
         }
 
+        $past_planned_tasks = "N";
+        if(!empty($params["PAST_PLANNED_TASKS"])){
+            $past_planned_tasks = $params["PAST_PLANNED_TASKS"];
+        }
+        if($past_planned_tasks == 'Y'){
+            $calc_run_lst = 'Y';
+        }
+
+        $outcome_executed_task_lst = "N";
+        if(!empty($params["OUTCOME_EXECUTED_TASK_LST"])){
+            $outcome_executed_task_lst = $params["OUTCOME_EXECUTED_TASK_LST"];
+        }
+        if($outcome_executed_task_lst == 'Y'){
+            $calc_run_lst = 'Y';
+            $past_planned_tasks = 'Y';
+        }
+
         $return_task_content = "N";
         if(!empty($params["RETURN_TASK_CONT"])){
             $return_task_content = $params["RETURN_TASK_CONT"];
@@ -403,7 +420,7 @@ $app->group('/task', function () use ($app) {
                 $row["last_outcome"] = '';
                 $row["last_run"] = '';
                 $row["executed_task_lst"] = [];
-
+                $row["outcome_executed_task_lst"] = [];
 
                 $log_name = rtrim( ltrim($row["task_path"],"/"), ".php" );
                 $log_name = str_replace("/", "", $log_name);
@@ -435,17 +452,19 @@ $app->group('/task', function () use ($app) {
                             $task_start = DateTime::createFromFormat('YmdHi', $aLOGFOCUS[2]);
                             $task_stop = DateTime::createFromFormat('YmdHi', $aLOGFOCUS[3]);
                             $row["executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $task_stop->format('Y-m-d H:i:s');
+                            if($outcome_executed_task_lst == "Y"){
+                                $row["outcome_executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $aLOGFOCUS[1];
+                            }
                         }
                     }
 
                     $aFIRSTLOG = explode('_', str_replace($LOGS_DIR."/", "", end($aLOGNAME)));
                     $task_start = DateTime::createFromFormat('YmdHi', $aFIRSTLOG[2]);
 
-                    if($event_interval_from < $task_start->format('Y-m-d H:i:s')){
-                        $event_interval_from = $task_start->format('Y-m-d H:i:s');
-                    }
                 }else{
-                    $event_interval_from = $date_now;
+                    if($past_planned_tasks != "Y"){
+                        $event_interval_from = $date_now;
+                    }
                 }
 
 
@@ -459,16 +478,18 @@ $app->group('/task', function () use ($app) {
                 $nincrement = 0;
                 $calc_run = false;
 
+
                 if($calc_run_lst == "Y"){
                     while($nincrement < 1000){ //Use the same hard limit of cron-expression library
                         $calc_run = $cron->getNextRunDate($event_interval_from, $nincrement, true)->format('Y-m-d H:i:s');
+
                         if($calc_run > $event_interval_to){
                             break;
                         }
 
                         $nincrement++;
 
-                        if($calc_run < $date_now){
+                        if($calc_run < $date_now && $past_planned_tasks != "Y"){
                             if(array_key_exists($calc_run, $row["executed_task_lst"])){
                                 if($calc_run == $row["executed_task_lst"][$calc_run]){
                                     $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + 1 minute"));
@@ -482,7 +503,7 @@ $app->group('/task', function () use ($app) {
                     }
 
                     foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
-                        if(!array_key_exists($exec_task_start, $row["interval_run_lst"])){
+                        if($exec_task_start >= $event_interval_from && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
                             $row["interval_run_lst"][$exec_task_start] = $exec_task_end;
                         }
                     }
