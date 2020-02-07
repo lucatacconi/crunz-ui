@@ -55,6 +55,7 @@ $app = new \Slim\App($container);
 
 //Security layer
 $app->add(new Tuupola\Middleware\JwtAuthentication([
+    "secure" => false,
     "secret" => getenv("JWT_SECRET"),
 
     "ignore" => ["/auth/login"],
