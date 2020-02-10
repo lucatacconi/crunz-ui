@@ -186,9 +186,11 @@
         methods: {
             readData:function(){
                 var self = this;
+
                 var options = {
                     showLoading: false
                 };
+
                 var params = {};
                 self.message = "Loading environment check data";
 

@@ -26,6 +26,11 @@
             loadGraph: function(){
 
                 var self = this;
+
+                var options = {
+                    showLoading: false
+                };
+
                 var params = {
                     "return_task_cont": "N",
                     "outcome_executed_task_lst": "Y",
@@ -33,7 +38,7 @@
                     "interval_to": moment().format("YYYY-MM-DD")
                 }
 
-                Utils.apiCall("get", "/task/",params)
+                Utils.apiCall("get", "/task/",params, options)
                 .then(function (response) {
                     if(response.data.length != 0){
                         for (i = 0; i < response.data.length; i++) {
@@ -58,7 +63,6 @@
                         }
                     }
 
-
                     var config_graph_daily = {
                         type: 'pie',
                         data: {
@@ -66,8 +70,8 @@
                             datasets: [{
                                 data: [ self.planned, self.executed, self.withErrors ],
                                 label: 'Daily task\'s distribution',
-                                backgroundColor: [ "#AAAAAA", "#BBBBBB", "#CCCCCC" ],
-                                borderColor: [ "#AAAAAA", "#BBBBBB", "#CCCCCC" ],
+                                backgroundColor: [ "#6DCEE8", "#A7E683", "#FFA182" ],
+                                borderColor: [ "#9199FE", "#5C9476", "#FF5074" ],
                                 borderWidth: 1
                             }]
                         },

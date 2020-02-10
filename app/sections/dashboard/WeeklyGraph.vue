@@ -16,15 +16,12 @@
                 dayBack: 3,
                 dayFront: 3,
 
-                statPlanned: [],
-                statExecuted: [],
-                statWithError: [],
-                dayList: [],
-                stats: {
-                    planned: [],
-                    executed: [],
-                    withErrors: []
-                }
+                stats: [],
+
+                graphDaysLabel: [],
+                graphPlanned: [],
+                graphExecuted: [],
+                graphWhitErrors: []
             }
         },
 
@@ -39,14 +36,24 @@
                 var day_start = moment().subtract(this.dayBack + 1, 'days');
 
                 for(i = 0; i < moves; i++){
-                    $day_focus = day_start.add(1, 'days');
-                    this.stats.planned[$day_focus.format("YYYY-MM-DD")] = 0;
-                    this.stats.executed[$day_focus.format("YYYY-MM-DD")] = 0;
-                    this.stats.withErrors[$day_focus.format("YYYY-MM-DD")] = 0;
-                    this.dayList.push($day_focus.format("ddd MM-DD"));
+
+                    day_focus_calc = day_start.add(1, 'days');
+
+                    this.stats[i] = {
+                        id_day: i,
+                        date_ref: day_focus_calc.format("YYYY-MM-DD"),
+                        planned: 0,
+                        executed: 0,
+                        with_errors: 0
+                    }
+
+                    day_label = day_focus_calc.format("ddd MM-DD");
+                    this.graphDaysLabel.push(day_label);
                 }
 
-
+                var options = {
+                    showLoading: false
+                };
 
                 var params = {
                     "return_task_cont": "N",
@@ -55,29 +62,29 @@
                     "interval_to": moment().add(this.dayFront, 'days').format("YYYY-MM-DD")
                 }
 
-                Utils.apiCall("get", "/task/",params)
+                Utils.apiCall("get", "/task/",params, options)
                 .then(function (response) {
                     if(response.data.length != 0){
+
                         for (i = 0; i < response.data.length; i++) {
                             task_data = response.data[i];
 
-                            for (var task_data_start in task_data.interval_run_lst) {
-                                for (var date_check in self.stats.planned) {
-                                    if(task_data_start.substring(0, 10) == date_check){
-                                        self.stats.planned[date_check] += 1;
+                            for (let task_data_start in task_data.interval_run_lst) {
+                                for (key = 0; key < self.stats.length; key++) {
+                                    if(task_data_start.substring(0, 10) == self.stats[key].date_ref){
+                                        self.stats[key].planned += 1;
                                     }
                                 }
                             }
 
-                            for (var task_data_exec in task_data.outcome_executed_task_lst) {
+                            for (let task_data_exec in task_data.outcome_executed_task_lst) {
+                                for (key = 0; key < self.stats.length; key++) {
+                                    if(task_data_exec.substring(0, 10) == self.stats[key].date_ref){
+                                        self.stats[key].executed += 1;
 
-                                for (var date_check in self.stats.executed) {
-                                    if(task_data_exec.substring(0, 10) == date_check){
-                                        self.stats.executed[date_check] += 1;
-
-                                        var task_out = task_data.outcome_executed_task_lst[task_data_exec];
+                                        let task_out = task_data.outcome_executed_task_lst[task_data_exec];
                                         if(task_out != "OK"){
-                                            self.stats.withErrors[date_check] += 1;
+                                            self.stats[key].with_errors += 1;
                                         }
                                     }
                                 }
@@ -85,34 +92,38 @@
                         }
                     }
 
-                    console.log(JSON.stringify(self.stats));
+                    for (key = 0; key < self.stats.length; key++) {
+                        self.graphPlanned.push(self.stats[key].planned);
+                        self.graphExecuted.push(self.stats[key].executed);
+                        self.graphWhitErrors.push(self.stats[key].with_errors);
+                    }
 
                     var config_graph_weekly = {
                         type: 'bar',
                         data: {
-                            labels: self.dayList,
+                            labels: self.graphDaysLabel,
 
                             datasets: [{
                                 label: 'Planned',
-                                backgroundColor: "#AAAAAA",
-                                borderColor: "#AAAAAA",
+                                backgroundColor: "#6DCEE8",
+                                borderColor: "#9199FE",
                                 borderWidth: 1,
                                 stack: 'Stack 0',
-                                data: self.stats.planned
+                                data: self.graphPlanned
                             }, {
                                 label: 'Executed',
-                                backgroundColor: "#BBBBBB",
-                                borderColor: "#BBBBBB",
+                                backgroundColor: "#A7E683",
+                                borderColor: "#5C9476",
                                 borderWidth: 1,
                                 stack: 'Stack 0',
-                                data: self.stats.executed
+                                data: self.graphExecuted
                             }, {
                                 label: 'With errors',
-                                backgroundColor: "#CCCCCC",
-                                borderColor: "#CCCCCC",
+                                backgroundColor: "#FFA182",
+                                borderColor: "#FF5074",
                                 borderWidth: 1,
                                 stack: 'Stack 0',
-                                data: self.stats.withErrors
+                                data: self.graphWhitErrors
                             }]
                         },
                         options: {
@@ -123,16 +134,14 @@
                         }
                     };
 
-                    var graph_container_weekly = document.getElementById('graph-area-weekly');
+                    let graph_container_weekly = document.getElementById('graph-area-weekly');
                     graphWeekly = new Chart(graph_container_weekly, config_graph_weekly);
 
                 });
-
             }
         },
 
         mounted:function() {
-
             this.loadGraph();
         }
     }
