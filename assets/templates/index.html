@@ -82,7 +82,7 @@
                 router,
                 vuetify: new Vuetify(),
                 components: {
-                    'container': httpVueLoader('../app/shareds/Container.vue')
+                    'container': httpVueLoader('../app/shareds/Container.vue' + '?v=' + new Date().getTime())
                 }
             })
         </script>
