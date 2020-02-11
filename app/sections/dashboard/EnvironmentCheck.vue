@@ -2,7 +2,7 @@
     <div>
         <v-card class="mt-2">
             <v-card-title>
-                Environment settings and directoris check
+                Environment settings and directories check
                 <v-spacer></v-spacer>
                 <v-btn
                     class="mx-2"
