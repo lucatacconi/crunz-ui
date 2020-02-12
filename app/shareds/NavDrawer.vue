@@ -43,7 +43,7 @@
 
                             <v-list-item-content>
                                 <v-list-item-title
-                                    :class="subItem.layout.color ? subItem.layout.color : null"
+                                    :class="subItem.layout.color ? subItem.layout.color : (subItem.action.path == activeRoute ? 'red--text' : null) "
                                 >
                                     {{ subItem.title }}
                                 </v-list-item-title>
@@ -70,7 +70,7 @@
 
                         <v-list-item-content>
                             <v-list-item-title
-                                :class="navItem.layout.color ? navItem.layout.color : null"
+                                :class="navItem.layout.color ? navItem.layout.color : (navItem.action.path == activeRoute ? 'red--text' : null)"
                             >
                                 {{ navItem.title }}
                             </v-list-item-title>
@@ -89,6 +89,7 @@
 module.exports = {
     data:function(){
         return{
+            activeRoute: this.$route.path
         }
     },
     computed: {
@@ -121,10 +122,6 @@ module.exports = {
                     }
                 }
 
-                if(navItem.layout != undefined){
-                    navItem.layout.color="red--text";
-                }
-
                 if(navItem.action.path != router.currentRoute.fullPath){
                     router.push(navItem.action.path);
                 }
@@ -138,6 +135,11 @@ module.exports = {
     },
     mounted:function() {
 
+    },
+    watch: {
+        '$route': function (to, from) {
+            this.activeRoute = to.fullPath;
+        }
     }
 }
 </script>
