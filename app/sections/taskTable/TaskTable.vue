@@ -147,17 +147,19 @@ module.exports = {
             editData: false,
             uploadData: false,
             logData: false,
-            message: 'No tasks found on server. Eventually check tasks directory path.'
+            message: 'No tasks found on server. Eventually check tasks directory path.',
+            reloadIntervalObj: false,
+            reloadTime: 60000
         }
     },
     methods: {
-        readData:function(){
+        readData:function(options = {}){
             var self = this;
             var params = {
                 "return_task_cont": "Y"
             }
             self.message = "Loading tasks";
-            Utils.apiCall("get", "/task/",params)
+            Utils.apiCall("get", "/task/",params, options)
             .then(function (response) {
                 if(response.data.length!=0){
                     self.files = response.data;
@@ -254,8 +256,8 @@ module.exports = {
         },
 
         executeItem: function (item, wait) {
-            var self=this;
-            var params={
+            var self = this;
+            var params = {
                 "task_path": item.task_path,
                 "exec_and_wait": wait ? 'Y' : 'N'
             }
@@ -281,6 +283,21 @@ module.exports = {
                     })
                 }
             });
+        },
+
+        scheduleReload: function () {
+            var self = this;
+            if(router.currentRoute.fullPath >= "/taskTable/TaskTable"){
+
+                var options = {
+                    showLoading: false
+                };
+
+                this.readData(options);
+                this.reloadIntervalObj = setTimeout(function(){
+                    self.scheduleReload();
+                }, self.reloadTime);
+            }
         }
     },
 
@@ -290,7 +307,12 @@ module.exports = {
 
     mounted:function(){
         var self = this;
-        setInterval(function(){ self.readData(); }, 60000);
+
+        if(this.reloadIntervalObj) clearTimeout(this.reloadIntervalObj);
+
+        this.reloadIntervalObj = setTimeout(function(){
+            self.scheduleReload();
+        }, self.reloadTime);
     },
 
     components:{
