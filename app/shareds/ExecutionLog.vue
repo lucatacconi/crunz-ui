@@ -23,108 +23,106 @@
             </v-toolbar>
 
             <v-card-text class="pt-0">
-                <v-form>
-                    <v-container>
+                <v-container>
 
-                        <v-row>
-                            <v-col cols="6" class="py-0">
-                                <v-text-field
-                                    label="Path:"
-                                    :value="logdata.path"
-                                    readonly
-                                    dense
-                                    hide-details
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="6" class="py-0">
-                                <v-text-field
-                                    label="Execution date and time:"
-                                    :value="logdata.execution"
-                                    readonly
-                                    dense
-                                    hide-details
-                                ></v-text-field>
-                            </v-col>
-                        </v-row>
+                    <v-row>
+                        <v-col cols="6" class="py-0">
+                            <v-text-field
+                                label="Path:"
+                                :value="logdata.path"
+                                readonly
+                                dense
+                                hide-details
+                            ></v-text-field>
+                        </v-col>
+                        <v-col cols="6" class="py-0">
+                            <v-text-field
+                                label="Execution date and time:"
+                                :value="logdata.execution"
+                                readonly
+                                dense
+                                hide-details
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
 
-                        <v-row>
-                            <v-col cols="6" class="py-0">
-                                <v-text-field
-                                    label="Duration (minutes):"
-                                    :value="( logdata.duration == 0 ? '&lt;1' : logdata.duration )"
-                                    readonly
-                                    dense
-                                    hide-details
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="6" class="py-0">
-                                <v-text-field
-                                    label="Execution outcome:"
-                                    :value="( logdata.outcome == 'OK' ? 'Success' : 'Failed')"
-                                    readonly
-                                    dense
-                                    hide-details
-                                    :error="( logdata.outcome == 'OK' ? false : true)"
-                                ></v-text-field>
-                            </v-col>
-                        </v-row>
+                    <v-row>
+                        <v-col cols="6" class="py-0">
+                            <v-text-field
+                                label="Duration (minutes):"
+                                :value="( logdata.duration == 0 ? '&lt;1' : logdata.duration )"
+                                readonly
+                                dense
+                                hide-details
+                            ></v-text-field>
+                        </v-col>
+                        <v-col cols="6" class="py-0">
+                            <v-text-field
+                                label="Execution outcome:"
+                                :value="( logdata.outcome == 'OK' ? 'Success' : 'Failed')"
+                                readonly
+                                dense
+                                hide-details
+                                :error="( logdata.outcome == 'OK' ? false : true)"
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
 
-                        <v-row>
-                            <v-col class="py-0 pt-5" cols="12">
-                                <v-card
-                                    outlined
+                    <v-row>
+                        <v-col class="py-0 pt-5" cols="12">
+                            <v-card
+                                outlined
+                            >
+                                <v-toolbar
+                                    dense
+                                    flat
+                                    tile
                                 >
-                                    <v-toolbar
-                                        dense
-                                        flat
-                                        tile
+                                    <v-toolbar-title>Standard log content</v-toolbar-title>
+                                    <v-spacer></v-spacer>
+                                    <v-btn
+                                        icon
+                                        @click="copyToClipboard('crunz-log')"
                                     >
-                                        <v-toolbar-title>Standard log content</v-toolbar-title>
-                                        <v-spacer></v-spacer>
-                                        <v-btn
-                                            icon
-                                            @click="copyToClipboard('crunz-log')"
-                                        >
-                                            <v-icon>mdi-content-duplicate</v-icon>
-                                        </v-btn>
-                                    </v-toolbar>
+                                        <v-icon>mdi-content-duplicate</v-icon>
+                                    </v-btn>
+                                </v-toolbar>
 
-                                    <v-card-text class="pa-0">
-                                        <div id="crunz-log"></div>
-                                    </v-card-text>
-                                </v-card>
-                            </v-col>
-                        </v-row>
+                                <v-card-text class="pa-0">
+                                    <div id="crunz-log"></div>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                    </v-row>
 
-                        <v-row v-if="logdata.customLog_content!=''">
-                            <v-col cols="12">
-                                <v-card
-                                    outlined
+                    <v-row v-if="logdata.customLog_content!=''">
+                        <v-col cols="12">
+                            <v-card
+                                outlined
+                            >
+                                <v-toolbar
+                                    dense
+                                    flat
+                                    tile
                                 >
-                                    <v-toolbar
-                                        dense
-                                        flat
-                                        tile
+                                    <v-toolbar-title>Custom log content</v-toolbar-title>
+                                    <v-spacer></v-spacer>
+                                    <v-btn
+                                        icon
+                                        @click="copyToClipboard('custom-log')"
                                     >
-                                        <v-toolbar-title>Custom log content</v-toolbar-title>
-                                        <v-spacer></v-spacer>
-                                        <v-btn
-                                            icon
-                                            @click="copyToClipboard('custom-log')"
-                                        >
-                                            <v-icon>mdi-content-duplicate</v-icon>
-                                        </v-btn>
-                                    </v-toolbar>
+                                        <v-icon>mdi-content-duplicate</v-icon>
+                                    </v-btn>
+                                </v-toolbar>
 
-                                    <v-card-text class="pa-0">
-                                        <div id="custom-log"></div>
-                                    </v-card-text>
-                                </v-card>
-                            </v-col>
-                        </v-row>
+                                <v-card-text class="pa-0">
+                                    <div id="custom-log"></div>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                    </v-row>
 
-                    </v-container>
-                <v-form>
+                </v-container>
             </v-card-text>
         </v-card>
     </v-dialog>

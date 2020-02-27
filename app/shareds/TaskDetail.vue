@@ -1,0 +1,199 @@
+<template>
+    <v-dialog :value="true" persistent max-width="800px" @on-close="closeModal()">
+        <v-card>
+            <v-toolbar
+                dense
+                dark
+                :color="rowdata.color"
+            >
+                <v-toolbar-title v-html="rowdata.name"></v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-toolbar-items>
+                    <v-btn
+                        icon
+                        @click="closeModal()"
+                    >
+                        <v-icon>
+                            close
+                        </v-icon>
+                    </v-btn>
+                </v-toolbar-items>
+            </v-toolbar>
+
+            <v-card-text class="pt-0">
+                <v-container>
+                    <v-row>
+                        <v-col cols="6" class="py-0">
+                            <v-text-field
+                                label="Path:"
+                                :value="rowdata.data.task_path"
+                                readonly
+                                dense
+                                hide-details
+                            ></v-text-field>
+                        </v-col>
+                        <v-col cols="6" class="py-0">
+                            <v-text-field
+                                label="Execution date and time:"
+                                :value="rowdata.execution"
+                                readonly
+                                dense
+                                hide-details
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="12" class="py-0">
+                            <v-text-field
+                                label="Execution schedule:"
+                                :value="rowdata.data.expression_readable"
+                                readonly
+                                dense
+                                hide-details
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="12" class="py-0">
+                            <v-textarea
+                                label="Description:"
+                                :value="rowdata.data.task_description"
+                                readonly
+                                dense
+                                hide-details
+                            ></v-textarea>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-card-text>
+        </v-card>
+    </v-dialog>
+</template>
+
+<script>
+module.exports = {
+    data:function(){
+        return{
+            // logdata: {
+            //     path:"",
+            //     execution:"",
+            //     duration:"",
+            //     outcome:"",
+            //     crunzLog_content : "",
+            //     customLog_content : ""
+            // },
+
+            // crunzLogEditor : null,
+            // customLogEditor : null
+        }
+    },
+
+    props: ['rowdata'],
+
+    mounted:function() {
+
+        console.log(JSON.stringify(this.rowdata));
+
+        // if(this.rowdata){
+        //     this.readData()
+        // }
+    },
+
+    methods: {
+        closeModal: function () {
+            var self = this;
+            self.$emit('on-close-edit-modal');
+        },
+
+        // initEditor:function(editor){
+        //     var ed = "";
+        //     var content = "";
+
+        //     if(editor=="crunz-log"){
+        //         content = this.logdata.crunzLog_content;
+        //     }
+        //     if(editor=="custom-log"){
+        //         content = this.logdata.customLog_content;
+        //     }
+
+        //     ed = ace.edit(editor);
+        //     ed.getSession().setMode("ace/mode/text");
+
+        //     ed.setOptions({
+        //         showPrintMargin: false,
+        //         fontSize: 14
+        //     });
+
+        //     ed.session.setValue(content);
+
+        //     if(editor=="crunz-log"){
+        //         this.crunzLogEditor = ed;
+        //     }
+        //     if(editor=="custom-log"){
+        //         this.customLogEditor = ed;
+        //     }
+        // },
+
+        // copyToClipboard:function(editor){
+        //     var ed=""
+        //     if(editor == "crunz-log"){
+        //         ed = this.crunzLogEditor;
+        //     }
+        //     if(editor == "custom-log"){
+        //         ed = this.customLogEditor;
+        //     }
+        //     if(ed!=""){
+        //         var sel = ed.selection.toJSON();
+        //         ed.selectAll();
+        //         ed.focus();
+        //         document.execCommand('copy');
+        //         ed.selection.fromJSON(sel);
+        //     }
+        // },
+
+        // readData:function(){
+        //     var self=this;
+
+        //     var apiParams = {
+        //         "task_path": self.rowdata.task_path
+        //     }
+
+        //     Utils.apiCall("get", "/task/exec-outcome", apiParams)
+        //     .then(function (response) {
+
+        //         if( typeof response === 'undefined' || response === null ){
+        //             Utils.showConnError();
+        //         }else{
+        //             self.logdata.path = response.data.task_path;
+        //             self.logdata.execution = response.data.task_start;
+        //             self.logdata.duration = response.data.duration;
+        //             self.logdata.outcome = response.data.outcome;
+
+        //             if(response.data.log_content != ""){
+        //                 self.logdata.crunzLog_content = window.atob(response.data.log_content);
+        //                 setTimeout(function(){
+        //                     self.initEditor('crunz-log');
+        //                 }, 200);
+        //             }
+        //             if(response.data.custom_log_content != ""){
+        //                 self.logdata.customLog_content = window.atob(response.data.custom_log_content);
+        //                 setTimeout(function(){
+        //                     self.initEditor('custom-log')
+        //                 }, 200);
+        //             }
+        //         }
+        //     });
+        // },
+    },
+}
+</script>
+
+<style>
+    /* #crunz-log {
+        height: 300px;
+    }
+    #custom-log {
+        height: 300px;
+    } */
+
+</style>
