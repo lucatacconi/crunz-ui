@@ -151,7 +151,7 @@ $app->group('/task', function () use ($app) {
         }
         if($outcome_executed_task_lst == 'Y'){
             $calc_run_lst = 'Y';
-            $past_planned_tasks = 'Y';
+            // $past_planned_tasks = 'Y';
         }
 
         $return_task_content = "N";
@@ -365,6 +365,24 @@ $app->group('/task', function () use ($app) {
                 }
 
 
+                if(!empty($row["lifetime_from"]) || !empty($row["lifetime_to"])){
+
+                    $lifetime_descr = " (Executed";
+
+                    if(!empty($row["lifetime_from"])){
+                        $lifetime_descr .= " from ".$row["lifetime_from"];
+                    }
+
+                    if(!empty($row["lifetime_to"])){
+                        $lifetime_descr .= " to ".$row["lifetime_to"];
+                    }
+
+                    $lifetime_descr .= ")";
+
+                    $row["task_description"] = $row["task_description"].$lifetime_descr;
+                }
+
+
                 try {
                     $row["expression_readable"] = CronTranslator::translate($row["expression"]);
                 } catch (Exception $e) {
@@ -467,11 +485,59 @@ $app->group('/task', function () use ($app) {
                     }
                 }
 
+                //Next run calculation
+                if(!empty($row["lifetime_from"]) || !empty($row["lifetime_to"])){
 
-                $row["next_run"] = $cron->getNextRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
+                    if($row["lifetime_to"] < $date_ref){
+                        $next_run = '';
+                    }else{
+                        $nincrement = 0;
+                        $next_run = '';
+
+                        while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+                            $calc_run = $cron->getNextRunDate($date_ref, $nincrement, true)->format('Y-m-d H:i:s');
+
+                            if($calc_run >= $row["lifetime_from"] && $calc_run <= $row["lifetime_to"]  ){
+                                $next_run = $calc_run;
+                                break;
+                            }
+
+                            $nincrement++;
+                        }
+                    }
+
+                }else{
+                    $next_run = $cron->getNextRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
+                }
+
+                $row["next_run"] = $next_run;
 
                 //Calculeted but not necessarily executed
-                $row["calculeted_last_run"] = $cron->getPreviousRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
+                if(!empty($row["lifetime_from"]) || !empty($row["lifetime_to"])){
+
+                    if($row["lifetime_from"] > $date_ref){
+                        $calculeted_last_run = '';
+                    }else{
+                        $nincrement = 0;
+                        $calculeted_last_run = '';
+
+                        while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+                            $calc_run = $cron->getPreviousRunDate($date_ref, $nincrement, true)->format('Y-m-d H:i:s');
+
+                            if($calc_run >= $row["lifetime_from"] && $calc_run <= $row["lifetime_to"]  ){
+                                $calculeted_last_run = $calc_run;
+                                break;
+                            }
+
+                            $nincrement++;
+                        }
+                    }
+                }else{
+                    $calculeted_last_run = $cron->getPreviousRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
+                }
+
+                $row["calculeted_last_run"] = $calculeted_last_run;
+
 
                 //Calculating run list of the interval
                 $row["interval_run_lst"] = [];
