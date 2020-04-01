@@ -5,8 +5,22 @@
         <task-detail
             v-if="showDetailModal"
             @on-close-edit-modal="closeDetailModal"
+            @on-open-log-modal="openLogModal"
             :rowdata="selectedEvent"
         ></task-detail>
+
+        <!-- Upload file modal -->
+        <task-upload
+            v-if="showUploadModal"
+            @on-close-edit-modal="closeUploadModal($event)"
+        ></task-upload>
+
+        <!-- Log modal -->
+        <task-log
+            v-if="showLogModal"
+            @on-close-edit-modal="closeLogModal"
+            :rowdata="logData"
+        ></task-log>
 
         <v-card>
             <v-row class="fill-height">
@@ -57,8 +71,11 @@ module.exports = {
     data:function(){
         return{
             tasks: [],
+            showUploadModal:false,
+            showLogModal:false,
             showDetailModal: false,
             selectedEvent: false,
+            logData:false,
 
             dateFocus: moment().format('YYYY-MM-DD')
         }
@@ -114,17 +131,28 @@ module.exports = {
             this.showDetailModal = true;
             this.selectedEvent = event != undefined ? event : false;
         },
-
         closeDetailModal: function(){
             this.showDetailModal = false;
         },
 
-        // checkLog:function(event){
-        //     if(event.start < moment().format('YYYY-MM-DD HH:mm:ss')){
-        //         return true;
-        //     }
-        //     return false;
-        // },
+        openUploadModal: function () {
+            this.showUploadModal = true;
+        },
+        closeUploadModal: function () {
+            this.showUploadModal = false;
+            if(typeof result !== 'undefined' && result){
+                this.readData();
+            }
+        },
+
+        openLogModal: function () {
+            this.logData = this.selectedEvent;
+            this.showLogModal = true;
+        },
+        closeLogModal: function () {
+            this.showLogModal = false;
+        },
+
 
         readData: function(){
 
@@ -132,6 +160,7 @@ module.exports = {
 
             var apiParams={
                 "calc_run_lst": 'Y',
+                "outcome_executed_task_lst": "Y",
                 "interval_from": moment(self.dateFocus,'YYYY-MM-DD').set('date',1).format('YYYY-MM-DD').toString(),
                 "interval_to": moment(self.dateFocus,'YYYY-MM-DD').endOf('month').format('YYYY-MM-DD').toString()
             }
@@ -171,7 +200,9 @@ module.exports = {
 
     components:{
         'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue' + '?v=' + new Date().getTime()),
-        'task-detail': httpVueLoader('../../shareds/TaskDetail.vue' + '?v=' + new Date().getTime())
+        'task-upload': httpVueLoader('../../shareds/FileUpload.vue' + '?v=' + new Date().getTime()),
+        'task-detail': httpVueLoader('../../shareds/TaskDetail.vue' + '?v=' + new Date().getTime()),
+        'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime())
     }
 }
 </script>

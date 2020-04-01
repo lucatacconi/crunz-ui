@@ -208,9 +208,18 @@ module.exports = {
 
         readData:function(){
             var self=this;
+            var task_path;
+
+            if(typeof self.rowdata.task_path !== 'undefined' && self.rowdata.task_path != '' ){
+                task_path = self.rowdata.task_path;
+            }else if(typeof self.rowdata.data.task_path !== 'undefined' && self.rowdata.data.task_path != '' ){
+                task_path = self.rowdata.data.task_path;
+            }else{
+                Utils.showConnError();
+            }
 
             var apiParams = {
-                "task_path": self.rowdata.task_path
+                "task_path": task_path
             }
 
             Utils.apiCall("get", "/task/exec-outcome", apiParams)

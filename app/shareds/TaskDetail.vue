@@ -25,8 +25,8 @@
                     <v-row>
                         <v-col cols="6" class="py-0">
                             <v-text-field
-                                label="Path:"
-                                :value="rowdata.data.task_path"
+                                label="Last duration (minutes):"
+                                :value="( exec_duration < 0 ? '--' : ( exec_duration == 0 ? '&lt;1' : exec_duration ))"
                                 readonly
                                 dense
                                 hide-details
@@ -34,8 +34,8 @@
                         </v-col>
                         <v-col cols="6" class="py-0">
                             <v-text-field
-                                label="Execution date and time:"
-                                :value="rowdata.execution"
+                                label="Status at the date and time:"
+                                :value="status != 'EXEC' ? 'Scheduled/Waiting' : 'Executed' "
                                 readonly
                                 dense
                                 hide-details
@@ -64,6 +64,70 @@
                             ></v-textarea>
                         </v-col>
                     </v-row>
+
+
+                    <div v-if="status == 'EXEC'">
+                        <v-row>
+                            <v-col cols="6" class="py-0">
+                                <v-text-field
+                                    label="Execution date and time:"
+                                    :value="rowdata.start"
+                                    readonly
+                                    dense
+                                    hide-details
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="6" class="py-0">
+                                <v-text-field
+                                    label="Duration (minutes):"
+                                    :value="( exec_duration < 0 ? '--' : ( exec_duration == 0 ? '&lt;1' : exec_duration ))"
+                                    readonly
+                                    dense
+                                    hide-details
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="6" class="py-0">
+                                <v-text-field v-if="exec_outcome != ''"
+                                    label="Execution outcome:"
+                                    :value="( exec_outcome == 'OK' ? 'Success' : 'Failed')"
+                                    readonly
+                                    dense
+                                    hide-details
+                                    :error="( exec_outcome == 'OK' ? false : true)"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="6" class="py-0 pb-0">
+                                <template>
+                                    <div class="text-center">
+                                        <v-btn  @click="openLogModal()"
+                                                class="ma-2 mt-3 mb-0 pb-0"
+                                                outlined
+                                                bottom
+                                                :color="rowdata.color">
+                                            <v-icon left>fas fa-file-alt</v-icon>
+                                            Execution log
+                                        </v-btn>
+                                    </div>
+                                </template>
+                            </v-col>
+                        </v-row>
+                    </div>
+                    <div v-else>
+                        <v-row>
+                            <v-col cols="6" class="py-0">
+                                <v-text-field
+                                    label="Scheduled execution date/time:"
+                                    :value="rowdata.data.next_run"
+                                    readonly
+                                    dense
+                                    hide-details
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </div>
+
                 </v-container>
             </v-card-text>
         </v-card>
@@ -74,17 +138,9 @@
 module.exports = {
     data:function(){
         return{
-            // logdata: {
-            //     path:"",
-            //     execution:"",
-            //     duration:"",
-            //     outcome:"",
-            //     crunzLog_content : "",
-            //     customLog_content : ""
-            // },
-
-            // crunzLogEditor : null,
-            // customLogEditor : null
+            status: null,
+            exec_duration: 0,
+            exec_outcome: null
         }
     },
 
@@ -92,11 +148,33 @@ module.exports = {
 
     mounted:function() {
 
-        console.log(JSON.stringify(this.rowdata));
+        var self = this;
 
-        // if(this.rowdata){
-        //     this.readData()
-        // }
+        this.status = "PROGR";
+        if(this.rowdata){
+
+            if(this.rowdata.data.executed_task_lst.length > 0){
+                this.exec_1_atleast = false
+            }
+
+
+            for (var task_start in this.rowdata.data.executed_task_lst) {
+                if(this.rowdata.start == task_start){
+                    this.status = "EXEC";
+                }
+            }
+            for (var task_exec in this.rowdata.data.outcome_executed_task_lst) {
+                if(this.rowdata.start == task_exec){
+                    this.exec_outcome = this.rowdata.data.outcome_executed_task_lst[task_exec];
+                }
+            }
+
+            if(this.rowdata.data.last_outcome != ''){
+                this.exec_duration = moment(this.rowdata.end).diff(moment(this.rowdata.start), 'minutes')
+            }else{
+                this.exec_duration = -1;
+            }
+        }
     },
 
     methods: {
@@ -105,95 +183,13 @@ module.exports = {
             self.$emit('on-close-edit-modal');
         },
 
-        // initEditor:function(editor){
-        //     var ed = "";
-        //     var content = "";
-
-        //     if(editor=="crunz-log"){
-        //         content = this.logdata.crunzLog_content;
-        //     }
-        //     if(editor=="custom-log"){
-        //         content = this.logdata.customLog_content;
-        //     }
-
-        //     ed = ace.edit(editor);
-        //     ed.getSession().setMode("ace/mode/text");
-
-        //     ed.setOptions({
-        //         showPrintMargin: false,
-        //         fontSize: 14
-        //     });
-
-        //     ed.session.setValue(content);
-
-        //     if(editor=="crunz-log"){
-        //         this.crunzLogEditor = ed;
-        //     }
-        //     if(editor=="custom-log"){
-        //         this.customLogEditor = ed;
-        //     }
-        // },
-
-        // copyToClipboard:function(editor){
-        //     var ed=""
-        //     if(editor == "crunz-log"){
-        //         ed = this.crunzLogEditor;
-        //     }
-        //     if(editor == "custom-log"){
-        //         ed = this.customLogEditor;
-        //     }
-        //     if(ed!=""){
-        //         var sel = ed.selection.toJSON();
-        //         ed.selectAll();
-        //         ed.focus();
-        //         document.execCommand('copy');
-        //         ed.selection.fromJSON(sel);
-        //     }
-        // },
-
-        // readData:function(){
-        //     var self=this;
-
-        //     var apiParams = {
-        //         "task_path": self.rowdata.task_path
-        //     }
-
-        //     Utils.apiCall("get", "/task/exec-outcome", apiParams)
-        //     .then(function (response) {
-
-        //         if( typeof response === 'undefined' || response === null ){
-        //             Utils.showConnError();
-        //         }else{
-        //             self.logdata.path = response.data.task_path;
-        //             self.logdata.execution = response.data.task_start;
-        //             self.logdata.duration = response.data.duration;
-        //             self.logdata.outcome = response.data.outcome;
-
-        //             if(response.data.log_content != ""){
-        //                 self.logdata.crunzLog_content = window.atob(response.data.log_content);
-        //                 setTimeout(function(){
-        //                     self.initEditor('crunz-log');
-        //                 }, 200);
-        //             }
-        //             if(response.data.custom_log_content != ""){
-        //                 self.logdata.customLog_content = window.atob(response.data.custom_log_content);
-        //                 setTimeout(function(){
-        //                     self.initEditor('custom-log')
-        //                 }, 200);
-        //             }
-        //         }
-        //     });
-        // },
-    },
+        openLogModal: function () {
+            var self = this;
+            self.$emit('on-open-log-modal');
+        }
+    }
 }
 </script>
 
 <style>
-    /* #crunz-log {
-        height: 300px;
-    }
-    #custom-log {
-        height: 300px;
-    } */
-
 </style>
