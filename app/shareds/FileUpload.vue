@@ -64,6 +64,15 @@
                 >
                     <v-icon left>mdi-file-upload-outline</v-icon>
                     Upload
+                </v-btn> -->
+
+                <v-btn
+                    outlined
+                    color="#607d8b"
+                    @click="uploadFile"
+                >
+                    <v-icon left>mdi-file-upload-outline</v-icon>
+                    Upload
                 </v-btn>
             </v-card-actions>
         </v-card>
