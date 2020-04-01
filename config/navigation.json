@@ -76,8 +76,8 @@
             "visible": true,
 
             "action":{
-                "path": "/menu/DailyCalendar",
-                "component": "../../app/sections/menu/DailyCalendar.vue"
+                "path": "/dailyCalendar/DailyCalendar",
+                "component": "../../app/sections/dailyCalendar/DailyCalendar.vue"
             },
 
             "layout":{
