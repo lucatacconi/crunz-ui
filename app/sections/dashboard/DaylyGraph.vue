@@ -33,6 +33,7 @@
 
                 var params = {
                     "return_task_cont": "N",
+                    "past_planned_tasks": "Y",
                     "outcome_executed_task_lst": "Y",
                     "interval_from": moment().format("YYYY-MM-DD"),
                     "interval_to": moment().format("YYYY-MM-DD")
