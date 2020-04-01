@@ -152,7 +152,7 @@ module.exports = {
         },
         closeUploadModal: function (result) {
             this.showUploadModal = false;
-            if(result){
+            if(typeof result !== 'undefined' && result){
                 this.readData();
             }
         },
