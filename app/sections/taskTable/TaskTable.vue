@@ -85,7 +85,7 @@
                                 {{ item !=undefined && item.expression != undefined && item.expression!='' ? cronstrue.toString(item.expression) : '' }}
                             </td>
                             <td class="text-center">
-                                {{ moment(item.next_run).format('YY-MM-DD HH:mm') }}
+                                {{ item.next_run == "" ? "Expired" : moment(item.next_run).format('YY-MM-DD HH:mm') }}
                             </td>
                             <td class="text-center">
                                 {{ item.last_run == "" ? "--" : moment(item.last_run).format('YY-MM-DD HH:mm') }}
