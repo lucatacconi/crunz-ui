@@ -99,7 +99,7 @@ module.exports = {
     methods: {
         closeModal: function (result) {
             var self = this;
-            self.$emit('on-close-edit-modal',result);
+            self.$emit('on-close-modal',result);
         },
         checkFolder:function(event) {
             if(event.length!=0){

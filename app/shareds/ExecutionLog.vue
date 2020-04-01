@@ -157,7 +157,7 @@ module.exports = {
     methods: {
         closeModal: function () {
             var self = this;
-            self.$emit('on-close-edit-modal');
+            self.$emit('on-close-modal');
         },
 
         initEditor:function(editor){

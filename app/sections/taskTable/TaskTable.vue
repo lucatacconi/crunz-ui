@@ -4,21 +4,21 @@
         <!-- Upload file modal -->
         <task-upload
             v-if="showUploadModal"
-            @on-close-edit-modal="closeUploadModal($event)"
+            @on-close-modal="closeUploadModal($event)"
             :rowdata="uploadData"
         ></task-upload>
 
         <!-- Log modal -->
         <task-log
             v-if="showLogModal"
-            @on-close-edit-modal="closeLogModal"
+            @on-close-modal="closeLogModal"
             :rowdata="logData"
         ></task-log>
 
         <!-- Edit modal -->
         <task-edit
             v-if="showEditModal"
-            @on-close-edit-modal="closeEditModal"
+            @on-close-modal="closeEditModal"
             :rowdata="logData"
         ></task-edit>
 

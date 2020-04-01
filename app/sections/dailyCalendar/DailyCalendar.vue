@@ -4,7 +4,7 @@
         <!-- Detail modal -->
         <task-detail
             v-if="showDetailModal"
-            @on-close-edit-modal="closeDetailModal"
+            @on-close-modal="closeDetailModal"
             @on-open-log-modal="openLogModal"
             :rowdata="selectedEvent"
         ></task-detail>
@@ -12,13 +12,13 @@
         <!-- Upload file modal -->
         <task-upload
             v-if="showUploadModal"
-            @on-close-edit-modal="closeUploadModal($event)"
+            @on-close-modal="closeUploadModal($event)"
         ></task-upload>
 
         <!-- Log modal -->
         <task-log
             v-if="showLogModal"
-            @on-close-edit-modal="closeLogModal"
+            @on-close-modal="closeLogModal"
             :rowdata="logData"
         ></task-log>
 
