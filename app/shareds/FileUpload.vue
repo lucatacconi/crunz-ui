@@ -55,12 +55,21 @@
                     ></v-file-input>
                     <v-switch class="pt-0" v-model="formData.rewrite" inset :label="`Rewrite task file if present in destination path`"></v-switch>
             </v-card-text>
-            <v-card-actions class="pt-0 pb-3 pr-3">
+            <v-card-actions class="pt-0 pb-3 pr-6">
                 <v-spacer></v-spacer>
-                <v-btn
+                <!-- <v-btn
                     small
                     dense
                     dark
+                    color="#607d8b"
+                    @click="uploadFile"
+                >
+                    <v-icon left>mdi-file-upload-outline</v-icon>
+                    Upload
+                </v-btn> -->
+
+                <v-btn
+                    outlined
                     color="#607d8b"
                     @click="uploadFile"
                 >
