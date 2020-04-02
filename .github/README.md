@@ -44,8 +44,8 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 | ![Chrome](https://raw.github.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png) | ![Firefox](https://raw.github.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png) |
 | ------------- | ------------- |
-| Content Cell  | Content Cell  |
-| Content Cell  | Content Cell  |
+| Latest ✔  | Latest ✔  |
+
 
 
 
