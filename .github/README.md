@@ -42,6 +42,13 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 ## Browser Support
 
+| ![Chrome](https://raw.github.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png) | ![Firefox](https://raw.github.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png) |
+| ------------- | ------------- |
+| Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  |
+
+
+
 | ![Chrome](https://raw.github.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png) |
 | ![Firefox](https://raw.github.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png) |
 | ![Safari](https://raw.github.com/alrra/browser-logos/master/src/safari/safari_48x48.png) |
