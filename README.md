@@ -1,6 +1,6 @@
 # Crunz-ui
 
-Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and is proposed as its graphical interface, to make its use more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees its elastic and dynamic structure.
+Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and is proposed as its natural graphical interface, to make its use more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees to Crunz-ui its elastic and dynamic structure.
 
 
 ## What Crunz is and how Crunz-ui connects to it
@@ -23,7 +23,6 @@ return $schedule;
 ```
 
 Crunz-ui natively uses Crunz libraries and functions to read and interpret the configured tasks.
-
 Then it presents tasks in a tabular or graphical display showing them on a monthly or daily view.
 
 
@@ -40,8 +39,7 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 ## System Requirements
 
 * Linux OS
-* Web server with URL rewriting
-* PHP 7.1.3 or newer
+* Apache and PHP 7.1.3 or newer
 * Composer
 
 
