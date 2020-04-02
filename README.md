@@ -1,6 +1,6 @@
 # Crunz-ui
 
-Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and is proposed as its natural graphical interface, to make its use more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees to Crunz-ui its elastic and dynamic structure.
+Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and is proposed as its natural graphical interface, optimal to make its usage more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees to the project its elastic and dynamic structure.
 
 
 ## What Crunz is and how Crunz-ui connects to it
@@ -23,7 +23,7 @@ return $schedule;
 ```
 
 Crunz-ui natively uses Crunz libraries and functions to read and interpret the configured tasks.
-Then it presents tasks in a tabular or graphical display showing them on a monthly or daily view.
+Then presents tasks in a tabular or graphical display, showing them on a monthly or daily view.
 
 
 ## What else can Crunz-ui do?
@@ -49,7 +49,6 @@ It's recommended that you use [Composer](https://getcomposer.org/) to install Cr
 
 Access the **Document Root** folder on your **Apache Server** or one of the configured virtual hosts and run the following command:
 ```
-bash
 $ composer create-project lucatacconi/crunz-ui
 ```
 
@@ -58,12 +57,7 @@ Configure the main application information and environment by editing /config/ap
 In any case it is possible to download the complete package from Github and proceed with the configuration of the appropriate files.
 
 
-
-## Usage on a previous installation of Crunz
-
-
 ## Never use Crunz before
-
 
 Download project
 Configure .env
@@ -72,6 +66,15 @@ Create log directory if non present
 Copy .sh in crunz directory
 Change crunz event in crontab
 First login
+
+
+
+## Usage on a previous installation of Crunz
+
+
+
+
+
 
 
 
