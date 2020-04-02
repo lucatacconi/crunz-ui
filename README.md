@@ -43,6 +43,29 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 * Composer
 
 
+## Contributing
+
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Installation and application setup
 
 It's recommended that you use [Composer](https://getcomposer.org/) to install Crunz-ui.
@@ -57,7 +80,7 @@ Configure the main application information and environment by editing /config/ap
 In any case it is possible to download the complete package from Github and proceed with the configuration of the appropriate files.
 
 
-## Never use Crunz before
+## Never used Crunz before
 
 Download project
 Configure .env
