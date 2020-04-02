@@ -56,6 +56,24 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 ## Installation and application setup
 
+It's recommended that you use [Composer](https://getcomposer.org/) to install Crunz-ui.
+
+Start from your **Apache Server**'s **Document Root** folder or start from directory combined with one of the configured virtual hosts and type the following command:
+```
+$ composer create-project lucatacconi/crunz-ui
+```
+This will install Crunz-ui and all required dependencies.
+
+Cruz-ui can be installed in two ways: it can work using the Crunz embedded in the packages or using the tasks and configurations of Crunz previously installed on the user's system.
+
+If you have never used Crunz before or want to use the Crunz integrated in the packages, refer to the section [Never used Crunz before](Never used Crunz before).
+If you want to use Cruz-ui on a version of Crunz previously installed on the user's systems, refer to the section [Usage on a previous installation of Crunz](Usage on a previous installation of Crunz).
+
+
+### Never used Crunz before
+
+
+## Usage on a previous installation of Crunz
 
 
 
@@ -77,7 +95,7 @@ Please see [ROADMAP](ROADMAP.md) for details.
 
 ## License
 
-Silly Vue Scaffolding is licensed under the MIT license. See [License File](LICENSE.md) for more information.
+Crunz-ui is licensed under the MIT license. See [License File](LICENSE.md) for more information.
 
 
 
@@ -98,16 +116,7 @@ Silly Vue Scaffolding is licensed under the MIT license. See [License File](LICE
 
 ## Installation and application setup
 
-It's recommended that you use [Composer](https://getcomposer.org/) to install Crunz-ui.
 
-Access the **Document Root** folder on your **Apache Server** or one of the configured virtual hosts and run the following command:
-```
-$ composer create-project lucatacconi/crunz-ui
-```
-
-Configure the main application information and environment by editing /config/application.json and .env file
-
-In any case it is possible to download the complete package from Github and proceed with the configuration of the appropriate files.
 
 
 ## Never used Crunz before
