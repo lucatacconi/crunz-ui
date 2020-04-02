@@ -66,14 +66,14 @@ This will install Crunz-ui and all required dependencies.
 
 Cruz-ui can be installed in two ways: it can work using the Crunz embedded in the packages or using the tasks and configurations of Crunz previously installed on the user's system.
 
-If you have never used Crunz before or want to use the Crunz integrated in the packages, refer to the section [Never used Crunz before](Never used Crunz before).
-If you want to use Cruz-ui on a version of Crunz previously installed on the user's systems, refer to the section [Usage on a previous installation of Crunz](Usage on a previous installation of Crunz).
+If you have never used Crunz before or want to use the Crunz integrated in the packages, refer to the section [Never used Crunz before](#Never used Crunz before).
+If you want to use Cruz-ui on a version of Crunz previously installed on the user's systems, refer to the section [Usage on a previous installation of Crunz](#Usage on a previous installation of Crunz).
 
 
 ### Never used Crunz before
 
 
-## Usage on a previous installation of Crunz
+### Usage on a previous installation of Crunz
 
 
 
