@@ -5,7 +5,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 require '../vendor/autoload.php';
 
-$dotenv = new Dotenv\Dotenv("../");
+$dotenv = Dotenv\Dotenv::createImmutable("../");
 $dotenv->load();
 
 // date_default_timezone_set(getenv("TIMEZONE"));
