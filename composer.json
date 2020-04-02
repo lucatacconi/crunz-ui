@@ -27,7 +27,7 @@
         "tuupola/base62": "^2",
         "tuupola/slim-jwt-auth": "^3",
         "tuupola/slim-basic-auth": "^3",
-        "vlucas/phpdotenv": "^2.4",
+        "vlucas/phpdotenv": "^4",
         "twig/twig": "^3",
         "lavary/crunz": "^2",
         "lorisleiva/cron-translator": ">=0.1.1"
