@@ -4,7 +4,7 @@
             <v-toolbar
                 dense
                 dark
-                color="#607d8b"
+                color="blue-grey"
             >
                 <v-toolbar-title>
                     Task execution log
@@ -31,7 +31,6 @@
                                 label="Path:"
                                 :value="logdata.path"
                                 readonly
-                                dense
                                 hide-details
                             ></v-text-field>
                         </v-col>
@@ -40,7 +39,6 @@
                                 label="Execution date and time:"
                                 :value="logdata.execution"
                                 readonly
-                                dense
                                 hide-details
                             ></v-text-field>
                         </v-col>
@@ -52,7 +50,6 @@
                                 label="Duration (minutes):"
                                 :value="( logdata.duration == 0 ? '&lt;1' : logdata.duration )"
                                 readonly
-                                dense
                                 hide-details
                             ></v-text-field>
                         </v-col>
@@ -61,7 +58,6 @@
                                 label="Execution outcome:"
                                 :value="( logdata.outcome == 'OK' ? 'Success' : 'Failed')"
                                 readonly
-                                dense
                                 hide-details
                                 :error="( logdata.outcome == 'OK' ? false : true)"
                             ></v-text-field>

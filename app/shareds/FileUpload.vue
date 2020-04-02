@@ -4,7 +4,7 @@
             <v-toolbar
                 dense
                 dark
-                color="#607d8b"
+                color="blue-grey"
             >
                 <v-toolbar-title>
                     {{modalTitle}}
@@ -21,10 +21,10 @@
                     </v-btn>
                 </v-toolbar-items>
             </v-toolbar>
-            <v-card-text class="px-8 pb-0">
+
+            <v-card-text class="pt-3 pb-0">
                 <span class="subtitle-1">Destination path</span>
                 <v-treeview
-                    dense
                     item-disabled="disabled"
                     color="blue"
                     :items="items"
@@ -45,30 +45,29 @@
                         {{item.description}}
                     </template>
                 </v-treeview>
-                    <v-file-input
-                        class="mt-0"
-                        label="Select file"
-                        accept=".php"
-                        prepend-icon=""
-                        append-icon="mdi-folder"
-                        v-model="formData.file"
-                    ></v-file-input>
-                    <v-switch class="pt-0" v-model="formData.rewrite" inset :label="`Rewrite task file if present in destination path`"></v-switch>
+                <v-file-input
+                    class="pt-5"
+                    label="Select file"
+                    accept=".php"
+                    prepend-icon=""
+                    hide-details
+                    append-icon="mdi-folder"
+                    v-model="formData.file"
+                ></v-file-input>
+                <v-switch class="pl-1"
+                          v-model="formData.rewrite"
+                          inset
+                          :label="`Rewrite task file if present in destination path`"
+                          hide-details
+                ></v-switch>
             </v-card-text>
-            <v-card-actions class="pt-0 pb-3 pr-6">
+
+            <v-card-actions class="pt-1 pr-5 pb-3">
                 <v-spacer></v-spacer>
                 <v-btn
                     outlined
-                    color="#607d8b"
-                    @click="uploadFile"
-                >
-                    <v-icon left>mdi-file-upload-outline</v-icon>
-                    Upload
-                </v-btn> -->
-
-                <v-btn
-                    outlined
-                    color="#607d8b"
+                    small
+                    color="grey darken-2"
                     @click="uploadFile"
                 >
                     <v-icon left>mdi-file-upload-outline</v-icon>

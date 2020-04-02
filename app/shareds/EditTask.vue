@@ -4,7 +4,7 @@
             <v-toolbar
                 dense
                 dark
-                color="#607d8b"
+                color="blue-grey"
             >
                 <v-toolbar-title>
                     Edit task
@@ -22,7 +22,7 @@
                 </v-toolbar-items>
             </v-toolbar>
 
-            <v-card-text class="pt-0">
+            <v-card-text class="pt-0 pb-0">
                 <v-form>
                     <v-container>
 
@@ -32,7 +32,6 @@
                                     label="Path:"
                                     :value="logdata.task_path"
                                     readonly
-                                    dense
                                     hide-details
                                 ></v-text-field>
                             </v-col>
@@ -68,27 +67,26 @@
                     </v-container>
                 <v-form>
             </v-card-text>
-            <v-card-actions class="pt-0 pb-3 pr-3">
+
+            <v-card-actions class="pt-0 pr-9 pb-3">
                 <v-spacer></v-spacer>
                 <v-btn
                     small
-                    dense
-                    dark
-                    color="#607d8b"
+                    outlined
+                    color="grey darken-2"
                     @click="saveFile(false)"
                 >
-                    <v-icon left>mdi-content-save</v-icon>
+                    <v-icon left>far fa-save</v-icon>
                     Save
                 </v-btn>
 
                 <v-btn
                     small
-                    dense
-                    dark
-                    color="#607d8b"
+                    outlined
+                    color="grey darken-2"
                     @click="saveFile(true)"
                 >
-                    <v-icon left>mdi-content-save</v-icon>
+                    <v-icon left>far fa-save</v-icon>
                     Save & close
                 </v-btn>
             </v-card-actions>

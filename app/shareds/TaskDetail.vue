@@ -28,7 +28,6 @@
                                 label="Last duration (minutes):"
                                 :value="( exec_duration < 0 ? '--' : ( exec_duration == 0 ? '&lt;1' : exec_duration ))"
                                 readonly
-                                dense
                                 hide-details
                             ></v-text-field>
                         </v-col>
@@ -37,7 +36,6 @@
                                 label="Status at the date and time:"
                                 :value="status != 'EXEC' ? 'Scheduled/Waiting' : 'Executed' "
                                 readonly
-                                dense
                                 hide-details
                             ></v-text-field>
                         </v-col>
@@ -48,7 +46,6 @@
                                 label="Execution schedule:"
                                 :value="rowdata.data.expression_readable"
                                 readonly
-                                dense
                                 hide-details
                             ></v-text-field>
                         </v-col>
@@ -59,7 +56,6 @@
                                 label="Description:"
                                 :value="rowdata.data.task_description"
                                 readonly
-                                dense
                                 hide-details
                             ></v-textarea>
                         </v-col>
@@ -73,7 +69,7 @@
                                     label="Execution date and time:"
                                     :value="rowdata.start"
                                     readonly
-                                    dense
+
                                     hide-details
                                 ></v-text-field>
                             </v-col>
@@ -82,7 +78,7 @@
                                     label="Duration (minutes):"
                                     :value="( exec_duration < 0 ? '--' : ( exec_duration == 0 ? '&lt;1' : exec_duration ))"
                                     readonly
-                                    dense
+
                                     hide-details
                                 ></v-text-field>
                             </v-col>
@@ -93,7 +89,7 @@
                                     label="Execution outcome:"
                                     :value="( exec_outcome == 'OK' ? 'Success' : 'Failed')"
                                     readonly
-                                    dense
+
                                     hide-details
                                     :error="( exec_outcome == 'OK' ? false : true)"
                                 ></v-text-field>
@@ -105,7 +101,7 @@
                                                 class="ma-2 mt-3 mb-0 pb-0"
                                                 outlined
                                                 bottom
-                                                :color="rowdata.color">
+                                                color="grey darken-2">
                                             <v-icon left>fas fa-file-alt</v-icon>
                                             Execution log
                                         </v-btn>
@@ -121,7 +117,7 @@
                                     label="Scheduled execution date/time:"
                                     :value="rowdata.data.next_run"
                                     readonly
-                                    dense
+
                                     hide-details
                                 ></v-text-field>
                             </v-col>
