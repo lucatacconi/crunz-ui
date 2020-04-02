@@ -40,6 +40,17 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 * Display of the execution log of the tasks performed using the appropriate interface
 * Forced run of the task, even outside the scheduled time with eventual display of the log once the execution is completed
 
+## Browser Support
+
+![Chrome](https://raw.github.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png) |
+![Firefox](https://raw.github.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png) |
+![Safari](https://raw.github.com/alrra/browser-logos/master/src/safari/safari_48x48.png) |
+![Opera](https://raw.github.com/alrra/browser-logos/master/src/opera/opera_48x48.png) |
+![Edge](https://raw.github.com/alrra/browser-logos/master/src/edge/edge_48x48.png) |
+![IE](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Internet_Explorer_10_logo.svg/48px-Internet_Explorer_10_logo.svg.png) |
+--- | --- | --- | --- | --- | --- |
+Latest ✔ | Latest ✔ | Latest ✔ | Latest ✔ | Latest ✔ | **No** |
+
 
 ## System Requirements
 
@@ -48,11 +59,30 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 * Composer
 
 
+## Installation and application setup
+
+
+
+
 ## Contributing
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 
+## Roadmap
+
+Please see [ROADMAP](ROADMAP.md) for details.
+
+
+## Credits
+
+* [Luca Tacconi](https://github.com/lucatacconi)
+* [Emanuele Marchesotti](https://github.com/flagellarmirror)
+
+
+## License
+
+Silly Vue Scaffolding is licensed under the MIT license. See [License File](LICENSE.md) for more information.
 
 
 
@@ -113,15 +143,4 @@ The application is preconfigured with a single access user to verify the login p
 To test access use the login **admin** and password **password**
 
 
-## Roadmap
-
-## Credits
-
-* [Luca Tacconi](https://github.com/lucatacconi)
-* [Emanuele Marchesotti](https://github.com/flagellarmirror)
-
-
-## License
-
-Silly Vue Scaffolding is licensed under the MIT license. See [License File](LICENSE.md) for more information.
 
