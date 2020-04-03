@@ -87,6 +87,8 @@ For more advanced configurations, refer to the Crunz manual.
 At this point it is necessary to configure all the users who must be able to access the application.
 Refer to [Accounts configuration](#Accounts-configuration) section to configure users. By default, in the basic configuration, the **admin** user is configured with the temporary password **password**.
 
+Complete the configuration by setting the folders that act as containers for the tasks.
+Refer to [Configuration of the task's folder structure](#Configuration-of-the-task's-folder-structure) section to configure the structure.
 
 ### Usage on a previous installation of Crunz
 
@@ -132,6 +134,46 @@ For simplicity's choice the access configurations have been inserted in a file. 
 The application is preconfigured with a single access user to verify the login procedure and access the dashboard and the main menu.
 
 To test access use the login **admin** and password **password**
+
+
+## Configuration of the task's folder structure
+
+The structure of folders is configured in the configuration file **/config/task_groups.json**.
+
+
+```
+{
+    "subdir":"/",
+    "description":"Main task",
+    "children":[
+        {
+            "subdir":"/group1",
+            "description":"Group 1",
+            "disabled": false,
+            "children":[
+                {
+                    "subdir":"/group1/subGroup1",
+                    "description":"SubGroup 1",
+                    "disabled": false
+                },
+                ...
+            ]
+        },
+        {
+            "subdir":"/group2",
+            "description":"Group 2",
+            "disabled": false
+        },
+        {
+            "subdir":"/group3",
+            "description":"Group 3",
+            "disabled": true
+        },
+        ...
+    ]
+}
+
+```
 
 
 ## Contributing
