@@ -84,6 +84,9 @@ By accessing the project folder, we can use the specific function of Crunz to ge
 The procedure will ask the user to provide default timezone for task run date calculations; execution will generate the Crunz configuration file with the default settings.
 For more advanced configurations, refer to the Crunz manual.
 
+At this point it is necessary to configure all the users who must be able to access the application.
+Refer to [Accounts configuration](#Accounts-configuration) section to configure users. By default, in the basic configuration, the **admin** user is configured with the temporary password **password**.
+
 
 ### Usage on a previous installation of Crunz
 
@@ -91,7 +94,7 @@ For more advanced configurations, refer to the Crunz manual.
 
 ## Accounts configuration
 
-All users enabled to access the application are configured in the configuration file /config/accounts.json.
+All users enabled to access the application are configured in the configuration file **/config/accounts.json**.
 
 The accounts.json configuration file has the following format:
 ```
@@ -133,12 +136,12 @@ To test access use the login **admin** and password **password**
 
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+Please see [Contributing informations](CONTRIBUTING.md) for details.
 
 
 ## Roadmap
 
-Please see [ROADMAP](ROADMAP.md) for details.
+Please see [Roadmap](ROADMAP.md) for details.
 
 
 ## Credits
@@ -150,50 +153,3 @@ Please see [ROADMAP](ROADMAP.md) for details.
 ## License
 
 Crunz-ui is licensed under the MIT license. See [License File](LICENSE.md) for more information.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Installation and application setup
-
-
-
-
-## Never used Crunz before
-
-Download project
-Configure .env
-Check permission and in case update permission
-Create log directory if non present
-Copy .sh in crunz directory
-Change crunz event in crontab
-First login
-
-
-
-## Usage on a previous installation of Crunz
-
-
-
-
-
-
-
-
-
-
-
