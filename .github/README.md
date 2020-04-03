@@ -60,21 +60,75 @@ It's recommended that you use [Composer](https://getcomposer.org/) to install Cr
 
 Start from your **Apache Server**'s **Document Root** folder or start from directory combined with one of the configured virtual hosts and type the following command:
 ```
-$ composer create-project lucatacconi/crunz-ui
+composer create-project lucatacconi/crunz-ui
 ```
 This will install Crunz-ui and all required dependencies.
 
 Cruz-ui can be installed in two ways: it can work using the Crunz embedded in the packages or using the tasks and configurations of Crunz previously installed on the user's system.
 
-If you have never used Crunz before or want to use the Crunz integrated in the packages, refer to the section [Never used Crunz before](#Never used Crunz before).
-If you want to use Cruz-ui on a version of Crunz previously installed on the user's systems, refer to the section [Usage on a previous installation of Crunz](#Usage on a previous installation of Crunz).
+If you have never used Crunz before or want to use the Crunz integrated in the packages, refer to the section [Never used Crunz before](#Never-used-Crunz-before).
+If you want to use Cruz-ui on a version of Crunz previously installed on the user's systems, refer to the section [Usage on a previous installation of Crunz](#Usage-on-a-previous-installation-of-Crunz).
 
 
 ### Never used Crunz before
 
+Cruz-ui has Crunz packages in its libraries. Once configured, it can then start viewing, managing and executing tasks.
+
+To work in this mode, once Crunz-ui is installed, proceed as follows:
+
+By accessing the project folder, we can use the specific function of Crunz to generate the basic configuration file of Crunz itself:
+```
+./vendor/bin/crunz publish:config
+```
+
+The procedure will ask the user to provide default timezone for task run date calculations; execution will generate the Crunz configuration file with the default settings.
+For more advanced configurations, refer to the Crunz manual.
+
 
 ### Usage on a previous installation of Crunz
 
+
+
+## Accounts configuration
+
+All users enabled to access the application are configured in the configuration file /config/accounts.json.
+
+The accounts.json configuration file has the following format:
+```
+[
+    {
+        "username":"admin",
+        "name":"Admin User",
+        "userType":"admin",
+        "email":"admin@nomail.com",
+        "password":"password",
+        "active":"Y",
+        "expireDate":"2020-10-10",
+        "customSessionDuration":""
+    },
+    {
+        "username":"j.doe",
+        "name":"Jhon Doe",
+        "userType":"user",
+        "email":"j.doe@nomail.com",
+        "password":"password",
+        "active":"Y",
+        "expireDate":"2020-10-10",
+        "customSessionDuration":""
+    },
+    ...
+]
+```
+
+Among the various information listed, the type of user is also induced, information that is then used to filter the menu items enabled for the user.
+For simplicity's choice the access configurations have been inserted in a file. However, nothing prevents the implementation of user management based on database reading.
+
+
+## First Login
+
+The application is preconfigured with a single access user to verify the login procedure and access the dashboard and the main menu.
+
+To test access use the login **admin** and password **password**
 
 
 ## Contributing
@@ -140,11 +194,6 @@ First login
 
 
 
-## First Login
-
-The application is preconfigured with a single access user to verify the login procedure and access the dashboard and the main menu.
-
-To test access use the login **admin** and password **password**
 
 
 

@@ -34,7 +34,7 @@
         {
             "title": "Tasks table",
             "subtitle": "Show tasks list",
-            "allowed":["admin"],
+            "allowed":["admin","user"],
             "visible": true,
 
             "action":{
@@ -53,7 +53,7 @@
         {
             "title": "Monthly calendar",
             "subtitle": "Show monthly tasks",
-            "allowed":["admin"],
+            "allowed":["admin","user"],
             "visible": true,
 
             "action":{
@@ -72,7 +72,7 @@
         {
             "title": "Daily calendar",
             "subtitle": "Show daily tasks",
-            "allowed":["admin"],
+            "allowed":["admin","user"],
             "visible": true,
 
             "action":{
