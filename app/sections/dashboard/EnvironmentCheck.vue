@@ -96,9 +96,17 @@
                                     :error-messages="!(env_check.YAML_CONFIG_TIMEZONE_PRESENCE) ? 'Configure timezone in crunz.yml.' : '' "
                                 ></v-text-field>
                             </v-col>
-                            <v-col cols="12" class="py-0 pb-2">
+                            <v-col cols="6" class="py-0 pb-2" v-if="!env_check.TASK_POSITION_EMBEDDED">
                                 <v-text-field
                                     label="Tasks directory position:"
+                                    :value="env_check.TASKS_DIR"
+                                    readonly
+                                    hide-details
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="6" class="py-0 pb-2" v-if="!env_check.TASK_POSITION_EMBEDDED">
+                                <v-text-field
+                                    :label="'Crunz-ui.sh prensence in '+env_check.TASK_POSITION_EMBEDDED_DESCR +':'"
                                     :value="env_check.TASKS_DIR"
                                     readonly
                                     hide-details
@@ -128,7 +136,7 @@
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
                                 </v-text-field>
                             </v-col>
-                            <v-col cols="12" class="py-0 pb-2">
+                            <v-col cols="12" class="py-0 pb-2" v-if="!env_check.TASK_POSITION_EMBEDDED">
                                 <v-text-field
                                     label="Logs directory position:"
                                     :value="env_check.LOGS_DIR"

@@ -1035,6 +1035,10 @@ $app->group('/task', function () use ($app) {
             $task_id++;
         }
 
+        if( !file_exists( $crunz_base_dir."/crunz-ui.sh" ) || !is_executable ( $crunz_base_dir."/crunz-ui.sh" )){
+            throw new Exception("ERROR - Crunz-ui.sh is not present in Crunz base path or is not executable.");
+        }
+
         if($task_founded && !empty($task_path_founded)){
 
             $aEXEC["task_path"] = $task_path;
