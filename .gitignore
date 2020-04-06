@@ -1,12 +1,13 @@
 
-#Ingore all temp, compiled and log but conserve directory structure
+#Ingore all log but conserve directory structure
 var/logs/*
-!var/logs/.gitignore
+!var/logs/.htaccess
+
 
 #Ingore all tasks execpt example task and htaccess
 tasks/*
 !tasks/.htaccess
-!tasks/.htaccesstestTasks.php
+!tasks/.testTasks.php
 
 # Ingore all logs files everywhere
 *.log
