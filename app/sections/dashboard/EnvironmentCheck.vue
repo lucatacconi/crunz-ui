@@ -190,7 +190,7 @@
                         if(self.env_check.TASK_POSITION_EMBEDDED){
                             self.env_check.TASK_POSITION_EMBEDDED_DESCR = "Embedded";
                         }else{
-                            self.env_check.TASK_POSITION_EMBEDDED_DESCR = "Custom directory ("+this.env_check.TASK_DIR+")";
+                            self.env_check.TASK_POSITION_EMBEDDED_DESCR = self.env_check.TASK_DIR + " (Custom directory)";
                         }
 
                         self.$emit('environment-check', self.env_check);
