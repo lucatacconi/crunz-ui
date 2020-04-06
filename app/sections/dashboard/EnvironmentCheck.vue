@@ -18,10 +18,12 @@
                         <v-row>
                             <v-col cols="12" class="py-0 pb-2">
                                 <v-text-field
-                                    label="Task position:"
+                                    label="Crunz directory position:"
                                     :value="env_check.TASK_POSITION_EMBEDDED_DESCR"
                                     readonly
-                                    hide-details
+                                    :hide-details="env_check.TASK_POSITION_EMBEDDED"
+                                    persistent-hint
+                                    hint="In Crunz configuration with custom directory (not embedded), remember to copy crunz-ui.sh file into custom directory and use it in crontab instead of crunz.sh"
                                 ></v-text-field>
                             </v-col>
 
@@ -31,7 +33,7 @@
                                     :value=" (env_check.YAML_CONFIG_PRESENCE) ? 'Crunz YAML configuration file present.' : 'Crunz YAML configuration file missing.' "
                                     readonly
                                     :hide-details=" (env_check.YAML_CONFIG_PRESENCE) "
-                                    :error-messages="!(env_check.YAML_CONFIG_PRESENCE) ? 'Crunz Yaml configuration missing. To create a new copy of the configuration file use <strong>./vendor/bin/crunz publish:config</strong> and follow the instructions.' : '' "
+                                    :error-messages="!(env_check.YAML_CONFIG_PRESENCE) ? 'Crunz Yaml configuration missing. To create a new copy of the configuration file use ./vendor/bin/crunz publish:config and follow the instructions.' : '' "
                                 >
                                     <v-icon v-if="env_check.YAML_CONFIG_PRESENCE" slot="append" color="green">mdi-check-bold</v-icon>
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
@@ -43,7 +45,7 @@
                                     :value=" (env_check.YAML_CONFIG_CORRECTNESS) ? 'Crunz YAML correctly configured.' : 'Errors present in Crunz YAML configuration file.' "
                                     readonly
                                     :hide-details=" (env_check.YAML_CONFIG_CORRECTNESS) "
-                                    :error-messages="!(env_check.YAML_CONFIG_PRESENCE) ? 'Crunz Yaml configuration error. Check crunz.yml file or recreate it using <strong>./vendor/bin/crunz publish:config</strong>.' : '' "
+                                    :error-messages="!(env_check.YAML_CONFIG_PRESENCE) ? 'Crunz Yaml configuration error. Check crunz.yml file or recreate it using ./vendor/bin/crunz publish:config' : '' "
                                 >
                                     <v-icon v-if="env_check.YAML_CONFIG_CORRECTNESS" slot="append" color="green">mdi-check-bold</v-icon>
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
@@ -55,7 +57,7 @@
                                     :value=" (env_check.YAML_CONFIG_SOURCE_PRESENCE) ? 'Task path correctly configured (./'+env_check.YAML_CONFIG_SOURCE+').' : 'Errors in task\'s path configuration in Crunz YAML configuration file.' "
                                     readonly
                                     :hide-details=" (env_check.YAML_CONFIG_SOURCE_PRESENCE) "
-                                    :error-messages="!(env_check.YAML_CONFIG_SOURCE_PRESENCE) ? 'Check Crunz Yaml configuration file. Check task\'s container directory in <strong>source</strong> in crunz.yml.' : '' "
+                                    :error-messages="!(env_check.YAML_CONFIG_SOURCE_PRESENCE) ? 'Check Crunz Yaml configuration file. Check task\'s container directory in source in crunz.yml.' : '' "
                                 >
                                     <v-icon v-if="env_check.YAML_CONFIG_SOURCE_PRESENCE" slot="append" color="green">mdi-check-bold</v-icon>
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
@@ -67,7 +69,7 @@
                                     :value=" (env_check.YAML_CONFIG_SUFFIX_PRESENCE) ? 'Suffix correctly configured ('+env_check.YAML_CONFIG_SUFFIX+').' : 'Errors in task\'s suffix configuration in Crunz YAML configuration file.' "
                                     readonly
                                     :hide-details=" (env_check.YAML_CONFIG_SUFFIX_PRESENCE) "
-                                    :error-messages="!(env_check.YAML_CONFIG_SUFFIX_PRESENCE) ? 'Check Crunz Yaml configuration file. Check <strong>suffix</strong> in crunz.yml.' : '' "
+                                    :error-messages="!(env_check.YAML_CONFIG_SUFFIX_PRESENCE) ? 'Check Crunz Yaml configuration file. Check suffix in crunz.yml.' : '' "
                                 >
                                     <v-icon v-if="env_check.YAML_CONFIG_SUFFIX_PRESENCE" slot="append" color="green">mdi-check-bold</v-icon>
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
@@ -79,7 +81,7 @@
                                     :value=" (env_check.YAML_CONFIG_TIMEZONE_PRESENCE) ? 'Time zone correctly configured.' : 'Errors in time zone configuration in Crunz YAML configuration file.' "
                                     readonly
                                     :hide-details=" (env_check.YAML_CONFIG_TIMEZONE_PRESENCE) "
-                                    :error-messages="!(env_check.YAML_CONFIG_TIMEZONE_PRESENCE) ? 'Check Crunz Yaml configuration file. Check <strong>timezone</strong> in crunz.yml.' : '' "
+                                    :error-messages="!(env_check.YAML_CONFIG_TIMEZONE_PRESENCE) ? 'Check Crunz Yaml configuration file. Check timezone in crunz.yml.' : '' "
                                 >
                                     <v-icon v-if="env_check.YAML_CONFIG_TIMEZONE_PRESENCE" slot="append" color="green">mdi-check-bold</v-icon>
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
@@ -91,7 +93,15 @@
                                     :value=" (env_check.YAML_CONFIG_TIMEZONE_PRESENCE) ? env_check.TIMEZONE_CONFIG : '--' "
                                     readonly
                                     :hide-details=" (env_check.YAML_CONFIG_TIMEZONE_PRESENCE) "
-                                    :error-messages="!(env_check.YAML_CONFIG_TIMEZONE_PRESENCE) ? 'Configure <strong>timezone</strong> in crunz.yml.' : '' "
+                                    :error-messages="!(env_check.YAML_CONFIG_TIMEZONE_PRESENCE) ? 'Configure timezone in crunz.yml.' : '' "
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" class="py-0 pb-2">
+                                <v-text-field
+                                    label="Tasks directory position:"
+                                    :value="env_check.TASKS_DIR"
+                                    readonly
+                                    hide-details
                                 ></v-text-field>
                             </v-col>
                             <v-col cols="6" class="py-0 pb-2">
@@ -118,10 +128,18 @@
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
                                 </v-text-field>
                             </v-col>
+                            <v-col cols="12" class="py-0 pb-2">
+                                <v-text-field
+                                    label="Logs directory position:"
+                                    :value="env_check.LOGS_DIR"
+                                    readonly
+                                    hide-details
+                                ></v-text-field>
+                            </v-col>
                             <v-col cols="6" class="py-0 pb-2">
                                 <v-text-field
                                     label="Logs path configured in Crunz-ui environment configuration file:"
-                                    :value=" (env_check.LOGS_DIR_CONFIG_PRESENCE) ? 'Logs path correctly configured.' : 'Logs path configuration missing. Check <strong>LOGS_DIR</strong> in ./env file.' "
+                                    :value=" (env_check.LOGS_DIR_CONFIG_PRESENCE) ? 'Logs path correctly configured.' : 'Logs path configuration missing. Check LOGS_DIR in ./env file.' "
                                     readonly
                                     :hide-details=" (env_check.LOGS_DIR_CONFIG_PRESENCE) "
                                     :error-messages="!(env_check.LOGS_DIR_CONFIG_PRESENCE) ? 'Check Logs path dir. If not present Crunz-ui will not check log and execution output during execution.' : '' "

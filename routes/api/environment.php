@@ -39,8 +39,10 @@ $app->group('/environment', function () use ($app) {
         $data["YAML_CONFIG_SUFFIX"] = false;
         $data["YAML_CONFIG_TIMEZONE_PRESENCE"] = false;
         $data["TIMEZONE_CONFIG"] = '';
+        $data["TASKS_DIR"] = '';
         $data["TASKS_DIR_PRESENCE"] = false;
         $data["TASKS_DIR_WRITABLE"] = false;
+        $data["LOGS_DIR"] = '';
         $data["LOGS_DIR_CONFIG_PRESENCE"] = false;
         $data["LOGS_DIR_PRESENCE"] = false;
         $data["LOGS_DIR_WRITABLE"] = false;
@@ -83,6 +85,8 @@ $app->group('/environment', function () use ($app) {
                     $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
                     $TASK_SUFFIX = $crunz_config["suffix"];
 
+                    $data["TASKS_DIR"] = $TASKS_DIR;
+
                     if(is_dir($TASKS_DIR)){
                         $data["TASKS_DIR_PRESENCE"] = true;
 
@@ -90,24 +94,26 @@ $app->group('/environment', function () use ($app) {
                             $data["TASKS_DIR_WRITABLE"] = true;
                         }
                     }
+                }
+            }
+        }
 
-                    if(!empty(getenv("LOGS_DIR"))){
-                        $data["LOGS_DIR_CONFIG_PRESENCE"] = true;
+        if(!empty(getenv("LOGS_DIR"))){
+            $data["LOGS_DIR_CONFIG_PRESENCE"] = true;
 
-                        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-                            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
-                        }else{
-                            $LOGS_DIR = getenv("LOGS_DIR");
-                        }
+            if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
+                $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+            }else{
+                $LOGS_DIR = getenv("LOGS_DIR");
+            }
 
-                        if(is_dir($LOGS_DIR)){
-                            $data["LOGS_DIR_PRESENCE"] = true;
+            $data["LOGS_DIR"] = $LOGS_DIR;
 
-                            if(is_writable($LOGS_DIR)){
-                                $data["LOGS_DIR_WRITABLE"] = true;
-                            }
-                        }
-                    }
+            if(is_dir($LOGS_DIR)){
+                $data["LOGS_DIR_PRESENCE"] = true;
+
+                if(is_writable($LOGS_DIR)){
+                    $data["LOGS_DIR_WRITABLE"] = true;
                 }
             }
         }
