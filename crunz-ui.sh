@@ -119,7 +119,7 @@ function runTask() {
             executed_task_outcome="KO"
         fi
 
-        counter_pad=`printf "%07.0f" $p_task_counter`
+        counter_pad=`printf "%08.0f" $p_task_counter`
 
         log_task_name="T"$counter_pad"_"$executed_task_outcome"_"$task_start_datetime"_"$task_stop_datetime"_"$file_seed".log"
         mv $p_logs_path/$file_uuid.log $p_logs_path/$log_task_name

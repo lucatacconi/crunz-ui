@@ -440,8 +440,7 @@ $app->group('/task', function () use ($app) {
                 $row["executed_task_lst"] = [];
                 $row["outcome_executed_task_lst"] = [];
 
-
-                $log_name = "T".str_pad($row["event_launch_id"], 8, "", STR_PAD_LEFT);
+                $log_name = "T".str_pad($row["event_launch_id"], 8, 0, STR_PAD_LEFT);
                 $aLOGNAME = glob($LOGS_DIR."/".$log_name."*.log"); //T00000001_OK_20191001100_20191001110_XXXX.log | T00000001_KO_20191001100_20191001110_XXXX.log
 
                 if(!empty($aLOGNAME)){
@@ -705,7 +704,7 @@ $app->group('/task', function () use ($app) {
 
 
                 //Get Crunz-ui log content
-                $log_name = "T".str_pad($aEXEC["task_id"], 8, "", STR_PAD_LEFT);
+                $log_name = "T".str_pad($aEXEC["task_id"], 8, 0, STR_PAD_LEFT);
 
                 if(!empty($params["DATETIME_REF"])){
 
@@ -1066,7 +1065,7 @@ $app->group('/task', function () use ($app) {
                 $datetime_init = date('YmdHis');
                 $datetime_ref = date('YmdHi');
 
-                $log_name = "T".str_pad($aEXEC["task_id"], 8, "", STR_PAD_LEFT);
+                $log_name = "T".str_pad($aEXEC["task_id"], 8, 0, STR_PAD_LEFT);
                 $log_name_filter = $log_name."_*_".$datetime_ref."_*_*";
 
                 while(!$log_file_ready && $round_cnt < $max_round){
