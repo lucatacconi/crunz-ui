@@ -8,7 +8,7 @@ execute Crunz tasks, calculate execution duration, outcome e write specific log.
 Usage:
     -h: show this help text
     -d <tasks_path>: set tasks directory to tasks_path (default: ./tasks; Read Crunz configuration file crunz.yml)
-    -l <logs path>: set logs directory to logs_path (default: ./logs; Read Crunz configuration file crunz.yml)
+    -l <logs path>: set logs directory to logs_path (default: ./var/logs; Check environment configuration in Crunz-ui directory)
     -t <n>: Configure Crunz to run only specified task (Wait for task's execution end)
     -f: Forces Crunz to run task even if not programmed
 
@@ -22,12 +22,13 @@ $usage
 absolute_tasks_contaniner_path="$( cd "$(dirname "$0")" ; pwd -P )"
 absolute_tasks_path="$( cd "$(dirname "$0")" ; pwd -P )/${tasks_path#"./"}"
 
-logs_path="./logs"
+logs_path="./var/logs"
 forced_execution=""
 id_task=-1
 
-a_no_due=["No event is due!"]
-a_task_outcome=["success","fail"]
+declare -a a_no_due=("No event is due!")
+declare -a a_task_outcome=("success" "fail")
+end_exec_string="Invoke Schedule's ping after."
 
 
 function parse_yaml {
@@ -65,50 +66,49 @@ function runTask() {
     task_stop_datetime=$(date +"%Y%m%d%H%M")
 
     task_launched="Y"
-    executed_task_row=""
-    executed_task=""
-    executed_task_outcome="KO"
+    execution_content=()
 
+    row_cnt=0
     while IFS= read -r line
     do
         #Has the task been launched?
-        if [[ ${a_no_due[*]} =~ $line ]]; then
+        if [[ ${a_no_due[*]} == $line ]]; then
             task_launched="N"
         fi
 
-        if [[ $line == *"Task Task file"* ]]; then
-            row_end_founded="N"
-            for outcome_status in "${a_task_outcome[@]}";
-            do
-                if [[ "$line" =~ $outcome_status ]]; then
-                    row_end_founded="Y"
-                fi
-            done
-
-            if [ $row_end_founded == "Y" ]; then
-                executed_task_row=$line
-            fi
-        fi
+        execution_content[$row_cnt]=$line
+        ((row_cnt++))
 
     done < "$p_logs_path/$file_uuid.log"
 
-    if [[ $task_launched == "Y" && $executed_task_row != "" ]]; then
 
-        start_task_path="Task Task file "
-        end_task_path=" status:"
+    # executed_task_row=""
+    row_cnt=0
+    row_cnt_p1=0
+    row_end_founded="N"
+    if [[ $task_launched == "Y" ]]; then
+        for line in "${execution_content[@]}"
+        do
+            let row_cnt_p1=$row_cnt+1
 
-        #I'm reading task's relative path in tasks directory. I need it for log file name
-        executed_task=$(echo $executed_task_row | grep -oP "(?<=$start_task_path).*?(?=$end_task_path)")
-        executed_task=${executed_task/".php"/""}
+            if [[ $line == *"status: "* ]]; then
+                for outcome_status in "${a_task_outcome[@]}";
+                do
+                    if [[ $line =~ $outcome_status ]]; then
+                        row_end_founded="Y"
+                        executed_task_row=$line
+                    fi
+                done
+            fi
+            ((row_cnt++))
+        done
+    fi
 
-        task_container=$absolute_tasks_path""${p_tasks_path/"./"/''}
-
-        log_task_name=${executed_task/"$task_container"/''}
-        log_task_name=${log_task_name/"/"/''}
-        log_task_name=${log_task_name//"/"/''}
+    executed_task_outcome="KO"
+    if [[ $task_launched == "Y" && $row_end_founded == "Y" && $executed_task_row != "" ]]; then
 
         #I'm reading the outcome of task execution
-        start_task_outcome="php status: "
+        start_task_outcome=" status: "
         end_task_outcome="\."
 
         executed_task_outcome=$(echo $executed_task_row | grep -oP "(?<=$start_task_outcome).*?(?=$end_task_outcome)")
@@ -119,11 +119,51 @@ function runTask() {
             executed_task_outcome="KO"
         fi
 
-        log_task_name=$log_task_name"_"$executed_task_outcome"_"$task_start_datetime"_"$task_stop_datetime"_"$file_seed".log"
+        counter_pad=`printf "%07.0f" $p_task_counter`
+
+        log_task_name="T"$counter_pad"_"$executed_task_outcome"_"$task_start_datetime"_"$task_stop_datetime"_"$file_seed".log"
         mv $p_logs_path/$file_uuid.log $p_logs_path/$log_task_name
     else
         rm $p_logs_path/$file_uuid.log
     fi
+
+
+# p_task_counter
+
+
+
+    # if [[ $task_launched == "Y" && $executed_task_row != "" ]]; then
+
+    #     start_task_path="Task "
+    #     end_task_path=" status:"
+
+    #     #I'm reading task's relative path in tasks directory. I need it for log file name
+    #     executed_task=$(echo $executed_task_row | grep -oP "(?<=$start_task_path).*?(?=$end_task_path)")
+    #     executed_task=${executed_task/".php"/""}
+
+    #     task_container=$absolute_tasks_path""${p_tasks_path/"./"/''}
+
+    #     log_task_name=${executed_task/"$task_container"/''}
+    #     log_task_name=${log_task_name/"/"/''}
+    #     log_task_name=${log_task_name//"/"/''}
+
+    #     #I'm reading the outcome of task execution
+    #     start_task_outcome=" status: "
+    #     end_task_outcome="\."
+
+    #     executed_task_outcome=$(echo $executed_task_row | grep -oP "(?<=$start_task_outcome).*?(?=$end_task_outcome)")
+
+    #     if [ "$executed_task_outcome" == "success" ]; then
+    #         executed_task_outcome="OK"
+    #     else
+    #         executed_task_outcome="KO"
+    #     fi
+
+    #     log_task_name=$log_task_name"_"$executed_task_outcome"_"$task_start_datetime"_"$task_stop_datetime"_"$file_seed".log"
+    #     mv $p_logs_path/$file_uuid.log $p_logs_path/$log_task_name
+    # else
+    #     rm $p_logs_path/$file_uuid.log
+    # fi
 }
 
 # ========================================================================================

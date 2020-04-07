@@ -440,14 +440,14 @@ $app->group('/task', function () use ($app) {
                 $row["executed_task_lst"] = [];
                 $row["outcome_executed_task_lst"] = [];
 
-                $log_name = rtrim( ltrim($row["task_path"],"/"), ".php" );
-                $log_name = str_replace("/", "", $log_name);
-                $aLOGNAME = glob($LOGS_DIR."/".$log_name."*.log"); //task_OK_20191001100_20191001110_XXXX.log | task_KO_20191001100_20191001110_XXXX.log
+
+                $log_name = "T".str_pad($row["event_launch_id"], 8, "", STR_PAD_LEFT);
+                $aLOGNAME = glob($LOGS_DIR."/".$log_name."*.log"); //T00000001_OK_20191001100_20191001110_XXXX.log | T00000001_KO_20191001100_20191001110_XXXX.log
 
                 if(!empty($aLOGNAME)){
                     usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
 
-                    //0 Path + name
+                    //0 "T" + Event ID
                     //1 Outcome
                     //2 Start datetime
                     //3 End datetime
@@ -705,8 +705,7 @@ $app->group('/task', function () use ($app) {
 
 
                 //Get Crunz-ui log content
-                $log_name = rtrim( ltrim($task_path,"/"), ".php" );
-                $log_name = str_replace("/", "", $log_name);
+                $log_name = "T".str_pad($aEXEC["task_id"], 8, "", STR_PAD_LEFT);
 
                 if(!empty($params["DATETIME_REF"])){
 
@@ -1067,7 +1066,8 @@ $app->group('/task', function () use ($app) {
                 $datetime_init = date('YmdHis');
                 $datetime_ref = date('YmdHi');
 
-                $log_name_filter = str_replace("/", "", rtrim(ltrim($task_path_founded, "/"), ".php")) . "_*_" . $datetime_ref . "_*_*";
+                $log_name = "T".str_pad($aEXEC["task_id"], 8, "", STR_PAD_LEFT);
+                $log_name_filter = $log_name."_*_".$datetime_ref."_*_*";
 
                 while(!$log_file_ready && $round_cnt < $max_round){
 
