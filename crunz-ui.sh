@@ -127,45 +127,6 @@ function runTask() {
         rm $p_logs_path/$file_uuid.log
     fi
 
-
-# p_task_counter
-
-
-
-    # if [[ $task_launched == "Y" && $executed_task_row != "" ]]; then
-
-    #     start_task_path="Task "
-    #     end_task_path=" status:"
-
-    #     #I'm reading task's relative path in tasks directory. I need it for log file name
-    #     executed_task=$(echo $executed_task_row | grep -oP "(?<=$start_task_path).*?(?=$end_task_path)")
-    #     executed_task=${executed_task/".php"/""}
-
-    #     task_container=$absolute_tasks_path""${p_tasks_path/"./"/''}
-
-    #     log_task_name=${executed_task/"$task_container"/''}
-    #     log_task_name=${log_task_name/"/"/''}
-    #     log_task_name=${log_task_name//"/"/''}
-
-    #     #I'm reading the outcome of task execution
-    #     start_task_outcome=" status: "
-    #     end_task_outcome="\."
-
-    #     executed_task_outcome=$(echo $executed_task_row | grep -oP "(?<=$start_task_outcome).*?(?=$end_task_outcome)")
-
-    #     if [ "$executed_task_outcome" == "success" ]; then
-    #         executed_task_outcome="OK"
-    #     else
-    #         executed_task_outcome="KO"
-    #     fi
-
-    #     log_task_name=$log_task_name"_"$executed_task_outcome"_"$task_start_datetime"_"$task_stop_datetime"_"$file_seed".log"
-    #     mv $p_logs_path/$file_uuid.log $p_logs_path/$log_task_name
-    # else
-    #     rm $p_logs_path/$file_uuid.log
-    # fi
-}
-
 # ========================================================================================
 
 tasks_path="./tasks"
