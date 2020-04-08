@@ -183,7 +183,6 @@ do
     esac
 done
 
-# logs_path="./"${logs_path/"./"/''}
 logs_path=${logs_path/"./"/''}
 
 if [ ! -w $logs_path ]; then
