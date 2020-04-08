@@ -99,14 +99,9 @@ Refer to [Configuration of the task's folder structure](#Configuration-of-the-ta
 ### Usage on a previous installation of Crunz
 
 First of all you need to tell Crunz-ui the exact location where Crunz is installed.
-To do this, edit the **.env** file inside the main folder of Crunz-ui by un-commenting the entry CRUNZ_BASE_DIR and indicating into that the value of the absolute path of the Crunz installation.
+To do this, edit the **.env** file inside the main folder of Crunz-ui by un-commenting the entry CRUNZ_BASE_DIR and indicating into that the value of the absolute path of the Crunz installation. In order to be able to insert, modify and delete tasks, the Apache user must have access and write permissions to the tasks folder.
 
-In order to be able to insert, modify and delete tasks, the Apache user must have access and write permissions to the tasks folder.
-
-Then configure the **.env** file with the absolute path of the Log folder. The folder must be accessible and writeable by the Apache user.
-
-By default the configured Log folder is ./var/logs inside Crunz / Crunz-ui folder.
-To use the standard Log folder, inside the Crunz folder create the var/logs folder and set the write permissions to make them accessible to the Apache user.
+Then configure the **.env** file with the absolute path of the Log folder. The folder must be accessible and writeable by the Apache user. By default the configured Log folder is ./var/logs inside Crunz / Crunz-ui folder. To use the standard Log folder, inside the Crunz folder create the var/logs folder and set the write permissions to make them accessible to the Apache user.
 
 Copy crunz-ui.sh file into the Crunz base folder:
 ```
