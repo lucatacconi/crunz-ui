@@ -49,7 +49,7 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 ## System Requirements
 
-* Linux OS
+* Linux OS and Bash shell
 * Apache and PHP 7.1.3 or newer
 * Composer
 
@@ -60,7 +60,7 @@ It's recommended that you use [Composer](https://getcomposer.org/) to install Cr
 
 Start from your **Apache Server**'s **Document Root** folder or start from directory combined with one of the configured virtual hosts and type the following command:
 ```
-composer create-project lucatacconi/crunz-ui
+composer require lucatacconi/crunz-ui
 ```
 This will install Crunz-ui and all required dependencies.
 
@@ -87,11 +87,47 @@ For more advanced configurations, refer to the Crunz manual.
 At this point it is necessary to configure all the users who must be able to access the application.
 Refer to [Accounts configuration](#Accounts-configuration) section to configure users. By default, in the basic configuration, the **admin** user is configured with the temporary password **password**.
 
+Then set an ordinary cron job (a crontab entry) which runs every minute, and delegates the responsibility to Crunz-ui event runner:
+```
+* * * * * cd /[BASE_CRUNZUI_PATH] && ./crunz-ui.sh
+```
+
 Complete the configuration by setting the folders that act as containers for the tasks.
 Refer to [Configuration of the task's folder structure](#Configuration-of-the-task's-folder-structure) section to configure the structure.
 
+
 ### Usage on a previous installation of Crunz
 
+First of all you need to tell Crunz-ui the exact location where Crunz is installed.
+To do this, edit the **.env** file inside the main folder of Crunz-ui by un-commenting the entry CRUNZ_BASE_DIR and indicating into that the value of the absolute path of the Crunz installation.
+
+In order to be able to insert, modify and delete tasks, the Apache user must have access and write permissions to the tasks folder.
+
+Then configure the **.env** file with the absolute path of the Log folder. The folder must be accessible and writeable by the Apache user.
+
+By default the configured Log folder is ./var/logs inside Crunz / Crunz-ui folder.
+To use the standard Log folder, inside the Crunz folder create the var/logs folder and set the write permissions to make them accessible to the Apache user.
+
+Copy crunz-ui.sh file into the Crunz base folder:
+```
+* * * * * cp /[BASE_CRUNZUI_PATH]/crunz-ui.sh /[BASE_CRUNZ_PATH]
+```
+
+Modify the Crunz process, configured in Crontab during the Crunz installation, replacing it with the Crunz-ui process:
+```
+* * * * * cd /[BASE_CRUNZ_PATH] && ./crunz-ui.sh
+```
+
+If you have configured a custom log folder, the crontab configuration must be changed as follows:
+```
+* * * * * cd /[BASE_CRUNZ_PATH] && ./crunz-ui.sh -l [LOGS_PATH]
+```
+
+At this point it is necessary to configure all the users who must be able to access the application.
+Refer to [Accounts configuration](#Accounts-configuration) section to configure users. By default, in the basic configuration, the **admin** user is configured with the temporary password **password**.
+
+Complete the configuration by setting the folders that act as containers for the tasks.
+Refer to [Configuration of the task's folder structure](#Configuration-of-the-task's-folder-structure) section to configure the structure.
 
 
 ## Accounts configuration
