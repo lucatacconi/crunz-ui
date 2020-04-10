@@ -92,7 +92,7 @@ Then set an ordinary cron job (a crontab entry) which runs every minute, and del
 * * * * * cd /[BASE_CRUNZUI_PATH] && ./crunz-ui.sh
 ```
 
-By default the configured Log folder is **./var/logs** inside Crunz-ui folder. To user custom Log folder configure the **.env** file with the absolute path of new Log folder.
+By default the configured log folder is **./var/logs** inside Crunz-ui folder. To use custom log folder configure the **.env** file with the path of new log folder.
 The folder must be accessible and writeable by the Apache user.
 
 If you have configured a custom log folder, the crontab configuration must be changed as follows:
@@ -107,18 +107,14 @@ Refer to [Configuration of the task's folder structure](#Configuration-of-the-ta
 ### Usage on a previous installation of Crunz
 
 First of all you need to tell Crunz-ui the exact location where Crunz is installed.
-To do this, edit the **.env** file inside the main folder of Crunz-ui by un-commenting the entry **CRUNZ_BASE_DIR** and indicating into that the value of the absolute path of the Crunz installation. In order to be able to insert, modify and delete tasks, the Apache user must have access and write permissions to the tasks folder.
+To do this, edit the **.env** file inside the main folder of Crunz-ui by un-commenting the entry **CRUNZ_BASE_DIR** and indicating into that the value of the absolute path of Crunz installation. In order to be able to insert, modify and delete tasks, the Apache user must have access and write permissions to the tasks folder.
 
-
-
-Then configure the **.env** file with the absolute path of the Log folder. The folder must be accessible and writeable by the Apache user. By default the configured Log folder is **./var/logs** inside Crunz / Crunz-ui folder. To use the standard Log folder, inside the Crunz folder create the var/logs folder and set the write permissions to make them accessible to the Apache user.
-
-Copy crunz-ui.sh file into the Crunz base folder:
+Then copy crunz-ui.sh file into the Crunz base folder:
 ```
 * * * * * cd /[BASE_CRUNZUI_PATH]/crunz-ui.sh /[BASE_CRUNZ_PATH]
 ```
 
-If you will use custom Log folder, create Log folder and check accessibility and write permissions to it:
+By default **crunz.ui.sh** batch will search for standard log folder **./var/logs** inside main Crunz folder. Therefore, if you want to use standard configuration, you need to create default folder for logs. The folder must be accessible and writeable by the Apache user:
 ```
 cd /[BASE_CRUNZ_PATH]
 mkdir ./var ./var/logs
@@ -129,6 +125,7 @@ Modify the Crunz process, configured in Crontab during the Crunz installation, r
 * * * * * cd /[BASE_CRUNZ_PATH] && ./crunz-ui.sh
 ```
 
+Configure, if needed, Crunz-ui **.env** file with a custom path of the log folder. In this case too it is important that the folder is accessible and writeable by the Apache user.
 If you have configured a custom log folder, the crontab configuration must be changed as follows:
 ```
 * * * * * cd /[BASE_CRUNZ_PATH] && ./crunz-ui.sh -l [LOGS_PATH]
@@ -141,14 +138,17 @@ Complete the configuration by setting the folders that act as containers for the
 Refer to [Configuration of the task's folder structure](#Configuration-of-the-task's-folder-structure) section to configure the structure.
 
 
-## Custom Log directory configuration
+## Custom log directory configuration
 
-By default the configured Log folder is **./var/logs** inside Crunz / Crunz-ui folder. The folder must be accessible and writeable by the Apache user.
+By default, the configured log folder is **./var/logs** inside Crunz / Crunz-ui folder. The folder must be accessible and writeable by the Apache user.
 
-If you have configured a custom Log folder, the crontab configuration must be changed as follows:
+To configure custom folder set the **.env** file with the path of new log folder.
+
+If you have configured a custom log folder, the crontab configuration must be changed as follows:
 ```
-* * * * * cd /[BASE_CRUNZ_PATH / BASE_CRUNZUI_PATH] && ./crunz-ui.sh -l [LOGS_PATH]
+cd /[BASE_CRUNZ_PATH / BASE_CRUNZUI_PATH] && ./crunz-ui.sh -l [LOGS_PATH]
 ```
+
 
 ## Accounts configuration
 
@@ -185,7 +185,7 @@ Among the various information listed, the type of user is also induced, informat
 For simplicity's choice the access configurations have been inserted in a file. However, nothing prevents the implementation of user management based on database reading.
 
 
-## First Login
+## First login
 
 The application is preconfigured with a single access user to verify the login procedure and access the dashboard and the main menu.
 
