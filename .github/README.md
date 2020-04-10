@@ -92,6 +92,14 @@ Then set an ordinary cron job (a crontab entry) which runs every minute, and del
 * * * * * cd /[BASE_CRUNZUI_PATH] && ./crunz-ui.sh
 ```
 
+By default the configured Log folder is **./var/logs** inside Crunz-ui folder. To user custom Log folder configure the **.env** file with the absolute path of new Log folder.
+The folder must be accessible and writeable by the Apache user.
+
+If you have configured a custom log folder, the crontab configuration must be changed as follows:
+```
+* * * * * cd /[BASE_CRUNZUI_PATH] && ./crunz-ui.sh -l [LOGS_PATH]
+```
+
 Complete the configuration by setting the folders that act as containers for the tasks.
 Refer to [Configuration of the task's folder structure](#Configuration-of-the-task's-folder-structure) section to configure the structure.
 
@@ -99,13 +107,21 @@ Refer to [Configuration of the task's folder structure](#Configuration-of-the-ta
 ### Usage on a previous installation of Crunz
 
 First of all you need to tell Crunz-ui the exact location where Crunz is installed.
-To do this, edit the **.env** file inside the main folder of Crunz-ui by un-commenting the entry CRUNZ_BASE_DIR and indicating into that the value of the absolute path of the Crunz installation. In order to be able to insert, modify and delete tasks, the Apache user must have access and write permissions to the tasks folder.
+To do this, edit the **.env** file inside the main folder of Crunz-ui by un-commenting the entry **CRUNZ_BASE_DIR** and indicating into that the value of the absolute path of the Crunz installation. In order to be able to insert, modify and delete tasks, the Apache user must have access and write permissions to the tasks folder.
 
-Then configure the **.env** file with the absolute path of the Log folder. The folder must be accessible and writeable by the Apache user. By default the configured Log folder is ./var/logs inside Crunz / Crunz-ui folder. To use the standard Log folder, inside the Crunz folder create the var/logs folder and set the write permissions to make them accessible to the Apache user.
+
+
+Then configure the **.env** file with the absolute path of the Log folder. The folder must be accessible and writeable by the Apache user. By default the configured Log folder is **./var/logs** inside Crunz / Crunz-ui folder. To use the standard Log folder, inside the Crunz folder create the var/logs folder and set the write permissions to make them accessible to the Apache user.
 
 Copy crunz-ui.sh file into the Crunz base folder:
 ```
-* * * * * cp /[BASE_CRUNZUI_PATH]/crunz-ui.sh /[BASE_CRUNZ_PATH]
+* * * * * cd /[BASE_CRUNZUI_PATH]/crunz-ui.sh /[BASE_CRUNZ_PATH]
+```
+
+If you will use custom Log folder, create Log folder and check accessibility and write permissions to it:
+```
+cd /[BASE_CRUNZ_PATH]
+mkdir ./var ./var/logs
 ```
 
 Modify the Crunz process, configured in Crontab during the Crunz installation, replacing it with the Crunz-ui process:
@@ -124,6 +140,15 @@ Refer to [Accounts configuration](#Accounts-configuration) section to configure 
 Complete the configuration by setting the folders that act as containers for the tasks.
 Refer to [Configuration of the task's folder structure](#Configuration-of-the-task's-folder-structure) section to configure the structure.
 
+
+## Custom Log directory configuration
+
+By default the configured Log folder is **./var/logs** inside Crunz / Crunz-ui folder. The folder must be accessible and writeable by the Apache user.
+
+If you have configured a custom Log folder, the crontab configuration must be changed as follows:
+```
+* * * * * cd /[BASE_CRUNZ_PATH / BASE_CRUNZUI_PATH] && ./crunz-ui.sh -l [LOGS_PATH]
+```
 
 ## Accounts configuration
 
