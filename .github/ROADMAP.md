@@ -3,7 +3,9 @@
 ## Upcoming implementations
 
 
-## v.1.0.0 (2020-04-11)
+## Release history
+
+### v.1.0.0 (2020-04-11)
 
 Crunz-ui first stable release:
 * Integrate Crunz library and funtions.
