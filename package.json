@@ -1,7 +1,6 @@
 {
     "name": "crunz-ui",
-    "version": "0.9.8",
-    "description": "User interface for lavary/crunz",
+    "description": "User interface for lavary/crunz. Integrate Crunz library and funtions: Tabular, monthly or weekly interface to view the scheduled and executed tasks. Quick display of the execution result of the tasks that have been executed (Indicator icons easily show the result). Upload, download, edit or delete tasks. Forced run of the task, even outside the scheduled time with eventual display of the log once the execution is completed. It can be used with integrated Crunz or with a version of Crunz already installed on the system",
     "dependencies": {
         "slim/slim": "^3",
         "monolog/monolog": "^1",
