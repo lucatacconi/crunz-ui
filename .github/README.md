@@ -60,7 +60,7 @@ It's recommended that you use [Composer](https://getcomposer.org/) to install Cr
 
 Start from your **Apache Server**'s **Document Root** folder or start from directory combined with one of the configured virtual hosts and type the following command:
 ```
-composer require lucatacconi/crunz-ui
+composer create-project lucatacconi/crunz-ui
 ```
 This will install Crunz-ui and all required dependencies.
 
