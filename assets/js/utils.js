@@ -38,10 +38,10 @@ var Utils = {
     },
     showConnError: function () {
         Swal.fire({
-            type: 'error',
+            type: "error",
             title: "Connection Error",
-            text: "Check you connection status and try again",
-        }).then((result) => {
+            text: "Check you connection status and try again"
+        }).then(function(result) {
             return;
         })
     },
@@ -115,7 +115,7 @@ var Utils = {
                     type: 'error',
                     title: 'Account error',
                     text: "Login error or session expired",
-                }).then((result) => {
+                }).then(function(result) {
                     Utils.doLogoutAndGoHome();
                 }).catch(swal.noop);
             }else{
@@ -124,7 +124,7 @@ var Utils = {
                     type: 'error',
                     title: error.response.data.status,
                     text: error.response.data.message,
-                }).then((result) => {
+                }).then(function(result) {
                     return;
                 })
                 .catch(swal.noop);
@@ -165,6 +165,7 @@ var Utils = {
             }
         }
 
+
         //Security check
         if(config != null && typeof config.apikey !== "undefined"){
             authorization = "Bearer " + config.apikey;
@@ -186,7 +187,7 @@ var Utils = {
                     type: 'error',
                     title: 'Account error',
                     text: "Login error or session expired",
-                }).then((result) => {
+                }).then(function(result) {
                     Utils.doLogoutAndGoHome();
                 }).catch(swal.noop);
             }else{
@@ -195,7 +196,7 @@ var Utils = {
                     type: 'error',
                     title: error.response.data.status,
                     text: error.response.data.message,
-                }).then((result) => {
+                }).then(function(result) {
                     return;
                 })
                 .catch(swal.noop);

@@ -60,7 +60,7 @@
 
                 var self = this;
 
-                this.$validator.validateAll('login-area').then((result) =>{
+                this.$validator.validateAll('login-area').then(function(result) {
                     if (result) {
 
                         var config = {
