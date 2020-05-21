@@ -81,12 +81,14 @@
                             for (let task_data_exec in task_data.outcome_executed_task_lst) {
                                 for (key = 0; key < self.stats.length; key++) {
                                     if(task_data_exec.substring(0, 10) == self.stats[key].date_ref){
-                                        self.stats[key].executed += 1;
-
                                         let task_out = task_data.outcome_executed_task_lst[task_data_exec];
-                                        if(task_out != "OK"){
+                                        if(task_out == "OK"){
+                                            self.stats[key].executed += 1;
+                                        }else{
                                             self.stats[key].with_errors += 1;
                                         }
+
+                                        self.stats[key].planned -= 1;
                                     }
                                 }
                             }

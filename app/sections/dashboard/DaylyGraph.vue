@@ -53,12 +53,14 @@
 
                             for (var task_data_exec in task_data.outcome_executed_task_lst) {
                                 if(task_data_exec.substring(0, 10) == moment().format("YYYY-MM-DD")){
-                                    self.executed += 1;
-
                                     var task_out = task_data.outcome_executed_task_lst[task_data_exec];
-                                    if(task_out != "OK"){
+                                    if(task_out == "OK"){
+                                        self.executed += 1;
+                                    }else{
                                         self.withErrors += 1;
                                     }
+
+                                    self.planned -= 1;
                                 }
                             }
                         }
