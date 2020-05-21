@@ -50,8 +50,13 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 ## System Requirements
 
 * Linux OS and Bash shell
-* Apache and PHP 7.1.3 or newer
+* Service ntp enabled
+* Apache and PHP 7.1.3 or newer, with rewrite.load module enabled
 * Composer
+
+***It is important that the system clock is correctly synchronized. In case of unsynchronized clock there could be misalignments in the execution of the tasks or in the management of the user sessions.***
+
+It is advisable to use npm to keep the server time synchronized.
 
 
 ## Installation and application setup
@@ -102,6 +107,8 @@ If you have configured a custom log folder, the crontab configuration must be ch
 
 Complete the configuration by setting the folders that act as containers for the tasks.
 Refer to [Configuration of the task's folder structure](#Configuration-of-the-task's-folder-structure) section to configure the structure.
+
+Please refer to [Ubuntu/Debian setup example](UBUNTU_EXPL.md) for suggestion.
 
 
 ### Usage on a previous installation of Crunz
