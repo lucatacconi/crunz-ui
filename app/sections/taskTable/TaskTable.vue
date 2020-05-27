@@ -23,11 +23,24 @@
         ></task-edit>
 
         <v-card>
+            <v-card-title >
+                Task list
+                <v-spacer></v-spacer>
+                <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Search"
+                    single-line
+                    hide-details
+                    class="mt-0"
+                ></v-text-field>
+            </v-card-title>
             <v-data-table
                 :headers="headers"
                 :items="files"
                 :sort-by="headers"
                 :sort-desc="[false, true]"
+                :search="search"
             >
                 <template v-if="files.length!=0" v-slot:body="{ items }">
                     <tbody>
@@ -124,17 +137,19 @@
 module.exports = {
     data:function(){
         return{
+            search: '',
             showUploadModal: false,
             showEditModal: false,
             showLogModal: false,
             showEditModal: false,
             headers: [
                 {
-                    text: '',
+                    text: 'Actions',
                     sortable: false,
-                    value: ''
+                    value: '',
+                    align: 'center'
                 },
-                { text: '#', value: 'event_launch_id', align: 'center' },
+                { text: 'Task num.', value: 'event_launch_id', align: 'center' },
                 { text: 'Task', value: 'task_path' },
                 { text: 'Description', value: 'task_description' },
                 { text: 'Execution', value: 'expression' },
