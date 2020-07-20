@@ -13,9 +13,11 @@ sudo apt install net-tools
 Installation of the ntp service which keeps the time always synchronized and verification of the system time:
 ```
 sudo apt-get install ntp
+sudo timedatectl set-timezone Europe/Rome
 sudo service ntp restart
 timedatectl
 ```
+I.e.: sudo timedatectl set-timezone Europe/Rome
 
 Installation of Apache server, PHP, and Curl for PHP:
 
