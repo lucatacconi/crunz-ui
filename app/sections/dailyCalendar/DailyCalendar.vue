@@ -77,6 +77,7 @@ module.exports = {
             showDetailModal: false,
             selectedEvent: false,
             logData:false,
+            taskTitleLength: 25,
 
             dateFocus: moment().format('YYYY-MM-DD')
         }
@@ -178,7 +179,7 @@ module.exports = {
                                 delete tmp.interval_run_lst;
 
                                 let obj_temp={
-                                    name: (response.data[i].filename.replace('.php', '').length > 15) ? response.data[i].filename.replace('.php', '').substring(0, 13)+".." : response.data[i].filename.replace('.php', ''),
+                                    name: (response.data[i].filename.replace('.php', '').length > self.taskTitleLength) ? response.data[i].filename.replace('.php', '').substring(0, (self.taskTitleLength + 2))+".." : response.data[i].filename.replace('.php', ''),
                                     start: interval_data_start,
                                     end: response.data[i].interval_run_lst[interval_data_start],
                                     details: response.data[i].task_description,
