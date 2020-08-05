@@ -22,7 +22,7 @@
             :rowdata="logData"
         ></task-edit>
 
-        <v-card>
+        <v-card class="mb-16">
             <v-card-title >
                 Task list
                 <v-spacer></v-spacer>
