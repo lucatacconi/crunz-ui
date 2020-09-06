@@ -300,6 +300,51 @@ $app->group('/task', function () use ($app) {
                 $row["task_description"] = $oEVENT->description;
                 $row["expression"] = $row["expression_orig"] = $oEVENT->getExpression();
 
+                //Check task if it is high-frequency task (more then once an hour)
+                $aEXPRESSION = explode(" ", $row["expression_orig"]);
+                $row["high-frequency"] = false;
+                $row["high-frequency-hour-round"] = 0;
+                $row["high-frequency-day-round"] = 0;
+                if( $aEXPRESSION[0] == '*' || strpos($aEXPRESSION[0], "-") !== false || strpos($aEXPRESSION[0], ",") !== false || strpos($aEXPRESSION[0], "/") !== false ){
+                    $row["high-frequency"] = true;
+
+                    $aFREQ_M = $aEXPRESSION[0];
+                    $aFREQ_H = $aEXPRESSION[1];
+
+                    $round_hour = 0;
+                    $round_day = 0;
+
+                    if($aFREQ_M == '*'){
+                        $round_hour = 60;
+                    }else if(strpos($aFREQ_M, "-") !== false){
+                        $aINT = explode("-", $aFREQ_M);
+                        $round_hour = ($aINT[1] - $aINT[0]);
+                    }else if(strpos($aFREQ_M, "/") !== false){
+                        $round_hour = round(60 / str_replace("*/", "", $aFREQ_M));
+                    }else if(strpos($aFREQ_M, ",") !== false){
+                        $aINT = explode("-", $aFREQ_M);
+                        $round_hour = count($aINT);
+                    }
+
+                    $row["round-hour"] = true;
+                    $row["high-frequency-hour-round"] = $round_hour;
+
+                    if($aFREQ_H == '*'){
+                        $round_day = $round_hour * 24;
+                    }else if(strpos($aFREQ_H, "-") !== false){
+                        $aINT = explode("-", $aFREQ_H);
+                        $round_day = ($aINT[1] - $aINT[0]) * $round_hour;
+                    }else if(strpos($aFREQ_H, "/") !== false){
+                        $round_day = round(24 / str_replace("*/", "", $aFREQ_H)) * $round_hour;
+                    }else if(strpos($aFREQ_H, ",") !== false){
+                        $aINT = explode("-", $aFREQ_H);
+                        $round_day = count($aINT) * $round_hour;
+                    }
+
+                    $row["high-frequency-day-round"] = $round_day;
+                }
+
+
                 //Check task lifetime
                 $from = '';
                 $to = '';
