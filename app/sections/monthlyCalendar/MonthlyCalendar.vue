@@ -47,6 +47,7 @@
                             v-model="dateFocus"
                             :events="tasks"
                             :event-color="getEventColor"
+                            :event-text-color="getEventTextColor"
                             type="month"
                             color="primary"
                             event-height=18
@@ -109,7 +110,7 @@ module.exports = {
             this.readData();
         },
 
-        stringToColour: function(str){
+        stringToColor: function(str){
             for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
             color = Math.floor(Math.abs((Math.sin(hash) * 10000) % 1 * 16777216)).toString(16);
             return '#' + Array(6 - color.length + 1).join('0') + color;
@@ -117,6 +118,9 @@ module.exports = {
 
         getEventColor: function(event) {
             return event.color;
+        },
+        getEventTextColor: function(event) {
+            return event.colorText;
         },
 
         viewDay: function({ date }) {
@@ -184,12 +188,25 @@ module.exports = {
                                     event_name = "(HF) " + event_name;
                                 }
 
+                                let event_color = self.stringToColor(response.data[i].task_path);
+
+                                r = parseInt(event_color.substr(1,2),16);
+                                g = parseInt(event_color.substr(3,2),16);
+                                b = parseInt(event_color.substr(4,2),16);
+                                yiq = ( (r * 299) + (g * 587) + (b * 114)) / 1000;
+
+                                let event_color_text = "#FFFFFF";
+                                if (yiq >= 100) {
+                                    event_color_text = "#141414";
+                                }
+
                                 let obj_temp={
                                     name: event_name,
                                     start: interval_data_start,
                                     end: response.data[i].interval_run_lst[interval_data_start],
                                     details: response.data[i].task_description,
-                                    color: self.stringToColour(response.data[i].task_path),
+                                    color: event_color,
+                                    colorText: event_color_text,
                                     data: tmp
                                 }
 
