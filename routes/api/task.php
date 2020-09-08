@@ -154,6 +154,11 @@ $app->group('/task', function () use ($app) {
             // $past_planned_tasks = 'Y';
         }
 
+        $executed_task_lst_in_interval = "Y";
+        if(!empty($params["EXECUTED_TASK_LST_IN_INTERVAL"])){
+            $executed_task_lst_in_interval = $params["EXECUTED_TASK_LST_IN_INTERVAL"];
+        }
+
         $return_task_content = "N";
         if(!empty($params["RETURN_TASK_CONT"])){
             $return_task_content = $params["RETURN_TASK_CONT"];
@@ -300,13 +305,13 @@ $app->group('/task', function () use ($app) {
                 $row["task_description"] = $oEVENT->description;
                 $row["expression"] = $row["expression_orig"] = $oEVENT->getExpression();
 
-                //Check task if it is high-frequency task (more then once an hour)
+                //Check task if it is high_frequency task (more then once an hour)
                 $aEXPRESSION = explode(" ", $row["expression_orig"]);
-                $row["high-frequency"] = false;
-                $row["high-frequency-hour-round"] = 0;
-                $row["high-frequency-day-round"] = 0;
+                $row["high_frequency"] = false;
+                $row["high_frequency_hour_round"] = 0;
+                $row["high_frequency_day_round"] = 0;
                 if( $aEXPRESSION[0] == '*' || strpos($aEXPRESSION[0], "-") !== false || strpos($aEXPRESSION[0], ",") !== false || strpos($aEXPRESSION[0], "/") !== false ){
-                    $row["high-frequency"] = true;
+                    $row["high_frequency"] = true;
 
                     $aFREQ_M = $aEXPRESSION[0];
                     $aFREQ_H = $aEXPRESSION[1];
@@ -327,7 +332,7 @@ $app->group('/task', function () use ($app) {
                     }
 
                     $row["round-hour"] = true;
-                    $row["high-frequency-hour-round"] = $round_hour;
+                    $row["high_frequency_hour_round"] = $round_hour;
 
                     if($aFREQ_H == '*'){
                         $round_day = $round_hour * 24;
@@ -341,7 +346,7 @@ $app->group('/task', function () use ($app) {
                         $round_day = count($aINT) * $round_hour;
                     }
 
-                    $row["high-frequency-day-round"] = $round_day;
+                    $row["high_frequency_day_round"] = $round_day;
                 }
 
 
@@ -513,6 +518,17 @@ $app->group('/task', function () use ($app) {
                             $aLOGFOCUS =explode('_', str_replace($LOGS_DIR."/", "", $LOGFOCUS));
                             $task_start = DateTime::createFromFormat('YmdHi', $aLOGFOCUS[2]);
                             $task_stop = DateTime::createFromFormat('YmdHi', $aLOGFOCUS[3]);
+
+                            if($task_start->format('Y-m-d H:i:s') < $event_interval_from || $task_start->format('Y-m-d H:i:s') > $event_interval_to){
+                                continue;
+                            }
+
+                            if($row["high_frequency"]){
+                                if($task_start->format('Y-m-d H:i:s') != $row["last_run"]){
+                                    continue;
+                                }
+                            }
+
                             $row["executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $task_stop->format('Y-m-d H:i:s');
                             if($outcome_executed_task_lst == "Y"){
                                 $row["outcome_executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $aLOGFOCUS[1];
@@ -590,14 +606,10 @@ $app->group('/task', function () use ($app) {
 
 
                 if($calc_run_lst == "Y"){
-                    while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+
+                    if($row["high_frequency"]){
+
                         $calc_run = $cron->getNextRunDate($event_interval_from, $nincrement, true)->format('Y-m-d H:i:s');
-
-                        if($calc_run > $event_interval_to){
-                            break;
-                        }
-
-                        $nincrement++;
 
                         if($calc_run < $date_now && $past_planned_tasks != "Y"){
                             if(array_key_exists($calc_run, $row["executed_task_lst"])){
@@ -610,15 +622,55 @@ $app->group('/task', function () use ($app) {
                         }else{
                             $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
                         }
-                    }
 
-                    foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
-                        if($exec_task_start >= $event_interval_from && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
-                            $row["interval_run_lst"][$exec_task_start] = $exec_task_end;
+                        $calc_run_new = $calc_run;
+                        while($calc_run_new <= $event_interval_to){
+                            $calc_run_new = date('Y-m-d H:i:s', strtotime("$calc_run_new + 1 day"));
+
+                            if($calc_run_new < $date_now && $past_planned_tasks != "Y"){
+                                if(array_key_exists($calc_run_new, $row["executed_task_lst"])){
+                                    if($calc_run == $row["executed_task_lst"][$calc_run_new]){
+                                        $row["interval_run_lst"][$calc_run_new] = date('Y-m-d H:i:s', strtotime("$calc_run_new + 1 minute"));
+                                    }else{
+                                        $row["interval_run_lst"][$calc_run_new] = $row["executed_task_lst"][$calc_run_new];
+                                    }
+                                }
+                            }else{
+                                $row["interval_run_lst"][$calc_run_new] = date('Y-m-d H:i:s', strtotime("$calc_run_new + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
+                            }
                         }
-                    }
 
-                    ksort($row["interval_run_lst"]);
+                    }else{
+                        while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+                            $calc_run = $cron->getNextRunDate($event_interval_from, $nincrement, true)->format('Y-m-d H:i:s');
+
+                            if($calc_run > $event_interval_to){
+                                break;
+                            }
+
+                            $nincrement++;
+
+                            if($calc_run < $date_now && $past_planned_tasks != "Y"){
+                                if(array_key_exists($calc_run, $row["executed_task_lst"])){
+                                    if($calc_run == $row["executed_task_lst"][$calc_run]){
+                                        $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + 1 minute"));
+                                    }else{
+                                        $row["interval_run_lst"][$calc_run] = $row["executed_task_lst"][$calc_run];
+                                    }
+                                }
+                            }else{
+                                $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
+                            }
+                        }
+
+                        foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
+                            if($exec_task_start >= $event_interval_from && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
+                                $row["interval_run_lst"][$exec_task_start] = $exec_task_end;
+                            }
+                        }
+
+                        ksort($row["interval_run_lst"]);
+                    }
                 }
 
                 $aTASKs[] = $row;

@@ -44,7 +44,7 @@
                         <v-col cols="12" class="py-0">
                             <v-text-field
                                 label="Execution schedule:"
-                                :value="rowdata.data.expression_readable"
+                                :value="rowdata.data.expression_readable + (rowdata.data.high_frequency ? ' (High frequency task)' : '')"
                                 readonly
                                 hide-details
                             ></v-text-field>

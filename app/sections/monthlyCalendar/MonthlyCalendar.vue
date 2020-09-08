@@ -179,8 +179,13 @@ module.exports = {
                                 let tmp = JSON.parse(JSON.stringify(response.data[i]));
                                 delete tmp.interval_run_lst;
 
+                                let event_name = (response.data[i].filename.replace('.php', '').length > self.taskTitleLength) ? response.data[i].filename.replace('.php', '').substring(0, (self.taskTitleLength + 2))+".." : response.data[i].filename.replace('.php', '');
+                                if(response.data[i].high_frequency){
+                                    event_name = "(HF) " + event_name;
+                                }
+
                                 let obj_temp={
-                                    name: (response.data[i].filename.replace('.php', '').length > 15) ? response.data[i].filename.replace('.php', '').substring(0, 13)+".." : response.data[i].filename.replace('.php', ''),
+                                    name: event_name,
                                     start: interval_data_start,
                                     end: response.data[i].interval_run_lst[interval_data_start],
                                     details: response.data[i].task_description,
