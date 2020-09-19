@@ -7,7 +7,8 @@ var/logs/*
 #Ingore all tasks execpt example task and htaccess
 tasks/*
 !tasks/.htaccess
-!tasks/.testTasks.php
+!tasks/testTasks.php
+!tasks/testAliveTasks.php
 
 # Ingore all logs files everywhere
 *.log
