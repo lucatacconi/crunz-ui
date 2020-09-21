@@ -82,9 +82,6 @@ $task = $schedule->run(function() {
             }
         }
 
-
-
-
     } catch (Exception $e) {
         throw new Exception($e->getMessage());
     }
@@ -95,4 +92,5 @@ $task
 ->description('Warns that Crunz-ui is working for you, check public IP of the server and sends it to specific addresses.')
 ->everyTwelveHours();
 
-return $schedule;
+//uncomment this line to activate
+//return $schedule;
