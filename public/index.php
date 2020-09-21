@@ -27,9 +27,6 @@ foreach (glob($config_path."*.json") as $filename) {
     }
 }
 
-
-
-
 $tpl_data = [];
 $tpl_data["run_mode"] = getenv("RUN_MODE");
 $tpl_data["application"] = $container_config["application"];
