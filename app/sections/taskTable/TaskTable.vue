@@ -35,11 +35,13 @@
                     class="mt-0"
                 ></v-text-field>
             </v-card-title>
+
             <v-data-table
                 :headers="headers"
                 :items="files"
                 :sort-by="headers"
                 :sort-desc="[false, true]"
+                :custom-sort="customSort"
                 :search="search"
             >
                 <template v-if="files.length!=0" v-slot:body="{ items }">
@@ -182,6 +184,58 @@ module.exports = {
                     self.message = "No tasks found on server. Eventually check tasks directory path."
                 }
             });
+        },
+
+        customSort(items, index, isDesc) {
+
+            items.sort((a, b) => {
+
+                if (index[0] === "expression") {
+
+                    a_split = a[index[0]].split(" ");
+                    b_split = b[index[0]].split(" ");
+
+                    const zeroPad = (num, places) => String(num).padStart(places, '0');
+
+                    a_m = "00";
+                    if(!isNaN(a_split[0])) a_m = zeroPad(parseInt(a_split[0], 10), 2);
+
+                    a_h = "00";
+                    if(!isNaN(a_split[1])) a_h = zeroPad(parseInt(a_split[1], 10), 2);
+
+                    b_m = "00";
+                    if(!isNaN(b_split[0])) b_m = zeroPad(parseInt(b_split[0], 10), 2);
+
+                    b_h = "00";
+                    if(!isNaN(b_split[1])) b_h = zeroPad(parseInt(b_split[1], 10), 2);
+
+                    console.log(a_h + a_m);
+                    console.log(b_h + b_m);
+
+                    if (!isDesc) {
+                        return (a_h + a_m) < (b_h + b_m) ? -1 : 1;
+                    } else {
+                        return (b_h + b_m) < (a_h + a_m) ? -1 : 1;
+                    }
+
+                }else{
+                    if (!(isNaN(a[index[0]]))) {
+                        if (!isDesc[0]) {
+                            return (a[index[0]] - b[index[0]]);
+                        } else {
+                            return (b[index[0]] - a[index[0]]);
+                        }
+
+                    } else {
+                        if (!isDesc[0]) {
+                            return (a[index[0]] < b[index[0]]) ? -1 : 1;
+                        } else {
+                            return (b[index[0]] < a[index[0]]) ? -1 : 1;
+                        }
+                    }
+                }
+            });
+            return items;
         },
 
         downloadTask:function(rowdata){
