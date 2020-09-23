@@ -93,4 +93,4 @@ $task
 ->everyTwelveHours();
 
 //uncomment this line to activate
-//return $schedule;
+return $schedule;
