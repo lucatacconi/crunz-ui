@@ -119,7 +119,7 @@ function runTask() {
             executed_task_outcome="KO"
         fi
 
-        counter_pad=`printf "%08.0f" $p_task_counter`
+        counter_pad=$(php -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getEventUniqueKey('$p_task_counter'); echo $res;')
 
         log_task_name="T"$counter_pad"_"$executed_task_outcome"_"$task_start_datetime"_"$task_stop_datetime"_"$file_seed".log"
         mv $p_logs_path/$file_uuid.log $p_logs_path/$log_task_name
@@ -194,7 +194,7 @@ if [ $id_task -gt 0 ]; then
     runTask $id_task "$forced_execution" "$tasks_path" "$logs_path"
 else
 
-    tasks_count=$(find $tasks_path -name *$tasks_suffix -type f | wc -l)
+    tasks_count=$(php -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getAllTree(); echo $res;')
 
     task_counter=1
     while [ $task_counter -le $tasks_count ]

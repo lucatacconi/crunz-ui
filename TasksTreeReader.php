@@ -87,7 +87,7 @@ class TasksTreeReader {
             }
         }
 
-        //php  -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getMaxNumTasks(); echo $res;'
+        //php -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getMaxNumTasks(); echo $res;'
         return $task_counter;
     }
 
@@ -178,7 +178,7 @@ class TasksTreeReader {
             }
         }
 
-        //php  -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getAllTree(); echo $res;'
+        //php -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getAllTree(); echo $res;'
         return json_encode($aTASKs);
     }
 
@@ -280,7 +280,7 @@ class TasksTreeReader {
 
         if(empty($aTASK) || empty($aTASK["event_unique_key"])) return false;
 
-        //php  -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getEventUniqueKey(); echo $res;'
+        //php -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getEventUniqueKey(); echo $res;'
         return $aTASK["event_unique_key"];
     }
 }
