@@ -35,97 +35,10 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             $only_active = $params["ONLY_ACTIVE"];
         }
 
-        $app_configs = $this->get('configs')["app_configs"];
-        $aGROUPs = $task_groups = $app_configs["task_groups"];
-
-        function recursiveRemoval(&$array){
-            if(!empty($array["disabled"]) && $array["disabled"] == true){
-                unset($array);
-            }
-
-            unset($array["disabled"]);
-
-            if(!empty($array["children"]) && is_array($array["children"])){
-
-                $at_least_one = "N";
-                foreach($array["children"] as $key=>&$arrayElement)
-                {
-                    if(empty($arrayElement["disabled"]) || $arrayElement["disabled"] == false){
-                        $at_least_one = "Y";
-                    }
-                }
-
-                if($at_least_one == "Y"){
-                    foreach($array["children"] as $key=>&$arrayElement)
-                    {
-                        if(!empty($arrayElement["disabled"]) && $arrayElement["disabled"] == true){
-                            array_splice($array["children"], $key, 1);
-                        }else{
-                            unset($array["children"][$key]["disabled"]);
-                            recursiveRemoval($arrayElement);
-                        }
-                    }
-                }else{
-                    unset($array["children"]);
-                }
-
-            }
-        }
-
-        if($only_active == "Y"){
-            recursiveRemoval($aGROUPs);
-        }
-
-        $data = $aGROUPs;
-
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
                         ->withHeader("Content-Type", "application/json");
     });
-
-    $group->get('/group-in-line', function (Request $request, Response $response, array $args) {
-
-        $data = [];
-
-        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
-
-        $only_active = "Y";
-        if(!empty($params["ONLY_ACTIVE"])){
-            $only_active = $params["ONLY_ACTIVE"];
-        }
-
-        $app_configs = $this->get('configs')["app_configs"];
-        $main_group = $task_groups = $app_configs["task_groups"];
-
-        unset($main_group["children"]);
-        $data[] = $main_group;
-
-        function setChildrenElementView(&$aLSTELEM, $parent, $only_active) {
-
-            if(!empty($parent["children"])){
-                foreach($parent["children"] as $row_cnt => $row_data){
-                    if($only_active == 'Y' && $row_data["disabled"]){
-                        continue;
-                    }
-
-                    unset($row_data["disabled"]);
-                    $sub_parent = $row_data;
-
-                    unset($sub_parent["children"]);
-                    $aLSTELEM[] = $sub_parent;
-
-                    setChildrenElementView($aLSTELEM, $row_data, $only_active);
-                }
-            }
-        }
-
-        setChildrenElementView($data, $task_groups, $only_active);
-
-        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-        return $response->withStatus(200)
-                        ->withHeader("Content-Type", "application/json");
-    });
-
 
     $group->get('/', function (Request $request, Response $response, array $args) {
 
