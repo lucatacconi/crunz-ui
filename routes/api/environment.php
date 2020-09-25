@@ -20,12 +20,12 @@ $app->group('/environment', function () use ($app) {
         $app_configs = $this->get('app_configs');
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $base_path;
             $data["TASK_POSITION_EMBEDDED"] = true;
             $data["TASK_DIR"] = '';
         }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
             $data["TASK_POSITION_EMBEDDED"] = false;
             $data["TASK_DIR"] = $crunz_base_dir;
         }
@@ -98,13 +98,13 @@ $app->group('/environment', function () use ($app) {
             }
         }
 
-        if(!empty(getenv("LOGS_DIR"))){
+        if(!empty($_ENV["LOGS_DIR"])){
             $data["LOGS_DIR_CONFIG_PRESENCE"] = true;
 
-            if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-                $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+            if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+                $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
             }else{
-                $LOGS_DIR = getenv("LOGS_DIR");
+                $LOGS_DIR = $_ENV["LOGS_DIR"];
             }
 
             $data["LOGS_DIR"] = $LOGS_DIR;

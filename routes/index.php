@@ -8,8 +8,6 @@ require '../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable("../");
 $dotenv->load();
 
-// date_default_timezone_set(getenv("TIMEZONE"));
-
 
 $container_config = array();
 
@@ -56,7 +54,7 @@ $app = new \Slim\App($container);
 //Security layer
 $app->add(new Tuupola\Middleware\JwtAuthentication([
     "secure" => false,
-    "secret" => getenv("JWT_SECRET"),
+    "secret" => $_ENV["JWT_SECRET"],
 
     "ignore" => ["/auth/login"],
 

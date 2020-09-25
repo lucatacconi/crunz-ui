@@ -191,10 +191,10 @@ $app->group('/task', function () use ($app) {
         $app_configs = $this->get('app_configs');
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $base_path;
         }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
         }
 
         if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
@@ -217,12 +217,12 @@ $app->group('/task', function () use ($app) {
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
         $TASK_SUFFIX = $crunz_config["suffix"];
 
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
 
-        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
         }else{
-            $LOGS_DIR = getenv("LOGS_DIR");
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
         }
 
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
@@ -707,10 +707,10 @@ $app->group('/task', function () use ($app) {
         $app_configs = $this->get('app_configs');
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $base_path;
         }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
         }
 
         if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
@@ -733,12 +733,12 @@ $app->group('/task', function () use ($app) {
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
         $TASK_SUFFIX = $crunz_config["suffix"];
 
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
 
-        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
         }else{
-            $LOGS_DIR = getenv("LOGS_DIR");
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
         }
 
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
@@ -925,10 +925,10 @@ $app->group('/task', function () use ($app) {
         $app_configs = $this->get('app_configs');
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $base_path;
         }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
         }
 
         if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
@@ -953,12 +953,12 @@ $app->group('/task', function () use ($app) {
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
 
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
 
-        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
         }else{
-            $LOGS_DIR = getenv("LOGS_DIR");
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
         }
 
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
@@ -1029,10 +1029,10 @@ $app->group('/task', function () use ($app) {
         $app_configs = $this->get('app_configs');
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $base_path;
         }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
         }
 
         if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
@@ -1055,12 +1055,12 @@ $app->group('/task', function () use ($app) {
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
         $TASK_SUFFIX = $crunz_config["suffix"];
 
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
 
-        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
         }else{
-            $LOGS_DIR = getenv("LOGS_DIR");
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
         }
 
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
@@ -1220,10 +1220,10 @@ $app->group('/task', function () use ($app) {
         $app_configs = $this->get('app_configs');
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $base_path;
         }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
         }
 
         if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
@@ -1248,12 +1248,12 @@ $app->group('/task', function () use ($app) {
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
 
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
 
-        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
         }else{
-            $LOGS_DIR = getenv("LOGS_DIR");
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
         }
 
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
@@ -1347,10 +1347,10 @@ $app->group('/task', function () use ($app) {
         $app_configs = $this->get('app_configs');
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $base_path;
         }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
         }
 
         if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
@@ -1375,12 +1375,12 @@ $app->group('/task', function () use ($app) {
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
 
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
 
-        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
         }else{
-            $LOGS_DIR = getenv("LOGS_DIR");
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
         }
 
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');

@@ -58,8 +58,8 @@ $app->group('/auth', function () use ($app) {
             //Setting session dueration
             if(!empty($aACCOUNT["customSessionDuration"])){
                 $duration = $aACCOUNT["customSessionDuration"];
-            }else if(!empty(getenv("SESSION_DURATION"))){
-                $duration = getenv("SESSION_DURATION");
+            }else if(!empty($_ENV["SESSION_DURATION"])){
+                $duration = $_ENV["SESSION_DURATION"];
             }else{
                 $duration = "2 hours";
             }
@@ -78,7 +78,7 @@ $app->group('/auth', function () use ($app) {
                 "userType" => !empty($aACCOUNT["userType"]) ? $aACCOUNT["userType"] : ''
             ];
 
-            $secret = getenv("JWT_SECRET");
+            $secret = $_ENV["JWT_SECRET"];
             $token = JWT::encode($payload, $secret, "HS256");
 
 
