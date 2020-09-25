@@ -1,7 +1,8 @@
 <?php
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Routing\RouteCollectorProxy;
 
 use Ramsey\Uuid\Uuid;
 use Firebase\JWT\JWT;
@@ -9,15 +10,15 @@ use Tuupola\Base62;
 
 use Symfony\Component\Yaml\Yaml;
 
-$app->group('/environment', function () use ($app) {
+$app->group('/environment', function (RouteCollectorProxy $group) {
 
-    $app->get('/check', function ($request, $response, $args) {
+    $group->get('/check', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
         if(empty($_ENV["CRUNZ_BASE_DIR"])){
@@ -134,8 +135,8 @@ $app->group('/environment', function () use ($app) {
             $data["ALL_CHECK"] = true;
         }
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 });

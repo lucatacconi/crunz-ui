@@ -1,7 +1,8 @@
 <?php
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Routing\RouteCollectorProxy;
 
 use Ramsey\Uuid\Uuid;
 use Firebase\JWT\JWT;
@@ -21,20 +22,20 @@ use CrunzUI\Task\CrunzUITaskGenerator;
 use Lorisleiva\CronTranslator\CronTranslator;
 use Symfony\Component\Yaml\Yaml;
 
-$app->group('/task', function () use ($app) {
+$app->group('/task', function (RouteCollectorProxy $group) {
 
-    $app->get('/group', function ($request, $response, $args) {
+    $group->get('/group', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
         $only_active = "Y";
         if(!empty($params["ONLY_ACTIVE"])){
             $only_active = $params["ONLY_ACTIVE"];
         }
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $aGROUPs = $task_groups = $app_configs["task_groups"];
 
         function recursiveRemoval(&$array){
@@ -77,23 +78,23 @@ $app->group('/task', function () use ($app) {
 
         $data = $aGROUPs;
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 
-    $app->get('/group-in-line', function ($request, $response, $args) {
+    $group->get('/group-in-line', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
         $only_active = "Y";
         if(!empty($params["ONLY_ACTIVE"])){
             $only_active = $params["ONLY_ACTIVE"];
         }
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $main_group = $task_groups = $app_configs["task_groups"];
 
         unset($main_group["children"]);
@@ -120,17 +121,17 @@ $app->group('/task', function () use ($app) {
 
         setChildrenElementView($data, $task_groups, $only_active);
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 
 
-    $app->get('/', function ($request, $response, $args) {
+    $group->get('/', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
         $calc_run_lst = "N";
         if(!empty($params["CALC_RUN_LST"])){
@@ -188,7 +189,7 @@ $app->group('/task', function () use ($app) {
         }
 
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
         if(empty($_ENV["CRUNZ_BASE_DIR"])){
@@ -691,20 +692,20 @@ $app->group('/task', function () use ($app) {
 
         $data = $aTASKs;
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 
 
-    $app->get('/exec-outcome', function ($request, $response, $args) {
+    $group->get('/exec-outcome', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
         if(empty($_ENV["CRUNZ_BASE_DIR"])){
@@ -909,20 +910,20 @@ $app->group('/task', function () use ($app) {
 
         $data = $aEXEC;
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 
 
-    $app->post('/', function ($request, $response, $args) {
+    $group->post('/', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
         if(empty($_ENV["CRUNZ_BASE_DIR"])){
@@ -1009,24 +1010,24 @@ $app->group('/task', function () use ($app) {
             $data["result_msg"] = $e->getMessage();
         }
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 
 
-    $app->post('/execute', function ($request, $response, $args) {
+    $group->post('/execute', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
         $exec_and_wait = "N";
         if(!empty($params["EXEC_AND_WAIT"])){
             $exec_and_wait = $params["EXEC_AND_WAIT"];
         }
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
         if(empty($_ENV["CRUNZ_BASE_DIR"])){
@@ -1204,20 +1205,20 @@ $app->group('/task', function () use ($app) {
             throw new Exception("ERROR - Task to execute not found");
         }
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 
 
-    $app->post('/upload', function ($request, $response, $args) {
+    $group->post('/upload', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
         if(empty($_ENV["CRUNZ_BASE_DIR"])){
@@ -1332,19 +1333,19 @@ $app->group('/task', function () use ($app) {
         $data["result"] = true;
         $data["result_msg"] = '';
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 
 
-    $app->delete('/', function ($request, $response, $args) {
+    $group->delete('/', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
         if(empty($_ENV["CRUNZ_BASE_DIR"])){
@@ -1420,8 +1421,8 @@ $app->group('/task', function () use ($app) {
             $data["result_msg"] = $e->getMessage();
         }
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 });
