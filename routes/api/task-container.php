@@ -118,13 +118,13 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
 
 
-        $data = $aPATH;
+        // $data = $aPATH;
 
-        if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
+        // if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
 
-        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
+        // if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
 
-
+        // mkdir
 
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
