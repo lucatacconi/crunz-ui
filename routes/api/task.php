@@ -24,22 +24,6 @@ use Symfony\Component\Yaml\Yaml;
 
 $app->group('/task', function (RouteCollectorProxy $group) {
 
-    $group->get('/group', function (Request $request, Response $response, array $args) {
-
-        $data = [];
-
-        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
-
-        $only_active = "Y";
-        if(!empty($params["ONLY_ACTIVE"])){
-            $only_active = $params["ONLY_ACTIVE"];
-        }
-
-        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-        return $response->withStatus(200)
-                        ->withHeader("Content-Type", "application/json");
-    });
-
     $group->get('/', function (Request $request, Response $response, array $args) {
 
         $data = [];
