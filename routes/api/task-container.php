@@ -118,10 +118,6 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         try {
 
-            if(is_dir( $params["DIR_NAME"] )){
-                throw new Exception("ERROR - Directory being added already present");
-            }
-
             $aDESTINATION = explode("/", $params["DIR_NAME"]);
             array_pop($aDESTINATION);
 
@@ -132,9 +128,12 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
                 }
             }
 
-
             if(!in_array($dest_up1, $aPATH)){
                 throw new Exception("ERROR - Directory parent not present");
+            }
+
+            if(is_dir( $TASKS_DIR  . $params["DIR_NAME"] )){
+                throw new Exception("ERROR - Directory being added already present");
             }
 
             if (!mkdir( $TASKS_DIR  . $params["DIR_NAME"] )) {
@@ -187,6 +186,9 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
         if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
 
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+
+        die($TASKS_DIR);
+
 
         try {
 
