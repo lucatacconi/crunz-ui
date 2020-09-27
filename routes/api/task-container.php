@@ -4,6 +4,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Routing\RouteCollectorProxy;
 use Symfony\Component\Yaml\Yaml;
+use CrunzUI\Tools\CrunzUITools;
 
 $app->group('/task-container', function (RouteCollectorProxy $group) {
 
@@ -38,26 +39,7 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
 
-
-
-        $dir_rotator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($TASKS_DIR));
-
-        $aPATH = [];
-        foreach ($dir_rotator as $path) {
-
-            if (!$path->isDir()){
-                continue;
-            }
-
-            $path = str_replace(['.','/.','/.','/..', $TASKS_DIR], '', $path);
-            $path = rtrim($path, "/");
-
-            if(!in_array($path, $aPATH)){
-                $aPATH[] = $path;
-            }
-        }
-
-        $data = $aPATH;
+        $data = CrunzUITools::taskDirectoryRotator($TASKS_DIR);
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
@@ -73,6 +55,8 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
         if(empty($params["DIR_NAME"])) throw new Exception("ERROR - Missing name of the directory being added");
 
         $params["DIR_NAME"] = str_replace(['.'], '', $params["DIR_NAME"]);
+
+        if($params["DIR_NAME"] == "/") throw new Exception("ERROR - Directory being added can not be main path");
 
 
         $app_configs = $this->get('configs')["app_configs"];
@@ -99,26 +83,13 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
 
-
-
-        $dir_rotator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($TASKS_DIR));
-
-        $aPATH = [];
-        foreach ($dir_rotator as $path) {
-
-            if (!$path->isDir()){
-                continue;
-            }
-
-            $path = str_replace(['.','/.','/.','/..', $TASKS_DIR], '', $path);
-            $path = rtrim($path, "/");
-
-            if(!in_array($path, $aPATH)){
-                $aPATH[] = $path;
-            }
-        }
+        $aPATH = CrunzUITools::taskDirectoryRotator($TASKS_DIR);
 
         try {
+
+            if(strlen($params["DIR_NAME"]) > 1){
+                $params["DIR_NAME"] = rtrim($params["DIR_NAME"],"/");
+            }
 
             $aDESTINATION = explode("/", $params["DIR_NAME"]);
             array_pop($aDESTINATION);
@@ -126,21 +97,25 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
             $dest_up1 = '';
             foreach($aDESTINATION as $row_cnt => $row_data){
                 if(!empty($row_data)){
-                    $dest_up1 .= '/'.$row_data;
+                    $dest_up1 .= '/' . $row_data;
+                }else{
+                    $dest_up1 = '/';
                 }
             }
 
-            if(!in_array($dest_up1, $aPATH)){
+            $dest_up1 = str_replace("//", "/", $dest_up1);
+
+            if(!in_array($dest_up1, $aPATH) ){
                 throw new Exception("ERROR - Directory parent not present");
             }
+
+            if(!is_writable($TASKS_DIR  . $dest_up1)) throw new Exception('ERROR - Directory parent not writable');
 
             if(is_dir( $TASKS_DIR  . $params["DIR_NAME"] )){
                 throw new Exception("ERROR - Directory being added already present");
             }
 
-            if(!is_writable($TASKS_DIR  . $params["DIR_NAME"])) throw new Exception('ERROR - Directory parent not writable');
-
-            if (!mkdir( $TASKS_DIR  . $params["DIR_NAME"] )) {
+            if (!mkdir( $TASKS_DIR  . rtrim($params["DIR_NAME"],"/") )) {
                 throw new Exception("ERROR - Failed to create folders...");
             }
 
@@ -167,6 +142,8 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
         if(empty($params["DIR_NAME"])) throw new Exception("ERROR - Missing name of the directory being deleted");
 
         $params["DIR_NAME"] = str_replace(['.'], '', $params["DIR_NAME"]);
+
+        if($params["DIR_NAME"] == "/") throw new Exception("ERROR - Directory being deleted can not be main path");
 
 
         $app_configs = $this->get('configs')["app_configs"];
