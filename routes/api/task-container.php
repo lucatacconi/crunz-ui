@@ -50,6 +50,7 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
             }
 
             $path = str_replace(['.','/.','/.','/..', $TASKS_DIR], '', $path);
+            $path = rtrim($path, "/");
 
             if(!in_array($path, $aPATH)){
                 $aPATH[] = $path;
@@ -69,7 +70,7 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
-        if(empty($_ENV["DIR_NAME"])) throw new Exception("ERROR - New directory name empty");
+        if(empty($params["DIR_NAME"])) throw new Exception("ERROR - Missing name of the directory being added");
 
 
         $app_configs = $this->get('configs')["app_configs"];
@@ -108,23 +109,45 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
             }
 
             $path = str_replace(['.','/.','/.','/..', $TASKS_DIR], '', $path);
+            $path = rtrim($path, "/");
 
             if(!in_array($path, $aPATH)){
                 $aPATH[] = $path;
             }
         }
 
+        try {
+
+            if(is_dir( $params["DIR_NAME"] )){
+                throw new Exception("ERROR - Directory being added already present");
+            }
+
+            $aDESTINATION = explode("/", $params["DIR_NAME"]);
+            array_pop($aDESTINATION);
+
+            $dest_up1 = '';
+            foreach($aDESTINATION as $row_cnt => $row_data){
+                if(!empty($row_data)){
+                    $dest_up1 .= '/'.$row_data;
+                }
+            }
 
 
+            if(!in_array($dest_up1, $aPATH)){
+                throw new Exception("ERROR - Directory parent not present");
+            }
 
+            if (!mkdir( $TASKS_DIR  . $params["DIR_NAME"] )) {
+                throw new Exception("ERROR - Failed to create folders...");
+            }
 
-        // $data = $aPATH;
+            $data["result"] = true;
+            $data["result_msg"] = '';
 
-        // if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
-
-        // if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
-
-        // mkdir
+        } catch(Exception $e) {
+            $data["result"] = false;
+            $data["result_msg"] = $e->getMessage();
+        }
 
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
