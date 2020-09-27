@@ -72,6 +72,8 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         if(empty($params["DIR_NAME"])) throw new Exception("ERROR - Missing name of the directory being added");
 
+        $params["DIR_NAME"] = str_replace(['.'], '', $params["DIR_NAME"]);
+
 
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
@@ -136,6 +138,8 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
                 throw new Exception("ERROR - Directory being added already present");
             }
 
+            if(!is_writable($TASKS_DIR  . $params["DIR_NAME"])) throw new Exception('ERROR - Directory parent not writable');
+
             if (!mkdir( $TASKS_DIR  . $params["DIR_NAME"] )) {
                 throw new Exception("ERROR - Failed to create folders...");
             }
@@ -162,6 +166,8 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         if(empty($params["DIR_NAME"])) throw new Exception("ERROR - Missing name of the directory being deleted");
 
+        $params["DIR_NAME"] = str_replace(['.'], '', $params["DIR_NAME"]);
+
 
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
@@ -187,21 +193,16 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
 
-        die($TASKS_DIR);
-
-
         try {
 
-            if(strpos($params["DIR_NAME"], $TASKS_DIR) === false){
-                throw new Exception("ERROR - Directory being deleted out of range");
-            }
+            $dir_delete = $TASKS_DIR . $params["DIR_NAME"];
 
-            $aCONTENT = scandir($params["DIR_NAME"]);
+            $aCONTENT = scandir($dir_delete);
             if(count($aCONTENT) > 2) throw new Exception("ERROR - Directory being deleted not empty");
 
-            if(!is_writable($params["DIR_NAME"])) throw new Exception('ERROR - Directory being deleted not writable');
+            if(!is_writable($dir_delete)) throw new Exception('ERROR - Directory being deleted not writable');
 
-            if(!rmdir($params["DIR_NAME"])) {
+            if(!rmdir($dir_delete)) {
                 throw new Exception('ERROR - Could not remove directory');
             }
 
