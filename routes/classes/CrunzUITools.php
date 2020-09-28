@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_tupes=1);
+declare(strict_types=1);
 
 namespace CrunzUI\Tools;
 
