@@ -115,11 +115,13 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
                 $path .= '/'. $path_data;
                 $descr .= ucfirst($path_data) . ' - ';
 
-                foreach($section_ref as $child_key => $child_data){
-                    if($child_data["subdir"] == $path){
-                        $child_founded = true;
-                        $child_key_ref = $child_key;
-                        break;
+                if(!empty($section_ref)){
+                    foreach($section_ref as $child_key => $child_data){
+                        if($child_data["subdir"] == $path){
+                            $child_founded = true;
+                            $child_key_ref = $child_key;
+                            break;
+                        }
                     }
                 }
 
