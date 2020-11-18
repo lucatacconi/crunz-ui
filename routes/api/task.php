@@ -1113,7 +1113,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         $data = [];
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+        $paramsBody = array_change_key_case($request->getParsedBody(), CASE_UPPER);
 
+        $params = array_merge($params, $paramsBody);
 
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
