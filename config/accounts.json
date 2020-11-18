@@ -6,7 +6,7 @@
         "email":"admin@nomail.com",
         "password":"password",
         "active":"Y",
-        "expireDate":"2020-10-10",
+        "expireDate":"2040-10-10",
         "customSessionDuration":""
     }
 ]
