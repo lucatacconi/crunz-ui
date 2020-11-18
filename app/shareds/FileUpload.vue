@@ -174,7 +174,7 @@ module.exports = {
     },
     created:function() {
         var self=this
-        Utils.apiCall("get", "/task/group")
+        Utils.apiCall("get", "/task-container/tree/display")
         .then(function (response) {
             self.items=[response.data]
         });
