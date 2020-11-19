@@ -153,11 +153,11 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
-        if(empty($params["DIR_NAME"])) throw new Exception("ERROR - Missing name of the directory being added");
+        if(empty($params["PATH"])) throw new Exception("ERROR - Missing name of the directory being added");
 
-        $params["DIR_NAME"] = str_replace(['.'], '', $params["DIR_NAME"]);
+        $params["PATH"] = str_replace(['.'], '', $params["PATH"]);
 
-        if($params["DIR_NAME"] == "/") throw new Exception("ERROR - Directory being added can not be main path");
+        if($params["PATH"] == "/") throw new Exception("ERROR - Directory being added can not be main path");
 
 
         $app_configs = $this->get('configs')["app_configs"];
@@ -188,11 +188,11 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         try {
 
-            if(strlen($params["DIR_NAME"]) > 1){
-                $params["DIR_NAME"] = rtrim($params["DIR_NAME"],"/");
+            if(strlen($params["PATH"]) > 1){
+                $params["PATH"] = rtrim($params["PATH"],"/");
             }
 
-            $aDESTINATION = explode("/", $params["DIR_NAME"]);
+            $aDESTINATION = explode("/", $params["PATH"]);
             array_pop($aDESTINATION);
 
             $dest_up1 = '';
@@ -212,11 +212,11 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
             if(!is_writable($TASKS_DIR  . $dest_up1)) throw new Exception('ERROR - Directory parent not writable');
 
-            if(is_dir( $TASKS_DIR  . $params["DIR_NAME"] )){
+            if(is_dir( $TASKS_DIR  . $params["PATH"] )){
                 throw new Exception("ERROR - Directory being added already present");
             }
 
-            if (!mkdir( $TASKS_DIR  . rtrim($params["DIR_NAME"],"/") )) {
+            if (!mkdir( $TASKS_DIR  . rtrim($params["PATH"],"/") )) {
                 throw new Exception("ERROR - Failed to create folders...");
             }
 
@@ -240,11 +240,11 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
-        if(empty($params["DIR_NAME"])) throw new Exception("ERROR - Missing name of the directory being deleted");
+        if(empty($params["PATH"])) throw new Exception("ERROR - Missing name of the directory being deleted");
 
-        $params["DIR_NAME"] = str_replace(['.'], '', $params["DIR_NAME"]);
+        $params["PATH"] = str_replace(['.'], '', $params["PATH"]);
 
-        if($params["DIR_NAME"] == "/") throw new Exception("ERROR - Directory being deleted can not be main path");
+        if($params["PATH"] == "/") throw new Exception("ERROR - Directory being deleted can not be main path");
 
 
         $app_configs = $this->get('configs')["app_configs"];
@@ -273,7 +273,7 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         try {
 
-            $dir_delete = $TASKS_DIR . $params["DIR_NAME"];
+            $dir_delete = $TASKS_DIR . $params["PATH"];
 
             $aCONTENT = scandir($dir_delete);
             if(count($aCONTENT) > 2) throw new Exception("ERROR - Directory being deleted not empty");
