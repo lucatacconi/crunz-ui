@@ -82,7 +82,7 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
         sort($aTASKS_DIR);
 
         $data = [];
-        $data = [ 'subdir' => '/', 'description' => 'Main task', 'children' => [] ];
+        $data = [ 'path' => '/', 'subdir' => '/', 'description' => 'Main task', 'children' => [] ];
 
 
         foreach($aTASKS_DIR as $aTASKS_DIR_cnt => $tasks_dir){
@@ -103,21 +103,21 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
             $path = '';
             $descr = '';
 
-            foreach($aPATH_dir as $path_cnt => $path_data){
+            foreach($aPATH_dir as $subdir_cnt => $subdir){
 
-                if($path_cnt == 0){
+                if($subdir_cnt == 0){
                     continue;
                 }
 
                 $child_founded =false;
                 $child_key_ref = -1;
 
-                $path .= '/'. $path_data;
-                $descr .= ucfirst($path_data) . ' - ';
+                $path .= '/'. $subdir;
+                $descr .= ucfirst($subdir) . ' - ';
 
                 if(!empty($section_ref)){
                     foreach($section_ref as $child_key => $child_data){
-                        if($child_data["subdir"] == $path){
+                        if($child_data["path"] == $path){
                             $child_founded = true;
                             $child_key_ref = $child_key;
                             break;
@@ -129,10 +129,11 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
                     $section_ref =  &$section_ref[$child_key]["children"];
                 }else{
                     $row = [];
-                    $row["subdir"] = $path;
+                    $row["subdir"] = $subdir;
+                    $row["path"] = $path;
                     $row["description"] = rtrim($descr, ' - ');
 
-                    if($path_cnt < $depth){
+                    if($subdir_cnt < $depth){
                         $row["children"] = [];
                     }
 
