@@ -17,6 +17,31 @@
             </v-btn>
         </v-toolbar>
 
+        <div
+            v-if="actionButton!=undefined"
+            class="pb-2"
+        >
+            <v-btn
+                class="ml-2 pa-0"
+                dark
+                small
+                dense
+                color="blue darken-2"
+                @click="test()"
+            >
+                Daily
+            </v-btn>
+            <v-btn
+                class="ml-2 pa-0"
+                dark
+                small
+                dense
+                color="blue darken-2"
+            >
+                Monthly
+            </v-btn>
+        </div>
+
         <v-card-text class="pa-0">
             <div id="task-edit"></div>
         </v-card-text>
@@ -30,7 +55,7 @@ module.exports = {
             taskEditEditor: null,
         }
     },
-    props:['content'],
+    props:['content','actionButton'],
     methods: {
         initEditor:function(editor){
             var ed = "";
@@ -69,6 +94,10 @@ module.exports = {
                 ed.selection.fromJSON(sel);
             }
         },
+        test:function(){
+            var cursor=this.taskEditEditor.selection.getCursor()
+            this.taskEditEditor.getSession().getDocument().insertInLine(cursor,"prova")
+        }
     },
     mounted:function() {
         var self=this
