@@ -77,7 +77,7 @@
                         item-disabled="disabled"
                         color="blue"
                         :items="items"
-                        item-key="subdir"
+                        item-key="path"
                         :active="selectFolder==null ? ['/'] : selectFolder"
                         activatable
                         @update:active="checkFolder($event)"
@@ -91,7 +91,7 @@
                             </v-icon>
                         </template>
                         <template v-slot:label="{ item }">
-                            {{item.description}}
+                            {{item.subdir}}
                         </template>
                         <template v-slot:append="{ item }">
                             <v-btn
@@ -104,7 +104,7 @@
                             </v-btn>
                             <v-btn
                                 icon @click="removeFloder(item)"
-                                v-if="item.subdir!='/'"
+                                v-if="item.path!='/'"
                             >
                                 <v-icon color="red">
                                     mdi-trash-can-outline
@@ -196,43 +196,19 @@ module.exports = {
         },
         addFolder:function(){
             var self=this
-            var valid_char=['a','b','c','d','e','f','g','h','i','l','m','n','o','p','q','r','s','t','u','v','z','y','w','j','x','0','1','2','3','4','5','6','7','8','9','.','-','_',' ']
-            var lower=this.new_folder_name.toLowerCase()
-            if(this.new_folder_name==''){
+
+            var regex = /[^a-zA-Z0-9_-]/g
+            if(regex.test(this.new_folder_name)){
                 Swal.fire({
                     title: 'ERROR',
-                    text: "Folder name is empty",
-                    type: 'error'
-                })
-                return
-            }
-            if(this.new_folder_name.charAt(0)==' '||this.new_folder_name.charAt(this.new_folder_name.length-1)==' '){
-                Swal.fire({
-                    title: 'ERROR',
-                    text: "At the start or the end of the name folder there is a empty space",
-                    type: 'error'
-                })
-                return
-            }
-            var error=false
-            var split =lower.split('')
-            for(var i=0;i<split.length;i++){
-                if(valid_char.indexOf(split[i])==-1){
-                    error=true
-                    break
-                }
-            }
-            if(error){
-                Swal.fire({
-                    title: 'ERROR',
-                    text: "The folder name contains one or more not allow characters",
+                    text: "Directory being added contains not allowed characters (Only a-z, A-Z, 0-9, -, _ characters allowed)",
                     type: 'error'
                 })
                 return
             }
 
             var params={
-                path:this.temp_item.subdir+"/"+this.new_folder_name
+                path:this.temp_item.path+"/"+this.new_folder_name
             }
             Utils.apiCall("post", "task-container/dir",params)
             .then(function (response) {
@@ -269,7 +245,7 @@ module.exports = {
             }).then( function (result) {
                 if (result.value) {
                     var params = {
-                        path:item.subdir
+                        path:item.path
                     }
                     Utils.apiCall("delete", "task-container/dir",params)
                     .then(function (response) {
