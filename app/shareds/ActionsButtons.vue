@@ -23,6 +23,21 @@
                     fab
                     dark
                     small
+                    color="green accent-4"
+                    @click="openNewTaskModal()"
+                    v-on="on"
+                >
+                    <v-icon>mdi-plus</v-icon>
+                </v-btn>
+            </template>
+            <span>New task</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+                <v-btn
+                    fab
+                    dark
+                    small
                     color="green"
                     @click="openUploadModal()"
                     v-on="on"
@@ -61,6 +76,9 @@ module.exports = {
         },
         openUploadModal:function(){
             this.$emit('upload-modal',true)
+        },
+        openNewTaskModal:function(){
+            this.$emit('new-task-modal',true)
         }
     },
 }
