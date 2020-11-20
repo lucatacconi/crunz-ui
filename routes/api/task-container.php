@@ -153,11 +153,19 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
-        if(empty($params["PATH"])) throw new Exception("ERROR - Missing name of the directory being added");
+        if(!isset($params["PATH"]) || $params["PATH"] == '') throw new Exception("ERROR - Missing name of the directory being added");
+
+        if (preg_match('/[^a-zA-Z0-9\\/_-]/', $params["PATH"])) {
+            throw new Exception("ERROR - Directory being added contains not allowed characters (Only a-z, A-Z, 0-9, -, _, / characters allowed)");
+        }
 
         $params["PATH"] = str_replace(['.'], '', $params["PATH"]);
+        $params["PATH"] = str_replace(['//'], '/', $params["PATH"]);
 
         if($params["PATH"] == "/") throw new Exception("ERROR - Directory being added can not be main path");
+
+        $params["PATH"] = rtrim($params["PATH"], "/");
+
 
 
         $app_configs = $this->get('configs')["app_configs"];
@@ -246,6 +254,9 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         if($params["PATH"] == "/") throw new Exception("ERROR - Directory being deleted can not be main path");
 
+        if (preg_match('/[^a-zA-Z0-9\\/_-]/', $params["PATH"])) {
+            throw new Exception("ERROR - Directory being deleted contains not allowed characters (Only a-z, A-Z, 0-9, -, _, / characters allowed)");
+        }
 
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
