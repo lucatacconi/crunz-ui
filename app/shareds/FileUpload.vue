@@ -196,6 +196,41 @@ module.exports = {
         },
         addFolder:function(){
             var self=this
+            var valid_char=['a','b','c','d','e','f','g','h','i','l','m','n','o','p','q','r','s','t','u','v','z','y','w','j','x','0','1','2','3','4','5','6','7','8','9','.','-','_',' ']
+            var lower=this.new_folder_name.toLowerCase()
+            if(this.new_folder_name==''){
+                Swal.fire({
+                    title: 'ERROR',
+                    text: "Folder name is empty",
+                    type: 'error'
+                })
+                return
+            }
+            if(this.new_folder_name.charAt(0)==' '||this.new_folder_name.charAt(this.new_folder_name.length-1)==' '){
+                Swal.fire({
+                    title: 'ERROR',
+                    text: "At the start or the end of the name folder there is a empty space",
+                    type: 'error'
+                })
+                return
+            }
+            var error=false
+            var split =lower.split('')
+            for(var i=0;i<split.length;i++){
+                if(valid_char.indexOf(split[i])==-1){
+                    error=true
+                    break
+                }
+            }
+            if(error){
+                Swal.fire({
+                    title: 'ERROR',
+                    text: "The folder name contains one or more not allow characters",
+                    type: 'error'
+                })
+                return
+            }
+
             var params={
                 path:this.temp_item.subdir+"/"+this.new_folder_name
             }
