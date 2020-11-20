@@ -116,7 +116,6 @@ module.exports = {
                 "task_file_path": this.rowdata.task_path,
                 "task_content": btoa(this.editor.getValue())
             }
-
             Utils.apiCall("post", "/task/", apiParams)
             .then(function (response) {
                 if(response.data.result){

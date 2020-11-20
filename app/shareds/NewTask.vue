@@ -131,9 +131,6 @@ return $schedule;`
                 "task_content": btoa(this.editor.getValue()),
                 "new_file":'Y'
             }
-
-            console.log(apiParams)
-
             Utils.apiCall("post", "/task/", apiParams)
             .then(function (response) {
                 if(response.data.result){
