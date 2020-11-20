@@ -869,16 +869,25 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         //Check destination
         if( empty($params["TASK_FILE_PATH"]) ) throw new Exception("ERROR - No task file path submitted");
 
+        if (preg_match('/[^a-zA-Z0-9_-.]/', trim($params["TASK_FILE_PATH"],"/") )) {
+            throw new Exception("ERROR - Task file name contains not allowed characters (Only a-z, A-Z, 0-9, -, _, . characters allowed)");
+        }
+
         if(trim($params["TASK_FILE_PATH"],"/") == ""){
             $task_file_path = $base_tasks_path;
         }else{
             $task_file_path = $base_tasks_path . "/".trim($params["TASK_FILE_PATH"],"/");
         }
 
+        $task_file_path = str_replace(['//'], '/', $task_file_path);
 
-        if(!file_exists($task_file_path)) throw new Exception('ERROR - Task file not exist');
-        if(!is_writable($task_file_path)) throw new Exception('ERROR - File not writable');
 
+        if( !empty($params["NEW_FILE"]) && $params["NEW_FILE"] == 'Y'){
+            if(file_exists($task_file_path)) throw new Exception('ERROR - Task file already exist');
+        }else{
+            if(!file_exists($task_file_path)) throw new Exception('ERROR - Task file not exist');
+            if(!is_writable($task_file_path)) throw new Exception('ERROR - File not writable');
+        }
 
         $task_handle = fopen($task_file_path, "wb");
         if($task_handle === false) throw new Exception('ERROR - File open error');
