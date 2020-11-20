@@ -883,6 +883,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
 
         if( !empty($params["NEW_FILE"]) && $params["NEW_FILE"] == 'Y'){
+
+            if(strpos($task_file_path, "$TASK_SUFFIX.php") === false && strpos($task_file_path, "$TASK_SUFFIX.PHP") === false){
+                throw new Exception("ERROR - Task file name doesn't contains Crunz suffix and '.php' file extension");
+            }
+
             if(file_exists($task_file_path)) throw new Exception('ERROR - Task file already exist');
         }else{
             if(!file_exists($task_file_path)) throw new Exception('ERROR - Task file not exist');
