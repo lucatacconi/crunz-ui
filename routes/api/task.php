@@ -869,7 +869,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         //Check destination
         if( empty($params["TASK_FILE_PATH"]) ) throw new Exception("ERROR - No task file path submitted");
 
-        if (preg_match('/[^a-zA-Z0-9_-.]/', trim($params["TASK_FILE_PATH"],"/") )) {
+        if (preg_match('/[^a-zA-Z0-9\._-]/', trim($params["TASK_FILE_PATH"],"/") )) {
             throw new Exception("ERROR - Task file name contains not allowed characters (Only a-z, A-Z, 0-9, -, _, . characters allowed)");
         }
 
@@ -899,6 +899,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         if( empty($params["TASK_CONTENT"]) ) throw new Exception("ERROR - No task content submitted");
 
+
+        $params["TASK_CONTENT"] = base64_decode($params["TASK_CONTENT"]);
         $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $params["TASK_CONTENT"]);
 
         if(
