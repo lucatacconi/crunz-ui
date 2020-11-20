@@ -27,15 +27,15 @@
                 <tree-view v-on:select-folder="formData.path=$event"></tree-view>
 
                 <v-layout row wrap class="pt-2 pb-2">
-                    <v-flex xs11 class="pl-3">
+                    <v-flex xs10 class="pl-3">
                         <v-text-field
                             hide-details
                             v-model="formData.task_name"
                             label="Task name"
                         ></v-text-field>
                     </v-flex>
-                    <v-flex xs1 class="pl-1 pt-8">
-                        .php
+                    <v-flex xs2 class="pl-1 pt-8">
+                        .{{suffix}}
                     </v-flex>
                 </v-layout>
 
@@ -49,20 +49,10 @@
                     small
                     outlined
                     color="grey darken-2"
-                    @click="saveFile(false)"
-                >
-                    <v-icon left>far fa-save</v-icon>
-                    Save
-                </v-btn>
-
-                <v-btn
-                    small
-                    outlined
-                    color="grey darken-2"
                     @click="saveFile(true)"
                 >
                     <v-icon left>far fa-save</v-icon>
-                    Save & close
+                    Save
                 </v-btn>
             </v-card-actions>
 
@@ -80,10 +70,11 @@ module.exports = {
             },
             modalTitle:"New task",
             editor:null,
+            suffix:null,
             task_content:
             `<?php
 
-use Crunz\Schedule;
+use Crunz\\Schedule;
 
 $schedule = new Schedule();
 
@@ -135,39 +126,51 @@ return $schedule;`
                 return
             }
 
-            // console.log(this.editor.getValue())
-
             var apiParams = {
-                "task_file_path": this.formData.path=='/' ? this.formData.path+this.formData.task_name+".php" : this.formData.path+"/"+this.formData.task_name+".php",
-                "task_content": this.editor.getValue()
+                "task_file_path": this.formData.path=='/' ? this.formData.path+this.formData.task_name+"."+this.suffix : this.formData.path+"/"+this.formData.task_name+"."+this.suffix,
+                "task_content": btoa(this.editor.getValue()),
+                "new_file":'Y'
             }
 
             console.log(apiParams)
 
-            // Utils.apiCall("post", "/task/", apiParams)
-            // .then(function (response) {
-            //     if(response.data.result){
-            //         Swal.fire({
-            //             title: 'Task updated.',
-            //             text: response.data.result_msg,
-            //             type: 'success',
-            //             // onClose: () => {
-            //             //     if(edit_modal_close){
-            //             //         self.closeModal(true);
-            //             //     }
-            //             // }
-            //         })
-            //     }else{
-            //         Swal.fire({
-            //             title: 'ERROR',
-            //             text: response.data.result_msg,
-            //             type: 'error'
-            //         })
-            //     }
-            // });
+            Utils.apiCall("post", "/task/", apiParams)
+            .then(function (response) {
+                if(response.data.result){
+                    Swal.fire({
+                        title: 'Task created',
+                        text: response.data.result_msg,
+                        type: 'success',
+                        onClose: () => {
+                            if(edit_modal_close){
+                                self.closeModal(true);
+                            }
+                        }
+                    })
+                }else{
+                    Swal.fire({
+                        title: 'ERROR',
+                        text: response.data.result_msg,
+                        type: 'error'
+                    })
+                }
+            });
         },
     },
     created:function() {
+        var self=this
+        Utils.apiCall("get", "/environment/crunz-config")
+        .then(function (response) {
+            if(response.data.suffix){
+                self.suffix=response.data.suffix
+            }else{
+                Swal.fire({
+                    title: 'ERROR',
+                    text: response.data.result_msg,
+                    type: 'error'
+                })
+            }
+        });
     },
     components:{
         'tree-view': httpVueLoader('./TreeView.vue' + '?v=' + new Date().getTime()),

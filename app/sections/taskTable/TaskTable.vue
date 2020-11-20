@@ -5,14 +5,12 @@
         <new-task
             v-if="showNewTaskModal"
             @on-close-modal="closeNewTaskModal($event)"
-            :rowdata="uploadData"
         ></new-task>
 
         <!-- Upload file modal -->
         <task-upload
             v-if="showUploadModal"
             @on-close-modal="closeUploadModal($event)"
-            :rowdata="uploadData"
         ></task-upload>
 
         <!-- Log modal -->
