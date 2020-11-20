@@ -35,7 +35,7 @@
                         ></v-text-field>
                     </v-flex>
                     <v-flex xs2 class="pl-1 pt-8">
-                        .{{suffix}}
+                        {{suffix}}
                     </v-flex>
                 </v-layout>
 
@@ -127,7 +127,7 @@ return $schedule;`
             }
 
             var apiParams = {
-                "task_file_path": this.formData.path=='/' ? this.formData.path+this.formData.task_name+"."+this.suffix : this.formData.path+"/"+this.formData.task_name+"."+this.suffix,
+                "task_file_path": this.formData.path=='/' ? this.formData.path+this.formData.task_name+this.suffix : this.formData.path+"/"+this.formData.task_name+this.suffix,
                 "task_content": btoa(this.editor.getValue()),
                 "new_file":'Y'
             }

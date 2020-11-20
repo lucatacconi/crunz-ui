@@ -102,7 +102,7 @@
                                 {{ item.task_description == "" ? "--" : item.task_description }}
                             </td>
                             <td>
-                                <!-- {{ item !=undefined && item.expression != undefined && item.expression!='' ? cronstrue.toString(item.expression) : '' }} -->
+                                {{ item !=undefined && item.expression != undefined && item.expression!='' ? cronstrue.toString(item.expression) : '' }}
                             </td>
                             <td class="text-center">
                                 {{ item.next_run == "" ? "Expired" : moment(item.next_run).format('YY-MM-DD HH:mm') }}
