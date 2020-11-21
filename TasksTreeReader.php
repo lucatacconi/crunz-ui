@@ -1,8 +1,5 @@
 <?php
 
-error_reporting(E_ALL);
-ini_set("display_errors", 1);
-
 require './vendor/autoload.php';
 
 use Symfony\Component\Yaml\Yaml;
@@ -178,7 +175,6 @@ class TasksTreeReader {
             }
         }
 
-        //php -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getAllTree(); echo $res;'
         return json_encode($aTASKs);
     }
 
@@ -279,8 +275,6 @@ class TasksTreeReader {
         }
 
         if(empty($aTASK) || empty($aTASK["event_unique_key"])) return false;
-
-        //php -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getEventUniqueKey(); echo $res;'
         return $aTASK["event_unique_key"];
     }
 }
