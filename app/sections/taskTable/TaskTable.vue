@@ -102,7 +102,6 @@
                                 {{ item.task_description == "" ? "--" : item.task_description }}
                             </td>
                             <td>
-                                <!-- {{ item !=undefined && item.expression != undefined && item.expression!='' ? cronstrue.toString(item.expression) : '' }} -->
                                 {{item.expression_readable}}
                             </td>
                             <td class="text-center">
@@ -160,8 +159,8 @@ module.exports = {
                 },
                 { text: 'Task num.', value: 'event_launch_id', align: 'center' },
                 { text: 'Task', value: 'task_path' },
-                { text: 'Description', value: 'task_description' },
-                { text: 'Execution', value: 'expression' },
+                { text: 'Description', value: 'task_description', sortable: false },
+                { text: 'Execution', value: 'expression', sortable: false },
                 { text: 'Next execution', value: 'next_run', align: 'center' },
                 { text: 'Last execution', value: 'last_run', align: 'center' },
                 { text: 'Last duration', value: 'last_duration', align: 'center' },
