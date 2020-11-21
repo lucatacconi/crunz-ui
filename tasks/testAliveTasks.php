@@ -92,5 +92,4 @@ $task
 ->description('Warns that Crunz-ui is working for you, check public IP of the server and sends it to specific addresses.')
 ->everyTwelveHours();
 
-//uncomment this line to activate
 return $schedule;
