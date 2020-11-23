@@ -9,37 +9,37 @@
         >
             <v-toolbar-title>Task content</v-toolbar-title>
             <v-btn
-                class="ml-2 pa-0"
+                class="ml-2"
                 small
                 dense
-                dark
-                color="blue darken-2"
+                outlined
+                color="grey darken-2"
                 @click="undo()"
             >
-                <v-icon>mdi-undo</v-icon>
+                <v-icon left>mdi-undo</v-icon>
                 undo
             </v-btn>
             <v-btn
-                class="ml-2 pa-0"
+                class="ml-2"
                 small
                 dense
-                dark
-                color="blue darken-2"
+                outlined
+                color="grey darken-2"
                 @click="redo()"
             >
-                <v-icon>mdi-redo</v-icon>
+                <v-icon left>mdi-redo</v-icon>
                 redo
             </v-btn>
             <v-btn
-                class="ml-2 pa-0"
+                class="ml-2"
                 small
                 dense
-                dark
-                color="blue darken-2"
+                outlined
+                color="grey darken-2"
                 @click="show_crunz_button=!show_crunz_button"
                 v-if="actionButton!=undefined"
             >
-                <v-icon>{{show_crunz_button ? 'mdi-eye-off' : 'mdi-eye'}}</v-icon>
+                <v-icon left>{{show_crunz_button ? 'mdi-eye-off' : 'mdi-eye'}}</v-icon>
                 {{show_crunz_button ? 'Hide crunz button' : 'Show crunz button'}}
             </v-btn>
             <v-spacer></v-spacer>
@@ -55,37 +55,34 @@
             v-if="actionButton!=undefined"
             class="pb-2"
         >
-            <!-- <v-layout
-                row
-                wrap
-                class="ma-0"
-            >
-                <v-flex xs6>
-                    <v-select
-                        class="pa-0 ml-2"
-                        hide-details
-                        outlined
-                        dense
-                        :items="[]"
-                    ></v-select>
-                </v-flex>
-                <v-flex xs4
-                    class="ml-2"
-                    style="margin-top:1px;"
-                >
-                    <v-btn
-                        dark
-                        color="blue darken-2"
-                    >
-                        Insert
-                    </v-btn>
-                </v-flex>
-            </v-layout> -->
             <center v-if="show_crunz_button">
                 <template
                     v-for="(item,i) in crunz_button"
                 >
+                    <v-tooltip
+                        top
+                        v-if="item.tooltip!=undefined"
+                        :key="i"
+                    >
+                        <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            class="mt-2 ml-2 pa-0"
+                            color="grey darken-2"
+                            small
+                            dense
+                            outlined
+                            style="width:160px;"
+                            @click="crunzButtonAction(item)"
+                            v-bind="attrs"
+                            v-on="on"
+                        >
+                            {{item.text}}
+                        </v-btn>
+                        </template>
+                        <span v-html="item.tooltip"></span>
+                    </v-tooltip>
                     <v-btn
+                        v-else
                         :key="i"
                         class="mt-2 ml-2 pa-0"
                         dark
@@ -93,7 +90,7 @@
                         dense
                         color="blue darken-2"
                         style="width:160px;"
-                        @click="test()"
+                        @click="crunzButtonAction(item)"
                     >
                         {{item.text}}
                     </v-btn>
@@ -115,88 +112,149 @@ module.exports = {
             show_crunz_button:false,
             crunz_button:[
                 {
-                    text:"hourly"
+                    text:"hourly",
+                    function:"->hourly()",
+                    tooltip:"Schedule the event to run hourly"
                 },
                 {
-                    text:"daily"
+                    text:"daily",
+                    function:"->daily()",
+                    tooltip:"Schedule the event to run daily"
                 },
                 {
-                    text:"on"
+                    text:"on",
+                    function:"->($date)",
+                    tooltip:"chedule the event to run on a certain date"
                 },
                 {
-                    text:"at"
+                    text:"at",
+                    function:"->at($time)",
+                    tooltip:"Schedule the command at a given time"
                 },
                 {
-                    text:"dailyAt"
+                    text:"daily At",
+                    function:"->dailyAt($time)",
+                    tooltip:"Schedule the event to run daily at a given time (10:00, 19:30, etc)"
                 },
                 {
-                    text:"between"
+                    text:"between",
+                    function:"->between($from, $to)",
+                    tooltip:"Set Working period"
                 },
                 {
-                    text:"from"
+                    text:"from",
+                    function:"->from($datetime)",
+                    tooltip:"Check if event should be on"
                 },
                 {
-                    text:"to"
+                    text:"to",
+                    function:"->to($datetime)",
+                    tooltip:"Check if event should be off"
                 },
                 {
-                    text:"twiceDaily"
+                    text:"twice Daily",
+                    function:"->twiceDaily($first = 1, $second = 13)",
+                    tooltip:"Schedule the event to run twice daily"
                 },
                 {
-                    text:"weekdays"
+                    text:"weekdays",
+                    function:"->weekdays()",
+                    tooltip:"Schedule the event to run only on weekdays"
                 },
                 {
-                    text:"mondays"
+                    text:"mondays",
+                    function:"->mondays()",
+                    tooltip:"chedule the event to run only on Mondays"
                 },
                 {
-                    text:"tuesdays"
+                    text:"tuesdays",
+                    function:"->tuesdays()",
+                    tooltip:"Schedule the event to run only on Tuesdays"
                 },
                 {
-                    text:"wednesdays"
+                    text:"wednesdays",
+                    function:"->wednesdays()",
+                    tooltip:"Schedule the event to run only on Wednesdays"
                 },
                 {
-                    text:"thursdays"
+                    text:"thursdays",
+                    function:"->thursdays()",
+                    tooltip:"Schedule the event to run only on Thursdays"
                 },
                 {
-                    text:"fridays"
+                    text:"fridays",
+                    function:"->fridays()",
+                    tooltip:"Schedule the event to run only on Fridays"
                 },
                 {
-                    text:"saturdays"
+                    text:"saturdays",
+                    function:"->saturdays()",
+                    tooltip:"Schedule the event to run only on Saturdays"
                 },
                 {
-                    text:"sundays"
+                    text:"sundays",
+                    function:"->sundays()",
+                    tooltip:"Schedule the event to run only on Sundays"
                 },
                 {
-                    text:"weeklyOn"
+                    text:"weekly",
+                    function:"->weekly()",
+                    tooltip:"Schedule the event to run weekly"
                 },
                 {
-                    text:"monthly"
+                    text:"weekly On",
+                    function:"->weeklyOn($day, $time = '0:0')",
+                    tooltip:"Schedule the event to run weekly on a given day and time"
                 },
                 {
-                    text:"quarterly"
+                    text:"monthly",
+                    function:"->monthly()",
+                    tooltip:"Schedule the event to run monthly"
                 },
                 {
-                    text:"yearly"
+                    text:"quarterly",
+                    function:"->quarterly()",
+                    tooltip:"Schedule the event to run quarterly"
                 },
                 {
-                    text:"days"
+                    text:"yearly",
+                    function:"->yearly()",
+                    tooltip:"chedule the event to run yearly"
                 },
                 {
-                    text:"hour"
+                    text:"days",
+                    function:"->days($days)",
+                    tooltip:"Set the days of the week the command should run on"
                 },
                 {
-                    text:"minute"
+                    text:"hour",
+                    function:"->hour($value)",
+                    tooltip:"Set hour for the cron job"
                 },
                 {
-                    text:"dayOfMonth"
+                    text:"minute",
+                    function:"->minute($value)",
+                    tooltip:"Set minute for the cron job"
                 },
                 {
-                    text:"month"
+                    text:"day Of Month",
+                    function:"->dayOfMonth($value)",
+                    tooltip:"Set day of month for the cron job"
                 },
                 {
-                    text:"dayOfWeek"
+                    text:"month",
+                    function:"->month($value)",
+                    tooltip:"Set month for the cron job"
                 },
                 {
-                    text:"preventOverlapping"
+                    text:"day Of Week",
+                    function:"->dayOfWeek($value)",
+                    tooltip:"Set day of week for the cron job"
+                },
+                {
+                    text:"prevent Overlapping",
+                    function:"->preventOverlapping(object $store = null)",
+                    tooltip:"Do not allow the event to overlap each other<br>By default, the lock is acquired through file system locks. Alternatively, you can pass a symfony lock store that will be responsible for the locking"
                 }
             ],
         }
@@ -250,6 +308,10 @@ module.exports = {
         },
         undo:function(){
             this.taskEditEditor.undo()
+        },
+        crunzButtonAction:function(item){
+            var cursor=this.taskEditEditor.selection.getCursor()
+            this.taskEditEditor.getSession().getDocument().insertInLine(cursor,item.function)
         },
     },
     mounted:function() {
