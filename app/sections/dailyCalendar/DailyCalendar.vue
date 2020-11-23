@@ -57,6 +57,7 @@
                             type="day"
                             color="primary"
                             event-height=18
+                            :event-more=false
 
                             @click:more="viewDay"
                             @click:date="viewDay"
