@@ -168,8 +168,9 @@ class TasksTreeReader {
                 $row["event_launch_id"] = $task_counter;
                 $row["event_file_id"] = $event_file_id;
                 $row["task_description"] = $oEVENT->description;
+                $row["expression"] = $oEVENT->getExpression();
 
-                $row["event_unique_key"] = md5($row["real_path"]) ."-". str_pad($event_file_id, 4, 0, STR_PAD_LEFT);
+                $row["event_unique_key"] = md5($row["real_path"] . $row["task_description"] . $row["expression"]) . str_pad($event_file_id, 3, 0, STR_PAD_LEFT);
 
                 $aTASKs[$row["event_launch_id"]] = $row;
             }
@@ -265,8 +266,9 @@ class TasksTreeReader {
                     $row["event_launch_id"] = $task_counter;
                     $row["event_file_id"] = $event_file_id;
                     $row["task_description"] = $oEVENT->description;
+                    $row["expression"] = $oEVENT->getExpression();
 
-                    $row["event_unique_key"] = md5($row["real_path"]) ."-". str_pad($event_file_id, 4, 0, STR_PAD_LEFT);
+                    $row["event_unique_key"] = md5($row["real_path"] . $row["task_description"] . $row["expression"]) . str_pad($event_file_id, 3, 0, STR_PAD_LEFT);
 
                     $aTASK = $row;
                     break(2);
