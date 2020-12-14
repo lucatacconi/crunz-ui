@@ -18,7 +18,7 @@ foreach (glob(__DIR__ . '/../classes/*.php') as $filename){
     require_once $filename;
 }
 
-use CrunzUI\Task\CrunzUITaskGenerator;
+// use CrunzUI\Task\CrunzUITaskGenerator;
 use Lorisleiva\CronTranslator\CronTranslator;
 use Symfony\Component\Yaml\Yaml;
 
@@ -174,9 +174,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
             $aEVENTs = $schedule->events();
 
+            $event_file_id = 0;
             foreach ($aEVENTs as $oEVENT) {
                 $row = [];
                 $task_counter++;
+                $event_file_id++;
 
                 $event_interval_from = $interval_from;
                 $event_interval_to = $interval_to;
@@ -200,8 +202,10 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                 $row["event_id"] = $oEVENT->getId();
                 $row["event_launch_id"] = $task_counter;
+                $row["event_file_id"] = $event_file_id;
                 $row["task_description"] = $oEVENT->description;
                 $row["expression"] = $row["expression_orig"] = $oEVENT->getExpression();
+                $row["event_unique_key"] = md5($row["real_path"] . $row["task_description"] . $row["expression"]) . str_pad($event_file_id, 3, 0, STR_PAD_LEFT);
 
                 //Check task if it is high_frequency task (more then once an hour)
                 $aEXPRESSION = explode(" ", $row["expression_orig"]);
