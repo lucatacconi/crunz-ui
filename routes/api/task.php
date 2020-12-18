@@ -389,20 +389,26 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["last_duration"] = 0;
                 $row["last_outcome"] = '';
                 $row["last_run"] = '';
+
+                $row["executed_in_interval"] = 0;
+                $row["error_in_interval"] = 0;
+                $row["succesfull_in_interval"] = 0;
+                $row["last_outcome"] = '';
+
+
                 $row["executed_task_lst"] = [];
                 $row["outcome_executed_task_lst"] = [];
 
-                $log_name = "T".str_pad($row["event_launch_id"], 8, 0, STR_PAD_LEFT);
-                $aLOGNAME = glob($LOGS_DIR."/".$log_name."*.log"); //T00000001_OK_20191001100_20191001110_XXXX.log | T00000001_KO_20191001100_20191001110_XXXX.log
+                //Looking for all the logs related to this event
+                $aLOGNAME = glob($LOGS_DIR."/".$row["event_unique_key"]."*.log"); //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
 
                 if(!empty($aLOGNAME)){
                     usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
 
-                    //0 "T" + Event ID
+                    //0 UNIQUE_KEY
                     //1 Outcome
                     //2 Start datetime
                     //3 End datetime
-                    //4 Seed
 
                     $aLASTLOG =explode('_', str_replace($LOGS_DIR."/", "", $aLOGNAME[0]));
 
@@ -423,6 +429,13 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                             if($task_start->format('Y-m-d H:i:s') < $event_interval_from || $task_start->format('Y-m-d H:i:s') > $event_interval_to){
                                 continue;
+                            }
+
+                            $row["executed_in_interval"]++;
+                            if($aLOGFOCUS[1] == "OK"){
+                                $row["succesfull_in_interval"]++;
+                            }else{
+                                $row["error_in_interval"]++;
                             }
 
                             if($row["high_frequency"]){
