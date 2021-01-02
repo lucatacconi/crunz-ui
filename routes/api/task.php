@@ -207,6 +207,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["expression"] = $row["expression_orig"] = $oEVENT->getExpression();
                 $row["event_unique_key"] = md5($row["real_path"] . $row["task_description"] . $row["expression"]) . str_pad($event_file_id, 3, 0, STR_PAD_LEFT);
 
+                if(!empty($params["UNIQUE_ID"])){
+                    if($row["event_unique_key"] != $params["UNIQUE_ID"]){
+                        continue;
+                    }
+                }
+
                 //Check task if it is high_frequency task (more then once an hour)
                 $aEXPRESSION = explode(" ", $row["expression_orig"]);
                 $row["high_frequency"] = false;
@@ -390,6 +396,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["last_outcome"] = '';
                 $row["last_run"] = '';
 
+                $row["planned_in_interval"] = 0;
                 $row["executed_in_interval"] = 0;
                 $row["error_in_interval"] = 0;
                 $row["succesfull_in_interval"] = 0;
@@ -598,6 +605,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                 if(!empty($params["TASK_PATH"])){
                     if($row["task_path"] == $params["TASK_PATH"]){
+                        break;
+                    }
+                }
+
+                if(!empty($params["UNIQUE_ID"])){
+                    if($row["event_unique_key"] == $params["UNIQUE_ID"]){
                         break;
                     }
                 }
