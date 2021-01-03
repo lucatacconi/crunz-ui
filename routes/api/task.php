@@ -331,6 +331,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }
                 }
 
+                $event_interval_from_orig = $event_interval_from;
+                $event_interval_to_orig = $event_interval_to;
+
 
                 if(!empty($row["lifetime_from"]) || !empty($row["lifetime_to"])){
 
@@ -580,12 +583,14 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                 }else{
 
+                    $tmp_interval_lst = [];
+
                     if($calc_run_lst == "Y"){
                         $row["interval_run_lst"] = [];
                     }
 
                     while($nincrement < 1000){ //Use the same hard limit of cron-expression library
-                        $calc_run = $cron->getNextRunDate($event_interval_from, $nincrement, true)->format('Y-m-d H:i:s');
+                        $calc_run = $cron->getNextRunDate($event_interval_from_orig, $nincrement, true)->format('Y-m-d H:i:s');
 
                         if($calc_run > $event_interval_to){
                             break;
@@ -593,7 +598,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                         $nincrement++;
 
-                        $row["planned_in_interval"]++;
+                        $tmp_interval_lst[$calc_run] = $calc_run;
+
+                        if($calc_run < $event_interval_from){
+                            continue;
+                        }
 
                         if($calc_run_lst == "Y"){
                             if($calc_run < $date_now && $past_planned_tasks != "Y"){
@@ -610,15 +619,26 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         }
                     }
 
+                    foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
+                        if($exec_task_start >= $event_interval_from_orig
+
+
+                        &&  $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $tmp_interval_lst)){
+                            $tmp_interval_lst[$calc_run] = $calc_run;
+                        }
+                    }
+
                     if($calc_run_lst == "Y"){
                         foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
-                            if($exec_task_start >= $event_interval_from && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
+                            if($exec_task_start >= $event_interval_from &&  $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
                                 $row["interval_run_lst"][$exec_task_start] = $exec_task_end;
                             }
                         }
 
                         ksort($row["interval_run_lst"]);
                     }
+
+                    $row["planned_in_interval"] = count($tmp_interval_lst);
                 }
 
                 $aTASKs[] = $row;
