@@ -553,9 +553,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
 
                 //Calculating run list of the interval
-                $nincrement = 0;
                 $calc_run = false;
                 $tmp_interval_lst = [];
+                $nincrement = 0;
 
                 if($row["high_frequency"]){
 
@@ -563,56 +563,39 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         $row["interval_run_lst"] = [];
                     }
 
-                    $calc_run = $cron->getNextRunDate($event_interval_from_orig, $nincrement, true)->format('Y-m-d H:i:s');
+                    $calc_run_prec = '';
+                    while(empty($calc_run_ref) || $calc_run_ref < $event_interval_to){
 
-                    if($calc_run < $date_now && $past_planned_tasks != "Y"){
-                        if(array_key_exists($calc_run, $row["executed_task_lst"])){
-                            if($calc_run == $row["executed_task_lst"][$calc_run]){
-                                $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + 1 minute"));
+                        if(empty($calc_run_ref)){
+                            $calc_run_ref = $event_interval_from_orig;
+                        }
+
+                        $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $nincrement, true)->format('Y-m-d H:i:s');
+                        if($nincrement == 0) $nincrement++;
+
+                        $row["planned_in_interval"]++;
+
+                        if($calc_run_ref < $date_now && $past_planned_tasks != "Y"){
+
+                            if(array_key_exists($calc_run_ref, $row["executed_task_lst"])){
+                                if($calc_run_ref == $row["executed_task_lst"][$calc_run_ref]){
+                                    $row["interval_run_lst"][$calc_run_ref] = date('Y-m-d H:i:s', strtotime("$calc_run_ref + 1 minute"));
+                                }else{
+                                    $row["interval_run_lst"][$calc_run_ref] = $row["executed_task_lst"][$calc_run_ref];
+                                }
+
+                                $calc_run_prec = date('Y-m-d', strtotime($calc_run_ref));
+                            }
+
+                        }else{
+                            if($calc_run_prec < date('Y-m-d', strtotime($calc_run_ref))){
+                                $row["interval_run_lst"][$calc_run_ref] = date('Y-m-d H:i:s', strtotime("$calc_run_ref + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
+                                $calc_run_prec = date('Y-m-d', strtotime($calc_run_ref));
                             }else{
-                                $row["interval_run_lst"][$calc_run] = $row["executed_task_lst"][$calc_run];
+                                continue;
                             }
                         }
-                    }else{
-                        $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
                     }
-
-                    $tmp_interval_lst[$calc_run] = $calc_run;
-
-
-
-
-
-
-                    if($calc_run < $event_interval_from){
-                        continue;
-                    }
-
-
-
-                    // $calc_run_new = $calc_run;
-                    // while($calc_run_new <= $event_interval_to){
-                    //     $calc_run_new = date('Y-m-d H:i:s', strtotime("$calc_run_new + 1 day"));
-
-                    //     if($calc_run_new < $date_now && $past_planned_tasks != "Y"){
-                    //         if(array_key_exists($calc_run_new, $row["executed_task_lst"])){
-                    //             if($calc_run == $row["executed_task_lst"][$calc_run_new]){
-                    //                 $row["interval_run_lst"][$calc_run_new] = date('Y-m-d H:i:s', strtotime("$calc_run_new + 1 minute"));
-                    //             }else{
-                    //                 $row["interval_run_lst"][$calc_run_new] = $row["executed_task_lst"][$calc_run_new];
-                    //             }
-                    //         }
-                    //     }else{
-                    //         $row["interval_run_lst"][$calc_run_new] = date('Y-m-d H:i:s', strtotime("$calc_run_new + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
-                    //     }
-                    // }
-
-
-                    // if($calc_run_lst == "Y"){
-
-                    // }else{
-
-                    // }
 
                 }else{
 
@@ -651,17 +634,14 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }
 
                     foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
-                        if($exec_task_start >= $event_interval_from_orig
-
-
-                        &&  $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $tmp_interval_lst)){
+                        if($exec_task_start >= $event_interval_from_orig && $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $tmp_interval_lst)){
                             $tmp_interval_lst[$calc_run] = $calc_run;
                         }
                     }
 
                     if($calc_run_lst == "Y"){
                         foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
-                            if($exec_task_start >= $event_interval_from &&  $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
+                            if($exec_task_start >= $event_interval_from && $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
                                 $row["interval_run_lst"][$exec_task_start] = $exec_task_end;
                             }
                         }
