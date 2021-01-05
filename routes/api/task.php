@@ -459,26 +459,24 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                             if($row["high_frequency"]){
 
-                                if(!empty($aLOGNAME[$aLOGNAME_key + 1])){
+                                if($aLOGNAME_key == 0){
+                                    $row["executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $task_stop->format('Y-m-d H:i:s');
+                                    if($outcome_executed_task_lst == "Y"){
+                                        $row["outcome_executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $aLOGFOCUS[1];
+                                    }
+                                }else{
 
-                                    $aLOGFOCUS_next =explode('_', str_replace($LOGS_DIR."/", "", $aLOGNAME[$aLOGNAME_key + 1]));
-                                    $task_start_next = DateTime::createFromFormat('YmdHi', $aLOGFOCUS_next[2]);
-                                    $task_stop_next = DateTime::createFromFormat('YmdHi', $aLOGFOCUS_next[3]);
+                                    $aLOGFOCUS_prev =explode('_', str_replace($LOGS_DIR."/", "", $aLOGNAME[$aLOGNAME_key - 1]));
+                                    $task_start_prev = DateTime::createFromFormat('YmdHi', $aLOGFOCUS_prev[2]);
+                                    $task_stop_prev = DateTime::createFromFormat('YmdHi', $aLOGFOCUS_prev[3]);
 
-                                    if($task_start->format('Y-m-d') < $task_start_next->format('Y-m-d')){
+                                    if($task_start->format('Y-m-d') == $task_start_prev->format('Y-m-d')){
+                                        continue;
+                                    }else{
                                         $row["executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $task_stop->format('Y-m-d H:i:s');
                                         if($outcome_executed_task_lst == "Y"){
                                             $row["outcome_executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $aLOGFOCUS[1];
                                         }
-                                    }else{
-                                        continue;
-                                    }
-
-                                }else{
-
-                                    $row["executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $task_stop->format('Y-m-d H:i:s');
-                                    if($outcome_executed_task_lst == "Y"){
-                                        $row["outcome_executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $aLOGFOCUS[1];
                                     }
                                 }
 
