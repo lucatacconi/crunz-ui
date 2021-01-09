@@ -170,7 +170,7 @@ class TasksTreeReader {
                 $row["task_description"] = $oEVENT->description;
                 $row["expression"] = $oEVENT->getExpression();
 
-                $row["event_unique_key"] = md5($row["real_path"] . $row["task_description"] . $row["expression"]) . str_pad($event_file_id, 3, 0, STR_PAD_LEFT);
+                $row["event_unique_key"] = md5($row["real_path"] . $row["task_description"] . $row["expression"]);
 
                 $aTASKs[$row["event_launch_id"]] = $row;
             }
@@ -268,7 +268,7 @@ class TasksTreeReader {
                     $row["task_description"] = $oEVENT->description;
                     $row["expression"] = $oEVENT->getExpression();
 
-                    $row["event_unique_key"] = md5($row["real_path"] . $row["task_description"] . $row["expression"]) . str_pad($event_file_id, 3, 0, STR_PAD_LEFT);
+                    $row["event_unique_key"] = md5($row["real_path"] . $row["task_description"] . $row["expression"]);
 
                     $aTASK = $row;
                     break(2);
