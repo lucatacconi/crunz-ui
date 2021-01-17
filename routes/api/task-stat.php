@@ -141,8 +141,9 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                 continue;
             }
 
+            unset($schedule);
             require $taskFile->getRealPath();
-            if (!$schedule instanceof Schedule) {
+            if (empty($schedule) || !$schedule instanceof Schedule) {
                 continue;
             }
 
@@ -282,17 +283,21 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
                 if($high_frequency){
 
-                    while(empty($calc_run_ref) || $calc_run_ref < $event_interval_to){
+                    $nincrement++;
+
+                    do{
 
                         if(empty($calc_run_ref)){
                             $calc_run_ref = $event_interval_from_orig;
+                        }else{
+                            $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $nincrement, true)->format('Y-m-d H:i:s');
                         }
 
-                        $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $nincrement, true)->format('Y-m-d H:i:s');
-                        if($nincrement == 0) $nincrement++;
+                        if($calc_run_ref <= $event_interval_to){
+                            $aSTATs[substr($calc_run_ref, 0, 10)]["planned"]++;
+                        }
 
-                        $aSTATs[substr($calc_run_ref, 0, 10)]["planned"]++;
-                    }
+                    } while(empty($calc_run_ref) || $calc_run_ref < $event_interval_to);
 
                 }else{
 
