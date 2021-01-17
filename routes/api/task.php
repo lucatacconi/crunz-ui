@@ -176,8 +176,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 continue;
             }
 
+            unset($schedule);
             require $taskFile->getRealPath();
-            if (!$schedule instanceof Schedule) {
+            if (empty($schedule) || !$schedule instanceof Schedule) {
                 continue;
             }
 
@@ -681,7 +682,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-
     $group->get('/exec-outcome', function (Request $request, Response $response, array $args) {
 
         $data = [];
@@ -754,8 +754,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         $task_counter = 0;
         foreach ($files as $taskFile) {
 
+            unset($schedule);
             require $taskFile->getRealPath();
-            if (!$schedule instanceof Schedule) {
+            if (empty($schedule) || !$schedule instanceof Schedule) {
                 continue;
             }
 
@@ -786,7 +787,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
 
                 //Get Crunz-ui log content
-                $log_name = "T".str_pad($aEXEC["task_id"], 8, 0, STR_PAD_LEFT);
+                // UNIQUE_KEY_OK_20191001100_20191001110.log
+                $log_name = md5($taskFile->getRealPath() . $oEVENT->description . $oEVENT->getExpression());
 
                 if(!empty($params["DATETIME_REF"])){
 
@@ -898,7 +900,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         return $response->withStatus(200)
                         ->withHeader("Content-Type", "application/json");
     });
-
 
     $group->post('/', function (Request $request, Response $response, array $args) {
 
@@ -1164,6 +1165,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $datetime_ref = date('YmdHi');
 
                 $log_name = "T".str_pad($aEXEC["task_id"], 8, 0, STR_PAD_LEFT);
+                // $log_name = md5($taskFile->getRealPath() . $oEVENT->description . $oEVENT->getExpression());
                 $log_name_filter = $log_name."_*_".$datetime_ref."_*_*";
 
                 while(!$log_file_ready && $round_cnt < $max_round){
@@ -1209,7 +1211,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         return $response->withStatus(200)
                         ->withHeader("Content-Type", "application/json");
     });
-
 
     $group->post('/upload', function (Request $request, Response $response, array $args) {
 
@@ -1339,7 +1340,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         return $response->withStatus(200)
                         ->withHeader("Content-Type", "application/json");
     });
-
 
     $group->delete('/', function (Request $request, Response $response, array $args) {
 
