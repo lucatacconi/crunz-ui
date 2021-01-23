@@ -420,7 +420,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["outcome_executed_task_lst"] = [];
 
                 //Looking for all the logs related to this event
-                $aLOGNAME = glob($LOGS_DIR."/".$row["event_unique_key"]."*.log"); //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
+                $aLOGNAME = glob($LOGS_DIR."/T".$row["event_unique_key"]."*.log"); //T UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
 
                 if(!empty($aLOGNAME)){
                     usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
