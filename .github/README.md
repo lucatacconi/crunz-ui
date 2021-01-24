@@ -117,9 +117,10 @@ Please refer to [Ubuntu/Debian setup example](UBUNTU_EXPL.md) for suggestion.
 First of all you need to tell Crunz-ui the exact location where Crunz is installed.
 To do this, edit the **.env** file inside the main folder of Crunz-ui by un-commenting the entry **CRUNZ_BASE_DIR** and indicating into that the value of the absolute path of Crunz installation. In order to be able to insert, modify and delete tasks, the Apache user must have access and write permissions to the tasks folder.
 
-Then copy crunz-ui.sh file into the Crunz base folder:
+Then copy crunz-ui.sh file and TasksTreeReader.php into the Crunz base folder:
 ```
 * * * * * cd /[BASE_CRUNZUI_PATH]/crunz-ui.sh /[BASE_CRUNZ_PATH]
+* * * * * cd /[BASE_CRUNZUI_PATH]/TasksTreeReader.php /[BASE_CRUNZ_PATH]
 ```
 
 By default **crunz.ui.sh** batch will search for standard log folder **./var/logs** inside main Crunz folder. Therefore, if you want to use standard configuration, you need to create default folder for logs. The folder must be accessible and writeable by the Apache user:
