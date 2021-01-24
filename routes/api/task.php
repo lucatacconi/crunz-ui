@@ -688,6 +688,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
+        if( empty($params["EVENT_UNIQUE_KEY"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No event unique key or task ID submitted");
 
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
@@ -729,11 +730,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
         if(!is_writable($LOGS_DIR)) throw new Exception('ERROR - Logs directory not writable');
 
-
-
         $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
 
-        if( empty($params["TASK_PATH"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No task path or task ID submitted");
 
 
         $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
@@ -776,19 +774,22 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $task_subdir = str_replace( array( $TASKS_DIR, $task_filename),'',$task_real_path);
                 $task_path = str_replace($TASKS_DIR, '', $task_real_path);
 
-                if(!empty($params["TASK_PATH"])){
-                    if($task_path != $params["TASK_PATH"]){
+                $event_unique_key = md5($taskFile->getRealPath() . $oEVENT->description . $oEVENT->getExpression());
+
+                if(!empty($params["EVENT_UNIQUE_KEY"])){
+                    if($event_unique_key != $params["EVENT_UNIQUE_KEY"]){
                         continue;
                     }
                 }
 
                 $aEXEC["task_path"] = $task_path;
                 $aEXEC["task_id"] = $task_counter;
+                $aEXEC["event_unique_key"] = $event_unique_key;
 
 
                 //Get Crunz-ui log content
                 // UNIQUE_KEY_OK_20191001100_20191001110.log
-                $log_name = md5($taskFile->getRealPath() . $oEVENT->description . $oEVENT->getExpression());
+                $log_name = "T" . $event_unique_key;
 
                 if(!empty($params["DATETIME_REF"])){
 
@@ -886,8 +887,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }
                 }
 
-                if(!empty($params["TASK_PATH"])){
-                    if($task_real_path == $params["TASK_PATH"]){
+                if(!empty($params["EVENT_UNIQUE_KEY"])){
+                    if($event_unique_key == $params["EVENT_UNIQUE_KEY"]){
                         break;
                     }
                 }
@@ -1016,12 +1017,13 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-
     $group->post('/execute', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        if( empty($params["EVENT_UNIQUE_KEY"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No event unique key or task ID to execute submitted");
 
         $exec_and_wait = "N";
         if(!empty($params["EXEC_AND_WAIT"])){
@@ -1068,29 +1070,14 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
         if(!is_writable($LOGS_DIR)) throw new Exception('ERROR - Logs directory not writable');
 
-
-
         $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
 
-        if( empty($params["TASK_PATH"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No task path or task ID to execute submitted");
 
-
-        //File compliance check
-        if(!empty($params["TASK_PATH"])){
-
-            $path_check = str_replace(".php", '', $params["TASK_PATH"]);
-
-            if(
-                strpos($path_check, '.') !== false ||
-                substr($params["TASK_PATH"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ||
-                strpos($path_check, $TASKS_DIR === false)
-            ){
-                throw new Exception("ERROR - Task path out of range");
-            }
+        if( !file_exists( $crunz_base_dir."/crunz-ui.sh" ) || !is_executable ( $crunz_base_dir."/crunz-ui.sh" )){
+            throw new Exception("ERROR - Crunz-ui.sh is not present in Crunz base path or is not executable.");
         }
 
 
-        //List of all file with the same order used by Crunz
         $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
         $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
 
@@ -1105,46 +1092,74 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             \iterator_to_array($regexIterator)
         );
 
-        $task_id = 1;
+
+        $task_id = 0;
         $task_founded = false;
         $task_path_founded = '';
         $aEXEC = [];
         $task_start = date("Y-m-d H:i");
 
-        foreach($files as $task_path => $task_data){
+        foreach ($files as $taskFile) {
 
-            $task_path =  str_replace($TASKS_DIR, '', $task_path);
-
-            if(!empty($params["TASK_ID"])){
-                if($params["TASK_ID"] == $task_id){
-                    $task_founded = true;
-                    $task_path_founded = $task_path;
-                    break;
-                }
-            }else{
-                if($task_path == "/".ltrim($params["TASK_PATH"],"/")){
-                    $task_founded = true;
-                    $task_path_founded = $task_path;
-                    break;
-                }
+            unset($schedule);
+            require $taskFile->getRealPath();
+            if (empty($schedule) || !$schedule instanceof Schedule) {
+                continue;
             }
 
-            $task_id++;
-        }
+            $aEVENTs = $schedule->events();
 
-        if( !file_exists( $crunz_base_dir."/crunz-ui.sh" ) || !is_executable ( $crunz_base_dir."/crunz-ui.sh" )){
-            throw new Exception("ERROR - Crunz-ui.sh is not present in Crunz base path or is not executable.");
+            foreach ($aEVENTs as $oEVENT) {
+                $task_id++;
+
+                if(!empty($params["TASK_ID"])){
+                    if($task_id != $params["TASK_ID"]){
+                        continue;
+                    }
+                }
+
+                $event_unique_key = md5($taskFile->getRealPath() . $oEVENT->description . $oEVENT->getExpression());
+
+                if(!empty($params["EVENT_UNIQUE_KEY"])){
+                    if($event_unique_key != $params["EVENT_UNIQUE_KEY"]){
+                        continue;
+                    }
+                }
+
+                $task_filename = $taskFile->getFilename();
+                $task_real_path = $taskFile->getRealPath();
+                $task_subdir = str_replace( array( $TASKS_DIR, $task_filename),'',$task_real_path);
+                $task_path = str_replace($TASKS_DIR, '', $task_real_path);
+
+                $aEXEC["event_unique_key"] = $event_unique_key;
+                $aEXEC["task_path"] = $task_path;
+                $aEXEC["task_id"] = $task_id;
+
+                if(!empty($params["TASK_ID"])){
+                    if($task_id == $params["TASK_ID"]){
+                        $task_founded = true;
+                        $task_path_founded = $task_path;
+                        break;
+                    }
+                }
+
+                if(!empty($params["EVENT_UNIQUE_KEY"])){
+                    if($event_unique_key == $params["EVENT_UNIQUE_KEY"]){
+                        $task_founded = true;
+                        $task_path_founded = $task_path;
+                        break;
+                    }
+                }
+            }
         }
 
         if($task_founded && !empty($task_path_founded)){
 
-            $aEXEC["task_path"] = $task_path;
-            $aEXEC["task_id"] = $task_id;
             $aEXEC["task_founded"] = $task_founded;
             $aEXEC["task_wait"] = $exec_and_wait;
 
             try {
-                shell_exec("cd $base_tasks_path && cd .. && ./crunz-ui.sh -f -t $task_id -l $LOGS_DIR > /dev/null 2>&1 & ");
+                shell_exec("cd $base_tasks_path && cd .. && ./crunz-ui.sh -f -t ".$aEXEC["task_id"]." -l $LOGS_DIR > /dev/null 2>&1 & ");
 
                 $aEXEC["result"] = true;
                 $aEXEC["result_msg"] = '';
@@ -1164,9 +1179,10 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $datetime_init = date('YmdHis');
                 $datetime_ref = date('YmdHi');
 
-                $log_name = "T".str_pad($aEXEC["task_id"], 8, 0, STR_PAD_LEFT);
-                // $log_name = md5($taskFile->getRealPath() . $oEVENT->description . $oEVENT->getExpression());
+                $log_name = "T" . $aEXEC["event_unique_key"];
                 $log_name_filter = $log_name."_*_".$datetime_ref."_*_*";
+
+                // throw new Exception($log_name_filter);
 
                 while(!$log_file_ready && $round_cnt < $max_round){
 
@@ -1184,13 +1200,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         }
                     }
 
-                    sleep(5);
+                    sleep(1);
                 }
 
                 if(empty($log_file_name)){
                     throw new Exception("ERROR - Task execution error");
                 }
-
 
                 $aEXEC["log_path"] = $log_file_name;
 

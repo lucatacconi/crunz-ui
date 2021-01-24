@@ -343,7 +343,7 @@ module.exports = {
         executeItem: function (item, wait) {
             var self = this;
             var params = {
-                "task_path": item.task_path,
+                "event_unique_key": item.event_unique_key,
                 "exec_and_wait": wait ? 'Y' : 'N'
             }
 
