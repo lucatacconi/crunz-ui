@@ -55,32 +55,16 @@ Installation of composer
 sudo apt-get install composer
 ```
 
-Adding the new user crunz_usr:
-```
-sudo useradd -m crunz_usr
-sudo adduser crunz_usr www-data
-```
-
-
 Installation of Crunz-ui and permissions configuration:
 ```
-sudo chown -R www-data:www-data /var/www/html
-sudo chmod -R g+w /var/www/html
-
-
-sudo su crunz_usr
 cd /var/www/html
-composer create-project lucatacconi/crunz-ui
-
-sudo chmod -R g+w /var/www/html/crunz-ui
-sudo chown -R crunz_usr:www-data /var/www/html/crunz-ui
+sudo composer create-project lucatacconi/crunz-ui
+sudo chown -R www-data:www-data crunz-ui
 ```
 
 Configuration of Crunz time zone:
 ```
-sudo su crunz_usr
-cd /var/www/html/crunz-ui
-./vendor/bin/crunz publish:config
+sudo ./vendor/bin/crunz publish:config
 ```
 
 Configuration of crontab (crontab -e) adding crunz-ui service execution scheduling:

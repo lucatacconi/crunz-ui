@@ -5,6 +5,11 @@
 
 ## Release history
 
+### v.2.0.0 (2021-XX-XX)
+
+Crunz-ui update stable release:
+* Integrate Slim 4 Framework
+
 ### v.1.0.0 (2020-04-11)
 
 Crunz-ui first stable release:

@@ -22,29 +22,10 @@
                 </v-toolbar-items>
             </v-toolbar>
 
-            <v-card-text class="pt-3 pb-0">
-                <span class="subtitle-1">Destination path</span>
-                <v-treeview
-                    item-disabled="disabled"
-                    color="blue"
-                    :items="items"
-                    item-key="subdir"
-                    :active="selectFolder==null ? ['/'] : selectFolder"
-                    activatable
-                    @update:active="checkFolder($event)"
-                >
-                    <template v-slot:prepend="{ item, open }">
-                        <v-icon v-if="!item.file">
-                            {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
-                        </v-icon>
-                        <v-icon v-else>
-                            {{ files[item.file] }}
-                        </v-icon>
-                    </template>
-                    <template v-slot:label="{ item }">
-                        {{item.description}}
-                    </template>
-                </v-treeview>
+            <v-card-text class="pt-3">
+
+                <tree-view v-on:select-folder="formData.path=$event"></tree-view>
+
                 <v-file-input
                     class="pt-5"
                     label="Select file"
@@ -54,26 +35,29 @@
                     append-icon="mdi-folder"
                     v-model="formData.file"
                 ></v-file-input>
-                <v-switch class="pl-1"
-                          v-model="formData.rewrite"
-                          inset
-                          :label="`Rewrite task file if present in destination path`"
-                          hide-details
-                ></v-switch>
+                <v-layout row wrap>
+                    <v-flex xs10 class="pl-3">
+                        <v-switch
+                            v-model="formData.rewrite"
+                            inset
+                            label="Rewrite task file if present in destination path"
+                            hide-details
+                        ></v-switch>
+                    </v-flex>
+                    <v-flex xs2 class="pt-4">
+                        <v-btn
+                            outlined
+                            small
+                            color="grey darken-2"
+                            @click="uploadFile"
+                        >
+                            <v-icon left>mdi-file-upload-outline</v-icon>
+                            Upload
+                        </v-btn>
+                    </v-flex>
+                </v-layout>
             </v-card-text>
 
-            <v-card-actions class="pt-1 pr-5 pb-3">
-                <v-spacer></v-spacer>
-                <v-btn
-                    outlined
-                    small
-                    color="grey darken-2"
-                    @click="uploadFile"
-                >
-                    <v-icon left>mdi-file-upload-outline</v-icon>
-                    Upload
-                </v-btn>
-            </v-card-actions>
         </v-card>
     </v-dialog>
 </template>
@@ -84,22 +68,10 @@ module.exports = {
         return{
             formData:{
                 file:null,
-                path:"",
+                path:null,
                 rewrite:true
             },
-            selectFolder:null,
-            modalTitle:"File upload",
-            files: {
-                html: 'mdi-language-html5',
-                js: 'mdi-nodejs',
-                json: 'mdi-json',
-                md: 'mdi-markdown',
-                pdf: 'mdi-file-pdf',
-                png: 'mdi-file-image',
-                txt: 'mdi-file-document-outline',
-                xls: 'mdi-file-excel',
-            },
-            items: [],
+            modalTitle:"File upload"
         }
     },
     methods: {
@@ -107,23 +79,13 @@ module.exports = {
             var self = this;
             self.$emit('on-close-modal',result);
         },
-        checkFolder:function(event) {
-            if(event.length!=0){
-                this.selectFolder=event
-            }else{
-                this.selectFolder=['/']
-            }
-
-        },
         uploadFile:function(){
             var self=this
             if(this.formData.file!=null&&this.formData.file.type=="application/x-php"){
 
-                // var result = this.searchChildren(this.items,this.selectFolder,'description')
-
                 var formData = new FormData();
                 formData.append("task_upload", this.formData.file);
-                formData.append("task_destination_path", this.selectFolder==null ? '/' : this.selectFolder[0]);
+                formData.append("task_destination_path", this.formData.path);
                 formData.append("can_rewrite", this.formData.rewrite ? 'Y' : 'N');
 
                 Utils.fileUpload("/task/upload", formData)
@@ -159,25 +121,12 @@ module.exports = {
                     type:"error"
                 })
             }
-        },
-        searchChildren:function(tree, value, key){ //cerco il valore di una determinata chiave nell'array tree
-            if (tree) {
-                for (var i = 0; i < tree.length; i++) {
-                    if (tree[i][key] == value) {
-                        return tree[i];
-                    }
-                    var found = this.searchChildren(tree[i].children, value, key);
-                    if (found) return found;
-                }
-            }
-        },
+        }
     },
     created:function() {
-        var self=this
-        Utils.apiCall("get", "/task/group")
-        .then(function (response) {
-            self.items=[response.data]
-        });
     },
+    components:{
+        'tree-view': httpVueLoader('./TreeView.vue' + '?v=' + new Date().getTime())
+    }
 }
 </script>

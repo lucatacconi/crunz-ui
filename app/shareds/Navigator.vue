@@ -3,7 +3,7 @@
         <navbar v-on:drawer="drawer=!drawer" :activesection="activeSection"></navbar>
         <navdrawer :drawer="drawer" v-on:select="selection=$event" :navmap="navmap" :selection="selection" v-on:selectedsection="onSelectedSection"></navdrawer>
 
-        <v-content>
+        <v-main>
             <v-container fluid fill-height>
                 <v-layout>
                     <v-flex>
@@ -11,7 +11,7 @@
                     </v-flex>
                 </v-layout>
             </v-container>
-        </v-content>
+        </v-main>
 
         <appfooter></appfooter>
    </div>

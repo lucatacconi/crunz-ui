@@ -1,15 +1,16 @@
 <?php
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Routing\RouteCollectorProxy;
 
 use Ramsey\Uuid\Uuid;
 use Firebase\JWT\JWT;
 use Tuupola\Base62;
 
-$app->group('/navigation', function () use ($app) {
+$app->group('/navigation', function (RouteCollectorProxy $group) {
 
-    $app->get('/', function ($request, $response, $args) {
+    $group->get('/', function (Request $request, Response $response, array $args) {
 
         $jwt_payload = $request->getAttribute("token");
 
@@ -22,7 +23,7 @@ $app->group('/navigation', function () use ($app) {
 
         if(!empty($jwt_payload["userType"])){
 
-            $app_config = $this->get('app_configs');
+            $app_config = $this->get('configs')["app_configs"];
 
             if( !empty($app_config["navigation"]) && !empty($app_config["navigation"]["navigationMap"])){
                 $navigation_map_orig = $app_config["navigation"]["navigationMap"];
@@ -138,9 +139,9 @@ $app->group('/navigation', function () use ($app) {
         $data["bootstrapPage"] = $bootstrapPage;
         $data["routes"] = $routes;
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 
 });

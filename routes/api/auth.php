@@ -1,22 +1,23 @@
 <?php
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Routing\RouteCollectorProxy;
 
 use Ramsey\Uuid\Uuid;
 use Firebase\JWT\JWT;
 use Tuupola\Base62;
 
-$app->group('/auth', function () use ($app) {
+$app->group('/auth', function (RouteCollectorProxy $group) {
 
-    $app->post('/login', function ($request, $response, $args) {
+    $group->post('/login', function (Request $request, Response $response, array $args) {
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
         if(empty($params["USERNAME"])) throw new Exception("ERROR - Parameter non found (1)");
         if(empty($params["PASSWORD"])) throw new Exception("ERROR - Parameter non found (2)");
 
-        $aACCOUNTs = $this->get('app_configs')["accounts"];
+        $aACCOUNTs = $this->get('configs')["app_configs"]["accounts"];
 
         $aACCOUNT = null;
         foreach($aACCOUNTs as $row_key => $row_data){
@@ -49,17 +50,18 @@ $app->group('/auth', function () use ($app) {
 
             $data = [];
             $data["status"] = "Authentication error";
+
+            $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
             return $response->withStatus(401)
-            ->withHeader("Content-Type", "application/json")
-            ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                            ->withHeader("Content-Type", "application/json");
 
         }else{
 
             //Setting session dueration
             if(!empty($aACCOUNT["customSessionDuration"])){
                 $duration = $aACCOUNT["customSessionDuration"];
-            }else if(!empty(getenv("SESSION_DURATION"))){
-                $duration = getenv("SESSION_DURATION");
+            }else if(!empty($_ENV["SESSION_DURATION"])){
+                $duration = $_ENV["SESSION_DURATION"];
             }else{
                 $duration = "2 hours";
             }
@@ -78,7 +80,7 @@ $app->group('/auth', function () use ($app) {
                 "userType" => !empty($aACCOUNT["userType"]) ? $aACCOUNT["userType"] : ''
             ];
 
-            $secret = getenv("JWT_SECRET");
+            $secret = $_ENV["JWT_SECRET"];
             $token = JWT::encode($payload, $secret, "HS256");
 
 
@@ -95,17 +97,16 @@ $app->group('/auth', function () use ($app) {
             $data["expires"] = $future->getTimeStamp();
             $data["accountData"] = json_encode($aACCOUNT_basic_data);
 
+            $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
             return $response->withStatus(201)
-                ->withHeader("Content-Type", "application/json")
-                ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                            ->withHeader("Content-Type", "application/json");
         }
     });
 
-    $app->get('/session/check', function ($request, $response, $args) {
+    $group->get('/session/check', function (Request $request, Response $response, array $args) {
 
         $response->getBody()->write("CONN OK");
         return $response;
 
     });
-
 });

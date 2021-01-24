@@ -3,7 +3,7 @@
     "description": "User interface for lavary/crunz. Integrate Crunz library and funtions: Tabular, monthly or weekly interface to view the scheduled and executed tasks. Quick display of the execution result of the tasks that have been executed (Indicator icons easily show the result). Upload, download, edit or delete tasks. Forced run of the task, even outside the scheduled time with eventual display of the log once the execution is completed. It can be used with integrated Crunz or with a version of Crunz already installed on the system",
     "type": "project",
     "keywords": [
-        "Slim3", "Api", "JWT", "Vue", "Vuetify", "Router", "Http-vue-loader", "Protected area", "Login system", "Menu tool", "Crunz" , "Crontab"
+        "Slim4", "Api", "JWT", "Vue", "Vuetify", "Router", "Http-vue-loader", "Protected area", "Login system", "Menu tool", "Crunz" , "Crontab"
     ],
     "homepage": "https://github.com/lucatacconi/crunz-ui/tree/master",
     "license": "MIT",
@@ -22,13 +22,22 @@
     ],
 
     "require": {
-        "slim/slim": "^3",
-        "monolog/monolog": "^1",
+        "slim/slim": "^4",
+        "slim/psr7": "^1",
+        "nyholm/psr7": "^1",
+        "nyholm/psr7-server": "^0",
+        "guzzlehttp/psr7": "^1",
+        "http-interop/http-factory-guzzle": "^1",
+        "laminas/laminas-diactoros": "^2",
+        "php-di/php-di": "^6",
+
+        "monolog/monolog": "^2",
         "tuupola/base62": "^2",
         "tuupola/slim-jwt-auth": "^3",
         "tuupola/slim-basic-auth": "^3",
-        "vlucas/phpdotenv": "^4",
+        "vlucas/phpdotenv": "^5",
         "twig/twig": "^3",
+
         "lavary/crunz": "^2",
         "lorisleiva/cron-translator": ">=0.1.1"
     }

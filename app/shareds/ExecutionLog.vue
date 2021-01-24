@@ -204,18 +204,18 @@ module.exports = {
 
         readData:function(){
             var self=this;
-            var task_path;
+            var event_unique_key;
 
-            if(typeof self.rowdata.task_path !== 'undefined' && self.rowdata.task_path != '' ){
-                task_path = self.rowdata.task_path;
-            }else if(typeof self.rowdata.data.task_path !== 'undefined' && self.rowdata.data.task_path != '' ){
-                task_path = self.rowdata.data.task_path;
+            if(typeof self.rowdata.event_unique_key !== 'undefined' && self.rowdata.event_unique_key != '' ){
+                event_unique_key = self.rowdata.event_unique_key;
+            }else if(typeof self.rowdata.data.event_unique_key !== 'undefined' && self.rowdata.data.event_unique_key != '' ){
+                event_unique_key = self.rowdata.data.event_unique_key;
             }else{
                 Utils.showConnError();
             }
 
             var apiParams = {
-                "task_path": task_path
+                "event_unique_key": event_unique_key
             }
 
             Utils.apiCall("get", "/task/exec-outcome", apiParams)

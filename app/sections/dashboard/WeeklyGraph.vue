@@ -56,42 +56,21 @@
                 };
 
                 var params = {
-                    "return_task_cont": "N",
-                    "past_planned_tasks": "Y",
-                    "outcome_executed_task_lst": "Y",
                     "interval_from": moment().subtract(this.dayBack, 'days').format("YYYY-MM-DD"),
                     "interval_to": moment().add(this.dayFront, 'days').format("YYYY-MM-DD")
                 }
 
-                Utils.apiCall("get", "/task/",params, options)
+                Utils.apiCall("get", "/task-stat/period",params, options)
                 .then(function (response) {
                     if(response.data.length != 0){
 
-                        for (i = 0; i < response.data.length; i++) {
-                            task_data = response.data[i];
+                        for (let  stat_data of self.stats) {
 
-                            for (let task_data_start in task_data.interval_run_lst) {
-                                for (key = 0; key < self.stats.length; key++) {
-                                    if(task_data_start.substring(0, 10) == self.stats[key].date_ref){
-                                        self.stats[key].planned += 1;
-                                    }
-                                }
-                            }
+                            let key = stat_data.id_day;
 
-                            for (let task_data_exec in task_data.outcome_executed_task_lst) {
-                                for (key = 0; key < self.stats.length; key++) {
-                                    if(task_data_exec.substring(0, 10) == self.stats[key].date_ref){
-                                        let task_out = task_data.outcome_executed_task_lst[task_data_exec];
-                                        if(task_out == "OK"){
-                                            self.stats[key].executed += 1;
-                                        }else{
-                                            self.stats[key].with_errors += 1;
-                                        }
-
-                                        self.stats[key].planned -= 1;
-                                    }
-                                }
-                            }
+                            self.stats[key].planned = response.data[stat_data.date_ref].planned;
+                            self.stats[key].executed = response.data[stat_data.date_ref].executed;
+                            self.stats[key].withErrors = response.data[stat_data.date_ref].error;
                         }
                     }
 

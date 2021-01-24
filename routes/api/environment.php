@@ -1,7 +1,8 @@
 <?php
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Routing\RouteCollectorProxy;
 
 use Ramsey\Uuid\Uuid;
 use Firebase\JWT\JWT;
@@ -9,23 +10,56 @@ use Tuupola\Base62;
 
 use Symfony\Component\Yaml\Yaml;
 
-$app->group('/environment', function () use ($app) {
+$app->group('/environment', function (RouteCollectorProxy $group) {
 
-    $app->get('/check', function ($request, $response, $args) {
+    $group->get('/crunz-config', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        $data = $crunz_config;
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
+    $group->get('/check', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $base_path;
             $data["TASK_POSITION_EMBEDDED"] = true;
             $data["TASK_DIR"] = '';
         }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
             $data["TASK_POSITION_EMBEDDED"] = false;
             $data["TASK_DIR"] = $crunz_base_dir;
         }
@@ -98,13 +132,13 @@ $app->group('/environment', function () use ($app) {
             }
         }
 
-        if(!empty(getenv("LOGS_DIR"))){
+        if(!empty($_ENV["LOGS_DIR"])){
             $data["LOGS_DIR_CONFIG_PRESENCE"] = true;
 
-            if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-                $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+            if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+                $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
             }else{
-                $LOGS_DIR = getenv("LOGS_DIR");
+                $LOGS_DIR = $_ENV["LOGS_DIR"];
             }
 
             $data["LOGS_DIR"] = $LOGS_DIR;
@@ -134,8 +168,8 @@ $app->group('/environment', function () use ($app) {
             $data["ALL_CHECK"] = true;
         }
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 });

@@ -1,7 +1,8 @@
 <?php
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Routing\RouteCollectorProxy;
 
 use Ramsey\Uuid\Uuid;
 use Firebase\JWT\JWT;
@@ -17,120 +18,32 @@ foreach (glob(__DIR__ . '/../classes/*.php') as $filename){
     require_once $filename;
 }
 
-use CrunzUI\Task\CrunzUITaskGenerator;
+
 use Lorisleiva\CronTranslator\CronTranslator;
 use Symfony\Component\Yaml\Yaml;
 
-$app->group('/task', function () use ($app) {
+$app->group('/task', function (RouteCollectorProxy $group) {
 
-    $app->get('/group', function ($request, $response, $args) {
+    $group->get('/', function (Request $request, Response $response, array $args) {
+
+
+        //Parameters list
+        // CALC_RUN_LST - Y | N - set API to show all planned task execution
+        // PAST_PLANNED_TASKS - Y | N - Set API to show also planned task execution previous then today also if not executed. Set CALC_RUN_LST to Y
+        // OUTCOME_EXECUTED_TASK_LST - Y | N - Shows the list of the results of the single executions
+        // RETURN_TASK_CONT - Y | N - set API to show content of the task (PHP code)
+
+        // DATE_REF - yyyy-mm-dd - Set reference date. Set to today if emtpy
+        // INTERVAL_FROM - yyyy-mm-dd - Set the start date of the time range that will be evaluated. If not set, it will be set to the first of the current month
+        // INTERVAL_TO - yyyy-mm-dd - Set the end date of the time range that will be evaluated. If not set, it will be set to the last day of the current month
+        // TASK_ID - int - Select task by ID
+        // TASK_PATH - path - Select task by path
+        // UNIQUE_ID - id - Select task by Unique ID
+
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
-
-        $only_active = "Y";
-        if(!empty($params["ONLY_ACTIVE"])){
-            $only_active = $params["ONLY_ACTIVE"];
-        }
-
-        $app_configs = $this->get('app_configs');
-        $aGROUPs = $task_groups = $app_configs["task_groups"];
-
-        function recursiveRemoval(&$array){
-            if(!empty($array["disabled"]) && $array["disabled"] == true){
-                unset($array);
-            }
-
-            unset($array["disabled"]);
-
-            if(!empty($array["children"]) && is_array($array["children"])){
-
-                $at_least_one = "N";
-                foreach($array["children"] as $key=>&$arrayElement)
-                {
-                    if(empty($arrayElement["disabled"]) || $arrayElement["disabled"] == false){
-                        $at_least_one = "Y";
-                    }
-                }
-
-                if($at_least_one == "Y"){
-                    foreach($array["children"] as $key=>&$arrayElement)
-                    {
-                        if(!empty($arrayElement["disabled"]) && $arrayElement["disabled"] == true){
-                            array_splice($array["children"], $key, 1);
-                        }else{
-                            unset($array["children"][$key]["disabled"]);
-                            recursiveRemoval($arrayElement);
-                        }
-                    }
-                }else{
-                    unset($array["children"]);
-                }
-
-            }
-        }
-
-        if($only_active == "Y"){
-            recursiveRemoval($aGROUPs);
-        }
-
-        $data = $aGROUPs;
-
-        return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-    });
-
-    $app->get('/group-in-line', function ($request, $response, $args) {
-
-        $data = [];
-
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
-
-        $only_active = "Y";
-        if(!empty($params["ONLY_ACTIVE"])){
-            $only_active = $params["ONLY_ACTIVE"];
-        }
-
-        $app_configs = $this->get('app_configs');
-        $main_group = $task_groups = $app_configs["task_groups"];
-
-        unset($main_group["children"]);
-        $data[] = $main_group;
-
-        function setChildrenElementView(&$aLSTELEM, $parent, $only_active) {
-
-            if(!empty($parent["children"])){
-                foreach($parent["children"] as $row_cnt => $row_data){
-                    if($only_active == 'Y' && $row_data["disabled"]){
-                        continue;
-                    }
-
-                    unset($row_data["disabled"]);
-                    $sub_parent = $row_data;
-
-                    unset($sub_parent["children"]);
-                    $aLSTELEM[] = $sub_parent;
-
-                    setChildrenElementView($aLSTELEM, $row_data, $only_active);
-                }
-            }
-        }
-
-        setChildrenElementView($data, $task_groups, $only_active);
-
-        return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-    });
-
-
-    $app->get('/', function ($request, $response, $args) {
-
-        $data = [];
-
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
         $calc_run_lst = "N";
         if(!empty($params["CALC_RUN_LST"])){
@@ -151,12 +64,6 @@ $app->group('/task', function () use ($app) {
         }
         if($outcome_executed_task_lst == 'Y'){
             $calc_run_lst = 'Y';
-            // $past_planned_tasks = 'Y';
-        }
-
-        $executed_task_lst_in_interval = "Y";
-        if(!empty($params["EXECUTED_TASK_LST_IN_INTERVAL"])){
-            $executed_task_lst_in_interval = $params["EXECUTED_TASK_LST_IN_INTERVAL"];
         }
 
         $return_task_content = "N";
@@ -188,13 +95,13 @@ $app->group('/task', function () use ($app) {
         }
 
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $base_path;
         }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
         }
 
         if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
@@ -217,12 +124,12 @@ $app->group('/task', function () use ($app) {
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
         $TASK_SUFFIX = $crunz_config["suffix"];
 
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
 
-        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
         }else{
-            $LOGS_DIR = getenv("LOGS_DIR");
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
         }
 
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
@@ -269,16 +176,19 @@ $app->group('/task', function () use ($app) {
                 continue;
             }
 
+            unset($schedule);
             require $taskFile->getRealPath();
-            if (!$schedule instanceof Schedule) {
+            if (empty($schedule) || !$schedule instanceof Schedule) {
                 continue;
             }
 
             $aEVENTs = $schedule->events();
 
+            $event_file_id = 0;
             foreach ($aEVENTs as $oEVENT) {
                 $row = [];
                 $task_counter++;
+                $event_file_id++;
 
                 $event_interval_from = $interval_from;
                 $event_interval_to = $interval_to;
@@ -302,8 +212,16 @@ $app->group('/task', function () use ($app) {
 
                 $row["event_id"] = $oEVENT->getId();
                 $row["event_launch_id"] = $task_counter;
+                $row["event_file_id"] = $event_file_id;
                 $row["task_description"] = $oEVENT->description;
                 $row["expression"] = $row["expression_orig"] = $oEVENT->getExpression();
+                $row["event_unique_key"] = md5($row["real_path"] . $row["task_description"] . $row["expression"]);
+
+                if(!empty($params["UNIQUE_ID"])){
+                    if($row["event_unique_key"] != $params["UNIQUE_ID"]){
+                        continue;
+                    }
+                }
 
                 //Check task if it is high_frequency task (more then once an hour)
                 $aEXPRESSION = explode(" ", $row["expression_orig"]);
@@ -414,6 +332,9 @@ $app->group('/task', function () use ($app) {
                     }
                 }
 
+                $event_interval_from_orig = $event_interval_from;
+                $event_interval_to_orig = $event_interval_to;
+
 
                 if(!empty($row["lifetime_from"]) || !empty($row["lifetime_to"])){
 
@@ -487,20 +408,27 @@ $app->group('/task', function () use ($app) {
                 $row["last_duration"] = 0;
                 $row["last_outcome"] = '';
                 $row["last_run"] = '';
+
+                $row["planned_in_interval"] = 0;
+                $row["executed_in_interval"] = 0;
+                $row["error_in_interval"] = 0;
+                $row["succesfull_in_interval"] = 0;
+                $row["last_outcome"] = '';
+
+
                 $row["executed_task_lst"] = [];
                 $row["outcome_executed_task_lst"] = [];
 
-                $log_name = "T".str_pad($row["event_launch_id"], 8, 0, STR_PAD_LEFT);
-                $aLOGNAME = glob($LOGS_DIR."/".$log_name."*.log"); //T00000001_OK_20191001100_20191001110_XXXX.log | T00000001_KO_20191001100_20191001110_XXXX.log
+                //Looking for all the logs related to this event
+                $aLOGNAME = glob($LOGS_DIR."/T".$row["event_unique_key"]."*.log"); //T UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
 
                 if(!empty($aLOGNAME)){
                     usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
 
-                    //0 "T" + Event ID
+                    //0 UNIQUE_KEY
                     //1 Outcome
                     //2 Start datetime
                     //3 End datetime
-                    //4 Seed
 
                     $aLASTLOG =explode('_', str_replace($LOGS_DIR."/", "", $aLOGNAME[0]));
 
@@ -523,15 +451,41 @@ $app->group('/task', function () use ($app) {
                                 continue;
                             }
 
-                            if($row["high_frequency"]){
-                                if($task_start->format('Y-m-d H:i:s') != $row["last_run"]){
-                                    continue;
-                                }
+                            $row["executed_in_interval"]++;
+                            if($aLOGFOCUS[1] == "OK"){
+                                $row["succesfull_in_interval"]++;
+                            }else{
+                                $row["error_in_interval"]++;
                             }
 
-                            $row["executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $task_stop->format('Y-m-d H:i:s');
-                            if($outcome_executed_task_lst == "Y"){
-                                $row["outcome_executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $aLOGFOCUS[1];
+                            if($row["high_frequency"]){
+
+                                if($aLOGNAME_key == 0){
+                                    $row["executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $task_stop->format('Y-m-d H:i:s');
+                                    if($outcome_executed_task_lst == "Y"){
+                                        $row["outcome_executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $aLOGFOCUS[1];
+                                    }
+                                }else{
+
+                                    $aLOGFOCUS_prev =explode('_', str_replace($LOGS_DIR."/", "", $aLOGNAME[$aLOGNAME_key - 1]));
+                                    $task_start_prev = DateTime::createFromFormat('YmdHi', $aLOGFOCUS_prev[2]);
+                                    $task_stop_prev = DateTime::createFromFormat('YmdHi', $aLOGFOCUS_prev[3]);
+
+                                    if($task_start->format('Y-m-d') == $task_start_prev->format('Y-m-d')){
+                                        continue;
+                                    }else{
+                                        $row["executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $task_stop->format('Y-m-d H:i:s');
+                                        if($outcome_executed_task_lst == "Y"){
+                                            $row["outcome_executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $aLOGFOCUS[1];
+                                        }
+                                    }
+                                }
+
+                            }else{
+                                $row["executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $task_stop->format('Y-m-d H:i:s');
+                                if($outcome_executed_task_lst == "Y"){
+                                    $row["outcome_executed_task_lst"][$task_start->format('Y-m-d H:i:s')] = $aLOGFOCUS[1];
+                                }
                             }
                         }
                     }
@@ -600,56 +554,72 @@ $app->group('/task', function () use ($app) {
 
 
                 //Calculating run list of the interval
-                $row["interval_run_lst"] = [];
-                $nincrement = 0;
                 $calc_run = false;
+                $tmp_interval_lst = [];
+                $nincrement = 0;
 
+                if($row["high_frequency"]){
 
-                if($calc_run_lst == "Y"){
+                    if($calc_run_lst == "Y"){
+                        $row["interval_run_lst"] = [];
+                    }
 
-                    if($row["high_frequency"]){
+                    $calc_run_prec = '';
+                    while(empty($calc_run_ref) || $calc_run_ref < $event_interval_to){
 
-                        $calc_run = $cron->getNextRunDate($event_interval_from, $nincrement, true)->format('Y-m-d H:i:s');
+                        if(empty($calc_run_ref)){
+                            $calc_run_ref = $event_interval_from_orig;
+                        }
 
-                        if($calc_run < $date_now && $past_planned_tasks != "Y"){
-                            if(array_key_exists($calc_run, $row["executed_task_lst"])){
-                                if($calc_run == $row["executed_task_lst"][$calc_run]){
-                                    $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + 1 minute"));
+                        $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $nincrement, true)->format('Y-m-d H:i:s');
+                        if($nincrement == 0) $nincrement++;
+
+                        $row["planned_in_interval"]++;
+
+                        if($calc_run_ref < $date_now && $past_planned_tasks != "Y"){
+
+                            if(array_key_exists($calc_run_ref, $row["executed_task_lst"])){
+                                if($calc_run_ref == $row["executed_task_lst"][$calc_run_ref]){
+                                    $row["interval_run_lst"][$calc_run_ref] = date('Y-m-d H:i:s', strtotime("$calc_run_ref + 1 minute"));
                                 }else{
-                                    $row["interval_run_lst"][$calc_run] = $row["executed_task_lst"][$calc_run];
+                                    $row["interval_run_lst"][$calc_run_ref] = $row["executed_task_lst"][$calc_run_ref];
                                 }
+
+                                $calc_run_prec = date('Y-m-d', strtotime($calc_run_ref));
                             }
+
                         }else{
-                            $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
-                        }
-
-                        $calc_run_new = $calc_run;
-                        while($calc_run_new <= $event_interval_to){
-                            $calc_run_new = date('Y-m-d H:i:s', strtotime("$calc_run_new + 1 day"));
-
-                            if($calc_run_new < $date_now && $past_planned_tasks != "Y"){
-                                if(array_key_exists($calc_run_new, $row["executed_task_lst"])){
-                                    if($calc_run == $row["executed_task_lst"][$calc_run_new]){
-                                        $row["interval_run_lst"][$calc_run_new] = date('Y-m-d H:i:s', strtotime("$calc_run_new + 1 minute"));
-                                    }else{
-                                        $row["interval_run_lst"][$calc_run_new] = $row["executed_task_lst"][$calc_run_new];
-                                    }
-                                }
+                            if($calc_run_prec < date('Y-m-d', strtotime($calc_run_ref))){
+                                $row["interval_run_lst"][$calc_run_ref] = date('Y-m-d H:i:s', strtotime("$calc_run_ref + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
+                                $calc_run_prec = date('Y-m-d', strtotime($calc_run_ref));
                             }else{
-                                $row["interval_run_lst"][$calc_run_new] = date('Y-m-d H:i:s', strtotime("$calc_run_new + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
+                                continue;
                             }
                         }
+                    }
 
-                    }else{
-                        while($nincrement < 1000){ //Use the same hard limit of cron-expression library
-                            $calc_run = $cron->getNextRunDate($event_interval_from, $nincrement, true)->format('Y-m-d H:i:s');
+                }else{
 
-                            if($calc_run > $event_interval_to){
-                                break;
-                            }
+                    if($calc_run_lst == "Y"){
+                        $row["interval_run_lst"] = [];
+                    }
 
-                            $nincrement++;
+                    while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+                        $calc_run = $cron->getNextRunDate($event_interval_from_orig, $nincrement, true)->format('Y-m-d H:i:s');
 
+                        if($calc_run > $event_interval_to){
+                            break;
+                        }
+
+                        $nincrement++;
+
+                        $tmp_interval_lst[$calc_run] = $calc_run;
+
+                        if($calc_run < $event_interval_from){
+                            continue;
+                        }
+
+                        if($calc_run_lst == "Y"){
                             if($calc_run < $date_now && $past_planned_tasks != "Y"){
                                 if(array_key_exists($calc_run, $row["executed_task_lst"])){
                                     if($calc_run == $row["executed_task_lst"][$calc_run]){
@@ -662,15 +632,25 @@ $app->group('/task', function () use ($app) {
                                 $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
                             }
                         }
+                    }
 
+                    foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
+                        if($exec_task_start >= $event_interval_from_orig && $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $tmp_interval_lst)){
+                            $tmp_interval_lst[$calc_run] = $calc_run;
+                        }
+                    }
+
+                    if($calc_run_lst == "Y"){
                         foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
-                            if($exec_task_start >= $event_interval_from && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
+                            if($exec_task_start >= $event_interval_from && $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
                                 $row["interval_run_lst"][$exec_task_start] = $exec_task_end;
                             }
                         }
 
                         ksort($row["interval_run_lst"]);
                     }
+
+                    $row["planned_in_interval"] = count($tmp_interval_lst);
                 }
 
                 $aTASKs[] = $row;
@@ -686,31 +666,37 @@ $app->group('/task', function () use ($app) {
                         break;
                     }
                 }
+
+                if(!empty($params["UNIQUE_ID"])){
+                    if($row["event_unique_key"] == $params["UNIQUE_ID"]){
+                        break;
+                    }
+                }
             }
         };
 
         $data = $aTASKs;
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 
-
-    $app->get('/exec-outcome', function ($request, $response, $args) {
+    $group->get('/exec-outcome', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
+        if( empty($params["EVENT_UNIQUE_KEY"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No event unique key or task ID submitted");
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $base_path;
         }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
         }
 
         if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
@@ -733,22 +719,19 @@ $app->group('/task', function () use ($app) {
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
         $TASK_SUFFIX = $crunz_config["suffix"];
 
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
 
-        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
         }else{
-            $LOGS_DIR = getenv("LOGS_DIR");
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
         }
 
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
         if(!is_writable($LOGS_DIR)) throw new Exception('ERROR - Logs directory not writable');
 
-
-
         $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
 
-        if( empty($params["TASK_PATH"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No task path or task ID submitted");
 
 
         $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
@@ -769,8 +752,9 @@ $app->group('/task', function () use ($app) {
         $task_counter = 0;
         foreach ($files as $taskFile) {
 
+            unset($schedule);
             require $taskFile->getRealPath();
-            if (!$schedule instanceof Schedule) {
+            if (empty($schedule) || !$schedule instanceof Schedule) {
                 continue;
             }
 
@@ -790,18 +774,22 @@ $app->group('/task', function () use ($app) {
                 $task_subdir = str_replace( array( $TASKS_DIR, $task_filename),'',$task_real_path);
                 $task_path = str_replace($TASKS_DIR, '', $task_real_path);
 
-                if(!empty($params["TASK_PATH"])){
-                    if($task_path != $params["TASK_PATH"]){
+                $event_unique_key = md5($taskFile->getRealPath() . $oEVENT->description . $oEVENT->getExpression());
+
+                if(!empty($params["EVENT_UNIQUE_KEY"])){
+                    if($event_unique_key != $params["EVENT_UNIQUE_KEY"]){
                         continue;
                     }
                 }
 
                 $aEXEC["task_path"] = $task_path;
                 $aEXEC["task_id"] = $task_counter;
+                $aEXEC["event_unique_key"] = $event_unique_key;
 
 
                 //Get Crunz-ui log content
-                $log_name = "T".str_pad($aEXEC["task_id"], 8, 0, STR_PAD_LEFT);
+                // UNIQUE_KEY_OK_20191001100_20191001110.log
+                $log_name = "T" . $event_unique_key;
 
                 if(!empty($params["DATETIME_REF"])){
 
@@ -899,8 +887,8 @@ $app->group('/task', function () use ($app) {
                     }
                 }
 
-                if(!empty($params["TASK_PATH"])){
-                    if($task_real_path == $params["TASK_PATH"]){
+                if(!empty($params["EVENT_UNIQUE_KEY"])){
+                    if($event_unique_key == $params["EVENT_UNIQUE_KEY"]){
                         break;
                     }
                 }
@@ -909,26 +897,25 @@ $app->group('/task', function () use ($app) {
 
         $data = $aEXEC;
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 
-
-    $app->post('/', function ($request, $response, $args) {
+    $group->post('/', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $base_path;
         }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
         }
 
         if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
@@ -953,12 +940,12 @@ $app->group('/task', function () use ($app) {
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
 
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
 
-        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
         }else{
-            $LOGS_DIR = getenv("LOGS_DIR");
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
         }
 
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
@@ -971,22 +958,38 @@ $app->group('/task', function () use ($app) {
         //Check destination
         if( empty($params["TASK_FILE_PATH"]) ) throw new Exception("ERROR - No task file path submitted");
 
+        if (preg_match('/[^a-zA-Z0-9\\/\._-]/', trim($params["TASK_FILE_PATH"],"/") )) {
+            throw new Exception("ERROR - Task file name contains not allowed characters (Only a-z, A-Z, 0-9, -, _, ., / characters allowed)");
+        }
+
         if(trim($params["TASK_FILE_PATH"],"/") == ""){
             $task_file_path = $base_tasks_path;
         }else{
             $task_file_path = $base_tasks_path . "/".trim($params["TASK_FILE_PATH"],"/");
         }
 
+        $task_file_path = str_replace(['//'], '/', $task_file_path);
 
-        if(!file_exists($task_file_path)) throw new Exception('ERROR - Task file not exist');
-        if(!is_writable($task_file_path)) throw new Exception('ERROR - File not writable');
 
+        if( !empty($params["NEW_FILE"]) && $params["NEW_FILE"] == 'Y'){
+
+            if(strpos($task_file_path, $TASK_SUFFIX) === false){
+                throw new Exception("ERROR - Task file name doesn't contains Crunz suffix and '.php' file extension");
+            }
+
+            if(file_exists($task_file_path)) throw new Exception('ERROR - Task file already exist');
+        }else{
+            if(!file_exists($task_file_path)) throw new Exception('ERROR - Task file not exist');
+            if(!is_writable($task_file_path)) throw new Exception('ERROR - File not writable');
+        }
 
         $task_handle = fopen($task_file_path, "wb");
         if($task_handle === false) throw new Exception('ERROR - File open error');
 
         if( empty($params["TASK_CONTENT"]) ) throw new Exception("ERROR - No task content submitted");
 
+
+        $params["TASK_CONTENT"] = base64_decode($params["TASK_CONTENT"]);
         $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $params["TASK_CONTENT"]);
 
         if(
@@ -1009,30 +1012,31 @@ $app->group('/task', function () use ($app) {
             $data["result_msg"] = $e->getMessage();
         }
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 
-
-    $app->post('/execute', function ($request, $response, $args) {
+    $group->post('/execute', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        if( empty($params["EVENT_UNIQUE_KEY"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No event unique key or task ID to execute submitted");
 
         $exec_and_wait = "N";
         if(!empty($params["EXEC_AND_WAIT"])){
             $exec_and_wait = $params["EXEC_AND_WAIT"];
         }
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $base_path;
         }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
         }
 
         if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
@@ -1055,40 +1059,25 @@ $app->group('/task', function () use ($app) {
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
         $TASK_SUFFIX = $crunz_config["suffix"];
 
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
 
-        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
         }else{
-            $LOGS_DIR = getenv("LOGS_DIR");
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
         }
 
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
         if(!is_writable($LOGS_DIR)) throw new Exception('ERROR - Logs directory not writable');
 
-
-
         $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
 
-        if( empty($params["TASK_PATH"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No task path or task ID to execute submitted");
 
-
-        //File compliance check
-        if(!empty($params["TASK_PATH"])){
-
-            $path_check = str_replace(".php", '', $params["TASK_PATH"]);
-
-            if(
-                strpos($path_check, '.') !== false ||
-                substr($params["TASK_PATH"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ||
-                strpos($path_check, $TASKS_DIR === false)
-            ){
-                throw new Exception("ERROR - Task path out of range");
-            }
+        if( !file_exists( $crunz_base_dir."/crunz-ui.sh" ) || !is_executable ( $crunz_base_dir."/crunz-ui.sh" )){
+            throw new Exception("ERROR - Crunz-ui.sh is not present in Crunz base path or is not executable.");
         }
 
 
-        //List of all file with the same order used by Crunz
         $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
         $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
 
@@ -1103,46 +1092,74 @@ $app->group('/task', function () use ($app) {
             \iterator_to_array($regexIterator)
         );
 
-        $task_id = 1;
+
+        $task_id = 0;
         $task_founded = false;
         $task_path_founded = '';
         $aEXEC = [];
         $task_start = date("Y-m-d H:i");
 
-        foreach($files as $task_path => $task_data){
+        foreach ($files as $taskFile) {
 
-            $task_path =  str_replace($TASKS_DIR, '', $task_path);
-
-            if(!empty($params["TASK_ID"])){
-                if($params["TASK_ID"] == $task_id){
-                    $task_founded = true;
-                    $task_path_founded = $task_path;
-                    break;
-                }
-            }else{
-                if($task_path == "/".ltrim($params["TASK_PATH"],"/")){
-                    $task_founded = true;
-                    $task_path_founded = $task_path;
-                    break;
-                }
+            unset($schedule);
+            require $taskFile->getRealPath();
+            if (empty($schedule) || !$schedule instanceof Schedule) {
+                continue;
             }
 
-            $task_id++;
-        }
+            $aEVENTs = $schedule->events();
 
-        if( !file_exists( $crunz_base_dir."/crunz-ui.sh" ) || !is_executable ( $crunz_base_dir."/crunz-ui.sh" )){
-            throw new Exception("ERROR - Crunz-ui.sh is not present in Crunz base path or is not executable.");
+            foreach ($aEVENTs as $oEVENT) {
+                $task_id++;
+
+                if(!empty($params["TASK_ID"])){
+                    if($task_id != $params["TASK_ID"]){
+                        continue;
+                    }
+                }
+
+                $event_unique_key = md5($taskFile->getRealPath() . $oEVENT->description . $oEVENT->getExpression());
+
+                if(!empty($params["EVENT_UNIQUE_KEY"])){
+                    if($event_unique_key != $params["EVENT_UNIQUE_KEY"]){
+                        continue;
+                    }
+                }
+
+                $task_filename = $taskFile->getFilename();
+                $task_real_path = $taskFile->getRealPath();
+                $task_subdir = str_replace( array( $TASKS_DIR, $task_filename),'',$task_real_path);
+                $task_path = str_replace($TASKS_DIR, '', $task_real_path);
+
+                $aEXEC["event_unique_key"] = $event_unique_key;
+                $aEXEC["task_path"] = $task_path;
+                $aEXEC["task_id"] = $task_id;
+
+                if(!empty($params["TASK_ID"])){
+                    if($task_id == $params["TASK_ID"]){
+                        $task_founded = true;
+                        $task_path_founded = $task_path;
+                        break;
+                    }
+                }
+
+                if(!empty($params["EVENT_UNIQUE_KEY"])){
+                    if($event_unique_key == $params["EVENT_UNIQUE_KEY"]){
+                        $task_founded = true;
+                        $task_path_founded = $task_path;
+                        break;
+                    }
+                }
+            }
         }
 
         if($task_founded && !empty($task_path_founded)){
 
-            $aEXEC["task_path"] = $task_path;
-            $aEXEC["task_id"] = $task_id;
             $aEXEC["task_founded"] = $task_founded;
             $aEXEC["task_wait"] = $exec_and_wait;
 
             try {
-                shell_exec("cd $base_tasks_path && cd .. && ./crunz-ui.sh -f -t $task_id -l $LOGS_DIR > /dev/null 2>&1 & ");
+                shell_exec("cd $base_tasks_path && cd .. && ./crunz-ui.sh -f -t ".$aEXEC["task_id"]." -l $LOGS_DIR > /dev/null 2>&1 & ");
 
                 $aEXEC["result"] = true;
                 $aEXEC["result_msg"] = '';
@@ -1162,8 +1179,10 @@ $app->group('/task', function () use ($app) {
                 $datetime_init = date('YmdHis');
                 $datetime_ref = date('YmdHi');
 
-                $log_name = "T".str_pad($aEXEC["task_id"], 8, 0, STR_PAD_LEFT);
+                $log_name = "T" . $aEXEC["event_unique_key"];
                 $log_name_filter = $log_name."_*_".$datetime_ref."_*_*";
+
+                // throw new Exception($log_name_filter);
 
                 while(!$log_file_ready && $round_cnt < $max_round){
 
@@ -1181,13 +1200,12 @@ $app->group('/task', function () use ($app) {
                         }
                     }
 
-                    sleep(5);
+                    sleep(1);
                 }
 
                 if(empty($log_file_name)){
                     throw new Exception("ERROR - Task execution error");
                 }
-
 
                 $aEXEC["log_path"] = $log_file_name;
 
@@ -1204,26 +1222,27 @@ $app->group('/task', function () use ($app) {
             throw new Exception("ERROR - Task to execute not found");
         }
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 
-
-    $app->post('/upload', function ($request, $response, $args) {
+    $group->post('/upload', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+        $paramsBody = array_change_key_case($request->getParsedBody(), CASE_UPPER);
 
+        $params = array_merge($params, $paramsBody);
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $base_path;
         }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
         }
 
         if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
@@ -1248,12 +1267,12 @@ $app->group('/task', function () use ($app) {
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
 
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
 
-        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
         }else{
-            $LOGS_DIR = getenv("LOGS_DIR");
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
         }
 
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
@@ -1332,25 +1351,24 @@ $app->group('/task', function () use ($app) {
         $data["result"] = true;
         $data["result_msg"] = '';
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 
-
-    $app->delete('/', function ($request, $response, $args) {
+    $group->delete('/', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getParams(), CASE_UPPER);
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
-        $app_configs = $this->get('app_configs');
+        $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty(getenv("CRUNZ_BASE_DIR"))){
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $base_path;
         }else{
-            $crunz_base_dir = getenv("CRUNZ_BASE_DIR");
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
         }
 
         if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
@@ -1375,12 +1393,12 @@ $app->group('/task', function () use ($app) {
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
 
-        if(empty(getenv("LOGS_DIR"))) throw new Exception("ERROR - Logs directory configuration empty");
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
 
-        if(substr(getenv("LOGS_DIR"), 0, 2) == "./"){
-            $LOGS_DIR = $base_path . "/" . getenv("LOGS_DIR");
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
         }else{
-            $LOGS_DIR = getenv("LOGS_DIR");
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
         }
 
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
@@ -1420,8 +1438,8 @@ $app->group('/task', function () use ($app) {
             $data["result_msg"] = $e->getMessage();
         }
 
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                        ->withHeader("Content-Type", "application/json");
     });
 });

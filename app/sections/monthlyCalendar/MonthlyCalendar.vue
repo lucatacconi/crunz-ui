@@ -1,6 +1,12 @@
 <template>
     <div>
 
+        <!-- New task modal -->
+        <new-task
+            v-if="showNewTaskModal"
+            @on-close-modal="closeNewTaskModal($event)"
+        ></new-task>
+
         <!-- Detail modal -->
         <task-detail
             v-if="showDetailModal"
@@ -51,6 +57,7 @@
                             type="month"
                             color="primary"
                             event-height=18
+                            :event-more=false
 
                             @click:more="viewDay"
                             @click:date="viewDay"
@@ -62,7 +69,7 @@
         </v-card>
 
         <!-- Actions buttons -->
-        <actions-buttons v-on:read-data="readData()" v-on:upload-modal="openUploadModal()"></actions-buttons>
+        <actions-buttons v-on:read-data="readData()" v-on:new-task-modal="openNewTaskModal()" v-on:upload-modal="openUploadModal()"></actions-buttons>
 
     </div>
 </template>
@@ -72,6 +79,7 @@ module.exports = {
     data:function(){
         return{
             tasks: [],
+            showNewTaskModal:false,
             showUploadModal:false,
             showLogModal:false,
             showDetailModal: false,
@@ -144,6 +152,16 @@ module.exports = {
         },
         closeUploadModal: function () {
             this.showUploadModal = false;
+            if(typeof result !== 'undefined' && result){
+                this.readData();
+            }
+        },
+
+        openNewTaskModal: function () {
+            this.showNewTaskModal = true;
+        },
+        closeNewTaskModal: function (result) {
+            this.showNewTaskModal = false;
             if(typeof result !== 'undefined' && result){
                 this.readData();
             }
@@ -224,7 +242,8 @@ module.exports = {
         'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue' + '?v=' + new Date().getTime()),
         'task-upload': httpVueLoader('../../shareds/FileUpload.vue' + '?v=' + new Date().getTime()),
         'task-detail': httpVueLoader('../../shareds/TaskDetail.vue' + '?v=' + new Date().getTime()),
-        'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime())
+        'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime()),
+        'new-task': httpVueLoader('../../shareds/NewTask.vue' + '?v=' + new Date().getTime())
     }
 }
 </script>

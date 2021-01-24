@@ -39,28 +39,7 @@
 
                         <v-row>
                             <v-col class="py-0 pt-5" cols="12">
-                                <v-card
-                                    outlined
-                                >
-                                    <v-toolbar
-                                        dense
-                                        flat
-                                        tile
-                                    >
-                                        <v-toolbar-title>Task content</v-toolbar-title>
-                                        <v-spacer></v-spacer>
-                                        <v-btn
-                                            icon
-                                            @click="copyToClipboard('task-edit')"
-                                        >
-                                            <v-icon>mdi-content-duplicate</v-icon>
-                                        </v-btn>
-                                    </v-toolbar>
-
-                                    <v-card-text class="pa-0">
-                                        <div id="task-edit"></div>
-                                    </v-card-text>
-                                </v-card>
+                                <editor v-on:editor="getEditor($event)" :content="logdata.taskEdit_content"></editor>
                             </v-col>
                         </v-row>
 
@@ -103,24 +82,18 @@ module.exports = {
                 task_path:"",
                 taskEdit_content : ""
             },
-
-            taskEditEditor : null,
+            editor:null,
         }
     },
 
     props: ['rowdata'],
 
     mounted:function() {
-        var self=this
         if(this.rowdata){
             if(this.rowdata.task_content!=''){
                 this.logdata.filename = this.rowdata.filename;
                 this.logdata.task_path = this.rowdata.task_path;
                 this.logdata.taskEdit_content=atob(this.rowdata.task_content)
-
-                setTimeout(function(){
-                    self.initEditor('task-edit');
-                }, 200);
             }
         }
     },
@@ -130,86 +103,44 @@ module.exports = {
             var self = this;
             self.$emit('on-close-modal');
         },
-
-        initEditor:function(editor){
-            var ed = "";
-            var content = "";
-
-            if(editor=="task-edit"){
-                content = this.logdata.taskEdit_content;
-            }
-
-            ed = ace.edit(editor);
-            ed.getSession().setMode("ace/mode/php");
-
-            ed.setOptions({
-                showPrintMargin: false,
-                fontSize: 14
-            });
-
-            ed.session.setValue(content);
-
-            if(editor=="task-edit"){
-                this.taskEditEditor = ed;
-            }
+        getEditor:function(editor){
+            this.editor=editor
         },
-
-        copyToClipboard:function(editor){
-            var ed = "";
-            if(editor == "task-edit"){
-                ed = this.taskEditEditor;
-            }
-            if(ed != ""){
-                var sel = ed.selection.toJSON();
-                ed.selectAll();
-                ed.focus();
-                document.execCommand('copy');
-                ed.selection.fromJSON(sel);
-            }
-        },
-
         saveFile: function (edit_modal_close) {
             var self=this;
 
-            var ed = this.taskEditEditor;
-            if(ed != ""){
-                var code = ed.getValue();
+            if(this.editor==undefined) return
+            if(this.editor==null) return
 
-                var apiParams = {
-                    "task_file_path": self.rowdata.task_path,
-                    "task_content": code
-                }
-
-                Utils.apiCall("post", "/task/", apiParams)
-                .then(function (response) {
-                    if(response.data.result){
-                        Swal.fire({
-                            title: 'Task updated.',
-                            text: response.data.result_msg,
-                            type: 'success',
-                            onClose: () => {
-                                if(edit_modal_close){
-                                    self.closeModal(true);
-                                }
-                            }
-                        })
-                    }else{
-                        Swal.fire({
-                            title: 'ERROR',
-                            text: response.data.result_msg,
-                            type: 'error'
-                        })
-                    }
-                });
+            var apiParams = {
+                "task_file_path": this.rowdata.task_path,
+                "task_content": btoa(this.editor.getValue())
             }
+            Utils.apiCall("post", "/task/", apiParams)
+            .then(function (response) {
+                if(response.data.result){
+                    Swal.fire({
+                        title: 'Task updated',
+                        text: response.data.result_msg,
+                        type: 'success',
+                        onClose: () => {
+                            if(edit_modal_close){
+                                self.closeModal(true);
+                            }
+                        }
+                    })
+                }else{
+                    Swal.fire({
+                        title: 'ERROR',
+                        text: response.data.result_msg,
+                        type: 'error'
+                    })
+                }
+            });
         }
+    },
+    components:{
+        'editor': httpVueLoader('./Editor.vue' + '?v=' + new Date().getTime())
     }
 }
 </script>
-
-<style>
-    #task-edit {
-        height: 300px;
-    }
-
-</style>

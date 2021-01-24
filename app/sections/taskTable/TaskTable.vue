@@ -1,11 +1,16 @@
 <template>
     <div>
 
+        <!-- New task modal -->
+        <new-task
+            v-if="showNewTaskModal"
+            @on-close-modal="closeNewTaskModal($event)"
+        ></new-task>
+
         <!-- Upload file modal -->
         <task-upload
             v-if="showUploadModal"
             @on-close-modal="closeUploadModal($event)"
-            :rowdata="uploadData"
         ></task-upload>
 
         <!-- Log modal -->
@@ -97,7 +102,7 @@
                                 {{ item.task_description == "" ? "--" : item.task_description }}
                             </td>
                             <td>
-                                {{ item !=undefined && item.expression != undefined && item.expression!='' ? cronstrue.toString(item.expression) : '' }}
+                                {{item.expression_readable}}
                             </td>
                             <td class="text-center">
                                 {{ item.next_run == "" ? "Expired" : moment(item.next_run).format('YY-MM-DD HH:mm') }}
@@ -130,7 +135,7 @@
         </v-card>
 
         <!-- Actions buttons -->
-        <actions-buttons v-on:read-data="readData()" v-on:edit-modal="opendEditModal()" v-on:upload-modal="openUploadModal()"></actions-buttons>
+        <actions-buttons v-on:read-data="readData()" v-on:edit-modal="opendEditModal()" v-on:new-task-modal="openNewTaskModal()" v-on:upload-modal="openUploadModal()"></actions-buttons>
 
     </div>
 </template>
@@ -140,6 +145,7 @@ module.exports = {
     data:function(){
         return{
             search: '',
+            showNewTaskModal:false,
             showUploadModal: false,
             showEditModal: false,
             showLogModal: false,
@@ -153,8 +159,8 @@ module.exports = {
                 },
                 { text: 'Task num.', value: 'event_launch_id', align: 'center' },
                 { text: 'Task', value: 'task_path' },
-                { text: 'Description', value: 'task_description' },
-                { text: 'Execution', value: 'expression' },
+                { text: 'Description', value: 'task_description', sortable: false },
+                { text: 'Execution', value: 'expression', sortable: false },
                 { text: 'Next execution', value: 'next_run', align: 'center' },
                 { text: 'Last execution', value: 'last_run', align: 'center' },
                 { text: 'Last duration', value: 'last_duration', align: 'center' },
@@ -271,6 +277,16 @@ module.exports = {
             }
         },
 
+        openNewTaskModal: function () {
+            this.showNewTaskModal = true;
+        },
+        closeNewTaskModal: function (result) {
+            this.showNewTaskModal = false;
+            if(typeof result !== 'undefined' && result){
+                this.readData();
+            }
+        },
+
         openLogModal: function (rowdata) {
             this.showLogModal = true;
             this.logData = rowdata != undefined ? rowdata : false;
@@ -327,7 +343,7 @@ module.exports = {
         executeItem: function (item, wait) {
             var self = this;
             var params = {
-                "task_path": item.task_path,
+                "event_unique_key": item.event_unique_key,
                 "exec_and_wait": wait ? 'Y' : 'N'
             }
 
@@ -387,6 +403,7 @@ module.exports = {
     components:{
         'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue' + '?v=' + new Date().getTime()),
         'task-upload': httpVueLoader('../../shareds/FileUpload.vue' + '?v=' + new Date().getTime()),
+        'new-task': httpVueLoader('../../shareds/NewTask.vue' + '?v=' + new Date().getTime()),
         'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime()),
         'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime())
     }
