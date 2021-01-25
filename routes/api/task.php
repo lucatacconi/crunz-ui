@@ -1074,7 +1074,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
 
         if( !file_exists( $crunz_base_dir."/crunz-ui.sh" ) || !is_executable ( $crunz_base_dir."/crunz-ui.sh" )){
-            throw new Exception("ERROR - Crunz-ui.sh is not present in Crunz base path or is not executable.");
+            throw new Exception("ERROR - Crunz-ui.sh is not present in Crunz base path or is not executable. Copy the file to the correct destination.");
+        }
+
+        if( !file_exists( $crunz_base_dir."/TasksTreeReader.php" )){
+            throw new Exception("ERROR - TasksTreeReader.php is not present in Crunz base path. Copy the file to the correct destination.");
         }
 
 
