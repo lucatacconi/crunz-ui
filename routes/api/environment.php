@@ -64,6 +64,16 @@ $app->group('/environment', function (RouteCollectorProxy $group) {
             $data["TASK_DIR"] = $crunz_base_dir;
         }
 
+        $data["CRUNZ_SH_PRESENCE"] = false;
+        $data["TREEREADER_PRESENCE"] = false;
+
+        if (is_file($crunz_base_dir . "/crunz-ui.sh")) {
+            $data["CRUNZ_SH_PRESENCE"] = true;
+        }
+        if (is_file($crunz_base_dir . "/TasksTreeReader.php")) {
+            $data["TREEREADER_PRESENCE"] = true;
+        }
+
         $data["YAML_CONFIG_PRESENCE"] = false;
         $data["YAML_CONFIG_NOEMPTY"] = false;
         $data["YAML_CONFIG_CORRECTNESS"] = false;
@@ -163,7 +173,9 @@ $app->group('/environment', function (RouteCollectorProxy $group) {
             $data["TASKS_DIR_WRITABLE"] == true &&
             $data["LOGS_DIR_CONFIG_PRESENCE"] == true &&
             $data["LOGS_DIR_PRESENCE"] == true &&
-            $data["LOGS_DIR_WRITABLE"] == true
+            $data["LOGS_DIR_WRITABLE"] == true &&
+            $data["CRUNZ_SH_PRESENCE"] == true &&
+            $data["TREEREADER_PRESENCE"] == true
         ){
             $data["ALL_CHECK"] = true;
         }
