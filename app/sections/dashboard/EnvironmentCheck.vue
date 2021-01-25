@@ -23,8 +23,12 @@
                                     readonly
                                     :hide-details="env_check.TASK_POSITION_EMBEDDED"
                                     persistent-hint
-                                    hint="In Crunz configuration with custom directory (not embedded), remember to copy crunz-ui.sh file into custom directory and use it in crontab instead of crunz.sh"
-                                ></v-text-field>
+                                    hint="In Crunz-ui configuration with custom Crunz directory not embedded, remember to copy crunz-ui.sh and TasksTreeReader.php files into custom directory and use it in crontab instead of crunz.sh"
+                                    :error-messages="!env_check.TASK_POSITION_EMBEDDED && !(env_check.CRUNZ_SH_PRESENCE && env_check.TREEREADER_PRESENCE) ? 'The following files crunz-ui.sh and TasksTreeReader.php missing in Crunz base directory. Copy crunz-ui.sh and TasksTreeReader.php files into your Crunz custom directory.' : '' "
+                                >
+                                    <v-icon v-if="env_check.CRUNZ_SH_PRESENCE && env_check.TREEREADER_PRESENCE" slot="append" color="green">mdi-check-bold</v-icon>
+                                    <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
+                                </v-text-field>
                             </v-col>
 
                             <v-col cols="6" class="py-0 pb-2">
@@ -49,7 +53,7 @@
                                 >
                                     <v-icon v-if="env_check.YAML_CONFIG_CORRECTNESS" slot="append" color="green">mdi-check-bold</v-icon>
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
-                            </v-text-field>
+                                </v-text-field>
                             </v-col>
                             <v-col cols="6" class="py-0 pb-2">
                                 <v-text-field
