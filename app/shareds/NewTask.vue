@@ -39,7 +39,7 @@
                     </v-flex>
                 </v-layout>
 
-                <editor v-on:editor="getEditor($event)" :content="task_content"></editor>
+                <editor v-on:editor="getEditor($event)" :action-button="true" :content="task_content"></editor>
 
             </v-card-text>
 
