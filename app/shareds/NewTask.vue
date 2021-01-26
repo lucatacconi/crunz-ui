@@ -120,7 +120,7 @@ return $schedule;`
             if(suffix.toLowerCase()==this.suffix.toLowerCase()){
                 Swal.fire({
                     title: 'ERROR',
-                    text: "Task file name contains suffix",
+                    text: "Task file name must not end with "+this.suffix,
                     type: 'error'
                 })
                 return
