@@ -28,6 +28,7 @@
                         hide-details
                         label="Folder name (ENTER to create new folder; ESC to exit)"
                         v-model="new_folder_name"
+                        autofocus="true"
                     ></v-text-field>
                 </v-card-text>
                 <v-card-actions>
