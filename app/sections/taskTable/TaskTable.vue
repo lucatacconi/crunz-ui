@@ -94,6 +94,22 @@
                             </td>
                             <td class="text-center">
                                 {{ item.event_launch_id }}
+
+                                <template v-if="item.high_frequency == true">
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-icon
+                                                small
+                                                color="orange"
+                                                v-bind="attrs"
+                                                v-on="on"
+                                            >
+                                                mdi-clock-fast
+                                            </v-icon>
+                                        </template>
+                                        <span>High frequency task</span>
+                                    </v-tooltip>
+                                </template>
                             </td>
                             <td>
                                 {{ item.task_path }}
@@ -125,7 +141,6 @@
                                         <span>The last scheduled task was not executed</span>
                                     </v-tooltip>
                                 </template>
-
                             </td>
                             <td class="text-center">
                                 <span v-if="item.last_outcome != ''">

@@ -69,6 +69,17 @@
             </v-row>
         </v-card>
 
+        <v-alert
+            dense
+            border="left"
+            colored-border
+            type="info"
+            elevation="2"
+            class="mt-3"
+        >
+            <strong>HFT</strong> is the indicator of an high frequency task, that's a task carried out many times per hour. To avoid saturating the display, in the calendar representations, both monthly and weekly, it will be shown only once a day.
+        </v-alert>
+
         <!-- Actions buttons -->
         <actions-buttons v-on:read-data="readData()" v-on:new-task-modal="openNewTaskModal()" v-on:upload-modal="openUploadModal()"></actions-buttons>
 
@@ -202,7 +213,7 @@ module.exports = {
 
                                 let event_name = (response.data[i].filename.replace('.php', '').length > self.taskTitleLength) ? response.data[i].filename.replace('.php', '').substring(0, (self.taskTitleLength + 2))+".." : response.data[i].filename.replace('.php', '');
                                 if(response.data[i].high_frequency){
-                                    event_name = "(HF) " + event_name;
+                                    event_name = "HFT - " + event_name;
                                 }
 
                                 let event_color = self.stringToColor(response.data[i].task_path);
