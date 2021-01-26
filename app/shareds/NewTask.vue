@@ -31,7 +31,7 @@
                         <v-text-field
                             hide-details
                             v-model="formData.task_name"
-                            label="Task name"
+                            label="Task file name"
                         ></v-text-field>
                     </v-flex>
                     <v-flex xs2 class="pl-1 pt-8">
