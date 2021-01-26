@@ -5,7 +5,7 @@
 
 ## Release history
 
-### v.2.0.0 (2021-01-XX)
+### v.2.0.0 (2021-01-26)
 
 Crunz-ui update stable release:
 * Slim 4 library integration. Crunz-ui version 1 used version 3 of the Slim library
