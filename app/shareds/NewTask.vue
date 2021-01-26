@@ -111,7 +111,15 @@ return $schedule;`
             if(this.formData.task_name==null||this.formData.task_name==''){
                 Swal.fire({
                     title: 'ERROR',
-                    text: "Task name is empty",
+                    text: "Task file name is empty",
+                    type: 'error'
+                })
+                return
+            }
+            if(this.formData.task_name.includes(this.suffix)){
+                Swal.fire({
+                    title: 'ERROR',
+                    text: "Task file name contains suffix",
                     type: 'error'
                 })
                 return
@@ -120,7 +128,7 @@ return $schedule;`
             if(regex.test(this.formData.task_name)){
                 Swal.fire({
                     title: 'ERROR',
-                    text: "Task name being added contains not allowed characters (Only a-z, A-Z, 0-9, -, _ characters allowed)",
+                    text: "Task file name being added contains not allowed characters (Only a-z, A-Z, 0-9, -, _ characters allowed)",
                     type: 'error'
                 })
                 return
