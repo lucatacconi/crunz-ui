@@ -116,7 +116,8 @@ return $schedule;`
                 })
                 return
             }
-            if(this.formData.task_name.includes(this.suffix)){
+            var suffix=this.formData.task_name.slice((this.formData.task_name.length -  this.suffix.length), this.formData.task_name.length)
+            if(suffix.toLowerCase()==this.suffix.toLowerCase()){
                 Swal.fire({
                     title: 'ERROR',
                     text: "Task file name contains suffix",
