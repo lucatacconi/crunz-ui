@@ -6,9 +6,9 @@
 [![License](https://poser.pugx.org/lucatacconi/crunz-ui/license)](https://packagist.org/packages/lucatacconi/crunz-ui)
 
 ![Crunz-ui](https://user-images.githubusercontent.com/9921890/105859101-6cf75080-5fec-11eb-9ede-0b6da2ec9898.png)
-&nbsp;
-&nbsp;
-&nbsp;
+<br />
+<br />
+<br />
 Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and is proposed as its natural graphical interface, optimal to make its usage more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees to the project its elastic and dynamic structure.
 
 
