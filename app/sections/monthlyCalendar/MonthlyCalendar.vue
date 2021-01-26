@@ -74,7 +74,7 @@
             colored-border
             type="info"
             elevation="2"
-            class="mt-3"
+            class="mt-5"
         >
             <strong>HFT</strong> is the indicator of an high frequency task, that's a task carried out many times per hour. To avoid saturating the display, in the calendar representations, both monthly and weekly, it will be shown only once a day.
         </v-alert>
