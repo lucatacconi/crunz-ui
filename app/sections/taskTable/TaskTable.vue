@@ -108,7 +108,24 @@
                                 {{ item.next_run == "" ? "Expired" : moment(item.next_run).format('YY-MM-DD HH:mm') }}
                             </td>
                             <td class="text-center">
-                                {{ item.last_run == "" ? "--" : moment(item.last_run).format('YY-MM-DD HH:mm') }}
+                                {{ item.last_run == "" ? "" : moment(item.last_run).format('YY-MM-DD HH:mm') }}
+
+                                <template v-if="item.last_run_actually_executed != true">
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-icon
+                                                small
+                                                color="red"
+                                                v-bind="attrs"
+                                                v-on="on"
+                                            >
+                                                mdi-clock-alert-outline
+                                            </v-icon>
+                                        </template>
+                                        <span>The last scheduled task was not executed</span>
+                                    </v-tooltip>
+                                </template>
+
                             </td>
                             <td class="text-center">
                                 <span v-if="item.last_outcome != ''">

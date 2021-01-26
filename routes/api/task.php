@@ -551,6 +551,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 }
 
                 $row["calculeted_last_run"] = $calculeted_last_run;
+                $row["executed_last_run"] = array_key_last($row["executed_task_lst"]);
+
+                $row["last_run_actually_executed"] = false;
+                if(!empty($row["executed_last_run"]) && $row["executed_last_run"] == $row["calculeted_last_run"]){
+                    $row["last_run_actually_executed"] = true;
+                }
 
 
                 //Calculating run list of the interval

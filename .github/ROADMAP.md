@@ -13,6 +13,7 @@ Crunz-ui update stable release:
 * Advanced management of high-frequency tasks (HFT), tasks that are carried out many times per hour. Previous version of Crunz-ui interface failed to display HFT crashing dashboard, daily and monthly view monthly view
 * Environment Verification Panel Update. Additional controls and useful messages have been added
 * Introduction of the event unique id which allows to uniquely identify the single task to be performed, improving log production operations
+* More accurate analysis of tasks execution and reporting, in the Task Table section, of any scheduled but not executed tasks
 * New default task testAlive that can be activated and used to notify the server's IP on Internet twice a day via email
 * Several improvements and bugfixes on all the code
 
