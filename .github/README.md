@@ -9,6 +9,7 @@
 <br />
 <br />
 <br />
+
 Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and is proposed as its natural graphical interface, optimal to make its usage more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees to the project its elastic and dynamic structure.
 
 
@@ -78,7 +79,12 @@ Cruz-ui can be installed in two ways: it can work using the Crunz embedded in th
 If you have never used Crunz before or want to use the Crunz integrated in the packages, refer to the section [Never used Crunz before](#Never-used-Crunz-before).
 If you want to use Cruz-ui on a version of Crunz previously installed on the user's systems, refer to the section [Usage on a previous installation of Crunz](#Usage-on-a-previous-installation-of-Crunz).
 
-***Using Crunz-ui on Xampp with PHP already present on the server in a separate installation from XAMPP, functions "Execute" and "Execute and wait log" present in the Tasks table section menu will fail***
+Crunz-ui can also be used with Xampp. However, it is necessary to create a symbolic link of the Xampp's PHP in your system executables folder:
+```
+sudo ln -s /opt/lampp/bin/php /usr/bin/
+```
+
+***Using Crunz-ui on Xampp with PHP already present on the server in a separate installation from XAMPP, functions "Execute and wait log" present in the Tasks table section menu will fail with the following error: Unable to load dynamic library 'curl.so'***
 
 ### Never used Crunz before
 
