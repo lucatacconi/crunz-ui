@@ -70,7 +70,6 @@ $task = $schedule->run(function() {
             $message = (new Swift_Message('Crunz-ui report'))
             ->setFrom([$crunz_config["mailer"]["sender_email"] => $crunz_config["mailer"]["sender_name"]])
             ->setTo($crunz_config["mailer"]["recipients"])
-            // ->setTo(['luca.fabio.tacconi@gmail.com' => 'Luca Tacconi'])
             ->setBody($aRESULT["DATA"]);
 
             $recipients = [];
