@@ -194,7 +194,7 @@ if [ $id_task -gt 0 ]; then
     runTask $id_task "$forced_execution" "$tasks_path" "$logs_path"
 else
 
-    tasks_count=$(php -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getAllTree(); echo $res;')
+    tasks_count=$(php -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getMaxNumTasks(); echo $res;')
 
     task_counter=1
     while [ $task_counter -le $tasks_count ]
