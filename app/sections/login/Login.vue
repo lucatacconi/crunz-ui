@@ -21,7 +21,7 @@
                                     :error-messages="errors.collect('login-area.username')" >
                                 </v-text-field>
                                 <v-text-field
-                                    v-model.trim="credentials.password"
+                                    v-model.trim="password_orgin"
                                     prepend-icon="lock"
                                     name="password"
                                     label="Password"
@@ -51,7 +51,9 @@
                 credentials: {
                     username: '',
                     password: ''
-                }
+                },
+
+                password_orgin: ''
             }
         },
         props: [],
@@ -59,6 +61,8 @@
             execLogin: function () {
 
                 var self = this;
+
+                self.credentials.password = CryptoJS.MD5(self.password_orgin);
 
                 this.$validator.validateAll('login-area').then(function(result) {
                     if (result) {
