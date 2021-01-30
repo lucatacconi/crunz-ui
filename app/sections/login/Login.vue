@@ -62,7 +62,7 @@
 
                 var self = this;
 
-                self.credentials.password = CryptoJS.MD5(self.password_orgin);
+                self.credentials.password = CryptoJS.MD5(self.password_orgin).toString();
 
                 this.$validator.validateAll('login-area').then(function(result) {
                     if (result) {

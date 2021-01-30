@@ -158,11 +158,10 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                 $event_interval_to = $interval_to;
 
                 $real_path = $taskFile->getRealPath();
-                $task_path = str_replace($TASKS_DIR, '', $real_path);
                 $task_description = $taskFile->getRealPath();
                 $expression = $oEVENT->getExpression();
 
-                $event_unique_key = md5($task_path . $task_description . $expression);
+                $event_unique_key = md5($real_path . $task_description . $expression);
 
                 //Check task if it is high_frequency task (more then once an hour)
                 $aEXPRESSION = explode(" ", $oEVENT->getExpression());
