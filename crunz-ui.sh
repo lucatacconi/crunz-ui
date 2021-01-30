@@ -119,9 +119,9 @@ function runTask() {
             executed_task_outcome="KO"
         fi
 
-        counter_pad=$(php -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getEventUniqueKey('$p_task_counter'); echo $res;')
+        event_unique_id=$(php -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getEventUniqueKey('$p_task_counter'); echo $res;')
 
-        log_task_name=$counter_pad"_"$executed_task_outcome"_"$task_start_datetime"_"$task_stop_datetime"_"$file_seed".log"
+        log_task_name=$event_unique_id"_"$executed_task_outcome"_"$task_start_datetime"_"$task_stop_datetime"_"$file_seed".log"
         mv $p_logs_path/$file_uuid.log $p_logs_path/$log_task_name
     else
         rm $p_logs_path/$file_uuid.log
