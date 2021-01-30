@@ -795,7 +795,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                 //Get Crunz-ui log content
                 // UNIQUE_KEY_OK_20191001100_20191001110.log
-                $log_name = "T" . $event_unique_key;
+                $log_name = $event_unique_key;
 
                 if(!empty($params["DATETIME_REF"])){
 
@@ -1189,7 +1189,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $datetime_init = date('YmdHis');
                 $datetime_ref = date('YmdHi');
 
-                $log_name = "T" . $aEXEC["event_unique_key"];
+                $log_name = $aEXEC["event_unique_key"];
                 $log_name_filter = $log_name."_*_".$datetime_ref."_*_*";
 
                 // throw new Exception($log_name_filter);
