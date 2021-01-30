@@ -187,7 +187,7 @@ class TasksTreeReader {
             return false;
         }
 
-        $crunz_base_dir = ".";
+        $crunz_base_dir = dirname(__FILE__);
 
         if(!file_exists ( $crunz_base_dir."/crunz.yml" )) return false;
         $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
