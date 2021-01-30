@@ -215,7 +215,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["event_file_id"] = $event_file_id;
                 $row["task_description"] = $oEVENT->description;
                 $row["expression"] = $row["expression_orig"] = $oEVENT->getExpression();
-                $row["event_unique_key"] = md5($row["real_path"] . $row["task_description"] . $row["expression"]);
+                $row["event_unique_key"] = md5($row["task_path"] . $row["task_description"] . $row["expression"]);
 
                 if(!empty($params["UNIQUE_ID"])){
                     if($row["event_unique_key"] != $params["UNIQUE_ID"]){
@@ -780,7 +780,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $task_subdir = str_replace( array( $TASKS_DIR, $task_filename),'',$task_real_path);
                 $task_path = str_replace($TASKS_DIR, '', $task_real_path);
 
-                $event_unique_key = md5($taskFile->getRealPath() . $oEVENT->description . $oEVENT->getExpression());
+                $event_unique_key = md5($task_path . $oEVENT->description . $oEVENT->getExpression());
 
                 if(!empty($params["EVENT_UNIQUE_KEY"])){
                     if($event_unique_key != $params["EVENT_UNIQUE_KEY"]){
@@ -795,7 +795,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                 //Get Crunz-ui log content
                 // UNIQUE_KEY_OK_20191001100_20191001110.log
-                $log_name = "T" . $event_unique_key;
+                $log_name = $event_unique_key;
 
                 if(!empty($params["DATETIME_REF"])){
 
@@ -1128,7 +1128,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }
                 }
 
-                $event_unique_key = md5($taskFile->getRealPath() . $oEVENT->description . $oEVENT->getExpression());
+                $task_path = str_replace($TASKS_DIR, '', $task_real_path);
+                $event_unique_key = md5($task_path . $oEVENT->description . $oEVENT->getExpression());
 
                 if(!empty($params["EVENT_UNIQUE_KEY"])){
                     if($event_unique_key != $params["EVENT_UNIQUE_KEY"]){
@@ -1139,7 +1140,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $task_filename = $taskFile->getFilename();
                 $task_real_path = $taskFile->getRealPath();
                 $task_subdir = str_replace( array( $TASKS_DIR, $task_filename),'',$task_real_path);
-                $task_path = str_replace($TASKS_DIR, '', $task_real_path);
+
 
                 $aEXEC["event_unique_key"] = $event_unique_key;
                 $aEXEC["task_path"] = $task_path;
@@ -1189,7 +1190,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $datetime_init = date('YmdHis');
                 $datetime_ref = date('YmdHi');
 
-                $log_name = "T" . $aEXEC["event_unique_key"];
+                $log_name = $aEXEC["event_unique_key"];
                 $log_name_filter = $log_name."_*_".$datetime_ref."_*_*";
 
                 // throw new Exception($log_name_filter);

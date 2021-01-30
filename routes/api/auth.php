@@ -21,7 +21,7 @@ $app->group('/auth', function (RouteCollectorProxy $group) {
 
         $aACCOUNT = null;
         foreach($aACCOUNTs as $row_key => $row_data){
-            if($row_data["username"] == $params["USERNAME"] && $row_data["password"] == $params["PASSWORD"]){
+            if($row_data["username"] == $params["USERNAME"] && md5($row_data["password"]) == $params["PASSWORD"]){
                 $aACCOUNT = $row_data;
             }
         }
