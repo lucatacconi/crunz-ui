@@ -32,42 +32,19 @@
                 };
 
                 var params = {
-                    // "return_task_cont": "N",
-                    // "past_planned_tasks": "Y",
-                    // "outcome_executed_task_lst": "Y",
                     "interval_from": moment().format("YYYY-MM-DD"),
                     "interval_to": moment().format("YYYY-MM-DD")
                 }
 
-                Utils.apiCall("get", "/task/",params, options)
+                Utils.apiCall("get", "/task-stat/period",params, options)
                 .then(function (response) {
-                    if(response.data.length != 0){
-                        for (i = 0; i < response.data.length; i++) {
-                            task_data = response.data[i];
+                    if((typeof(response.data[moment().format("YYYY-MM-DD")]) !== 'undefined') && response.data[moment().format("YYYY-MM-DD")] != 0){
 
-                            self.planned += task_data.planned_in_interval;
-                            self.executed += task_data.executed_in_interval;
-                            self.withErrors += task_data.error_in_interval;
+                        let day_stat = response.data[moment().format("YYYY-MM-DD")];
 
-                            // for (var task_data_start in task_data.interval_run_lst) {
-                            //     if(task_data_start.substring(0, 10) == moment().format("YYYY-MM-DD")){
-                            //         self.planned += 1;
-                            //     }
-                            // }
-
-                            // for (var task_data_exec in task_data.outcome_executed_task_lst) {
-                            //     if(task_data_exec.substring(0, 10) == moment().format("YYYY-MM-DD")){
-                            //         var task_out = task_data.outcome_executed_task_lst[task_data_exec];
-                            //         if(task_out == "OK"){
-                            //             self.executed += 1;
-                            //         }else{
-                            //             self.withErrors += 1;
-                            //         }
-
-                            //         self.planned -= 1;
-                            //     }
-                            // }
-                        }
+                        self.planned = day_stat.planned -( day_stat.succesfull + day_stat.error );
+                        self.executed = day_stat.succesfull;
+                        self.withErrors = day_stat.error;
                     }
 
                     var config_graph_daily = {
