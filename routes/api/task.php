@@ -554,7 +554,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["executed_last_run"] = array_key_last($row["executed_task_lst"]);
 
                 $row["last_run_actually_executed"] = false;
-                if(!empty($row["executed_last_run"]) && $row["executed_last_run"] == $row["calculeted_last_run"]){
+                $aLASTLOGs = glob($LOGS_DIR."/".$row["event_unique_key"].'_*_'. date("YmdHi", strtotime($row["calculeted_last_run"])) ."_*.log");
+                if(!empty($aLASTLOGs)){
                     $row["last_run_actually_executed"] = true;
                 }
 
