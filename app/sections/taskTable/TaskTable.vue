@@ -331,8 +331,11 @@ module.exports = {
             this.showEditModal = true;
             this.logData = rowdata != undefined ? rowdata : false;
         },
-        closeEditModal: function () {
+        closeEditModal: function (result) {
             this.showEditModal = false;
+            if(typeof result !== 'undefined' && result){
+                this.readData();
+            }
         },
 
         deleteItem: function (rowdata) {

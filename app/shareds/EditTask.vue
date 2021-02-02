@@ -99,9 +99,9 @@ module.exports = {
     },
 
     methods: {
-        closeModal: function () {
+        closeModal: function (result) {
             var self = this;
-            self.$emit('on-close-modal');
+            self.$emit('on-close-modal', result);
         },
         getEditor:function(editor){
             this.editor=editor
