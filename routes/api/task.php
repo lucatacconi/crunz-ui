@@ -1129,6 +1129,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }
                 }
 
+                $task_real_path = $taskFile->getRealPath();
                 $task_path = str_replace($TASKS_DIR, '', $task_real_path);
                 $event_unique_key = md5($task_path . $oEVENT->description . $oEVENT->getExpression());
 
