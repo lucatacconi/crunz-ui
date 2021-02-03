@@ -68,7 +68,12 @@
 
                             let key = stat_data.id_day;
 
-                            self.stats[key].planned = response.data[stat_data.date_ref].planned - (response.data[stat_data.date_ref].executed + response.data[stat_data.date_ref].error);
+                            let planned_calc = response.data[stat_data.date_ref].planned - (response.data[stat_data.date_ref].executed + response.data[stat_data.date_ref].error)
+                            if(planned_calc < 0){
+                                planned_calc = 0;
+                            }
+
+                            self.stats[key].planned = planned_calc;
                             self.stats[key].executed = response.data[stat_data.date_ref].executed;
                             self.stats[key].withErrors = response.data[stat_data.date_ref].error;
                         }

@@ -42,7 +42,12 @@
 
                         let day_stat = response.data[moment().format("YYYY-MM-DD")];
 
-                        self.planned = day_stat.planned -( day_stat.succesfull + day_stat.error );
+                        let planned_calc = day_stat.planned -( day_stat.succesfull + day_stat.error );
+                        if(planned_calc < 0){
+                            planned_calc = 0;
+                        }
+
+                        self.planned = planned_calc;
                         self.executed = day_stat.succesfull;
                         self.withErrors = day_stat.error;
                     }
