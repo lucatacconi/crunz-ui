@@ -289,7 +289,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     $lifetime_to = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[1] ));
                 }
 
-                if(empty($from)){
+                if(empty($lifetime_from)){
                     $delimiter = '#';
                     $startTag = '->from(';
                     $endTag = ')';
@@ -304,7 +304,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }
                 }
 
-                if(!empty($to)){
+                if(empty($lifetime_to)){
                     $delimiter = '#';
                     $startTag = '->to(';
                     $endTag = ')';
