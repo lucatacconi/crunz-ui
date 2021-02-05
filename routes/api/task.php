@@ -500,54 +500,73 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 }
 
                 //Next run calculation
-                if(!empty($row["lifetime_from"]) || !empty($row["lifetime_to"])){
+                if(empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
+                    $next_run = $cron->getNextRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
+                }else if(!empty($row["lifetime_to"]) && $row["lifetime_to"] < $date_ref){
+                    $next_run = '';
+                }else{
 
-                    if($row["lifetime_to"] < $date_ref){
-                        $next_run = '';
-                    }else{
-                        $nincrement = 0;
-                        $next_run = '';
+                    $nincrement = 0;
+                    $next_run = '';
 
-                        while($nincrement < 1000){ //Use the same hard limit of cron-expression library
-                            $calc_run = $cron->getNextRunDate($date_ref, $nincrement, true)->format('Y-m-d H:i:s');
+                    while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+                        $calc_run = $cron->getNextRunDate($date_ref, $nincrement, true)->format('Y-m-d H:i:s');
 
+                        if(!empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
+                            if($calc_run <= $row["lifetime_to"]  ){
+                                $next_run = $calc_run;
+                                break;
+                            }
+                        }else if(empty($row["lifetime_from"]) && !empty($row["lifetime_to"])){
+                            if($calc_run <= $row["lifetime_to"]  ){
+                                $next_run = $calc_run;
+                                break;
+                            }
+                        }else if(!empty($row["lifetime_from"]) && !empty($row["lifetime_to"])){
                             if($calc_run >= $row["lifetime_from"] && $calc_run <= $row["lifetime_to"]  ){
                                 $next_run = $calc_run;
                                 break;
                             }
-
-                            $nincrement++;
                         }
-                    }
 
-                }else{
-                    $next_run = $cron->getNextRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
+                        $nincrement++;
+                    }
                 }
 
                 $row["next_run"] = $next_run;
 
                 //Calculeted but not necessarily executed
-                if(!empty($row["lifetime_from"]) || !empty($row["lifetime_to"])){
+                if(empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
+                    $calculeted_last_run = $cron->getPreviousRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
+                }else if(!empty($row["lifetime_from"]) && $row["lifetime_from"] > $date_ref){
+                    $calculeted_last_run = '';
+                }else{
 
-                    if($row["lifetime_from"] > $date_ref){
-                        $calculeted_last_run = '';
-                    }else{
-                        $nincrement = 0;
-                        $calculeted_last_run = '';
+                    $nincrement = 0;
+                    $calculeted_last_run = '';
 
-                        while($nincrement < 1000){ //Use the same hard limit of cron-expression library
-                            $calc_run = $cron->getPreviousRunDate($date_ref, $nincrement, true)->format('Y-m-d H:i:s');
+                    while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+                        $calc_run = $cron->getPreviousRunDate($date_ref, $nincrement, true)->format('Y-m-d H:i:s');
 
+                        if(!empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
+                            if($calc_run >= $row["lifetime_from"] ){
+                                $calculeted_last_run = $calc_run;
+                                break;
+                            }
+                        }else if(empty($row["lifetime_from"]) && !empty($row["lifetime_to"])){
+                            if($calc_run <= $row["lifetime_to"]  ){
+                                $calculeted_last_run = $calc_run;
+                                break;
+                            }
+                        }else if(!empty($row["lifetime_from"]) && !empty($row["lifetime_to"])){
                             if($calc_run >= $row["lifetime_from"] && $calc_run <= $row["lifetime_to"]  ){
                                 $calculeted_last_run = $calc_run;
                                 break;
                             }
-
-                            $nincrement++;
                         }
+
+                        $nincrement++;
                     }
-                }else{
-                    $calculeted_last_run = $cron->getPreviousRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
                 }
 
                 $row["calculeted_last_run"] = $calculeted_last_run;
