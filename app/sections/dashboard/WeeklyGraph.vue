@@ -21,7 +21,9 @@
                 graphDaysLabel: [],
                 graphPlanned: [],
                 graphExecuted: [],
-                graphWhitErrors: []
+                graphWhitErrors: [],
+                graphExecutedNotPlanned: [],
+                graphErrorsNotPlanned: [],
             }
         },
 
@@ -44,7 +46,9 @@
                         date_ref: day_focus_calc.format("YYYY-MM-DD"),
                         planned: 0,
                         executed: 0,
-                        with_errors: 0
+                        with_errors: 0,
+                        executed_not_planned: 0,
+                        errors_not_planned: 0
                     }
 
                     day_label = day_focus_calc.format("ddd MM-DD");
@@ -65,17 +69,14 @@
                     if(response.data.length != 0){
 
                         for (let  stat_data of self.stats) {
-
                             let key = stat_data.id_day;
-
-                            let planned_calc = response.data[stat_data.date_ref].planned - (response.data[stat_data.date_ref].executed + response.data[stat_data.date_ref].error)
-                            if(planned_calc < 0){
-                                planned_calc = 0;
-                            }
+                            let planned_calc = response.data[stat_data.date_ref].planned - (response.data[stat_data.date_ref].succesfull + response.data[stat_data.date_ref].error)
 
                             self.stats[key].planned = planned_calc;
-                            self.stats[key].executed = response.data[stat_data.date_ref].executed;
-                            self.stats[key].withErrors = response.data[stat_data.date_ref].error;
+                            self.stats[key].executed = response.data[stat_data.date_ref].succesfull;
+                            self.stats[key].with_errors = response.data[stat_data.date_ref].error;
+                            self.stats[key].executed_not_planned = response.data[stat_data.date_ref].succesfull_not_planned;
+                            self.stats[key].errors_not_planned = response.data[stat_data.date_ref].error_not_planned;
                         }
                     }
 
@@ -83,6 +84,8 @@
                         self.graphPlanned.push(self.stats[key].planned);
                         self.graphExecuted.push(self.stats[key].executed);
                         self.graphWhitErrors.push(self.stats[key].with_errors);
+                        self.graphExecutedNotPlanned.push(self.stats[key].executed_not_planned);
+                        self.graphErrorsNotPlanned.push(self.stats[key].errors_not_planned);
                     }
 
                     var config_graph_weekly = {
@@ -90,28 +93,44 @@
                         data: {
                             labels: self.graphDaysLabel,
 
-                            datasets: [{
-                                label: 'Planned',
-                                backgroundColor: "#6DCEE8",
-                                borderColor: "#9199FE",
-                                borderWidth: 1,
-                                stack: 'Stack 0',
-                                data: self.graphPlanned
-                            }, {
-                                label: 'Executed',
-                                backgroundColor: "#A7E683",
-                                borderColor: "#5C9476",
-                                borderWidth: 1,
-                                stack: 'Stack 0',
-                                data: self.graphExecuted
-                            }, {
-                                label: 'With errors',
-                                backgroundColor: "#FFA182",
-                                borderColor: "#FF5074",
-                                borderWidth: 1,
-                                stack: 'Stack 0',
-                                data: self.graphWhitErrors
-                            }]
+                            datasets: [
+                                {
+                                    label: 'Planned',
+                                    backgroundColor: "#6DCEE8",
+                                    borderColor: "#9199FE",
+                                    borderWidth: 1,
+                                    stack: 'Stack 0',
+                                    data: self.graphPlanned
+                                }, {
+                                    label: 'Executed',
+                                    backgroundColor: "#A7E683",
+                                    borderColor: "#5C9476",
+                                    borderWidth: 1,
+                                    stack: 'Stack 0',
+                                    data: self.graphExecuted
+                                }, {
+                                    label: 'With errors',
+                                    backgroundColor: "#FFA182",
+                                    borderColor: "#FF5074",
+                                    borderWidth: 1,
+                                    stack: 'Stack 0',
+                                    data: self.graphWhitErrors
+                                }, {
+                                    label: 'Executed not planned',
+                                    backgroundColor: "#FFD149",
+                                    borderColor: "#FF9D00",
+                                    borderWidth: 1,
+                                    stack: 'Stack 0',
+                                    data: self.graphExecutedNotPlanned
+                                }, {
+                                    label: 'Error in not planned',
+                                    backgroundColor: "#EA9EFF",
+                                    borderColor: "#D84FFF",
+                                    borderWidth: 1,
+                                    stack: 'Stack 0',
+                                    data: self.graphErrorsNotPlanned
+                                }
+                            ]
                         },
                         options: {
                             responsive: true,
