@@ -3,7 +3,7 @@
         <v-navigation-drawer
             v-model="drawer"
             app
-            mobile-breakpoint="0"
+            mobile-breakpoint="sm"
         >
             <v-list dense>
                 <template v-for="navItem in navMap">
