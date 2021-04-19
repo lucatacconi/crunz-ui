@@ -83,6 +83,10 @@
                                                     <v-list-item-icon><v-icon small>fa fa-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
                                                 </v-list-item>
+                                                <v-list-item @click="archiveItem(item, i)">
+                                                    <v-list-item-icon><v-icon small color="red">fas fa-archive</v-icon></v-list-item-icon>
+                                                    <v-list-item-title > <span class="red--text">Archive task</span> </v-list-item-title>
+                                                </v-list-item>
                                                 <v-list-item @click="deleteItem(item, i)">
                                                     <v-list-item-icon><v-icon small color="red">fa fa-trash</v-icon></v-list-item-icon>
                                                     <v-list-item-title > <span class="red--text">Delete task</span> </v-list-item-title>
@@ -336,6 +340,43 @@ module.exports = {
             if(typeof result !== 'undefined' && result){
                 this.readData();
             }
+        },
+
+        archiveItem: function (rowdata) {
+            var self = this;
+            Swal.fire({
+                title: 'Archive task',
+                text: "Are you sure you want to archive task? The task file will be renamed and the task will no longer be visible in the dashboard.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f86c6b',
+                cancelButtonColor: '#20a8d8',
+                confirmButtonText: 'Archive',
+                cancelButtonText: 'Back'
+            }).then( function (result) {
+                if (result.value) {
+                    var params = {
+                        "task_path": rowdata.task_path
+                    }
+                    Utils.apiCall("post", "/task/archive",params)
+                    .then(function (response) {
+                        if(response.data.result){
+                            Swal.fire({
+                                title: 'Task archived',
+                                text: response.data.result_msg,
+                                type: 'success'
+                            })
+                            self.readData();
+                        }else{
+                            Swal.fire({
+                                title: 'ERROR',
+                                text: response.data.result_msg,
+                                type: 'error'
+                            })
+                        }
+                    });
+                }
+            });
         },
 
         deleteItem: function (rowdata) {
