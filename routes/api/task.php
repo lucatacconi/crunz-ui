@@ -1474,4 +1474,96 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         return $response->withStatus(200)
                         ->withHeader("Content-Type", "application/json");
     });
+
+
+    $group->post('/archive', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty($crunz_config["timezone"])) throw new Exception("ERROR - Wrong timezone configuration");
+
+        date_default_timezone_set($crunz_config["timezone"]);
+
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        $TASK_SUFFIX = $crunz_config["suffix"];
+
+        if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
+
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
+        }else{
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
+        }
+
+        if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
+        if(!is_writable($LOGS_DIR)) throw new Exception('ERROR - Logs directory not writable');
+
+
+        $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
+
+        if(empty($params["TASK_PATH"])) throw new Exception("ERROR - No task file to archive submitted");
+
+        //File compliance check
+        $path_check = str_replace(".php", '', $params["TASK_PATH"]);
+
+        if(
+            strpos($path_check, '.') !== false ||
+            substr($params["TASK_PATH"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ||
+            strpos($path_check, $TASKS_DIR === false)
+        ){
+            throw new Exception("ERROR - Task path out of range");
+        }
+
+        $data["path"] = $params["TASK_PATH"];
+        $file_to_archive = $base_tasks_path."/".ltrim($params["TASK_PATH"],"/");
+
+        try {
+
+            if(!file_exists($file_to_archive)) throw new Exception('ERROR - File not present');
+
+            if(!is_writable($file_to_archive)) throw new Exception('ERROR - File not writable');
+
+            $out = rename($file_to_archive, str_replace(".php", ".arch", $file_to_archive));
+            if(!$out){
+                throw new Exception('ERROR - Archive error');
+            }
+
+            $data["result"] = true;
+            $data["result_msg"] = '';
+
+        } catch(Exception $e) {
+            $data["result"] = false;
+            $data["result_msg"] = $e->getMessage();
+        }
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
 });
