@@ -1,19 +1,19 @@
 
-#Ingore all log but conserve directory structure
+#Ignore all log but conserve directory structure
 var/logs/*
 !var/logs/.htaccess
 
 
-#Ingore all tasks execpt example task and htaccess
+#Ignore all tasks execpt example task and htaccess
 tasks/*
 !tasks/.htaccess
 !tasks/testTasks.php
 !tasks/testAliveTasks.php
 
-# Ingore all logs files everywhere
+# Ignore all logs files everywhere
 *.log
 
-# Ingore all zipped files
+# Ignore all zipped files
 *.7z
 *.dmg
 *.gz
@@ -23,9 +23,12 @@ tasks/*
 *.tar
 *.zip
 
-# Ingore all lib e vendor file
+# Ignore all lib e vendor file
 /vendor/*
 composer.lock
 
-## Ingore all crunz configuration
+# Ignore all crunz configuration
 crunz.yml
+
+#Ignore IDEs' configuration directory
+.vscode
