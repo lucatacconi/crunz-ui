@@ -16,12 +16,12 @@ $task = $schedule->run(function() {
         curl_setopt($ch, CURLOPT_URL, 'https://checkip.amazonaws.com');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        $ip = curl_exec($ch);
-        $ip = str_replace([chr(10), chr(13)], '', $ip);
+        $ip_ext = curl_exec($ch);
+        $ip_ext = str_replace([chr(10), chr(13)], '', $ip_ext);
         curl_close($ch);
 
-
-        $aRESULT["DATA"] = "Hi, I'm Crunz-ui, I'm alive. My IP is " .$ip. " - ".date("Y-m-d H:i:s");
+        $ip = $_SERVER['SERVER_ADDR'];
+        $aRESULT["DATA"] = "Hi, I'm Crunz-ui, I'm alive. My IP is " .$ip. ". My external IP is " .$ip_ext. " - ".date("Y-m-d H:i:s");
 
         $jRESULT = json_encode($aRESULT);
 
