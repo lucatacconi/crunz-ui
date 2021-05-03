@@ -86,6 +86,25 @@
                 "color": false,
                 "class": false
             }
+        },
+
+        {
+            "title": "Execution errors occurred",
+            "subtitle": "List of errors that occurred",
+            "allowed":["admin","user"],
+            "visible": true,
+
+            "action":{
+                "path": "/errorOccured/ErrorOccured",
+                "component": "../../app/sections/errorOccured/ErrorOccured.vue"
+            },
+
+            "layout":{
+                "icon": "mdi-alert-outline",
+                "disabled": false,
+                "color": "false",
+                "class": "red lighten-3"
+            }
         }
     ]
 }
