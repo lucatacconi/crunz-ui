@@ -185,7 +185,6 @@ module.exports = {
             showUploadModal: false,
             showEditModal: false,
             showLogModal: false,
-            showEditModal: false,
             headers: [
                 {
                     text: 'Actions',
