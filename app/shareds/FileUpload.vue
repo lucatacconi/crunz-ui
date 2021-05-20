@@ -69,7 +69,7 @@ module.exports = {
             formData:{
                 file:null,
                 path:null,
-                rewrite:true
+                rewrite:false
             },
             modalTitle:"File upload"
         }
