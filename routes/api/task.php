@@ -1475,7 +1475,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-
     $group->post('/archive', function (Request $request, Response $response, array $args) {
 
         $data = [];
@@ -1561,6 +1560,138 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             $data["result"] = false;
             $data["result_msg"] = $e->getMessage();
         }
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
+    $group->get('/exec-history', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty($crunz_config["timezone"])) throw new Exception("ERROR - Wrong timezone configuration");
+
+        date_default_timezone_set($crunz_config["timezone"]);
+
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        $TASK_SUFFIX = $crunz_config["suffix"];
+
+        if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
+
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
+        }else{
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
+        }
+
+
+        $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
+
+        $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
+        $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
+
+
+        $quotedSuffix = \preg_quote($TASK_SUFFIX, '/');
+        $regexIterator = new \RegexIterator( $recursiveIterator, "/^.+{$quotedSuffix}$/i", \RecursiveRegexIterator::GET_MATCH );
+
+        $files = \array_map(
+            static function (array $file) {
+                return new \SplFileInfo(\reset($file));
+            },
+            \iterator_to_array($regexIterator)
+        );
+
+
+        $aTASKs = [];
+        $task_counter = 0;
+        foreach ($files as $taskFile) {
+
+            $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
+            $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content_orig);
+
+            if(
+                strpos($file_content, 'use Crunz\Schedule;') === false ||
+                strpos($file_content, '= new Schedule()') === false ||
+                strpos($file_content, '->run(') === false ||
+                strpos($file_content, 'return $schedule;') === false
+            ){
+                continue;
+            }
+
+            $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
+            if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                //Syntax error in file
+                continue;
+            }
+
+            unset($schedule);
+            require $taskFile->getRealPath();
+            if (empty($schedule) || !$schedule instanceof Schedule) {
+                continue;
+            }
+
+            $aEVENTs = $schedule->events();
+
+
+            $event_file_id = 0;
+            foreach ($aEVENTs as $oEVENT) {
+
+                $row = [];
+                $task_counter++;
+                $event_file_id++;
+
+
+
+                // $row["filename"] = $taskFile->getFilename();
+                // $row["real_path"] = $taskFile->getRealPath();
+                // $row["subdir"] = str_replace( array( $TASKS_DIR, $row["filename"]),'',$row["real_path"]);
+                // $row["task_path"] = str_replace($TASKS_DIR, '', $row["real_path"]);
+
+
+
+                $row["event_id"] = $oEVENT->getId();
+                // $row["event_launch_id"] = $task_counter;
+                // $row["event_file_id"] = $event_file_id;
+                $row["task_description"] = $oEVENT->description;
+                $row["expression"] = $row["expression_orig"] = $oEVENT->getExpression();
+                $row["event_unique_key"] = md5($row["task_path"] . $row["task_description"] . $row["expression"]);
+
+
+
+
+                $aTASKs[$row["event_unique_key"]] = $row;
+            }
+        }
+
+
+
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
