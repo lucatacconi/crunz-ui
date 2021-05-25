@@ -17,7 +17,7 @@
 
         <v-card class="mb-16">
             <v-card-title >
-                Execution error occured list
+                Tasks' execution outcome list
                 <v-spacer></v-spacer>
                 <v-text-field
                     v-model="search"

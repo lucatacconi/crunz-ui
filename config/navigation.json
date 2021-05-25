@@ -89,21 +89,21 @@
         },
 
         {
-            "title": "Execution errors occurred",
-            "subtitle": "List of errors that occurred",
+            "title": "Tasks' execution list",
+            "subtitle": "Executions result",
             "allowed":["admin","user"],
             "visible": true,
 
             "action":{
-                "path": "/errorOccured/ErrorOccured",
-                "component": "../../app/sections/errorOccured/ErrorOccured.vue"
+                "path": "/executionHistory/ExecutionHistory",
+                "component": "../../app/sections/executionHistory/ExecutionHistory.vue"
             },
 
             "layout":{
-                "icon": "mdi-alert-outline",
+                "icon": "mdi-clipboard-list-outline",
                 "disabled": false,
-                "color": "false",
-                "class": "red lighten-3"
+                "color": false,
+                "class": false
             }
         }
     ]
