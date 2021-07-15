@@ -33,6 +33,7 @@
                     prepend-icon=""
                     hide-details
                     append-icon="mdi-folder"
+                    :multiple="multipleUpload"
                     v-model="formData.file"
                 ></v-file-input>
                 <v-layout row wrap>
@@ -71,7 +72,8 @@ module.exports = {
                 path:null,
                 rewrite:false
             },
-            modalTitle:"File upload"
+            modalTitle:"File upload",
+            multipleUpload:true
         }
     },
     methods: {
@@ -81,46 +83,55 @@ module.exports = {
         },
         uploadFile:function(){
             var self=this
-            if(this.formData.file!=null&&this.formData.file.type=="application/x-php"){
 
-                var formData = new FormData();
-                formData.append("task_upload", this.formData.file);
-                formData.append("task_destination_path", this.formData.path);
-                formData.append("can_rewrite", this.formData.rewrite ? 'Y' : 'N');
-
-                Utils.fileUpload("/task/upload", formData)
-                .then(function (response) {
-                    if(response.data.result){
-                        Swal.fire({
-                            title: 'Task uploaded',
-                            text: response.data.result_msg,
-                            type: 'success',
-                            onClose: () => {
-                                self.closeModal(true)
-                            }
-                        })
-                    }else{
-                        Swal.fire({
-                            title: 'ERROR',
-                            text: response.data.result_msg,
-                            type: 'error'
-                        })
-                    }
-                });
-
-            }else{
-                var txt=""
-                if(this.formData.file==null){
-                    txt+="<br>File not selected"
-                }else if(this.formData.file.type!='application/x-php'){
-                    txt+="<br>Type file wrong"
+            var error=''
+            if(!this.multipleUpload){
+                if(this.formData.file==null||this.formData.file.type!="application/x-php"){
+                    if(this.formData.file==null)error+='<br>File not selected'
+                    if(this.formData.file.type!="application/x-php")error+='<br>Type file wrong'
                 }
+            }else{
+                for(var i=0;i<this.formData.file.length;i++){
+                    if(this.formData.file[i]==null||this.formData.file[i].type!="application/x-php"){
+                        if(this.formData.file[i]==null)error+='<br>File not selected'
+                        if(this.formData.file[i].type!="application/x-php")error+='<br>Type file wrong'
+                        break
+                    }
+                }
+            }
+            if(error!=''){
                 Swal.fire({
                     title:"Upload error",
-                    html:txt,
+                    html:error,
                     type:"error"
                 })
+                return
             }
+
+            var formData = new FormData();
+            formData.append("task_upload", this.formData.file);
+            formData.append("task_destination_path", this.formData.path);
+            formData.append("can_rewrite", this.formData.rewrite ? 'Y' : 'N');
+
+            Utils.fileUpload("/task/upload", formData)
+            .then(function (response) {
+                if(response.data.result){
+                    Swal.fire({
+                        title: 'Task uploaded',
+                        text: response.data.result_msg,
+                        type: 'success',
+                        onClose: () => {
+                            self.closeModal(true)
+                        }
+                    })
+                }else{
+                    Swal.fire({
+                        title: 'ERROR',
+                        text: response.data.result_msg,
+                        type: 'error'
+                    })
+                }
+            });
         }
     },
     created:function() {
