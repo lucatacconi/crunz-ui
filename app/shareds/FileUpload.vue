@@ -33,7 +33,7 @@
                     prepend-icon=""
                     hide-details
                     append-icon="mdi-folder"
-                    :multiple="multipleUpload"
+                    :multiple="formData.multipleUpload"
                     v-model="formData.file"
                 ></v-file-input>
                 <v-layout row wrap>
@@ -70,10 +70,10 @@ module.exports = {
             formData:{
                 file:null,
                 path:null,
-                rewrite:false
+                rewrite:false,
+                multipleUpload:true
             },
-            modalTitle:"File upload",
-            multipleUpload:true
+            modalTitle:"File upload"
         }
     },
     methods: {
@@ -85,7 +85,7 @@ module.exports = {
             var self=this
 
             var error=''
-            if(!this.multipleUpload){
+            if(!this.formData.multipleUpload){
                 if(this.formData.file==null||this.formData.file.type!="application/x-php"){
                     if(this.formData.file==null)error+='<br>File not selected'
                     if(this.formData.file.type!="application/x-php")error+='<br>Type file wrong'
@@ -112,6 +112,8 @@ module.exports = {
             formData.append("task_upload", this.formData.file);
             formData.append("task_destination_path", this.formData.path);
             formData.append("can_rewrite", this.formData.rewrite ? 'Y' : 'N');
+            formData.append("multiple_upload", this.formData.multipleUpload ? 'Y' : 'N');
+
 
             Utils.fileUpload("/task/upload", formData)
             .then(function (response) {
