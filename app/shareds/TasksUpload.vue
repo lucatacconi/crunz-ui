@@ -73,7 +73,7 @@ module.exports = {
                 rewrite:false,
                 multipleUpload:true
             },
-            modalTitle:"File upload"
+            modalTitle:"Tasks upload"
         }
     },
     methods: {

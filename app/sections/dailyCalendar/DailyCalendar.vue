@@ -16,10 +16,10 @@
         ></task-detail>
 
         <!-- Upload file modal -->
-        <task-upload
+        <tasks-upload
             v-if="showUploadModal"
             @on-close-modal="closeUploadModal($event)"
-        ></task-upload>
+        ></tasks-upload>
 
         <!-- Log modal -->
         <task-log
@@ -250,7 +250,7 @@ module.exports = {
 
     components:{
         'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue' + '?v=' + new Date().getTime()),
-        'task-upload': httpVueLoader('../../shareds/FileUpload.vue' + '?v=' + new Date().getTime()),
+        'tasks-upload': httpVueLoader('../../shareds/TasksUpload.vue' + '?v=' + new Date().getTime()),
         'task-detail': httpVueLoader('../../shareds/TaskDetail.vue' + '?v=' + new Date().getTime()),
         'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime()),
         'new-task': httpVueLoader('../../shareds/NewTask.vue' + '?v=' + new Date().getTime())
