@@ -1,5 +1,5 @@
 <template>
-    <v-dialog :value="true" persistent max-width="800px" @on-close="closeModal()">
+    <v-dialog :value="true" persistent max-width="1185px" height="500px" @on-close="closeModal()">
         <v-card>
             <v-toolbar
                 dense
@@ -250,10 +250,10 @@ module.exports = {
 
 <style>
     #crunz-log {
-        height: 300px;
+        height: 500px;
     }
     #custom-log {
-        height: 300px;
+        height: 500px;
     }
 
 </style>

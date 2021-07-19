@@ -325,7 +325,7 @@ module.exports = {
 
 <style>
     #task-edit {
-        height: 300px;
+        height: 500px;
     }
 
 </style>
