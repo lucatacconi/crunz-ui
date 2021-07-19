@@ -1266,6 +1266,14 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
         $paramsBody = array_change_key_case($request->getParsedBody(), CASE_UPPER);
 
+
+        print_r($params);
+        print_r($paramsBody);
+        print_r($_FILES);
+
+
+        die("-----");
+
         $params = array_merge($params, $paramsBody);
 
         $app_configs = $this->get('configs')["app_configs"];

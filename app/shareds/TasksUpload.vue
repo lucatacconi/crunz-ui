@@ -108,9 +108,11 @@ module.exports = {
                 return
             }
 
+            console.log(JSON.stringify(this.formData.file));
+
             var formData = new FormData();
-            formData.append("task_upload", this.formData.file);
-            formData.append("task_destination_path", this.formData.path);
+            formData.append("tasks_upload", this.formData.file);
+            formData.append("tasks_destination_path", this.formData.path);
             formData.append("can_rewrite", this.formData.rewrite ? 'Y' : 'N');
             formData.append("multiple_upload", this.formData.multipleUpload ? 'Y' : 'N');
 
