@@ -85,16 +85,15 @@ module.exports = {
             var self=this
 
             var error=''
-            if(!this.formData.multipleUpload){
-                if(this.formData.files==null||this.formData.files.type!="application/x-php"){
-                    if(this.formData.files==null)error+='<br>File not selected'
-                    if(this.formData.files.type!="application/x-php")error+='<br>Type files wrong'
-                }
+            if(this.formData.files==null){
+                error+='<br>File not selected'
+            }else if(this.formData.files.length==0){
+                error+='<br>File not selected'
             }else{
                 for(var i=0;i<this.formData.files.length;i++){
                     if(this.formData.files[i]==null||this.formData.files[i].type!="application/x-php"){
-                        if(this.formData.files[i]==null)error+='<br>File not selected'
-                        if(this.formData.files[i].type!="application/x-php")error+='<br>Type file wrong'
+                        if(this.formData.files[i]==null) error+='<br>File not selected'
+                        if(this.formData.files[i].type!="application/x-php") error+='<br>Type file wrong'
                         break
                     }
                 }
@@ -109,12 +108,8 @@ module.exports = {
             }
 
             var formData = new FormData();
-            if(!this.formData.multipleUpload){
-                formData.append("tasks_upload_0", this.formData.file);
-            }else{
-                for(var i=0;i<this.formData.file.length;i++){
-                    formData.append("tasks_upload_"+Number(i+1), this.formData.file[i]);
-                }
+            for(var i=0;i<this.formData.files.length;i++){
+                formData.append("tasks_upload_"+Number(i+1), this.formData.files[i]);
             }
             formData.append("tasks_destination_path", this.formData.path);
             formData.append("can_rewrite", this.formData.rewrite ? 'Y' : 'N');
