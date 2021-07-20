@@ -108,10 +108,14 @@ module.exports = {
                 return
             }
 
-            console.log(JSON.stringify(this.formData.file));
-
             var formData = new FormData();
-            formData.append("tasks_upload", this.formData.file);
+            if(!this.formData.multipleUpload){
+                formData.append("tasks_upload_0", this.formData.file);
+            }else{
+                for(var i=0;i<this.formData.file.length;i++){
+                    formData.append("tasks_upload_"+Number(i+1), this.formData.file[i]);
+                }
+            }
             formData.append("tasks_destination_path", this.formData.path);
             formData.append("can_rewrite", this.formData.rewrite ? 'Y' : 'N');
             formData.append("multiple_upload", this.formData.multipleUpload ? 'Y' : 'N');
