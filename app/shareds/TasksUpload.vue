@@ -34,7 +34,7 @@
                     hide-details
                     append-icon="mdi-folder"
                     :multiple="formData.multipleUpload"
-                    v-model="formData.file"
+                    v-model="formData.files"
                 ></v-file-input>
                 <v-layout row wrap>
                     <v-flex xs10 class="pl-3">
@@ -68,7 +68,7 @@ module.exports = {
     data:function(){
         return{
             formData:{
-                file:null,
+                files: [],
                 path:null,
                 rewrite:false,
                 multipleUpload:true
@@ -86,15 +86,15 @@ module.exports = {
 
             var error=''
             if(!this.formData.multipleUpload){
-                if(this.formData.file==null||this.formData.file.type!="application/x-php"){
-                    if(this.formData.file==null)error+='<br>File not selected'
-                    if(this.formData.file.type!="application/x-php")error+='<br>Type file wrong'
+                if(this.formData.files==null||this.formData.files.type!="application/x-php"){
+                    if(this.formData.files==null)error+='<br>File not selected'
+                    if(this.formData.files.type!="application/x-php")error+='<br>Type files wrong'
                 }
             }else{
-                for(var i=0;i<this.formData.file.length;i++){
-                    if(this.formData.file[i]==null||this.formData.file[i].type!="application/x-php"){
-                        if(this.formData.file[i]==null)error+='<br>File not selected'
-                        if(this.formData.file[i].type!="application/x-php")error+='<br>Type file wrong'
+                for(var i=0;i<this.formData.files.length;i++){
+                    if(this.formData.files[i]==null||this.formData.files[i].type!="application/x-php"){
+                        if(this.formData.files[i]==null)error+='<br>File not selected'
+                        if(this.formData.files[i].type!="application/x-php")error+='<br>Type file wrong'
                         break
                     }
                 }
