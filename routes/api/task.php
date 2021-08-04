@@ -1266,14 +1266,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
         $paramsBody = array_change_key_case($request->getParsedBody(), CASE_UPPER);
 
-
-        print_r($params);
-        print_r($paramsBody);
-        print_r($_FILES);
-
-
-        die("-----");
-
         $params = array_merge($params, $paramsBody);
 
         $app_configs = $this->get('configs')["app_configs"];
@@ -1329,64 +1321,104 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
 
         //Check destination
-        if( empty($params["TASK_DESTINATION_PATH"]) ) throw new Exception("ERROR - No task path destination submitted");
+        if( empty($params["TASKS_DESTINATION_PATH"]) ) throw new Exception("ERROR - No task path destination submitted");
 
-        if(trim($params["TASK_DESTINATION_PATH"],"/") == ""){
+        if(trim($params["TASKS_DESTINATION_PATH"],"/") == ""){
             $destination_path = $base_tasks_path;
         }else{
-            $destination_path = $base_tasks_path . "/".trim($params["TASK_DESTINATION_PATH"],"/");
+            $destination_path = $base_tasks_path . "/".trim($params["TASKS_DESTINATION_PATH"],"/");
         }
 
         if(!is_dir($destination_path)) throw new Exception('ERROR - Destination path not exist');
         if(!is_writable($destination_path)) throw new Exception('ERROR - File not writable');
 
+        // print_r($params);
+        // print_r($_FILES);
+
+        // Array (
+        //     [TASKS_DESTINATION_PATH] => /
+        //     [CAN_REWRITE] => N
+        //     [MULTIPLE_UPLOAD] => Y )
+        // Array (
+        //     [task_upload_1] =>
+        //         Array (
+        //             [name] => test1Tasks.php
+        //             [type] => application/x-php
+        //             [tmp_name] => /tmp/phpcDGFQh
+        //             [error] => 0
+        //             [size] => 3082
+        //         )
+        //     [task_upload_2] => Array (
+        //         [name] => test2Tasks.php
+        //         [type] => application/x-php
+        //         [tmp_name] => /tmp/phpAL0jFh
+        //         [error] => 0
+        //         [size] => 3082
+        //     )
+        // )
+
         //Check task file
         if(!empty($_FILES)){
             $_FILES = array_change_key_case($_FILES, CASE_UPPER);
+        }else{
+            throw new Exception("ERROR - No task file name submitted");
         }
 
-        if(
-            empty($_FILES) ||
-            empty($_FILES["TASK_UPLOAD"]) ||
-            !is_uploaded_file($_FILES["TASK_UPLOAD"]["tmp_name"]) ||
-            $_FILES["TASK_UPLOAD"]["error"] > 0
-        ) throw new Exception("ERROR - No task file submitted or error uploading file");
+        //Check files upload or upload error
+        $empty_or_error = false;
 
-        if( empty($_FILES["TASK_UPLOAD"]["name"]) ) throw new Exception("ERROR - No task file name submitted");
+        foreach($_FILES as $file_key => $file_data){
 
-        if( substr($_FILES["TASK_UPLOAD"]["name"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ) throw new Exception("ERROR - Task file must end with '".$TASK_SUFFIX."'");
+            if( empty($file_data["name"]) ) throw new Exception("ERROR - No task file submitted or error uploading file");
+
+            $file_name = $file_data["name"];
+
+            if(
+                !is_uploaded_file($file_data["tmp_name"]) ||
+                $file_data["error"] > 0
+            ){
+                throw new Exception("ERROR - Error uploading file ($file_name)");
+            }
+
+            if( substr($file_data["name"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ) throw new Exception("ERROR - Task file must end with '".$TASK_SUFFIX."' ($file_name)");
+
+            $accepted_file_ext = ["php"];
+            $aFILENAME = explode('.', $file_data["name"]);
+            if(!in_array( strtolower( end ( $aFILENAME )),$accepted_file_ext)){
+                throw new Exception("ERROR - Wrong task file extension ($file_name)");
+            }
+
+            if( empty($file_data["size"]) ) throw new Exception("ERROR - Zero byte task file submitted ($file_name)");
+
+            if($can_rewrite != "Y"){
+                if (file_exists($destination_path."/".$file_data["name"])) throw new Exception("ERROR - Same task file in the same position fouded. Can't overwrite ($file_name)");
+            }
 
 
-        $accepted_file_ext = ["php"];
-        $aFILENAME = explode('.', $_FILES["TASK_UPLOAD"]["name"]);
-        if(!in_array( strtolower( end ( $aFILENAME )),$accepted_file_ext)){
-            throw new Exception("ERROR - Wrong task file extension");
+            //Check if file is a task file
+            $file_content = file_get_contents($file_data["tmp_name"], true);
+            $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content);
+
+            if(
+                strpos($file_content, 'use Crunz\Schedule;') === false ||
+                strpos($file_content, '= new Schedule()') === false ||
+                strpos($file_content, '->run(') === false
+            ){
+                throw new Exception("ERROR - Wrong task configuration in task file ($file_name)");
+            }
         }
 
-        if( empty($_FILES["TASK_UPLOAD"]["size"]) ) throw new Exception("ERROR - Zero byte task file submitted");
 
-        if($can_rewrite != "Y"){
-            if (file_exists($destination_path."/".$_FILES["TASK_UPLOAD"]["name"])) throw new Exception("ERROR - Same task file in the same position fouded. Can't overwrite");
+        //if I arrived here it means that there were no errors in the analysis of the files
+        foreach($_FILES as $file_key => $file_data){
+
+            $file_name = $file_data["name"];
+
+            if(!move_uploaded_file($file_data["tmp_name"], $destination_path."/".$file_data["name"])){
+                throw new Exception("ERROR - Error uploading task file ($file_name)");
+            }
         }
 
-
-        //Check if file is a task file
-        $file_content = file_get_contents($_FILES["TASK_UPLOAD"]["tmp_name"], true);
-        $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content);
-
-        if(
-            strpos($file_content, 'use Crunz\Schedule;') === false ||
-            strpos($file_content, '= new Schedule()') === false ||
-            strpos($file_content, '->run(') === false
-        ){
-            throw new Exception("ERROR - Wrong task configuration in task file");
-        }
-
-
-        //All check done.. Can upload task file
-        if(!move_uploaded_file($_FILES["TASK_UPLOAD"]["tmp_name"], $destination_path."/".$_FILES["TASK_UPLOAD"]["name"])){
-            throw new Exception("ERROR - Error uploading task file");
-        }
 
         $data["result"] = true;
         $data["result_msg"] = '';

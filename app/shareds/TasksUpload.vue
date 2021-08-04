@@ -86,14 +86,14 @@ module.exports = {
 
             var error=''
             if(this.formData.files==null){
-                error+='<br>File not selected'
+                error+='<br>Task file/s not selected'
             }else if(this.formData.files.length==0){
                 error+='<br>File not selected'
             }else{
                 for(var i=0;i<this.formData.files.length;i++){
                     if(this.formData.files[i]==null||this.formData.files[i].type!="application/x-php"){
-                        if(this.formData.files[i]==null) error+='<br>File not selected'
-                        if(this.formData.files[i].type!="application/x-php") error+='<br>Type file wrong'
+                        if(this.formData.files[i]==null) error+='<br>Task file/s not selected'
+                        if(this.formData.files[i].type!="application/x-php") error+='<br>Wrong task file format'
                         break
                     }
                 }
@@ -109,18 +109,17 @@ module.exports = {
 
             var formData = new FormData();
             for(var i=0;i<this.formData.files.length;i++){
-                formData.append("tasks_upload_"+Number(i+1), this.formData.files[i]);
+                formData.append("task_upload_"+Number(i+1), this.formData.files[i]);
             }
             formData.append("tasks_destination_path", this.formData.path);
             formData.append("can_rewrite", this.formData.rewrite ? 'Y' : 'N');
             formData.append("multiple_upload", this.formData.multipleUpload ? 'Y' : 'N');
 
-
             Utils.fileUpload("/task/upload", formData)
             .then(function (response) {
                 if(response.data.result){
                     Swal.fire({
-                        title: 'Task uploaded',
+                        title: 'Task/s uploaded',
                         text: response.data.result_msg,
                         type: 'success',
                         onClose: () => {
