@@ -215,7 +215,8 @@ module.exports = {
             }
 
             var apiParams = {
-                "event_unique_key": event_unique_key
+                "event_unique_key": event_unique_key,
+                "datetime_ref": self.rowdata.start
             }
 
             Utils.apiCall("get", "/task/exec-outcome", apiParams)
