@@ -1668,7 +1668,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             \iterator_to_array($regexIterator)
         );
 
-
         $aTASKs = [];
         $task_counter = 0;
         foreach ($files as $taskFile) {
@@ -1707,31 +1706,71 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $task_counter++;
                 $event_file_id++;
 
+                $row["event_launch_id"] = $task_counter;
 
-
-                // $row["filename"] = $taskFile->getFilename();
-                // $row["real_path"] = $taskFile->getRealPath();
-                // $row["subdir"] = str_replace( array( $TASKS_DIR, $row["filename"]),'',$row["real_path"]);
-                // $row["task_path"] = str_replace($TASKS_DIR, '', $row["real_path"]);
-
-
-
-                $row["event_id"] = $oEVENT->getId();
-                // $row["event_launch_id"] = $task_counter;
-                // $row["event_file_id"] = $event_file_id;
+                $row["filename"] = $taskFile->getFilename();
+                $row["real_path"] = $taskFile->getRealPath();
+                $row["subdir"] = str_replace( array( $TASKS_DIR, $row["filename"]),'',$row["real_path"]);
+                $row["task_path"] = str_replace($TASKS_DIR, '', $row["real_path"]);
                 $row["task_description"] = $oEVENT->description;
-                $row["expression"] = $row["expression_orig"] = $oEVENT->getExpression();
+                $row["expression"] = $oEVENT->getExpression();
+
                 $row["event_unique_key"] = md5($row["task_path"] . $row["task_description"] . $row["expression"]);
 
-
-
+                try {
+                    $row["expression_readable"] = CronTranslator::translate($row["expression"]);
+                } catch (Exception $e) {
+                    $row["expression_readable"] = "";
+                }
 
                 $aTASKs[$row["event_unique_key"]] = $row;
             }
         }
 
 
+        $aLOGNAME = glob($LOGS_DIR."/"."*.log");
 
+        if(!empty($aLOGNAME)){
+            usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
+
+            foreach ($aLOGNAME as $logname) {
+
+                $aLOGDETT =explode('_', str_replace($LOGS_DIR."/", "", $logname));
+
+                // Array
+                // (
+                //     [0] => 1615df171355437b20b027f598641c89
+                //     [1] => KO
+                //     [2] => 202108050114
+                //     [3] => 202108050114
+                //     [4] => SVIp.log
+                // )
+
+                if(!empty($aLOGDETT[0])) $event_unique_key = $aLOGDETT[0];
+                if(!empty($aLOGDETT[1])) $task_exec_outcome = $aLOGDETT[1];
+                if(!empty($aLOGDETT[2])) $datetime_start = $aLOGDETT[2];
+                if(!empty($aLOGDETT[3])) $datetime_end = $aLOGDETT[3];
+
+                $task_start = \DateTime::createFromFormat('YmdHi', $datetime_start);
+                $task_stop = \DateTime::createFromFormat('YmdHi', $datetime_end);
+                $interval = $task_start->diff($task_stop);
+                $task_duration = ($interval->format('%i') != 0 ? $interval->format('%i') : 1);
+
+
+                if(empty($aTASKs[$event_unique_key])){
+                    continue; //the task may have been deleted or archived
+                }
+
+                $row = $aTASKs[$event_unique_key];
+
+                $row["execution_datatime"] = $task_start->format('Y-m-d H:i:s');
+                $row["start"] = $datetime_start;
+                $row["duration"] = $task_duration;
+                $row["outcome"] = $task_exec_outcome;
+
+                $data[] = $row;
+            }
+        }
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)

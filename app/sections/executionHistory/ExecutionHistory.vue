@@ -31,13 +31,13 @@
 
             <v-data-table
                 :headers="headers"
-                :items="files"
+                :items="tasksExecutions"
                 :sort-by="headers"
                 :sort-desc="[false, true]"
                 :custom-sort="customSort"
                 :search="search"
             >
-                <template v-if="files.length!=0" v-slot:body="{ items }">
+                <template v-if="tasksExecutions.length!=0" v-slot:body="{ items }">
                     <tbody>
                         <tr v-for="(item,i) in items" :key="i">
                             <td>
@@ -64,24 +64,8 @@
                                     </v-menu>
                                 </div>
                             </td>
-                            <!-- <td class="text-center">
+                            <td class="text-center">
                                 {{ item.event_launch_id }}
-
-                                <template v-if="item.high_frequency == true">
-                                    <v-tooltip bottom>
-                                        <template v-slot:activator="{ on, attrs }">
-                                            <v-icon
-                                                small
-                                                color="orange"
-                                                v-bind="attrs"
-                                                v-on="on"
-                                            >
-                                                mdi-clock-fast
-                                            </v-icon>
-                                        </template>
-                                        <span>High frequency task</span>
-                                    </v-tooltip>
-                                </template>
                             </td>
                             <td>
                                 {{ item.task_path }}
@@ -93,39 +77,16 @@
                                 {{item.expression_readable}}
                             </td>
                             <td class="text-center">
-                                {{ item.next_run == "" ? "Expired" : moment(item.next_run).format('YY-MM-DD HH:mm') }}
+                                {{ moment(item.execution_datatime).format('YY-MM-DD HH:mm') }}
                             </td>
                             <td class="text-center">
-                                {{ item.last_run == "" ? "" : moment(item.last_run).format('YY-MM-DD HH:mm') }}
-
-                                <template v-if="item.last_run_actually_executed != true">
-                                    <v-tooltip bottom>
-                                        <template v-slot:activator="{ on, attrs }">
-                                            <v-icon
-                                                small
-                                                color="red"
-                                                v-bind="attrs"
-                                                v-on="on"
-                                            >
-                                                mdi-clock-alert-outline
-                                            </v-icon>
-                                        </template>
-                                        <span>The last scheduled task was not executed</span>
-                                    </v-tooltip>
-                                </template>
-                            </td>
-                            <td class="text-center">
-                                <span v-if="item.last_outcome != ''">
-                                    {{ item.last_duration == 0 ? "&lt;1" : item.last_duration }}
-                                    min.
-                                </span>
-                                <span v-else>--</span>
+                                {{ item.duration == 0 ? "&lt;1" : item.duration }} min.
                             </td>
                             <td class="text-center" >
-                                <v-icon v-if="item.last_outcome=='OK'" color="green darken-2" @click="openLogModal(item,i)" small>fas fa-folder-open</v-icon>
-                                <v-icon v-else-if="item.last_outcome=='KO'" color="red" @click="openLogModal(item,i)" small>fas fa-folder-open</v-icon>
+                                <v-icon v-if="item.outcome=='OK'" color="green darken-2" @click="openLogModal(item,i)" small>fas fa-folder-open</v-icon>
+                                <v-icon v-else-if="item.outcome=='KO'" color="red" @click="openLogModal(item,i)" small>fas fa-folder-open</v-icon>
                                 <span v-else>--</span>
-                            </td> -->
+                            </td>
                         </tr>
                     </tbody>
                 </template>
@@ -155,20 +116,19 @@ module.exports = {
                     value: '',
                     align: 'center'
                 },
-                // { text: 'Task num.', value: 'event_launch_id', align: 'center' },
-                // { text: 'Task', value: 'task_path' },
-                // { text: 'Description', value: 'task_description', sortable: false },
-                // { text: 'Execution', value: 'expression', sortable: false },
-                // { text: 'Next execution', value: 'next_run', align: 'center' },
-                // { text: 'Last execution', value: 'last_run', align: 'center' },
-                // { text: 'Last duration', value: 'last_duration', align: 'center' },
-                // { text: 'Last exec. outcome', value: 'last_outcome', align: 'center' },
+                { text: 'Task num.', value: 'event_launch_id', align: 'center' },
+                { text: 'Task', value: 'task_path' },
+                { text: 'Description', value: 'task_description', sortable: false },
+                { text: 'Execution', value: 'expression', sortable: false },
+                { text: 'Exec. date and time', value: 'execution_datatime', align: 'center' },
+                { text: 'Duration', value: 'duration', align: 'center' },
+                { text: 'Outcome', value: 'outcome', align: 'center' }
             ],
-            files: [],
+            tasksExecutions: [],
             editData: false,
             uploadData: false,
             logData: false,
-            message: 'No errors occured found on tasks.',
+            message: 'No tasks execution log found on server.',
             reloadIntervalObj: false,
             reloadTime: 60000
         }
@@ -179,13 +139,13 @@ module.exports = {
             var params = {
                 "return_task_cont": "Y"
             }
-            self.message = "Loading errors";
-            Utils.apiCall("get", "/task/",params, options)
+            self.message = "Loading execution log";
+            Utils.apiCall("get", "/task/exec-history",params, options)
             .then(function (response) {
                 if(response.data.length!=0){
-                    self.files = response.data;
+                    self.tasksExecutions = response.data;
                 }else{
-                    self.message = "No errors occured found on tasks."
+                    self.message = "No tasks execution log found on server."
                 }
             });
         },
@@ -258,6 +218,21 @@ module.exports = {
             this.showEditModal = false;
             if(typeof result !== 'undefined' && result){
                 this.readData();
+            }
+        },
+
+        scheduleReload: function () {
+            var self = this;
+            if(router.currentRoute.fullPath >= "/executionHistory/ExecutionHistory"){
+
+                var options = {
+                    showLoading: false
+                };
+
+                this.readData(options);
+                this.reloadIntervalObj = setTimeout(function(){
+                    self.scheduleReload();
+                }, self.reloadTime);
             }
         }
     },
