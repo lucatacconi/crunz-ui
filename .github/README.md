@@ -63,6 +63,7 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 It is advisable to use npm to keep the server time synchronized.
 
+There is no need to set a long time in PHP max_execution_time property: Crunz performs tasks as if they were run from the console. When running PHP from the command line the default setting is 0 therefore without time limits
 
 ## Installation and application setup
 
