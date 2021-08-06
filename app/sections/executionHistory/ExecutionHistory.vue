@@ -48,12 +48,12 @@
                                         </template>
                                         <v-list subheader dense>
                                             <v-subheader class="pl-4 blue-grey white--text font-weight-bold white">
-                                                Task Action Menu
+                                                Executed task Action Menu
                                             </v-subheader>
                                             <v-list-item-group color="primary">
-                                                <v-list-item @click="openLogModal(item, i)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
-                                                    <v-list-item-icon><v-icon small>fa fa-folder-open</v-icon></v-list-item-icon>
-                                                    <v-list-item-title>View last log</v-list-item-title>
+                                                <v-list-item @click="downloadTask(item,i)">
+                                                    <v-list-item-icon><v-icon small>fa-download </v-icon></v-list-item-icon>
+                                                    <v-list-item-title>Download task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="openEditModal(item, i)">
                                                     <v-list-item-icon><v-icon small>fa fa-edit</v-icon></v-list-item-icon>
