@@ -136,9 +136,7 @@ module.exports = {
     methods: {
         readData:function(options = {}){
             var self = this;
-            var params = {
-                "return_task_cont": "Y"
-            }
+            var params = {}
             self.message = "Loading execution log";
             Utils.apiCall("get", "/task/exec-history",params, options)
             .then(function (response) {
@@ -200,6 +198,59 @@ module.exports = {
                 }
             });
             return items;
+        },
+
+        downloadTask:function(rowdata){
+
+            var self = this;
+            var params = {
+                "return_task_cont": "Y",
+                "unique_id": rowdata.event_unique_key
+            }
+
+            Utils.apiCall("get", "/task/",params, {})
+            .then(function (response) {
+
+                error_dwl_msg = "Error downloading task content";
+
+                if(response.data.length!=0){
+                    task_detail = response.data[0];
+                    rowdata.task_content = task_detail.task_content
+
+                    if(rowdata.task_content != '' && rowdata.filename != ''){
+                        if(rowdata.task_content == ''){
+                            Swal.fire({
+                                title: 'Task content empty',
+                                text: "Task content is empty",
+                                type: 'error'
+                            })
+                            return;
+                        }
+                        if(rowdata.filename == ''){
+                            Swal.fire({
+                                title: 'Filename empty',
+                                text: "Filename is empty",
+                                type: 'error'
+                            })
+                            return;
+                        }
+                        var dec = atob(rowdata.task_content);
+                        Utils.downloadFile(dec,rowdata.filename);
+                    }else{
+                        Swal.fire({
+                            title: 'ERROR',
+                            text: error_dwl_msg,
+                            type: 'error'
+                        })
+                    }
+                }else{
+                    Swal.fire({
+                        title: 'ERROR',
+                        text: error_dwl_msg,
+                        type: 'error'
+                    })
+                }
+            });
         },
 
         openLogModal: function (rowdata) {
