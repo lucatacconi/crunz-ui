@@ -17,7 +17,7 @@ Crunz-ui updated stable release:
 * Larger log viewer and task editing screens to enhance user operations
 * More understandable and meaningful labels
 * Improvements in interface ergonomics
-* Several improvements and bugfixes on all the code
+* Several improvements and bug fixes on all the code
 
 ### v.2.0.0 (2021-01-26)
 
@@ -29,12 +29,12 @@ Crunz-ui updated stable release:
 * Introduction of the event unique id which allows to uniquely identify the single task to be performed, improving log production operations
 * More accurate analysis of tasks execution and reporting, in the Task Table section, of any scheduled but not executed tasks
 * New default task testAlive that can be activated and used to notify the server's IP on Internet twice a day via email
-* Several improvements and bugfixes on all the code
+* Several improvements and bug fixes on all the code
 
 ### v.1.0.0 (2020-04-11)
 
 Crunz-ui first stable release:
-* Integrate Crunz library and funtions
+* Integrate Crunz library and functions
 * Tabular, monthly or weekly interface to view the scheduled and executed tasks
 * Quick display of the execution result of the tasks that have been executed (Indicator icons easily show the result)
 * Upload, download, edit or delete tasks
