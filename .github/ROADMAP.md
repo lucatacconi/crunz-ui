@@ -1,25 +1,27 @@
 # Roadmap
 
-## Upcoming implementations
+## Upcoming/Desiderata implementations
 
+* In case of error, communication via email to the user who created the task or to specific configured users
+* the system should log the user who entered a task on the system
+* the system should log the user who manually run a task
 
 ## Release history
 
 ### v.2.6.1 (2021-08-26)
 
-Crunz-ui update stable release:
-<!-- * Slim 4 library integration. Crunz-ui version 1 used version 3 of the Slim library
-* Deploy of the new interface that allows loading of new tasks directly from the web interface through the embedded php editor
-* Advanced management of high-frequency tasks (HFT), tasks that are carried out many times per hour. Previous version of Crunz-ui interface failed to display HFT crashing dashboard, daily and monthly view monthly view
-* Environment Verification Panel Update. Additional controls and useful messages have been added
-* Introduction of the event unique id which allows to uniquely identify the single task to be performed, improving log production operations
-* More accurate analysis of tasks execution and reporting, in the Task Table section, of any scheduled but not executed tasks
-* New default task testAlive that can be activated and used to notify the server's IP on Internet twice a day via email
-* Several improvements and bugfixes on all the code -->
+Crunz-ui updated stable release:
+* Optimization of the task reading engine that now presents results faster and more efficiently
+* Enabled, in the monthly and week task display interfaces, the possibility of viewing the execution logs also of executions prior to the last one.
+* Multiple task upload in the task upload interface
+* Larger log viewer and task editing screens to enhance user operations
+* More understandable and meaningful labels
+* Improvements in interface ergonomics
+* Several improvements and bugfixes on all the code
 
 ### v.2.0.0 (2021-01-26)
 
-Crunz-ui update stable release:
+Crunz-ui updated stable release:
 * Slim 4 library integration. Crunz-ui version 1 used version 3 of the Slim library
 * Deploy of the new interface that allows loading of new tasks directly from the web interface through the embedded php editor
 * Advanced management of high-frequency tasks (HFT), tasks that are carried out many times per hour. Previous version of Crunz-ui interface failed to display HFT crashing dashboard, daily and monthly view monthly view
