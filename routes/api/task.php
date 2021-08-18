@@ -1612,6 +1612,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
+        $list_length = 100;
+        if(!empty($params["LST_LENGTH"])){
+            $list_length = params["LST_LENGTH"];
+        }
+
+
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
@@ -1733,7 +1739,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         if(!empty($aLOGNAME)){
             usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
 
-            foreach ($aLOGNAME as $logname) {
+            foreach ($aLOGNAME as $lognum => $logname) {
+
+                if($lognum > $list_length){
+                    break;
+                }
 
                 $aLOGDETT =explode('_', str_replace($LOGS_DIR."/", "", $logname));
 
