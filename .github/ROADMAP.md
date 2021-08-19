@@ -13,6 +13,7 @@
 Crunz-ui updated stable release:
 * Optimization of the task reading engine that now presents results faster and more efficiently
 * Enabled, in the monthly and week task display interfaces, the possibility of viewing the execution logs also of executions prior to the last one.
+* New section for viewing the history of task executions (allows you to access the log of individual executions, see the outcome and compare it with the log of the last execution)
 * Multiple task upload in the task upload interface
 * Larger log viewer and task editing screens to enhance user operations
 * More understandable and meaningful labels
