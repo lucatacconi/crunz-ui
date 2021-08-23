@@ -44,8 +44,8 @@
             <v-data-table
                 :headers="headers"
                 :items="files"
-                :sort-by="headers"
-                :sort-desc="[false, true]"
+                :sort-desc.sync="sortDesc"
+                :sort-by.sync="sortBy"
                 :custom-sort="customSort"
                 :search="search"
             >
@@ -180,6 +180,8 @@
 module.exports = {
     data:function(){
         return{
+            sortDesc:false,
+            sortBy:'',
             search: '',
             showNewTaskModal:false,
             showUploadModal: false,

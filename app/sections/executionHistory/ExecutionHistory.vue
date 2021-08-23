@@ -19,6 +19,14 @@
             <v-card-title >
                 Tasks' execution outcome list
                 <v-spacer></v-spacer>
+                <v-select
+                    v-model="amountLogs"
+                    label="Amount of logs"
+                    hide-details
+                    class="mt-0 mr-2"
+                    :items="['100','200','300','300+']"
+                    @change="readData"
+                ></v-select>
                 <v-text-field
                     v-model="search"
                     append-icon="mdi-magnify"
@@ -32,8 +40,8 @@
             <v-data-table
                 :headers="headers"
                 :items="tasksExecutions"
-                :sort-by="headers"
-                :sort-desc="[false, true]"
+                :sort-desc.sync="sortDesc"
+                :sort-by.sync="sortBy"
                 :custom-sort="customSort"
                 :search="search"
             >
@@ -145,6 +153,9 @@
 module.exports = {
     data:function(){
         return{
+            sortDesc:false,
+            sortBy:'',
+            amountLogs:'100',
             search: '',
             showEditModal: false,
             showLogModal: false,
@@ -175,7 +186,9 @@ module.exports = {
     methods: {
         readData:function(options = {}){
             var self = this;
-            var params = {}
+            var params = {
+                lst_length:self.amountLogs
+            }
             self.message = "Loading execution log";
             Utils.apiCall("get", "/task/exec-history",params, options)
             .then(function (response) {
