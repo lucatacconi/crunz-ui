@@ -346,11 +346,11 @@ module.exports = {
     mounted:function(){
         var self = this;
 
-        // if(this.reloadIntervalObj) clearTimeout(this.reloadIntervalObj);
+        if(this.reloadIntervalObj) clearTimeout(this.reloadIntervalObj);
 
-        // this.reloadIntervalObj = setTimeout(function(){
-        //     self.scheduleReload();
-        // }, self.reloadTime);
+        this.reloadIntervalObj = setTimeout(function(){
+            self.scheduleReload();
+        }, self.reloadTime);
     },
 
     components:{
