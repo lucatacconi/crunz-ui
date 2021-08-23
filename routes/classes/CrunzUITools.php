@@ -18,6 +18,7 @@ class CrunzUITools{
                     continue;
                 }
 
+                $path = (string)$path;
                 $path = str_replace(['.','/.','/.','/..', $base_path], '', $path);
 
                 if($path != '/'){
@@ -32,10 +33,4 @@ class CrunzUITools{
 
         return $aPATH;
     }
-
-
-
-
-
-
 }
