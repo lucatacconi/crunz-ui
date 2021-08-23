@@ -214,9 +214,15 @@ module.exports = {
                 Utils.showConnError();
             }
 
-            var apiParams = {
-                "event_unique_key": event_unique_key,
-                "datetime_ref": self.rowdata.start
+            if(self.rowdata.start != ''){
+                var apiParams = {
+                    "event_unique_key": event_unique_key,
+                    "datetime_ref": self.rowdata.start
+                }
+            }else{
+                var apiParams = {
+                    "event_unique_key": event_unique_key
+                }
             }
 
             Utils.apiCall("get", "/task/exec-outcome", apiParams)

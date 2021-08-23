@@ -59,6 +59,10 @@
                                                     <v-list-item-icon><v-icon small>fa fa-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
                                                 </v-list-item>
+                                                <v-list-item @click="openLastLogModal(item, i)">
+                                                    <v-list-item-icon><v-icon small>fas fa-folder-open</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>View last log</v-list-item-title>
+                                                </v-list-item>
                                             </v-list-item-group>
                                         </v-list>
                                     </v-menu>
@@ -257,6 +261,18 @@ module.exports = {
             this.showLogModal = true;
             this.logData = rowdata != undefined ? rowdata : false;
         },
+
+        openLastLogModal: function (rowdata) {
+            this.showLogModal = true;
+
+            if(rowdata != undefined){
+                this.logData = JSON.parse(JSON.stringify(rowdata));
+                this.logData.start = ''
+            }else{
+                this.logData = false;
+            }
+        },
+
         closeLogModal: function () {
             this.showLogModal = false;
         },
