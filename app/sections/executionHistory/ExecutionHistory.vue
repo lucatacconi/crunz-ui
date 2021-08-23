@@ -103,6 +103,41 @@
 
         </v-card>
 
+        <v-speed-dial
+            absolute
+            fixed
+            bottom
+            right
+            direction="left"
+            transition="slide-y-reverse-transition"
+            style="margin-bottom:30px;"
+        >
+            <template v-slot:activator>
+                <v-btn
+                    color="blue darken-2"
+                    dark
+                    fab
+                >
+                    <v-icon>fa fa-cog</v-icon>
+                </v-btn>
+            </template>
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                    <v-btn
+                        fab
+                        dark
+                        small
+                        color="indigo"
+                        @click="readData()"
+                        v-on="on"
+                    >
+                        <v-icon>mdi-refresh</v-icon>
+                    </v-btn>
+                </template>
+                <span>Refresh</span>
+            </v-tooltip>
+        </v-speed-dial>
+
     </div>
 </template>
 
@@ -311,11 +346,11 @@ module.exports = {
     mounted:function(){
         var self = this;
 
-        if(this.reloadIntervalObj) clearTimeout(this.reloadIntervalObj);
+        // if(this.reloadIntervalObj) clearTimeout(this.reloadIntervalObj);
 
-        this.reloadIntervalObj = setTimeout(function(){
-            self.scheduleReload();
-        }, self.reloadTime);
+        // this.reloadIntervalObj = setTimeout(function(){
+        //     self.scheduleReload();
+        // }, self.reloadTime);
     },
 
     components:{
