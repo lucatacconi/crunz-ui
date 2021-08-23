@@ -18,24 +18,29 @@
         <v-card class="mb-16">
             <v-card-title >
                 Tasks' execution outcome list
-                <v-spacer></v-spacer>
-                <v-select
-                    v-model="amountLogs"
-                    label="Amount of logs"
-                    hide-details
-                    class="mt-0 mr-2"
-                    :items="['100','200','300','300+']"
-                    @change="readData"
-                ></v-select>
-                <v-text-field
-                    v-model="search"
-                    append-icon="mdi-magnify"
-                    label="Search"
-                    single-line
-                    hide-details
-                    class="mt-0"
-                ></v-text-field>
             </v-card-title>
+            <v-layout row wrap class="ma-0 mr-4 ml-4">
+                <v-flex xs12 md6>
+                    <v-select
+                        v-model="amountLogs"
+                        label="Amount of logs"
+                        hide-details
+                        class="mt-0 mr-2"
+                        :items="['100','200','300','300+']"
+                        @change="readData"
+                    ></v-select>
+                </v-flex>
+                <v-flex xs12 md6>
+                    <v-text-field
+                        v-model="search"
+                        append-icon="mdi-magnify"
+                        label="Search"
+                        single-line
+                        hide-details
+                        class="mt-0"
+                    ></v-text-field>
+                </v-flex>
+            </v-layout>
 
             <v-data-table
                 :headers="headers"
