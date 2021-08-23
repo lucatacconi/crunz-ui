@@ -1485,7 +1485,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         $path_check = str_replace(".php", '', $params["TASK_PATH"]);
 
         if(
-            strpos($path_check, '.') !== false ||
+            strpos($path_check, '..') !== false ||
             substr($params["TASK_PATH"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ||
             strpos($path_check, $TASKS_DIR === false)
         ){
