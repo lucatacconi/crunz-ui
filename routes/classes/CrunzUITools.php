@@ -11,20 +11,22 @@ class CrunzUITools{
         $dir_rotator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($base_path));
 
         $aPATH = [];
-        foreach ($dir_rotator as $path) {
+        if(!empty($dir_rotator)){
+            foreach ($dir_rotator as $path) {
 
-            if (!$path->isDir()){
-                continue;
-            }
+                if (!$path->isDir()){
+                    continue;
+                }
 
-            $path = str_replace(['.','/.','/.','/..', $base_path], '', $path);
+                $path = str_replace(['.','/.','/.','/..', $base_path], '', $path);
 
-            if($path != '/'){
-                $path = rtrim($path, "/");
-            }
+                if($path != '/'){
+                    $path = rtrim($path, "/");
+                }
 
-            if(!in_array($path, $aPATH)){
-                $aPATH[] = $path;
+                if(!in_array($path, $aPATH)){
+                    $aPATH[] = $path;
+                }
             }
         }
 
