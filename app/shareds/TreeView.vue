@@ -147,13 +147,14 @@ module.exports = {
                 return
             }
 
+            var path=this.temp_item.path=='/' ? this.temp_item.path+this.new_folder_name : this.temp_item.path+"/"+this.new_folder_name
             var params={
-                path:this.temp_item.path=='/' ? this.temp_item.path+this.new_folder_name : this.temp_item.path+"/"+this.new_folder_name
+                path:path
             }
             Utils.apiCall("post", "task-container/dir",params)
             .then(function (response) {
                 if(response.data.result){
-                    self.readTree()
+                    self.readTree(path)
                     Swal.fire({
                         title: 'Folder created',
                         text: response.data.result_msg,
@@ -218,11 +219,12 @@ module.exports = {
                 }
             }
         },
-        readTree:function(){
+        readTree:function(selectFolder=null){
             var self=this
             Utils.apiCall("get", "/task-container/tree/display")
             .then(function (response) {
                 self.items=[response.data]
+                if(selectFolder!=null) self.selectFolder=[selectFolder]
             });
         }
     },
