@@ -2,13 +2,15 @@
 
 ## Upcoming/Desiderata implementations
 
-* In case of error, communication via email to the user who created the task or to specific configured users
-* the system should log the user who entered a task on the system
-* the system should log the user who manually run a task
+* System should log the user who entered a task on the system
+* System should log the user who manually run a task
+* In case of error, communication should be sent by email to the user who created the task or to specific configured users
+* Light and dark mode switch
+
 
 ## Release history
 
-### v.2.6.1 (2021-08-26)
+### v.2.6.1 (2021-09-01)
 
 Crunz-ui updated stable release:
 * Optimization of the task reading engine that now presents results faster and more efficiently
@@ -19,6 +21,7 @@ Crunz-ui updated stable release:
 * More understandable and meaningful labels
 * Improvements in interface ergonomics
 * Several improvements and bug fixes on all the code
+* Fixes issue #9, #10 and #11
 
 ### v.2.0.0 (2021-01-26)
 
