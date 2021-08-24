@@ -34,7 +34,7 @@
                     <v-text-field
                         v-model="search"
                         append-icon="mdi-magnify"
-                        label="Search"
+                        label="Search in log interval"
                         single-line
                         hide-details
                         class="mt-0"
