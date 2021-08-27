@@ -96,9 +96,8 @@
                                     </v-menu>
                                 </div>
                             </td>
-                            <td class="text-center">
-                                {{ item.event_launch_id }}
-
+                            <td>
+                                {{ item.task_path }}
                                 <template v-if="item.high_frequency == true">
                                     <v-tooltip bottom>
                                         <template v-slot:activator="{ on, attrs }">
@@ -114,9 +113,6 @@
                                         <span>High frequency task</span>
                                     </v-tooltip>
                                 </template>
-                            </td>
-                            <td>
-                                {{ item.task_path }}
                             </td>
                             <td>
                                 {{ item.task_description == "" ? "--" : item.task_description }}
@@ -194,7 +190,6 @@ module.exports = {
                     value: '',
                     align: 'center'
                 },
-                { text: 'Task num.', value: 'event_launch_id', align: 'center' },
                 { text: 'Task', value: 'task_path' },
                 { text: 'Description', value: 'task_description', sortable: false },
                 { text: 'Execution', value: 'expression', sortable: false },
