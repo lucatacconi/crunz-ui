@@ -1406,6 +1406,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             ){
                 throw new Exception("ERROR - Wrong task configuration in task file ($file_name)");
             }
+
+            $file_check_result = exec("php -l \"".$file_data["tmp_name"]."\"");
+            if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                //Syntax error in file
+                throw new Exception("ERROR - Syntax error in task file ($file_name)");
+            }
         }
 
 
@@ -1684,11 +1690,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 continue;
             }
 
-            $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
-            if(strpos($file_check_result, 'No syntax errors detected in') === false){
-                //Syntax error in file
-                continue;
-            }
+            // $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
+            // if(strpos($file_check_result, 'No syntax errors detected in') === false){
+            //     //Syntax error in file
+            //     continue;
+            // }
 
             unset($schedule);
             require $taskFile->getRealPath();
