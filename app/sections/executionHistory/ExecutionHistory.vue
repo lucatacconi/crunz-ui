@@ -26,7 +26,7 @@
                         label="Amount of logs"
                         hide-details
                         class="mt-0 mr-2"
-                        :items="['100','200','300','300+']"
+                        :items="['50','100','150','150+']"
                         @change="readData"
                     ></v-select>
                 </v-flex>
@@ -160,7 +160,7 @@ module.exports = {
         return{
             sortBy:'execution_datatime',
             sortDesc:true,
-            amountLogs:'100',
+            amountLogs:'50',
             search: '',
             showEditModal: false,
             showLogModal: false,
