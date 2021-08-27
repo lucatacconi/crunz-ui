@@ -1736,7 +1736,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             foreach ($aLOGNAME as $lognum => $logname) {
 
                 if(!empty($params["LST_LENGTH"])){
-                    if($lognum > $params["LST_LENGTH"]){
+                    if($lognum >= $params["LST_LENGTH"]){
                         break;
                     }
                 }
