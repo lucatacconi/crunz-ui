@@ -158,8 +158,8 @@
 module.exports = {
     data:function(){
         return{
-            sortDesc:false,
-            sortBy:'',
+            sortBy:'execution_datatime',
+            sortDesc:true,
             amountLogs:'100',
             search: '',
             showEditModal: false,
