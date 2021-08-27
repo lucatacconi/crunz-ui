@@ -81,9 +81,6 @@
                                     </v-menu>
                                 </div>
                             </td>
-                            <td class="text-center">
-                                {{ item.event_launch_id }}
-                            </td>
                             <td>
                                 {{ item.task_path }}
                             </td>
@@ -171,7 +168,6 @@ module.exports = {
                     value: '',
                     align: 'center'
                 },
-                { text: 'Task num.', value: 'event_launch_id', align: 'center' },
                 { text: 'Task', value: 'task_path' },
                 { text: 'Description', value: 'task_description', sortable: false },
                 { text: 'Execution', value: 'expression', sortable: false },
