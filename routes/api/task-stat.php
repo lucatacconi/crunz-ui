@@ -111,6 +111,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         );
 
         $aSTATs = [];
+        $aLOGNAME_bck = [];
         $data_calc = substr($interval_from, 0, 10);
 
         while($data_calc <= substr($interval_to, 0, 10)){
@@ -243,7 +244,39 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                 $cron = Cron\CronExpression::factory($expression);
 
 
-                $aLOGNAME_tmp = glob($LOGS_DIR."/".$event_unique_key."*.log"); //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
+                if(empty($aLOGNAME_bck[$event_unique_key])){
+
+                    if(date('Y-m-d', $lifetime_from) == date('Y-m-d', $lifetime_to)){
+                        $glob_filter = $LOGS_DIR."/";
+                        $glob_filter .= $event_unique_key."_";
+                        $glob_filter .= "*_";
+                        $glob_filter .= date('Ymd', $lifetime_from)."*_";
+                        $glob_filter .= date('Ymd', $lifetime_to)."*";
+                        $glob_filter .= ".log";
+                    }else{
+                        $glob_filter = $LOGS_DIR."/";
+                        $glob_filter .= $event_unique_key."_";
+                        $glob_filter .= "*_";
+
+                        $glob_filter_from = '';
+                        $glob_filter_to = '';
+
+                        for($chr_selector = 0; $chr_selector < 10; $chr_selector++){
+                            if(substr(date('Y-m-d', $lifetime_from), $chr_selector, 1) ==  substr(date('Y-m-d', $lifetime_to), $chr_selector, 1)  ){
+                                $glob_filter_from .= $glob_filter_to .= substr(date('Y-m-d', $lifetime_from), $chr_selector, 1);
+                            }
+                        }
+
+                        $glob_filter .= $glob_filter_from."*_";
+                        $glob_filter .= $glob_filter_to."*";
+                        $glob_filter .= ".log";
+                    }
+
+                    $aLOGNAME_tmp = glob($glob_filter); //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
+                    $aLOGNAME_bck[$event_unique_key] = $aLOGNAME_tmp;
+                }else{
+                    $aLOGNAME_tmp = $aLOGNAME_bck[$event_unique_key];
+                }
 
                 $aLOGNAME = [];
                 if(!empty($aLOGNAME_tmp)){
