@@ -246,12 +246,12 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
                 if(empty($aLOGNAME_bck[$event_unique_key])){
 
-                    if(date('Y-m-d', $lifetime_from) == date('Y-m-d', $lifetime_to)){
+                    if(date('Y-m-d', strtotime($interval_from)) == date('Y-m-d', strtotime($interval_to))){
                         $glob_filter = $LOGS_DIR."/";
                         $glob_filter .= $event_unique_key."_";
                         $glob_filter .= "*_";
-                        $glob_filter .= date('Ymd', $lifetime_from)."*_";
-                        $glob_filter .= date('Ymd', $lifetime_to)."*";
+                        $glob_filter .= date('Ymd', strtotime($interval_from))."*_";
+                        $glob_filter .= date('Ymd', strtotime($interval_to))."*";
                         $glob_filter .= ".log";
                     }else{
                         $glob_filter = $LOGS_DIR."/";
@@ -262,8 +262,8 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                         $glob_filter_to = '';
 
                         for($chr_selector = 0; $chr_selector < 10; $chr_selector++){
-                            if(substr(date('Y-m-d', $lifetime_from), $chr_selector, 1) ==  substr(date('Y-m-d', $lifetime_to), $chr_selector, 1)  ){
-                                $glob_filter_from .= $glob_filter_to .= substr(date('Y-m-d', $lifetime_from), $chr_selector, 1);
+                            if(substr(date('Y-m-d', strtotime($interval_from)), $chr_selector, 1) ==  substr(date('Y-m-d', strtotime($interval_to)), $chr_selector, 1)  ){
+                                $glob_filter_from .= $glob_filter_to .= substr(date('Y-m-d', strtotime($interval_from)), $chr_selector, 1);
                             }
                         }
 
