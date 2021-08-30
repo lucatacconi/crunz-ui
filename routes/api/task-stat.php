@@ -111,7 +111,6 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         );
 
         $aSTATs = [];
-        $aLOGNAME_bck = [];
         $data_calc = substr($interval_from, 0, 10);
 
         while($data_calc <= substr($interval_to, 0, 10)){
@@ -121,6 +120,39 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
             $data_calc = date('Y-m-d', strtotime("$data_calc + 1 days"));
         }
+
+        if( date('Y-m-d', strtotime($interval_from)) == date('Y-m-d', strtotime($interval_to)) ){
+
+            $glob_filter = $LOGS_DIR."/";
+            $glob_filter .= "*";
+            $glob_filter .= date('Ymd', strtotime($interval_from))."*_";
+            $glob_filter .= date('Ymd', strtotime($interval_to))."*";
+            $glob_filter .= ".log";
+
+        }else{
+
+            $glob_filter = $LOGS_DIR."/";
+            $glob_filter .= "*";
+
+            $glob_filter_from = '';
+            $glob_filter_to = '';
+
+            for($chr_selector = 0; $chr_selector < 10; $chr_selector++){
+
+                if( substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1) == substr(date('Ymd', strtotime($interval_to)), $chr_selector, 1) ){
+                    $glob_filter_from .= substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1);
+                    $glob_filter_to .= substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1);
+                }else{
+                    break;
+                }
+            }
+
+            $glob_filter .= $glob_filter_from."*_";
+            $glob_filter .= $glob_filter_to."*";
+            $glob_filter .= ".log";
+        }
+
+        $aLOGNAME_tmp = glob($glob_filter); //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
 
         foreach ($files as $taskFile) {
 
