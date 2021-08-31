@@ -179,10 +179,12 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                 continue;
             }
 
-            $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
-            if(strpos($file_check_result, 'No syntax errors detected in') === false){
-                //Syntax error in file
-                continue;
+            if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
+                $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
+                if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                    //Syntax error in file
+                    continue;
+                }
             }
 
             unset($schedule);
