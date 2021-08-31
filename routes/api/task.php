@@ -45,6 +45,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
+        // throw new Exception(print_r($params, true));
+
         $calc_run_lst = "N";
         if(!empty($params["CALC_RUN_LST"])){
             $calc_run_lst = $params["CALC_RUN_LST"];
@@ -152,6 +154,52 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             },
             \iterator_to_array($regexIterator)
         );
+
+
+        //Reading all log releted to the interval
+        if( date('Y-m-d', strtotime($interval_from)) == date('Y-m-d', strtotime($interval_to)) ){
+
+            $glob_filter = $LOGS_DIR."/";
+            $glob_filter .= "*";
+            $glob_filter .= date('Ymd', strtotime($interval_from))."*_";
+            $glob_filter .= date('Ymd', strtotime($interval_to))."*";
+            $glob_filter .= ".log";
+
+        }else{
+
+            $glob_filter = $LOGS_DIR."/";
+            $glob_filter .= "*";
+
+            $glob_filter_from = '';
+            $glob_filter_to = '';
+
+            for($chr_selector = 0; $chr_selector < 10; $chr_selector++){
+
+                if( substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1) == substr(date('Ymd', strtotime($interval_to)), $chr_selector, 1) ){
+                    $glob_filter_from .= substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1);
+                    $glob_filter_to .= substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1);
+                }else{
+                    break;
+                }
+            }
+
+            $glob_filter .= $glob_filter_from."*_";
+            $glob_filter .= $glob_filter_to."*";
+            $glob_filter .= ".log";
+        }
+
+        $aLOGNAME_all = glob($glob_filter); //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
+
+        $aLOGNAME_perkey = [];
+        foreach($aLOGNAME_all as $logkey => $logfile){
+            $aLOG =explode('_', str_replace($LOGS_DIR."/", "", $logfile));
+
+            if( count($aLOGNAME_perkey[$aLOG[0]]) == 0 ){
+                $aLOGNAME_perkey[$aLOG[0]] = [];
+            }
+
+            $aLOGNAME_perkey[$aLOG[0]][] = $logfile;
+        }
 
 
         $aTASKs = [];
@@ -410,19 +458,25 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["last_duration"] = 0;
                 $row["last_outcome"] = '';
                 $row["last_run"] = '';
-
-                $row["planned_in_interval"] = 0;
-                $row["executed_in_interval"] = 0;
-                $row["error_in_interval"] = 0;
-                $row["succesfull_in_interval"] = 0;
                 $row["last_outcome"] = '';
 
+                if($calc_run_lst == "Y"){
+                    $row["planned_in_interval"] = 0;
+                    $row["executed_in_interval"] = 0;
+                    $row["error_in_interval"] = 0;
+                    $row["succesfull_in_interval"] = 0;
 
-                $row["executed_task_lst"] = [];
-                $row["outcome_executed_task_lst"] = [];
+                    $row["interval_run_lst"] = [];
+                    $row["executed_task_lst"] = [];
+                    $row["outcome_executed_task_lst"] = [];
+                }
+
 
                 //Looking for all the logs related to this event
-                $aLOGNAME = glob($LOGS_DIR."/".$row["event_unique_key"]."*.log"); //T UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
+                $aLOGNAME = [];
+                if(!empty($aLOGNAME_perkey[$row["event_unique_key"]])){
+                    $aLOGNAME = $aLOGNAME_perkey[$row["event_unique_key"]]; //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
+                }
 
                 if(!empty($aLOGNAME)){
                     usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
@@ -501,6 +555,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }
                 }
 
+
                 //Next run calculation
                 if(empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
                     $next_run = $cron->getNextRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
@@ -513,6 +568,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                     while($nincrement < 1000){ //Use the same hard limit of cron-expression library
                         $calc_run = $cron->getNextRunDate($date_ref, $nincrement, true)->format('Y-m-d H:i:s');
+
+                        if($calc_run > $interval_to) break;
 
                         if(!empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
                             if($calc_run <= $row["lifetime_to"]  ){
@@ -550,6 +607,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     while($nincrement < 1000){ //Use the same hard limit of cron-expression library
                         $calc_run = $cron->getPreviousRunDate($date_ref, $nincrement, true)->format('Y-m-d H:i:s');
 
+                        if($calc_run < $interval_from) break;
+
                         if(!empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
                             if($calc_run >= $row["lifetime_from"] ){
                                 $calculeted_last_run = $calc_run;
@@ -575,8 +634,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["executed_last_run"] = array_key_last($row["executed_task_lst"]);
 
                 $row["last_run_actually_executed"] = false;
-                $aLASTLOGs = glob($LOGS_DIR."/".$row["event_unique_key"].'_*_'. date("YmdHi", strtotime($row["calculeted_last_run"])) ."_*.log");
-                if(!empty($aLASTLOGs)){
+                $aLASTLOG = preg_grep( "#^$LOGS_DIR+\/".$row["event_unique_key"]."_[OK]{2}_".date("YmdHi", strtotime($row["calculeted_last_run"]))."_[0-9]{12}_[a-zA-Z0-9-]{4}.log$#", $aLOGNAME );
+
+                if(!empty($aLASTLOG)){
                     $row["last_run_actually_executed"] = true;
                 }
 
@@ -586,68 +646,61 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $tmp_interval_lst = [];
                 $nincrement = 0;
 
-                if($row["high_frequency"]){
+                if($calc_run_lst == "Y"){
 
-                    if($calc_run_lst == "Y"){
-                        $row["interval_run_lst"] = [];
-                    }
+                    if($row["high_frequency"]){
 
-                    $calc_run_prec = '';
-                    while(empty($calc_run_ref) || $calc_run_ref < $event_interval_to){
+                        $calc_run_prec = '';
+                        while(empty($calc_run_ref) || $calc_run_ref < $event_interval_to){
 
-                        if(empty($calc_run_ref)){
-                            $calc_run_ref = $event_interval_from_orig;
-                        }
+                            if(empty($calc_run_ref)){
+                                $calc_run_ref = $event_interval_from_orig;
+                            }
 
-                        $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $nincrement, true)->format('Y-m-d H:i:s');
-                        if($nincrement == 0) $nincrement++;
+                            $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $nincrement, true)->format('Y-m-d H:i:s');
+                            if($nincrement == 0) $nincrement++;
 
-                        $row["planned_in_interval"]++;
+                            $row["planned_in_interval"]++;
 
-                        if($calc_run_ref < $date_now && $past_planned_tasks != "Y"){
+                            if($calc_run_ref < $date_now && $past_planned_tasks != "Y"){
 
-                            if(array_key_exists($calc_run_ref, $row["executed_task_lst"])){
-                                if($calc_run_ref == $row["executed_task_lst"][$calc_run_ref]){
-                                    $row["interval_run_lst"][$calc_run_ref] = date('Y-m-d H:i:s', strtotime("$calc_run_ref + 1 minute"));
-                                }else{
-                                    $row["interval_run_lst"][$calc_run_ref] = $row["executed_task_lst"][$calc_run_ref];
+                                if(array_key_exists($calc_run_ref, $row["executed_task_lst"])){
+                                    if($calc_run_ref == $row["executed_task_lst"][$calc_run_ref]){
+                                        $row["interval_run_lst"][$calc_run_ref] = date('Y-m-d H:i:s', strtotime("$calc_run_ref + 1 minute"));
+                                    }else{
+                                        $row["interval_run_lst"][$calc_run_ref] = $row["executed_task_lst"][$calc_run_ref];
+                                    }
+
+                                    $calc_run_prec = date('Y-m-d', strtotime($calc_run_ref));
                                 }
 
-                                $calc_run_prec = date('Y-m-d', strtotime($calc_run_ref));
+                            }else{
+                                if($calc_run_prec < date('Y-m-d', strtotime($calc_run_ref))){
+                                    $row["interval_run_lst"][$calc_run_ref] = date('Y-m-d H:i:s', strtotime("$calc_run_ref + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
+                                    $calc_run_prec = date('Y-m-d', strtotime($calc_run_ref));
+                                }else{
+                                    continue;
+                                }
+                            }
+                        }
+
+                    }else{
+
+                        while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+                            $calc_run = $cron->getNextRunDate($event_interval_from_orig, $nincrement, true)->format('Y-m-d H:i:s');
+
+                            if($calc_run > $event_interval_to){
+                                break;
                             }
 
-                        }else{
-                            if($calc_run_prec < date('Y-m-d', strtotime($calc_run_ref))){
-                                $row["interval_run_lst"][$calc_run_ref] = date('Y-m-d H:i:s', strtotime("$calc_run_ref + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
-                                $calc_run_prec = date('Y-m-d', strtotime($calc_run_ref));
-                            }else{
+                            $nincrement++;
+
+                            $tmp_interval_lst[$calc_run] = $calc_run;
+
+                            if($calc_run < $event_interval_from){
                                 continue;
                             }
-                        }
-                    }
 
-                }else{
-
-                    if($calc_run_lst == "Y"){
-                        $row["interval_run_lst"] = [];
-                    }
-
-                    while($nincrement < 1000){ //Use the same hard limit of cron-expression library
-                        $calc_run = $cron->getNextRunDate($event_interval_from_orig, $nincrement, true)->format('Y-m-d H:i:s');
-
-                        if($calc_run > $event_interval_to){
-                            break;
-                        }
-
-                        $nincrement++;
-
-                        $tmp_interval_lst[$calc_run] = $calc_run;
-
-                        if($calc_run < $event_interval_from){
-                            continue;
-                        }
-
-                        if($calc_run_lst == "Y"){
                             if($calc_run < $date_now && $past_planned_tasks != "Y"){
                                 if(array_key_exists($calc_run, $row["executed_task_lst"])){
                                     if($calc_run == $row["executed_task_lst"][$calc_run]){
@@ -660,25 +713,21 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                                 $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
                             }
                         }
-                    }
 
-                    foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
-                        if($exec_task_start >= $event_interval_from_orig && $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $tmp_interval_lst)){
-                            $tmp_interval_lst[$calc_run] = $calc_run;
-                        }
-                    }
-
-                    if($calc_run_lst == "Y"){
                         foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
+                            if($exec_task_start >= $event_interval_from_orig && $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $tmp_interval_lst)){
+                                $tmp_interval_lst[$calc_run] = $calc_run;
+                            }
+
                             if($exec_task_start >= $event_interval_from && $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
                                 $row["interval_run_lst"][$exec_task_start] = $exec_task_end;
                             }
                         }
 
                         ksort($row["interval_run_lst"]);
-                    }
 
-                    $row["planned_in_interval"] = count($tmp_interval_lst);
+                        $row["planned_in_interval"] = count($tmp_interval_lst);
+                    }
                 }
 
                 $aTASKs[] = $row;
