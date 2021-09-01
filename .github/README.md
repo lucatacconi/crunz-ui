@@ -241,6 +241,11 @@ Please see [Contributing informations](CONTRIBUTING.md) for details.
 Please see [Roadmap](ROADMAP.md) for details.
 
 
+## FAQ and Troubleshooting
+
+For help, FAQ or troubleshooting please refer to [FAQ and Troubleshooting](FAQ.md).
+
+
 ## Credits
 
 * [Luca Tacconi](https://github.com/lucatacconi)

@@ -1,4 +1,4 @@
-# APACHE su Ubuntu
+# APACHE on Ubuntu
 
 Here is the procedure for activating Crunz-ui with the use of Crunz embedded on a newly installed Ubuntu system.
 
