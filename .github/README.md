@@ -12,6 +12,25 @@
 
 Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and is proposed as its natural graphical interface, optimal to make its usage more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees to the project its elastic and dynamic structure.
 
+<details>
+ <summary><strong>Table of Contents</strong> (click to expand)</summary>
+
+- [What Crunz is and how Crunz-ui connects to it](#-what-crunz-is-and-how-crunz-ui-connects-to-it)
+- [What else can Crunz-ui do](#-what-else-can-crunz-ui-do)
+- [Browser Support](#-browser-support)
+- [System Requirements](#-system-requirements)
+- [Installation and application setup](#-installation-and-application-setup)
+  - [Never used Crunz before](#-never-used-crunz-before)
+  - [Usage on a previous installation of Crunz](#-usage-on-a-previous-installation-of-crunz)
+  - [Custom log directory configuration](#-custom-log-directory-configuration)
+  - [Accounts configuration](#-accounts-configuration)
+  - [Ubuntu/Debian setup example](UBUNTU_EXPL.md)
+
+- [First login](#-first-login)
+- [Contributing informations](CONTRIBUTING.md)
+- [FAQ / Troubleshooting](FAQ.md)
+</details>
+
 
 ## What Crunz is and how Crunz-ui connects to it
 
@@ -59,7 +78,7 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 * Apache and PHP 7.1.3 or newer, with rewrite.load module enabled
 * Composer
 
-***It is important that the system clock is correctly synchronized. In case of unsynchronized clock there could be misalignments in the execution of the tasks or in the management of the user sessions.***
+> :warning: It is important that the system clock is correctly synchronized. In case of unsynchronized clock there could be misalignments in the execution of the tasks or in the management of the user sessions.
 
 It is advisable to use npm to keep the server time synchronized.
 
@@ -85,7 +104,10 @@ Crunz-ui can also be used with Xampp. However, it is necessary to create a symbo
 sudo ln -s /opt/lampp/bin/php /usr/bin/
 ```
 
-***Using Crunz-ui on Xampp with PHP already present on the server in a separate installation from XAMPP, functions "Execute and wait log" present in the Tasks table section menu will fail with the following error: Unable to load dynamic library 'curl.so'***
+> :warning: Using Crunz-ui on Xampp with PHP already present on the server in a separate installation from XAMPP, functions "Execute and wait log" present in the Tasks table section menu will fail with the following error: Unable to load dynamic library 'curl.so'
+
+> :warning: In the case of servers with less computing power, checking the syntax of the tasks considerably slows down the display of tables and statistics. You can set the parameter CHECK_PHP_TASKS_SYNTAX to false o inhibit syntax checking. Configuring the parameter CHECK_PHP_TASKS_SYNTAX to false in case of syntax errors in the tasks could cause anomalous behavior in the Crunz-ui interfaces
+
 
 ### Never used Crunz before
 
@@ -116,9 +138,6 @@ If you have configured a custom log folder, the crontab configuration must be ch
 ```
 * * * * * cd /[BASE_CRUNZUI_PATH] && ./crunz-ui.sh -l [LOGS_PATH]
 ```
-
-Complete the configuration by setting the folders that act as containers for the tasks.
-Refer to [Configuration of the task's folder structure](#Configuration-of-the-task's-folder-structure) section to configure the structure.
 
 Please refer to [Ubuntu/Debian setup example](UBUNTU_EXPL.md) for suggestion.
 
@@ -153,9 +172,6 @@ If you have configured a custom log folder, the crontab configuration must be ch
 
 At this point it is necessary to configure all the users who must be able to access the application.
 Refer to [Accounts configuration](#Accounts-configuration) section to configure users. By default, in the basic configuration, the **admin** user is configured with the temporary password **password**.
-
-Complete the configuration by setting the folders that act as containers for the tasks.
-Refer to [Configuration of the task's folder structure](#Configuration-of-the-task's-folder-structure) section to configure the structure.
 
 
 ## Custom log directory configuration
@@ -212,48 +228,9 @@ The application is preconfigured with a single access user to verify the login p
 To test access use the login **admin** and password **password**
 
 
-## Configuration of the task's folder structure
-
-The structure of folders is configured in the configuration file **/config/task_groups.json**.
-
-
-```
-{
-    "subdir":"/",
-    "description":"Main task",
-    "children":[
-        {
-            "subdir":"/group1",
-            "description":"Group 1",
-            "disabled": false,
-            "children":[
-                {
-                    "subdir":"/group1/subGroup1",
-                    "description":"SubGroup 1",
-                    "disabled": false
-                },
-                ...
-            ]
-        },
-        {
-            "subdir":"/group2",
-            "description":"Group 2",
-            "disabled": false
-        },
-        {
-            "subdir":"/group3",
-            "description":"Group 3",
-            "disabled": true
-        },
-        ...
-    ]
-}
-
-```
-
-
 ## Contributing
 
+This project is maintained by a group of awesome and contributions are extremely welcome :heart:.
 Please see [Contributing informations](CONTRIBUTING.md) for details.
 
 
