@@ -78,7 +78,9 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 * Apache and PHP 7.1.3 or newer, with rewrite.load module enabled
 * Composer
 
+
 > :warning: ***It is important that the system clock is correctly synchronized. In case of unsynchronized clock there could be misalignments in the execution of the tasks or in the management of the user sessions.***
+
 
 It is advisable to use npm to keep the server time synchronized.
 
@@ -105,6 +107,7 @@ sudo ln -s /opt/lampp/bin/php /usr/bin/
 ```
 
 > :warning: ***Using Crunz-ui on Xampp with PHP already present on the server in a separate installation from XAMPP, functions "Execute and wait log" present in the Tasks table section menu will fail with the following error: Unable to load dynamic library 'curl.so'***
+
 
 > :warning: ***In the case of servers with less computing power, checking the syntax of the tasks considerably slows down the display of tables and statistics. You can set the parameter CHECK_PHP_TASKS_SYNTAX to false o inhibit syntax checking. Configuring the parameter CHECK_PHP_TASKS_SYNTAX to false in case of syntax errors in the tasks could cause anomalous behavior in the Crunz-ui interfaces***
 
