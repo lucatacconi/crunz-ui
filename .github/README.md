@@ -15,17 +15,17 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 <details>
  <summary><strong>Table of Contents</strong> (click to expand)</summary>
 
-- [What Crunz is and how Crunz-ui connects to it](##-what-crunz-is-and-how-crunz-ui-connects-to-it)
-- [What else can Crunz-ui do](##-what-else-can-crunz-ui-do)
-- [Browser Support](##-browser-support)
-- [System Requirements](##-system-requirements)
-- [Installation and application setup](##-installation-and-application-setup)
-  - [Never used Crunz before](##-never-used-crunz-before)
-  - [Usage on a previous installation of Crunz](##-usage-on-a-previous-installation-of-crunz)
-  - [Custom log directory configuration](##-custom-log-directory-configuration)
-  - [Accounts configuration](##-accounts-configuration)
+- [What Crunz is and how Crunz-ui connects to it](#what-crunz-is-and-how-crunz-ui-connects-to-it)
+- [What else can Crunz-ui do](#what-else-can-crunz-ui-do)
+- [Browser Support](#browser-support)
+- [System Requirements](#system-requirements)
+- [Installation and application setup](#installation-and-application-setup)
+  - [Never used Crunz before](#never-used-crunz-before)
+  - [Usage on a previous installation of Crunz](#usage-on-a-previous-installation-of-crunz)
+  - [Custom log directory configuration](#custom-log-directory-configuration)
+  - [Accounts configuration](#accounts-configuration)
   - [Ubuntu/Debian setup example](UBUNTU_EXPL.md)
-- [First login](##-first-login)
+- [First login](#first-login)
 - [Contributing informations](CONTRIBUTING.md)
 - [FAQ / Troubleshooting](FAQ.md)
 </details>
