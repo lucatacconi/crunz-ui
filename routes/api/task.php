@@ -1063,8 +1063,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         $task_handle = fopen($task_file_path, "wb");
         if($task_handle === false) throw new Exception('ERROR - File open error');
 
-        if( empty($params["TASK_CONTENT"]) ) throw new Exception("ERROR - No task content submitted");
+        $tester_file_name = date("Ymdhis_test");
+        $task_tester_handle = fopen($base_tasks_path."/".$tester_file_name, "w");
+        if($task_tester_handle === false) throw new Exception('ERROR - File tester open error');
 
+        if( empty($params["TASK_CONTENT"]) ) throw new Exception("ERROR - No task content submitted");
 
         $params["TASK_CONTENT"] = base64_decode($params["TASK_CONTENT"]);
         $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $params["TASK_CONTENT"]);
@@ -1078,6 +1081,18 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         }
 
         try {
+
+            fwrite($task_tester_handle, $params["TASK_CONTENT"]);
+            fclose($task_tester_handle);
+
+            $file_check_result = exec("php -l \"".$base_tasks_path."/".$tester_file_name."\"");
+            if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                //Syntax error in file
+                throw new Exception("ERROR - Syntax error in task file");
+            }
+
+            unlink($base_tasks_path."/".$tester_file_name);
+
             fwrite($task_handle, $params["TASK_CONTENT"]);
             fclose($task_handle);
 
@@ -1741,11 +1756,13 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 continue;
             }
 
-            // $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
-            // if(strpos($file_check_result, 'No syntax errors detected in') === false){
-            //     //Syntax error in file
-            //     continue;
-            // }
+            if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
+                $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
+                if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                    //Syntax error in file
+                    continue;
+                }
+            }
 
             unset($schedule);
             require $taskFile->getRealPath();
