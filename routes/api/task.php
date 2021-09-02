@@ -1063,9 +1063,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         $task_handle = fopen($task_file_path, "wb");
         if($task_handle === false) throw new Exception('ERROR - File open error');
 
-        $tester_file_name = date("Ymdhis_test");
+        $tester_file_name = date("Ymdhis")."_tester";
         $task_tester_handle = fopen($base_tasks_path."/".$tester_file_name, "w");
-        if($task_tester_handle === false) throw new Exception('ERROR - File tester open error');
+        if($task_tester_handle === false) throw new Exception('ERROR - Error in opening file for syntax check');
 
         if( empty($params["TASK_CONTENT"]) ) throw new Exception("ERROR - No task content submitted");
 
@@ -1088,10 +1088,10 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             $file_check_result = exec("php -l \"".$base_tasks_path."/".$tester_file_name."\"");
             if(strpos($file_check_result, 'No syntax errors detected in') === false){
                 //Syntax error in file
+                fclose($task_tester_handle);
+                unlink($base_tasks_path."/".$tester_file_name);
                 throw new Exception("ERROR - Syntax error in task file");
             }
-
-            unlink($base_tasks_path."/".$tester_file_name);
 
             fwrite($task_handle, $params["TASK_CONTENT"]);
             fclose($task_handle);
