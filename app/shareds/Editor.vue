@@ -123,7 +123,7 @@ module.exports = {
                 },
                 {
                     text:"on",
-                    function:"->($date)",
+                    function:"->on($date)",
                     tooltip:"chedule the event to run on a certain date"
                 },
                 {
@@ -325,7 +325,7 @@ module.exports = {
 
 <style>
     #task-edit {
-        height: 300px;
+        height: 500px;
     }
 
 </style>

@@ -45,6 +45,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
+        // throw new Exception(print_r($params, true));
+
         $calc_run_lst = "N";
         if(!empty($params["CALC_RUN_LST"])){
             $calc_run_lst = $params["CALC_RUN_LST"];
@@ -154,6 +156,52 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         );
 
 
+        //Reading all log releted to the interval
+        if( date('Y-m-d', strtotime($interval_from)) == date('Y-m-d', strtotime($interval_to)) ){
+
+            $glob_filter = $LOGS_DIR."/";
+            $glob_filter .= "*";
+            $glob_filter .= date('Ymd', strtotime($interval_from))."*_";
+            $glob_filter .= date('Ymd', strtotime($interval_to))."*";
+            $glob_filter .= ".log";
+
+        }else{
+
+            $glob_filter = $LOGS_DIR."/";
+            $glob_filter .= "*";
+
+            $glob_filter_from = '';
+            $glob_filter_to = '';
+
+            for($chr_selector = 0; $chr_selector < 10; $chr_selector++){
+
+                if( substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1) == substr(date('Ymd', strtotime($interval_to)), $chr_selector, 1) ){
+                    $glob_filter_from .= substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1);
+                    $glob_filter_to .= substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1);
+                }else{
+                    break;
+                }
+            }
+
+            $glob_filter .= $glob_filter_from."*_";
+            $glob_filter .= $glob_filter_to."*";
+            $glob_filter .= ".log";
+        }
+
+        $aLOGNAME_all = glob($glob_filter); //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
+
+        $aLOGNAME_perkey = [];
+        foreach($aLOGNAME_all as $logkey => $logfile){
+            $aLOG =explode('_', str_replace($LOGS_DIR."/", "", $logfile));
+
+            if( count($aLOGNAME_perkey[$aLOG[0]]) == 0 ){
+                $aLOGNAME_perkey[$aLOG[0]] = [];
+            }
+
+            $aLOGNAME_perkey[$aLOG[0]][] = $logfile;
+        }
+
+
         $aTASKs = [];
         $task_counter = 0;
         foreach ($files as $taskFile) {
@@ -170,10 +218,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 continue;
             }
 
-            $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
-            if(strpos($file_check_result, 'No syntax errors detected in') === false){
-                //Syntax error in file
-                continue;
+            if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
+                $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
+                if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                    //Syntax error in file
+                    continue;
+                }
             }
 
             unset($schedule);
@@ -408,19 +458,25 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["last_duration"] = 0;
                 $row["last_outcome"] = '';
                 $row["last_run"] = '';
-
-                $row["planned_in_interval"] = 0;
-                $row["executed_in_interval"] = 0;
-                $row["error_in_interval"] = 0;
-                $row["succesfull_in_interval"] = 0;
                 $row["last_outcome"] = '';
 
+                if($calc_run_lst == "Y"){
+                    $row["planned_in_interval"] = 0;
+                    $row["executed_in_interval"] = 0;
+                    $row["error_in_interval"] = 0;
+                    $row["succesfull_in_interval"] = 0;
 
-                $row["executed_task_lst"] = [];
-                $row["outcome_executed_task_lst"] = [];
+                    $row["interval_run_lst"] = [];
+                    $row["executed_task_lst"] = [];
+                    $row["outcome_executed_task_lst"] = [];
+                }
+
 
                 //Looking for all the logs related to this event
-                $aLOGNAME = glob($LOGS_DIR."/".$row["event_unique_key"]."*.log"); //T UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
+                $aLOGNAME = [];
+                if(!empty($aLOGNAME_perkey[$row["event_unique_key"]])){
+                    $aLOGNAME = $aLOGNAME_perkey[$row["event_unique_key"]]; //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
+                }
 
                 if(!empty($aLOGNAME)){
                     usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
@@ -499,6 +555,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }
                 }
 
+
                 //Next run calculation
                 if(empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
                     $next_run = $cron->getNextRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
@@ -511,6 +568,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                     while($nincrement < 1000){ //Use the same hard limit of cron-expression library
                         $calc_run = $cron->getNextRunDate($date_ref, $nincrement, true)->format('Y-m-d H:i:s');
+
+                        if($calc_run > $interval_to) break;
 
                         if(!empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
                             if($calc_run <= $row["lifetime_to"]  ){
@@ -548,6 +607,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     while($nincrement < 1000){ //Use the same hard limit of cron-expression library
                         $calc_run = $cron->getPreviousRunDate($date_ref, $nincrement, true)->format('Y-m-d H:i:s');
 
+                        if($calc_run < $interval_from) break;
+
                         if(!empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
                             if($calc_run >= $row["lifetime_from"] ){
                                 $calculeted_last_run = $calc_run;
@@ -573,8 +634,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["executed_last_run"] = array_key_last($row["executed_task_lst"]);
 
                 $row["last_run_actually_executed"] = false;
-                $aLASTLOGs = glob($LOGS_DIR."/".$row["event_unique_key"].'_*_'. date("YmdHi", strtotime($row["calculeted_last_run"])) ."_*.log");
-                if(!empty($aLASTLOGs)){
+                $aLASTLOG = preg_grep( "#^$LOGS_DIR+\/".$row["event_unique_key"]."_[OK]{2}_".date("YmdHi", strtotime($row["calculeted_last_run"]))."_[0-9]{12}_[a-zA-Z0-9-]{4}.log$#", $aLOGNAME );
+
+                if(!empty($aLASTLOG)){
                     $row["last_run_actually_executed"] = true;
                 }
 
@@ -584,68 +646,61 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $tmp_interval_lst = [];
                 $nincrement = 0;
 
-                if($row["high_frequency"]){
+                if($calc_run_lst == "Y"){
 
-                    if($calc_run_lst == "Y"){
-                        $row["interval_run_lst"] = [];
-                    }
+                    if($row["high_frequency"]){
 
-                    $calc_run_prec = '';
-                    while(empty($calc_run_ref) || $calc_run_ref < $event_interval_to){
+                        $calc_run_prec = '';
+                        while(empty($calc_run_ref) || $calc_run_ref < $event_interval_to){
 
-                        if(empty($calc_run_ref)){
-                            $calc_run_ref = $event_interval_from_orig;
-                        }
+                            if(empty($calc_run_ref)){
+                                $calc_run_ref = $event_interval_from_orig;
+                            }
 
-                        $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $nincrement, true)->format('Y-m-d H:i:s');
-                        if($nincrement == 0) $nincrement++;
+                            $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $nincrement, true)->format('Y-m-d H:i:s');
+                            if($nincrement == 0) $nincrement++;
 
-                        $row["planned_in_interval"]++;
+                            $row["planned_in_interval"]++;
 
-                        if($calc_run_ref < $date_now && $past_planned_tasks != "Y"){
+                            if($calc_run_ref < $date_now && $past_planned_tasks != "Y"){
 
-                            if(array_key_exists($calc_run_ref, $row["executed_task_lst"])){
-                                if($calc_run_ref == $row["executed_task_lst"][$calc_run_ref]){
-                                    $row["interval_run_lst"][$calc_run_ref] = date('Y-m-d H:i:s', strtotime("$calc_run_ref + 1 minute"));
-                                }else{
-                                    $row["interval_run_lst"][$calc_run_ref] = $row["executed_task_lst"][$calc_run_ref];
+                                if(array_key_exists($calc_run_ref, $row["executed_task_lst"])){
+                                    if($calc_run_ref == $row["executed_task_lst"][$calc_run_ref]){
+                                        $row["interval_run_lst"][$calc_run_ref] = date('Y-m-d H:i:s', strtotime("$calc_run_ref + 1 minute"));
+                                    }else{
+                                        $row["interval_run_lst"][$calc_run_ref] = $row["executed_task_lst"][$calc_run_ref];
+                                    }
+
+                                    $calc_run_prec = date('Y-m-d', strtotime($calc_run_ref));
                                 }
 
-                                $calc_run_prec = date('Y-m-d', strtotime($calc_run_ref));
+                            }else{
+                                if($calc_run_prec < date('Y-m-d', strtotime($calc_run_ref))){
+                                    $row["interval_run_lst"][$calc_run_ref] = date('Y-m-d H:i:s', strtotime("$calc_run_ref + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
+                                    $calc_run_prec = date('Y-m-d', strtotime($calc_run_ref));
+                                }else{
+                                    continue;
+                                }
+                            }
+                        }
+
+                    }else{
+
+                        while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+                            $calc_run = $cron->getNextRunDate($event_interval_from_orig, $nincrement, true)->format('Y-m-d H:i:s');
+
+                            if($calc_run > $event_interval_to){
+                                break;
                             }
 
-                        }else{
-                            if($calc_run_prec < date('Y-m-d', strtotime($calc_run_ref))){
-                                $row["interval_run_lst"][$calc_run_ref] = date('Y-m-d H:i:s', strtotime("$calc_run_ref + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
-                                $calc_run_prec = date('Y-m-d', strtotime($calc_run_ref));
-                            }else{
+                            $nincrement++;
+
+                            $tmp_interval_lst[$calc_run] = $calc_run;
+
+                            if($calc_run < $event_interval_from){
                                 continue;
                             }
-                        }
-                    }
 
-                }else{
-
-                    if($calc_run_lst == "Y"){
-                        $row["interval_run_lst"] = [];
-                    }
-
-                    while($nincrement < 1000){ //Use the same hard limit of cron-expression library
-                        $calc_run = $cron->getNextRunDate($event_interval_from_orig, $nincrement, true)->format('Y-m-d H:i:s');
-
-                        if($calc_run > $event_interval_to){
-                            break;
-                        }
-
-                        $nincrement++;
-
-                        $tmp_interval_lst[$calc_run] = $calc_run;
-
-                        if($calc_run < $event_interval_from){
-                            continue;
-                        }
-
-                        if($calc_run_lst == "Y"){
                             if($calc_run < $date_now && $past_planned_tasks != "Y"){
                                 if(array_key_exists($calc_run, $row["executed_task_lst"])){
                                     if($calc_run == $row["executed_task_lst"][$calc_run]){
@@ -658,25 +713,21 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                                 $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
                             }
                         }
-                    }
 
-                    foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
-                        if($exec_task_start >= $event_interval_from_orig && $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $tmp_interval_lst)){
-                            $tmp_interval_lst[$calc_run] = $calc_run;
-                        }
-                    }
-
-                    if($calc_run_lst == "Y"){
                         foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
+                            if($exec_task_start >= $event_interval_from_orig && $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $tmp_interval_lst)){
+                                $tmp_interval_lst[$calc_run] = $calc_run;
+                            }
+
                             if($exec_task_start >= $event_interval_from && $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
                                 $row["interval_run_lst"][$exec_task_start] = $exec_task_end;
                             }
                         }
 
                         ksort($row["interval_run_lst"]);
-                    }
 
-                    $row["planned_in_interval"] = count($tmp_interval_lst);
+                        $row["planned_in_interval"] = count($tmp_interval_lst);
+                    }
                 }
 
                 $aTASKs[] = $row;
@@ -1012,8 +1063,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         $task_handle = fopen($task_file_path, "wb");
         if($task_handle === false) throw new Exception('ERROR - File open error');
 
-        if( empty($params["TASK_CONTENT"]) ) throw new Exception("ERROR - No task content submitted");
+        $tester_file_name = date("Ymdhis")."_tester";
+        $task_tester_handle = fopen($base_tasks_path."/".$tester_file_name, "w");
+        if($task_tester_handle === false) throw new Exception('ERROR - Error in opening file for syntax check');
 
+        if( empty($params["TASK_CONTENT"]) ) throw new Exception("ERROR - No task content submitted");
 
         $params["TASK_CONTENT"] = base64_decode($params["TASK_CONTENT"]);
         $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $params["TASK_CONTENT"]);
@@ -1027,6 +1081,18 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         }
 
         try {
+
+            fwrite($task_tester_handle, $params["TASK_CONTENT"]);
+            fclose($task_tester_handle);
+
+            $file_check_result = exec("php -l \"".$base_tasks_path."/".$tester_file_name."\"");
+            if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                //Syntax error in file
+                fclose($task_tester_handle);
+                unlink($base_tasks_path."/".$tester_file_name);
+                throw new Exception("ERROR - Syntax error in task file");
+            }
+
             fwrite($task_handle, $params["TASK_CONTENT"]);
             fclose($task_handle);
 
@@ -1321,64 +1387,110 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
 
         //Check destination
-        if( empty($params["TASK_DESTINATION_PATH"]) ) throw new Exception("ERROR - No task path destination submitted");
+        if( empty($params["TASKS_DESTINATION_PATH"]) ) throw new Exception("ERROR - No task path destination submitted");
 
-        if(trim($params["TASK_DESTINATION_PATH"],"/") == ""){
+        if(trim($params["TASKS_DESTINATION_PATH"],"/") == ""){
             $destination_path = $base_tasks_path;
         }else{
-            $destination_path = $base_tasks_path . "/".trim($params["TASK_DESTINATION_PATH"],"/");
+            $destination_path = $base_tasks_path . "/".trim($params["TASKS_DESTINATION_PATH"],"/");
         }
 
         if(!is_dir($destination_path)) throw new Exception('ERROR - Destination path not exist');
         if(!is_writable($destination_path)) throw new Exception('ERROR - File not writable');
 
+        // print_r($params);
+        // print_r($_FILES);
+
+        // Array (
+        //     [TASKS_DESTINATION_PATH] => /
+        //     [CAN_REWRITE] => N
+        //     [MULTIPLE_UPLOAD] => Y )
+        // Array (
+        //     [task_upload_1] =>
+        //         Array (
+        //             [name] => test1Tasks.php
+        //             [type] => application/x-php
+        //             [tmp_name] => /tmp/phpcDGFQh
+        //             [error] => 0
+        //             [size] => 3082
+        //         )
+        //     [task_upload_2] => Array (
+        //         [name] => test2Tasks.php
+        //         [type] => application/x-php
+        //         [tmp_name] => /tmp/phpAL0jFh
+        //         [error] => 0
+        //         [size] => 3082
+        //     )
+        // )
+
         //Check task file
         if(!empty($_FILES)){
             $_FILES = array_change_key_case($_FILES, CASE_UPPER);
+        }else{
+            throw new Exception("ERROR - No task file name submitted");
         }
 
-        if(
-            empty($_FILES) ||
-            empty($_FILES["TASK_UPLOAD"]) ||
-            !is_uploaded_file($_FILES["TASK_UPLOAD"]["tmp_name"]) ||
-            $_FILES["TASK_UPLOAD"]["error"] > 0
-        ) throw new Exception("ERROR - No task file submitted or error uploading file");
+        //Check files upload or upload error
+        $empty_or_error = false;
 
-        if( empty($_FILES["TASK_UPLOAD"]["name"]) ) throw new Exception("ERROR - No task file name submitted");
+        foreach($_FILES as $file_key => $file_data){
 
-        if( substr($_FILES["TASK_UPLOAD"]["name"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ) throw new Exception("ERROR - Task file must end with '".$TASK_SUFFIX."'");
+            if( empty($file_data["name"]) ) throw new Exception("ERROR - No task file submitted or error uploading file");
+
+            $file_name = $file_data["name"];
+
+            if(
+                !is_uploaded_file($file_data["tmp_name"]) ||
+                $file_data["error"] > 0
+            ){
+                throw new Exception("ERROR - Error uploading file ($file_name)");
+            }
+
+            if( substr($file_data["name"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ) throw new Exception("ERROR - Task file must end with '".$TASK_SUFFIX."' ($file_name)");
+
+            $accepted_file_ext = ["php"];
+            $aFILENAME = explode('.', $file_data["name"]);
+            if(!in_array( strtolower( end ( $aFILENAME )),$accepted_file_ext)){
+                throw new Exception("ERROR - Wrong task file extension ($file_name)");
+            }
+
+            if( empty($file_data["size"]) ) throw new Exception("ERROR - Zero byte task file submitted ($file_name)");
+
+            if($can_rewrite != "Y"){
+                if (file_exists($destination_path."/".$file_data["name"])) throw new Exception("ERROR - Same task file in the same position fouded. Can't overwrite ($file_name)");
+            }
 
 
-        $accepted_file_ext = ["php"];
-        $aFILENAME = explode('.', $_FILES["TASK_UPLOAD"]["name"]);
-        if(!in_array( strtolower( end ( $aFILENAME )),$accepted_file_ext)){
-            throw new Exception("ERROR - Wrong task file extension");
+            //Check if file is a task file
+            $file_content = file_get_contents($file_data["tmp_name"], true);
+            $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content);
+
+            if(
+                strpos($file_content, 'use Crunz\Schedule;') === false ||
+                strpos($file_content, '= new Schedule()') === false ||
+                strpos($file_content, '->run(') === false
+            ){
+                throw new Exception("ERROR - Wrong task configuration in task file ($file_name)");
+            }
+
+            $file_check_result = exec("php -l \"".$file_data["tmp_name"]."\"");
+            if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                //Syntax error in file
+                throw new Exception("ERROR - Syntax error in task file ($file_name)");
+            }
         }
 
-        if( empty($_FILES["TASK_UPLOAD"]["size"]) ) throw new Exception("ERROR - Zero byte task file submitted");
 
-        if($can_rewrite != "Y"){
-            if (file_exists($destination_path."/".$_FILES["TASK_UPLOAD"]["name"])) throw new Exception("ERROR - Same task file in the same position fouded. Can't overwrite");
+        //if I arrived here it means that there were no errors in the analysis of the files
+        foreach($_FILES as $file_key => $file_data){
+
+            $file_name = $file_data["name"];
+
+            if(!move_uploaded_file($file_data["tmp_name"], $destination_path."/".$file_data["name"])){
+                throw new Exception("ERROR - Error uploading task file ($file_name)");
+            }
         }
 
-
-        //Check if file is a task file
-        $file_content = file_get_contents($_FILES["TASK_UPLOAD"]["tmp_name"], true);
-        $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content);
-
-        if(
-            strpos($file_content, 'use Crunz\Schedule;') === false ||
-            strpos($file_content, '= new Schedule()') === false ||
-            strpos($file_content, '->run(') === false
-        ){
-            throw new Exception("ERROR - Wrong task configuration in task file");
-        }
-
-
-        //All check done.. Can upload task file
-        if(!move_uploaded_file($_FILES["TASK_UPLOAD"]["tmp_name"], $destination_path."/".$_FILES["TASK_UPLOAD"]["name"])){
-            throw new Exception("ERROR - Error uploading task file");
-        }
 
         $data["result"] = true;
         $data["result_msg"] = '';
@@ -1445,7 +1557,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         $path_check = str_replace(".php", '', $params["TASK_PATH"]);
 
         if(
-            strpos($path_check, '.') !== false ||
+            strpos($path_check, '..') !== false ||
             substr($params["TASK_PATH"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ||
             strpos($path_check, $TASKS_DIR === false)
         ){
@@ -1474,7 +1586,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         return $response->withStatus(200)
                         ->withHeader("Content-Type", "application/json");
     });
-
 
     $group->post('/archive', function (Request $request, Response $response, array $args) {
 
@@ -1560,6 +1671,185 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         } catch(Exception $e) {
             $data["result"] = false;
             $data["result_msg"] = $e->getMessage();
+        }
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
+    $group->get('/exec-history', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty($crunz_config["timezone"])) throw new Exception("ERROR - Wrong timezone configuration");
+
+        date_default_timezone_set($crunz_config["timezone"]);
+
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        $TASK_SUFFIX = $crunz_config["suffix"];
+
+        if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
+
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
+        }else{
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
+        }
+
+
+        $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
+
+        $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
+        $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
+
+
+        $quotedSuffix = \preg_quote($TASK_SUFFIX, '/');
+        $regexIterator = new \RegexIterator( $recursiveIterator, "/^.+{$quotedSuffix}$/i", \RecursiveRegexIterator::GET_MATCH );
+
+        $files = \array_map(
+            static function (array $file) {
+                return new \SplFileInfo(\reset($file));
+            },
+            \iterator_to_array($regexIterator)
+        );
+
+        $aTASKs = [];
+        $task_counter = 0;
+        foreach ($files as $taskFile) {
+
+            $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
+            $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content_orig);
+
+            if(
+                strpos($file_content, 'use Crunz\Schedule;') === false ||
+                strpos($file_content, '= new Schedule()') === false ||
+                strpos($file_content, '->run(') === false ||
+                strpos($file_content, 'return $schedule;') === false
+            ){
+                continue;
+            }
+
+            if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
+                $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
+                if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                    //Syntax error in file
+                    continue;
+                }
+            }
+
+            unset($schedule);
+            require $taskFile->getRealPath();
+            if (empty($schedule) || !$schedule instanceof Schedule) {
+                continue;
+            }
+
+            $aEVENTs = $schedule->events();
+
+
+            $event_file_id = 0;
+            foreach ($aEVENTs as $oEVENT) {
+
+                $row = [];
+                $task_counter++;
+                $event_file_id++;
+
+                $row["event_launch_id"] = $task_counter;
+
+                $row["filename"] = $taskFile->getFilename();
+                $row["real_path"] = $taskFile->getRealPath();
+                $row["subdir"] = str_replace( array( $TASKS_DIR, $row["filename"]),'',$row["real_path"]);
+                $row["task_path"] = str_replace($TASKS_DIR, '', $row["real_path"]);
+                $row["task_description"] = $oEVENT->description;
+                $row["expression"] = $oEVENT->getExpression();
+
+                $row["event_unique_key"] = md5($row["task_path"] . $row["task_description"] . $row["expression"]);
+
+                try {
+                    $row["expression_readable"] = CronTranslator::translate($row["expression"]);
+                } catch (Exception $e) {
+                    $row["expression_readable"] = "";
+                }
+
+                $aTASKs[$row["event_unique_key"]] = $row;
+            }
+        }
+
+
+        $aLOGNAME = glob($LOGS_DIR."/"."*.log");
+
+        if(!empty($aLOGNAME)){
+            usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
+
+            foreach ($aLOGNAME as $lognum => $logname) {
+
+                if(!empty($params["LST_LENGTH"])){
+                    if($lognum >= $params["LST_LENGTH"]){
+                        break;
+                    }
+                }
+
+                $aLOGDETT =explode('_', str_replace($LOGS_DIR."/", "", $logname));
+
+                // Array
+                // (
+                //     [0] => 1615df171355437b20b027f598641c89
+                //     [1] => KO
+                //     [2] => 202108050114
+                //     [3] => 202108050114
+                //     [4] => SVIp.log
+                // )
+
+                if(!empty($aLOGDETT[0])) $event_unique_key = $aLOGDETT[0];
+                if(!empty($aLOGDETT[1])) $task_exec_outcome = $aLOGDETT[1];
+                if(!empty($aLOGDETT[2])) $datetime_start = $aLOGDETT[2];
+                if(!empty($aLOGDETT[3])) $datetime_end = $aLOGDETT[3];
+
+                $task_start = \DateTime::createFromFormat('YmdHi', $datetime_start);
+                $task_stop = \DateTime::createFromFormat('YmdHi', $datetime_end);
+                $interval = $task_start->diff($task_stop);
+                $task_duration = ($interval->format('%i') != 0 ? $interval->format('%i') : 1);
+
+
+                if(empty($aTASKs[$event_unique_key])){
+                    continue; //the task may have been deleted or archived
+                }
+
+                $row = $aTASKs[$event_unique_key];
+
+                $row["execution_datatime"] = $task_start->format('Y-m-d H:i:s');
+                $row["start"] = $datetime_start;
+                $row["duration"] = $task_duration;
+                $row["outcome"] = $task_exec_outcome;
+
+                $data[] = $row;
+            }
         }
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));

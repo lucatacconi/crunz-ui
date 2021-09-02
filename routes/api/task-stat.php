@@ -121,6 +121,50 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
             $data_calc = date('Y-m-d', strtotime("$data_calc + 1 days"));
         }
 
+        if( date('Y-m-d', strtotime($interval_from)) == date('Y-m-d', strtotime($interval_to)) ){
+
+            $glob_filter = $LOGS_DIR."/";
+            $glob_filter .= "*";
+            $glob_filter .= date('Ymd', strtotime($interval_from))."*_";
+            $glob_filter .= date('Ymd', strtotime($interval_to))."*";
+            $glob_filter .= ".log";
+
+        }else{
+
+            $glob_filter = $LOGS_DIR."/";
+            $glob_filter .= "*";
+
+            $glob_filter_from = '';
+            $glob_filter_to = '';
+
+            for($chr_selector = 0; $chr_selector < 10; $chr_selector++){
+
+                if( substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1) == substr(date('Ymd', strtotime($interval_to)), $chr_selector, 1) ){
+                    $glob_filter_from .= substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1);
+                    $glob_filter_to .= substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1);
+                }else{
+                    break;
+                }
+            }
+
+            $glob_filter .= $glob_filter_from."*_";
+            $glob_filter .= $glob_filter_to."*";
+            $glob_filter .= ".log";
+        }
+
+        $aLOGNAME_all = glob($glob_filter); //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
+
+        $aLOGNAME_perkey = [];
+        foreach($aLOGNAME_all as $logkey => $logfile){
+            $aLOG =explode('_', str_replace($LOGS_DIR."/", "", $logfile));
+
+            if( count($aLOGNAME_perkey[$aLOG[0]]) == 0 ){
+                $aLOGNAME_perkey[$aLOG[0]] = [];
+            }
+
+            $aLOGNAME_perkey[$aLOG[0]][] = $logfile;
+        }
+
         foreach ($files as $taskFile) {
 
             $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
@@ -135,10 +179,12 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                 continue;
             }
 
-            $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
-            if(strpos($file_check_result, 'No syntax errors detected in') === false){
-                //Syntax error in file
-                continue;
+            if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
+                $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
+                if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                    //Syntax error in file
+                    continue;
+                }
             }
 
             unset($schedule);
@@ -242,10 +288,12 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                 unset($cron);
                 $cron = Cron\CronExpression::factory($expression);
 
-
-                $aLOGNAME_tmp = glob($LOGS_DIR."/".$event_unique_key."*.log"); //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
-
                 $aLOGNAME = [];
+                $aLOGNAME_tmp = [];
+                if(!empty($aLOGNAME_perkey[$event_unique_key])){
+                    $aLOGNAME_tmp = $aLOGNAME_perkey[$event_unique_key];
+                }
+
                 if(!empty($aLOGNAME_tmp)){
                     usort( $aLOGNAME_tmp, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
 
@@ -283,7 +331,6 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                     $nincrement++;
 
                     do{
-
                         if(empty($calc_run_ref)){
                             $calc_run_ref = $event_interval_from_orig;
                         }else{

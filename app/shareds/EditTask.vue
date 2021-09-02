@@ -1,5 +1,5 @@
 <template>
-    <v-dialog :value="true" persistent max-width="800px" @on-close="closeModal()">
+    <v-dialog :value="true" persistent max-width="1185px" height="500px" @on-close="closeModal()">
         <v-card>
             <v-toolbar
                 dense
@@ -30,7 +30,7 @@
                             <v-col cols="12" class="py-0">
                                 <v-text-field
                                     label="Path:"
-                                    :value="logdata.task_path"
+                                    :value="taskFile.task_path"
                                     readonly
                                     hide-details
                                 ></v-text-field>
@@ -39,7 +39,7 @@
 
                         <v-row>
                             <v-col class="py-0 pt-5" cols="12">
-                                <editor v-on:editor="getEditor($event)" :content="logdata.taskEdit_content"></editor>
+                                <editor v-on:editor="getEditor($event)" :content="taskFile.taskEdit_content"></editor>
                             </v-col>
                         </v-row>
 
@@ -77,7 +77,7 @@
 module.exports = {
     data:function(){
         return{
-            logdata: {
+            taskFile: {
                 filename:"",
                 task_path:"",
                 taskEdit_content : ""
@@ -90,11 +90,28 @@ module.exports = {
 
     mounted:function() {
         if(this.rowdata){
-            if(this.rowdata.task_content!=''){
-                this.logdata.filename = this.rowdata.filename;
-                this.logdata.task_path = this.rowdata.task_path;
-                this.logdata.taskEdit_content=atob(this.rowdata.task_content)
+
+            var self = this;
+            var params = {
+                "return_task_cont": "Y",
+                "unique_id": self.rowdata.event_unique_key
             }
+
+            Utils.apiCall("get", "/task/",params, {})
+            .then(function (response) {
+
+                if(response.data.length!=0){
+                    task_detail = response.data[0];
+                    self.rowdata.task_content = task_detail.task_content
+
+                    if(self.rowdata.task_content!=''){
+                        self.taskFile.filename = self.rowdata.filename;
+                        self.taskFile.task_path = self.rowdata.task_path;
+                        self.taskFile.taskEdit_content=atob(self.rowdata.task_content)
+                    }
+
+                }
+            });
         }
     },
 

@@ -13,8 +13,8 @@
     module.exports = {
         data: function() {
             return {
-                dayBack: 3,
-                dayFront: 3,
+                dayBack: 5,
+                dayFront: 1,
 
                 stats: [],
 

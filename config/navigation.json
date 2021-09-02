@@ -86,6 +86,25 @@
                 "color": false,
                 "class": false
             }
+        },
+
+        {
+            "title": "Tasks' execution list",
+            "subtitle": "Executions result",
+            "allowed":["admin","user"],
+            "visible": true,
+
+            "action":{
+                "path": "/executionHistory/ExecutionHistory",
+                "component": "../../app/sections/executionHistory/ExecutionHistory.vue"
+            },
+
+            "layout":{
+                "icon": "mdi-clipboard-list-outline",
+                "disabled": false,
+                "color": false,
+                "class": false
+            }
         }
     ]
 }
