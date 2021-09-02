@@ -74,7 +74,7 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 * Linux OS and Bash shell
 * Service ntp enabled
-* Apache and PHP 7.1.3 or newer, with rewrite.load module enabled
+* Apache and PHP 7.4 or newer, with rewrite.load module enabled
 * Composer
 
 
