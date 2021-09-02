@@ -8,10 +8,10 @@
         ></new-task>
 
         <!-- Upload file modal -->
-        <task-upload
+        <tasks-upload
             v-if="showUploadModal"
             @on-close-modal="closeUploadModal($event)"
-        ></task-upload>
+        ></tasks-upload>
 
         <!-- Log modal -->
         <task-log
@@ -44,8 +44,8 @@
             <v-data-table
                 :headers="headers"
                 :items="files"
-                :sort-by="headers"
-                :sort-desc="[false, true]"
+                :sort-desc.sync="sortDesc"
+                :sort-by.sync="sortBy"
                 :custom-sort="customSort"
                 :search="search"
             >
@@ -96,9 +96,8 @@
                                     </v-menu>
                                 </div>
                             </td>
-                            <td class="text-center">
-                                {{ item.event_launch_id }}
-
+                            <td>
+                                {{ item.task_path }}
                                 <template v-if="item.high_frequency == true">
                                     <v-tooltip bottom>
                                         <template v-slot:activator="{ on, attrs }">
@@ -114,9 +113,6 @@
                                         <span>High frequency task</span>
                                     </v-tooltip>
                                 </template>
-                            </td>
-                            <td>
-                                {{ item.task_path }}
                             </td>
                             <td>
                                 {{ item.task_description == "" ? "--" : item.task_description }}
@@ -180,12 +176,13 @@
 module.exports = {
     data:function(){
         return{
+            sortDesc:false,
+            sortBy:'',
             search: '',
             showNewTaskModal:false,
             showUploadModal: false,
             showEditModal: false,
             showLogModal: false,
-            showEditModal: false,
             headers: [
                 {
                     text: 'Actions',
@@ -193,7 +190,6 @@ module.exports = {
                     value: '',
                     align: 'center'
                 },
-                { text: 'Task num.', value: 'event_launch_id', align: 'center' },
                 { text: 'Task', value: 'task_path' },
                 { text: 'Description', value: 'task_description', sortable: false },
                 { text: 'Execution', value: 'expression', sortable: false },
@@ -214,9 +210,7 @@ module.exports = {
     methods: {
         readData:function(options = {}){
             var self = this;
-            var params = {
-                "return_task_cont": "Y"
-            }
+            var params = {}
             self.message = "Loading tasks";
             Utils.apiCall("get", "/task/",params, options)
             .then(function (response) {
@@ -281,26 +275,56 @@ module.exports = {
         },
 
         downloadTask:function(rowdata){
-            if(rowdata.task_content != '' && rowdata.filename != ''){
-                if(rowdata.task_content == ''){
-                    Swal.fire({
-                        title: 'Task content empty',
-                        text: "Task content is empty",
-                        type: 'error'
-                    })
-                    return;
-                }
-                if(rowdata.filename == ''){
-                    Swal.fire({
-                        title: 'Filename empty',
-                        text: "Filename is empty",
-                        type: 'error'
-                    })
-                    return;
-                }
-                var dec = atob(rowdata.task_content);
-                Utils.downloadFile(dec,rowdata.filename);
+
+            var self = this;
+            var params = {
+                "return_task_cont": "Y",
+                "unique_id": rowdata.event_unique_key
             }
+
+            Utils.apiCall("get", "/task/",params, {})
+            .then(function (response) {
+
+                error_dwl_msg = "Error downloading task content";
+
+                if(response.data.length!=0){
+                    task_detail = response.data[0];
+                    rowdata.task_content = task_detail.task_content
+
+                    if(rowdata.task_content != '' && rowdata.filename != ''){
+                        if(rowdata.task_content == ''){
+                            Swal.fire({
+                                title: 'Task content empty',
+                                text: "Task content is empty",
+                                type: 'error'
+                            })
+                            return;
+                        }
+                        if(rowdata.filename == ''){
+                            Swal.fire({
+                                title: 'Filename empty',
+                                text: "Filename is empty",
+                                type: 'error'
+                            })
+                            return;
+                        }
+                        var dec = atob(rowdata.task_content);
+                        Utils.downloadFile(dec,rowdata.filename);
+                    }else{
+                        Swal.fire({
+                            title: 'ERROR',
+                            text: error_dwl_msg,
+                            type: 'error'
+                        })
+                    }
+                }else{
+                    Swal.fire({
+                        title: 'ERROR',
+                        text: error_dwl_msg,
+                        type: 'error'
+                    })
+                }
+            });
         },
 
         openUploadModal: function () {
@@ -478,7 +502,7 @@ module.exports = {
 
     components:{
         'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue' + '?v=' + new Date().getTime()),
-        'task-upload': httpVueLoader('../../shareds/FileUpload.vue' + '?v=' + new Date().getTime()),
+        'tasks-upload': httpVueLoader('../../shareds/TasksUpload.vue' + '?v=' + new Date().getTime()),
         'new-task': httpVueLoader('../../shareds/NewTask.vue' + '?v=' + new Date().getTime()),
         'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime()),
         'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime())

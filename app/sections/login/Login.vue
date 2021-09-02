@@ -18,6 +18,7 @@
                                     label="Username"
                                     type="text"
                                     v-validate="{ required: true }"
+                                    autofocus=true
                                     :error-messages="errors.collect('login-area.username')" >
                                 </v-text-field>
                                 <v-text-field

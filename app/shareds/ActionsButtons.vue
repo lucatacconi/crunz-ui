@@ -45,7 +45,7 @@
                     <v-icon>mdi-upload</v-icon>
                 </v-btn>
             </template>
-            <span>Upload file</span>
+            <span>Upload tasks</span>
         </v-tooltip>
         <v-tooltip bottom>
             <template v-slot:activator="{ on }">

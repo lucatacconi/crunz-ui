@@ -33,7 +33,8 @@
                     prepend-icon=""
                     hide-details
                     append-icon="mdi-folder"
-                    v-model="formData.file"
+                    :multiple="formData.multipleUpload"
+                    v-model="formData.files"
                 ></v-file-input>
                 <v-layout row wrap>
                     <v-flex xs10 class="pl-3">
@@ -67,11 +68,12 @@ module.exports = {
     data:function(){
         return{
             formData:{
-                file:null,
+                files: [],
                 path:null,
-                rewrite:true
+                rewrite:false,
+                multipleUpload:true
             },
-            modalTitle:"File upload"
+            modalTitle:"Tasks upload"
         }
     },
     methods: {
@@ -81,46 +83,57 @@ module.exports = {
         },
         uploadFile:function(){
             var self=this
-            if(this.formData.file!=null&&this.formData.file.type=="application/x-php"){
 
-                var formData = new FormData();
-                formData.append("task_upload", this.formData.file);
-                formData.append("task_destination_path", this.formData.path);
-                formData.append("can_rewrite", this.formData.rewrite ? 'Y' : 'N');
-
-                Utils.fileUpload("/task/upload", formData)
-                .then(function (response) {
-                    if(response.data.result){
-                        Swal.fire({
-                            title: 'Task uploaded',
-                            text: response.data.result_msg,
-                            type: 'success',
-                            onClose: () => {
-                                self.closeModal(true)
-                            }
-                        })
-                    }else{
-                        Swal.fire({
-                            title: 'ERROR',
-                            text: response.data.result_msg,
-                            type: 'error'
-                        })
-                    }
-                });
-
+            var error=''
+            if(this.formData.files==null){
+                error+='<br>Task file/s not selected'
+            }else if(this.formData.files.length==0){
+                error+='<br>File not selected'
             }else{
-                var txt=""
-                if(this.formData.file==null){
-                    txt+="<br>File not selected"
-                }else if(this.formData.file.type!='application/x-php'){
-                    txt+="<br>Type file wrong"
+                for(var i=0;i<this.formData.files.length;i++){
+                    if(this.formData.files[i]==null||this.formData.files[i].type!="application/x-php"){
+                        if(this.formData.files[i]==null) error+='<br>Task file/s not selected'
+                        if(this.formData.files[i].type!="application/x-php") error+='<br>Wrong task file format'
+                        break
+                    }
                 }
+            }
+            if(error!=''){
                 Swal.fire({
                     title:"Upload error",
-                    html:txt,
+                    html:error,
                     type:"error"
                 })
+                return
             }
+
+            var formData = new FormData();
+            for(var i=0;i<this.formData.files.length;i++){
+                formData.append("task_upload_"+Number(i+1), this.formData.files[i]);
+            }
+            formData.append("tasks_destination_path", this.formData.path);
+            formData.append("can_rewrite", this.formData.rewrite ? 'Y' : 'N');
+            formData.append("multiple_upload", this.formData.multipleUpload ? 'Y' : 'N');
+
+            Utils.fileUpload("/task/upload", formData)
+            .then(function (response) {
+                if(response.data.result){
+                    Swal.fire({
+                        title: 'Task/s uploaded',
+                        text: response.data.result_msg,
+                        type: 'success',
+                        onClose: () => {
+                            self.closeModal(true)
+                        }
+                    })
+                }else{
+                    Swal.fire({
+                        title: 'ERROR',
+                        text: response.data.result_msg,
+                        type: 'error'
+                    })
+                }
+            });
         }
     },
     created:function() {

@@ -1,5 +1,5 @@
 <template>
-    <v-dialog :value="true" persistent max-width="800px" @on-close="closeModal()">
+    <v-dialog :value="true" persistent max-width="1185px" height="500px" @on-close="closeModal()">
         <v-card>
             <v-toolbar
                 dense
@@ -214,8 +214,15 @@ module.exports = {
                 Utils.showConnError();
             }
 
-            var apiParams = {
-                "event_unique_key": event_unique_key
+            if(self.rowdata.start != ''){
+                var apiParams = {
+                    "event_unique_key": event_unique_key,
+                    "datetime_ref": self.rowdata.start
+                }
+            }else{
+                var apiParams = {
+                    "event_unique_key": event_unique_key
+                }
             }
 
             Utils.apiCall("get", "/task/exec-outcome", apiParams)
@@ -250,10 +257,10 @@ module.exports = {
 
 <style>
     #crunz-log {
-        height: 300px;
+        height: 500px;
     }
     #custom-log {
-        height: 300px;
+        height: 500px;
     }
 
 </style>
