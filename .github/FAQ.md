@@ -104,7 +104,7 @@ Cruz-ui has Crunz packages in its libraries.
 
 However Crunz-ui can use Crunz installations already installed on your server.
 
-please refer to [Readme](README.md#usage-on-a-previous-installation-of-crunz)
+Please refer to [Readme](README.md#usage-on-a-previous-installation-of-crunz)
 
 
 ## I don't know the password to access the system
@@ -118,3 +118,23 @@ All users enabled to access the application are configured in the configuration 
 
 ## After successful login the system returns to the login page
 
+The problem occurs when there is an error in the timezone configuration or in the configuration of the current date and time.
+
+It is important that the system clock is correctly synchronized. In case of unsynchronized clock there could be misalignments in the execution of the tasks or in the management of the user sessions.
+
+First of all check the configuration present in the crunz.yml file.
+
+Then check the date and time configured on your server:
+```
+date
+```
+
+It is advisable to use npm to keep the server time synchronized:
+```
+sudo apt-get install ntp
+sudo timedatectl set-timezone TIMEZONE
+sudo service ntp restart
+timedatectl
+```
+
+Replace TIMEZONE with the desired time zone. Refer to [Timezone Database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) for values.

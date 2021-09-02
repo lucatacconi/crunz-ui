@@ -7,6 +7,7 @@
 * In case of error, communication should be sent by email to the user who created the task or to specific configured users
 * Light and dark mode switch
 * Session that allows for the massive verification of the syntax of the tasks loaded on the system
+* Crunz and Crunz-ui configuration for Doker
 
 
 ## Release history
