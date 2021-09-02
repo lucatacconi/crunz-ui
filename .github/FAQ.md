@@ -43,7 +43,7 @@ In the situation above, Web interface in fact is served by Xampp Apache and PHP 
 
 You can avoid error replacing the php symlink in the /usr/bin directory and pointing it to Xampp's php.
 
-Do not delete the original symbolic link but save or rename it
+> :warning: ***Do not delete the original symbolic link but save or rename it***
 ```
 cd /usr/bin/
 sudo mv /usr/bin/php /usr/bin/php-old
@@ -64,7 +64,7 @@ SESSION_DURATION = "2 hours"
 #Absolute path to Crunz base directory. Leave empty if you want to use Crunz embedded
 #CRUNZ_BASE_DIR = ""
 
-***LOGS_DIR = "./var/logs"***
+LOGS_DIR = "./var/logs" #<--- MODIFY HERE
 
 RUN_MODE = "PRODU" #PRODU | DEVEL
 
@@ -86,7 +86,17 @@ to (replace BASE_CRUNZUI_PATH and LOGS_PATH with custom paths configured on your
 * * * * * cd /[BASE_CRUNZUI_PATH] && ./crunz-ui.sh -l [LOGS_PATH]
 ```
 
+
 ## My server is very slow. I can do something to make the interfaces more responsive?
+
+Crunz-ui checks the syntax of tasks during all read, update or write operations.
+
+In the case of servers with less computing power, checking the syntax of the tasks considerably slows down the display of tables and statistics.
+
+You can set the parameter CHECK_PHP_TASKS_SYNTAX to false to inhibit syntax checking.
+
+> :warning: ***Configuring the parameter CHECK_PHP_TASKS_SYNTAX to false in case of syntax errors in the tasks could cause anomalous behavior in the Crunz-ui interfaces***
+
 
 ## I already have Crunz installed on my server. How do I configure Crunz-ui?
 
