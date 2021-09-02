@@ -6,6 +6,7 @@
 * System should log the user who manually run a task
 * In case of error, communication should be sent by email to the user who created the task or to specific configured users
 * Light and dark mode switch
+* Session that allows for the massive verification of the syntax of the tasks loaded on the system
 
 
 ## Release history
@@ -22,6 +23,9 @@ Crunz-ui updated stable release:
 * Improvements in interface ergonomics
 * Several improvements and bug fixes on all the code
 * Fixes issue #9, #10 and #11
+* Disable via parameter of the task syntax check, an operation that can slow down a lot of obsolete servers
+* Introduction of the faq and troubleshooting page
+* Updated documentation for installation and configuration
 
 ### v.2.0.0 (2021-01-26)
 
