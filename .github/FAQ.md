@@ -3,16 +3,17 @@
 Below are a number of useful tips for configuring the system and for solving common problems. If the problem you encountered is not reported please contact us and open an issue.
 
 
-### Table of Contents
+## Table of Contents
 - [In the initial check on the dashboard I am reported configuration errors](#in-the-initial-check-on-the-dashboard-i-am-reported-configuration-errors)
 - [I use Xampp on my server and I get an error when I try to manually execute a task](#i-use-xampp-on-my-server-and-i-get-an-error-when-i-try-to-manually-execute-a-task)
 - [How do I configure the system to generate logs in a custom folder?](#how-do-i-configure-the-system-to-generate-logs-in-a-custom-folder)
 - [My server is very slow. I can do something to make the interfaces more responsive?](#my-server-is-very-slow-i-can-do-something-to-make-the-interfaces-more-responsive)
 - [I already have Crunz installed on my server. How do I configure Crunz-ui?](#i-already-have-crunz-installed-on-my-server-how-do-i-configure-crunz-ui)
+- [I don't know the password to access the system](#i-dont-know-the-password-to-access-the-system)
 - [After successful login the system returns to the login page](#after-successful-login-the-system-returns-to-the-login-page)
 
 
-### In the initial check on the dashboard I am reported configuration errors
+## In the initial check on the dashboard I am reported configuration errors
 
 When accessing the Crunz-ui dashboard, Crunz-ui checks the system status. Verify that tasks and logs folder is present and writable. Then check that the Crunz configuration file is present and correctly configured.
 
@@ -32,7 +33,7 @@ sudo ./vendor/bin/crunz publish:config
 > :warning: ***Attention, the above examples work on an embedded Crunz installation***
 
 
-### I use Xampp on my server and I get an error when I try to manually execute a task by interface
+## I use Xampp on my server and I get an error when I try to manually execute a task by interface
 
 Crunz-ui allows you to launch the execution of tasks directly from the interface.
 
@@ -43,12 +44,60 @@ In the situation above, Web interface in fact is served by Xampp Apache and PHP 
 You can avoid error replacing the php symlink in the /usr/bin directory and pointing it to Xampp's php.
 
 Do not delete the original symbolic link but save or rename it
+```
+cd /usr/bin/
+sudo mv /usr/bin/php /usr/bin/php-old
+sudo ln -s /opt/lampp/bin/php /usr/bin/
+```
 
 
-### How do I configure the system to generate logs in a custom folder?
+## How do I configure the system to generate logs in a custom folder?
 
-### My server is very slow. I can do something to make the interfaces more responsive?
+By default crunz.ui.sh batch will search for standard log folder ./var/logs inside main Crunz.ui folder.
 
-### I already have Crunz installed on my server. How do I configure Crunz-ui?
+if you want to configure a custom log directory first indicate the location of the custom log folder inside the .env file:
+```
+JWT_SECRET = "234sjdflajsfajsfagwq1239fwqeff7sdf32ghdsf67048qo4"
 
-### After successful login the system returns to the login page
+SESSION_DURATION = "2 hours"
+
+#Absolute path to Crunz base directory. Leave empty if you want to use Crunz embedded
+#CRUNZ_BASE_DIR = ""
+
+***LOGS_DIR = "./var/logs"***
+
+RUN_MODE = "PRODU" #PRODU | DEVEL
+
+#Important notice
+#In the case of servers with less computing power, checking the syntax of the tasks considerably slows down the display of tables and statistics
+#you can set the parameter CHECK_PHP_TASKS_SYNTAX to false to inhibit syntax checking
+#Configuring the parameter CHECK_PHP_TASKS_SYNTAX to false in case of syntax errors in the tasks could cause anomalous behavior in the Crunz-ui interfaces
+
+CHECK_PHP_TASKS_SYNTAX = true #true | false
+```
+
+Then modify standard Crunz-ui event configuration in the crontab from:
+```
+* * * * * cd /[BASE_CRUNZUI_PATH] && ./crunz-ui.sh
+```
+
+to (replace BASE_CRUNZUI_PATH and LOGS_PATH with custom paths configured on your system):
+```
+* * * * * cd /[BASE_CRUNZUI_PATH] && ./crunz-ui.sh -l [LOGS_PATH]
+```
+
+## My server is very slow. I can do something to make the interfaces more responsive?
+
+## I already have Crunz installed on my server. How do I configure Crunz-ui?
+
+
+## I don't know the password to access the system
+
+The application is preconfigured with a single access user to verify the login procedure and access the dashboard and the main menu.
+
+To test access use the login **admin** and password **password**
+
+All users enabled to access the application are configured in the configuration file **/config/accounts.json**.
+
+
+## After successful login the system returns to the login page
