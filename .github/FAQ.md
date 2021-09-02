@@ -1,30 +1,31 @@
 # FAQ and Troubleshooting
 
- <summary><strong>Table of Contents</strong> (click to expand)</summary>
+Below are a number of useful tips for configuring the system and for solving common problems. If the problem you encountered is not reported please contact us and open an issue.
 
-- [What Crunz is and how Crunz-ui connects to it](#what-crunz-is-and-how-crunz-ui-connects-to-it)
-- [What else can Crunz-ui do](#what-else-can-crunz-ui-do)
-- [Browser Support](#browser-support)
-- [System Requirements](#system-requirements)
-- [Installation and application setup](#installation-and-application-setup)
-  - [Never used Crunz before](#never-used-crunz-before)
-  - [Usage on a previous installation of Crunz](#usage-on-a-previous-installation-of-crunz)
-  - [Custom log directory configuration](#custom-log-directory-configuration)
-  - [Accounts configuration](#accounts-configuration)
-  - [Ubuntu/Debian setup example](UBUNTU_EXPL.md)
-- [First login](#first-login)
-- [Contributing informations](CONTRIBUTING.md)
-- [FAQ / Troubleshooting](FAQ.md)
+
+### Table of Contents
+- [In the initial check on the dashboard I am reported configuration errors](#in-the-initial-check-on-the-dashboard-i-am-reported-configuration-errors)
+- [I use Xampp on my server and I get an error when I try to manually execute a task](#i-use-xampp-on-my-server-and-i-get-an-error-when-i-try-to-manually-execute-a-task)
+- [How do I configure the system to generate logs in a custom folder?](#how-do-i-configure-the-system-to-generate-logs-in-a-custom-folder)
+- [My server is very slow. I can do something to make the interfaces more responsive?](#my-server-is-very-slow-i-can-do-something-to-make-the-interfaces-more-responsive)
+- [I already have Crunz installed on my server. How do I configure Crunz-ui?](#i-already-have-crunz-installed-on-my-server-how-do-i-configure-crunz-ui)
+- [After successful login the system returns to the login page](#after-successful-login-the-system-returns-to-the-login-page)
 
 
 
-### I use Xampp on my server and I get an error when I try to manually execute a task
+###In the initial check on the dashboard I am reported configuration errors
+
+when accessing the crunz-ui dashboard, it checks the system status. Verify that the tasks and logs folder is present and writable. Then check that the Crunz configuration file is present and correctly configured
 
 
-### How do I configure the system to generate logs in a custom folder?
 
-### My server is very slow. I can do something to make the interfaces more responsive
+###I use Xampp on my server and I get an error when I try to manually execute a task
 
-### I already have Crunz installed on my server. How do I configure Crunz-ui?
 
-### After successful login the system returns to the login page
+###How do I configure the system to generate logs in a custom folder?
+
+###My server is very slow. I can do something to make the interfaces more responsive?
+
+###I already have Crunz installed on my server. How do I configure Crunz-ui?
+
+###After successful login the system returns to the login page
