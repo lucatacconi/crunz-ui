@@ -100,6 +100,12 @@ You can set the parameter CHECK_PHP_TASKS_SYNTAX to false to inhibit syntax chec
 
 ## I already have Crunz installed on my server. How do I configure Crunz-ui?
 
+Cruz-ui has Crunz packages in its libraries.
+
+However Crunz-ui can use Crunz installations already installed on your server.
+
+please refer to [Readme](README.md#usage-on-a-previous-installation-of-crunz)
+
 
 ## I don't know the password to access the system
 
@@ -111,3 +117,4 @@ All users enabled to access the application are configured in the configuration 
 
 
 ## After successful login the system returns to the login page
+
