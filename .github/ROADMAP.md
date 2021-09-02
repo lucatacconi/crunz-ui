@@ -12,7 +12,7 @@
 
 ## Release history
 
-### v.2.6.1 (2021-09-01)
+### v.2.6.1 (2021-09-02)
 
 Crunz-ui updated stable release:
 * Optimization of the task reading engine that now presents results faster and more efficiently
@@ -27,6 +27,7 @@ Crunz-ui updated stable release:
 * Disable via parameter of the task syntax check, an operation that can slow down a lot of obsolete servers
 * Introduction of the faq and troubleshooting page
 * Updated documentation for installation and configuration
+* Implementation of Crunz [Lavary/Crunz](https://github.com/lavary/crunz) v3.0.1 in Crunz-ui
 
 ### v.2.0.0 (2021-01-26)
 
