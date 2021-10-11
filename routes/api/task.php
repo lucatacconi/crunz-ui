@@ -631,7 +631,10 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 }
 
                 $row["calculeted_last_run"] = $calculeted_last_run;
-                $row["executed_last_run"] = array_key_last($row["executed_task_lst"]);
+
+                if(!empty($row["executed_task_lst"])){
+                    $row["executed_last_run"] = array_key_last($row["executed_task_lst"]);
+                }
 
                 $row["last_run_actually_executed"] = false;
                 $aLASTLOG = preg_grep( "#^$LOGS_DIR+\/".$row["event_unique_key"]."_[OK]{2}_".date("YmdHi", strtotime($row["calculeted_last_run"]))."_[0-9]{12}_[a-zA-Z0-9-]{4}.log$#", $aLOGNAME );

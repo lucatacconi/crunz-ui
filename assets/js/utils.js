@@ -101,7 +101,7 @@ var Utils = {
         if(this.showLoadingConf && this.hideLoadingConf){
             axios.interceptors.response.use(function (response) {
                 Utils.hideLoading();
-                return response;
+                return Promise.resolve(response);
             }, function (error) {
                 // Do something with response error
                 return Promise.reject(error);
