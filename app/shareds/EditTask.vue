@@ -97,9 +97,8 @@ module.exports = {
                 "unique_id": self.rowdata.event_unique_key
             }
 
-            Utils.apiCall("get", "/task/",params, {})
+            Utils.apiCall("get", "/task/",params)
             .then(function (response) {
-
                 if(response.data.length!=0){
                     task_detail = response.data[0];
                     self.rowdata.task_content = task_detail.task_content

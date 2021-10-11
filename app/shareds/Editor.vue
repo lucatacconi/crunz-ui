@@ -320,6 +320,11 @@ module.exports = {
             self.initEditor('task-edit');
         }, 200);
     },
+    watch:{
+        content:function(value){
+            if(this.taskEditEditor!=null) this.taskEditEditor.session.setValue(value);
+        }
+    }
 }
 </script>
 
