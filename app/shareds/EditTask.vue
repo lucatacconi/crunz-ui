@@ -128,6 +128,15 @@ module.exports = {
             if(this.editor==undefined) return
             if(this.editor==null) return
 
+            if(this.editor.getValue().trim()==""){
+                Swal.fire({
+                    title: 'ERROR',
+                    text: "Task content is empty",
+                    type: 'error'
+                })
+                return
+            }
+
             var apiParams = {
                 "task_file_path": this.rowdata.task_path,
                 "task_content": btoa(this.editor.getValue())
