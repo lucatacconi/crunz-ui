@@ -343,7 +343,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
                             $aSTATs[$calc_run_short]["planned"]++;
 
-                            if(in_array($calc_run_ref, $aLOGNAME)){
+                            if(array_key_exists($calc_run_ref, $aLOGNAME)){
                                 $aSTATs[$calc_run_short]["executed"]++;
 
                                 if($aLOGNAME[$calc_run_ref] == 'OK'){
@@ -356,7 +356,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                             }
                         }
 
-                    } while(empty($calc_run_ref) || $calc_run_ref < $event_interval_to);
+                    } while(empty($calc_run_ref) || $calc_run_ref <= $event_interval_to);
 
                 }else{
 

@@ -3,3 +3,7 @@
     font-family: Roboto,sans-serif;
 }
 
+#app{
+    background-image: url("../images/clock-backg.png");
+    background-repeat: repeat;
+}
