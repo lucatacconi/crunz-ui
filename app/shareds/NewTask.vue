@@ -134,6 +134,14 @@ return $schedule;`
                 })
                 return
             }
+            if(this.editor.getValue().trim()==""){
+                Swal.fire({
+                    title: 'ERROR',
+                    text: "Task content is empty",
+                    type: 'error'
+                })
+                return
+            }
 
             var apiParams = {
                 "task_file_path": this.formData.path=='/' ? this.formData.path+this.formData.task_name+this.suffix : this.formData.path+"/"+this.formData.task_name+this.suffix,
