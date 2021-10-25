@@ -328,13 +328,12 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
                 if($high_frequency){
 
-                    $nincrement++;
-
                     do{
+
                         if(empty($calc_run_ref)){
-                            $calc_run_ref = $event_interval_from_orig;
+                            $calc_run_ref = $calc_run_ref = $cron->getNextRunDate($event_interval_from_orig, 0, true)->format('Y-m-d H:i');
                         }else{
-                            $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $nincrement, true)->format('Y-m-d H:i');
+                            $calc_run_ref = $cron->getNextRunDate($calc_run_ref, 1, true)->format('Y-m-d H:i');
                         }
 
                         if($calc_run_ref <= $event_interval_to){
