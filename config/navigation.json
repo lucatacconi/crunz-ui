@@ -51,6 +51,25 @@
         },
 
         {
+            "title": "Tasks' execution list",
+            "subtitle": "Executions result",
+            "allowed":["admin","user"],
+            "visible": true,
+
+            "action":{
+                "path": "/executionHistory/ExecutionHistory",
+                "component": "../../app/sections/executionHistory/ExecutionHistory.vue"
+            },
+
+            "layout":{
+                "icon": "mdi-clipboard-list-outline",
+                "disabled": false,
+                "color": false,
+                "class": false
+            }
+        },
+
+        {
             "title": "Monthly calendar",
             "subtitle": "Show monthly tasks",
             "allowed":["admin","user"],
@@ -89,18 +108,37 @@
         },
 
         {
-            "title": "Tasks' execution list",
-            "subtitle": "Executions result",
+            "title": "Archived tasks",
+            "subtitle": "Show all archived tasks",
             "allowed":["admin","user"],
             "visible": true,
 
             "action":{
-                "path": "/executionHistory/ExecutionHistory",
-                "component": "../../app/sections/executionHistory/ExecutionHistory.vue"
+                "path": "/archivedTasks/ArchivedTasks",
+                "component": "../../app/sections/archivedTasks/ArchivedTasks.vue"
             },
 
             "layout":{
-                "icon": "mdi-clipboard-list-outline",
+                "icon": "archive-outline",
+                "disabled": false,
+                "color": false,
+                "class": false
+            }
+        },
+
+        {
+            "title": "Tasks' code checker",
+            "subtitle": "Lint PHP task file",
+            "allowed":["admin","user"],
+            "visible": true,
+
+            "action":{
+                "path": "/taskCheck/TaskCheck",
+                "component": "../../app/sections/taskCheck/TaskCheck.vue"
+            },
+
+            "layout":{
+                "icon": "microscope",
                 "disabled": false,
                 "color": false,
                 "class": false
