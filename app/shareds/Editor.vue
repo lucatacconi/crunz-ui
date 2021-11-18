@@ -99,7 +99,7 @@
         </div>
 
         <v-card-text class="pa-0">
-            <div id="task-edit" style="height:500px;"></div>
+            <div id="task-edit"></div>
         </v-card-text>
     </v-card>
 </template>
@@ -325,4 +325,7 @@ module.exports = {
 </script>
 
 <style>
+    #task-edit {
+        height: 500px;
+    }
 </style>
