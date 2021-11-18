@@ -368,8 +368,8 @@ module.exports = {
     },
 
     components:{
-        'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime()),
-        'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime())
+        'task-log': () => Utils.loadFileVue('../app/shareds/ExecutionLog.vue'),
+        'task-edit': () => Utils.loadFileVue('../app/shareds/EditTask.vue')
     }
 }
 </script>

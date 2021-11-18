@@ -39,7 +39,7 @@
 
                         <v-row>
                             <v-col class="py-0 pt-5" cols="12">
-                                <editor v-on:editor="getEditor($event)" :content="taskFile.taskEdit_content"></editor>
+                                <editor @editor="getEditor($event)" :content="taskFile.taskEdit_content"></editor>
                             </v-col>
                         </v-row>
 

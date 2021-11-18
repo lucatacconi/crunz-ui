@@ -1,4 +1,4 @@
-<template id="navbartools" lang="html">
+<template id="navbartools">
     <span>
 
     </span>

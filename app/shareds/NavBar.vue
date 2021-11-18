@@ -1,4 +1,4 @@
-<template id="navigator" lang="html">
+<template id="navigator">
     <v-app-bar app clipped-right color="blue-grey" dense dark>
         <v-app-bar-nav-icon @click="drawer()" ></v-app-bar-nav-icon>
         <v-toolbar-title>
@@ -29,8 +29,8 @@
             }
         },
         components: {
-            'userinfo': httpVueLoader('../../app/shareds/UserInfo.vue' + '?v=' + new Date().getTime()),
-            'navbartools': httpVueLoader('../../app/shareds/NavBarTools.vue' + '?v=' + new Date().getTime())
+            'userinfo': () => Utils.loadFileVue('../app/shareds/UserInfo.vue'),
+            'navbartools': () => Utils.loadFileVue('../app/shareds/NavBarTools.vue')
         },
         mounted: function(){
         }

@@ -1,4 +1,4 @@
-<template id="login" lang="html">
+<template id="login">
     <v-app>
         <v-main>
             <v-container fluid fill-height>

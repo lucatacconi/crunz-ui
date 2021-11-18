@@ -85,7 +85,7 @@
                                 </v-toolbar>
 
                                 <v-card-text class="pa-0">
-                                    <div id="crunz-log"></div>
+                                    <div id="crunz-log" style="height:500px;"></div>
                                 </v-card-text>
                             </v-card>
                         </v-col>
@@ -112,7 +112,7 @@
                                 </v-toolbar>
 
                                 <v-card-text class="pa-0">
-                                    <div id="custom-log"></div>
+                                    <div id="custom-log" style="height:500px;"></div>
                                 </v-card-text>
                             </v-card>
                         </v-col>
@@ -256,11 +256,4 @@ module.exports = {
 </script>
 
 <style>
-    #crunz-log {
-        height: 500px;
-    }
-    #custom-log {
-        height: 500px;
-    }
-
 </style>

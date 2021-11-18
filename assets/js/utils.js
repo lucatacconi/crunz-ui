@@ -1,4 +1,31 @@
 var Utils = {
+    loadFileVue:function(url){
+        return new Promise((resolve, reject)=>{
+            var { loadModule } = window['vue2-sfc-loader'];
+            var options = {
+                moduleCache: {
+                    vue: null,
+                    myData:{}
+                },
+                async getFile(url) {
+                    const res = await fetch(url);
+                    if ( !res.ok ){
+                        console.error("Errore file non trovato"+url);
+                        resolve(null);
+                        return;
+                    }
+                    return {
+                        getContentData: asBinary => asBinary ? res.arrayBuffer() : res.text(),
+                    }
+                },
+                addStyle() { },
+            }
+            loadModule(url, options).then((component)=>{
+                resolve(component);
+            })
+        })
+    },
+
     createUUID: function () {
         var dt = new Date().getTime();
         var uuid = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {

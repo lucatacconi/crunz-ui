@@ -24,7 +24,7 @@
 
             <v-card-text class="pt-3">
 
-                <tree-view v-on:select-folder="formData.path=$event"></tree-view>
+                <tree-view @select-folder="formData.path=$event"></tree-view>
 
                 <v-layout row wrap class="pt-2 pb-2">
                     <v-flex xs10 class="pl-3">
@@ -39,7 +39,7 @@
                     </v-flex>
                 </v-layout>
 
-                <editor v-on:editor="getEditor($event)" :action-button="true" :content="task_content"></editor>
+                <editor @editor="getEditor($event)" :action-button="true" :content="task_content"></editor>
 
             </v-card-text>
 

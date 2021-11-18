@@ -1,4 +1,4 @@
-<template id="container" lang="html">
+<template id="container">
     <div>
         <loading v-if="showloading"></loading>
         <login v-if="!granted"></login>
@@ -23,9 +23,9 @@
         },
         props: ['showloading'],
         components: {
-            'loading': httpVueLoader('../../app/shareds/Loading.vue' + '?v=' + new Date().getTime()),
-            'login': httpVueLoader('../../app/sections/login/Login.vue' + '?v=' + new Date().getTime()),
-            'navigator': httpVueLoader('../../app/shareds/Navigator.vue' + '?v=' + new Date().getTime())
+            'loading': () => Utils.loadFileVue('../app/shareds/Loading.vue'),
+            'login': () => Utils.loadFileVue('../app/sections/login/Login.vue'),
+            'navigator': () => Utils.loadFileVue('../app/shareds/Navigator.vue')
         },
         methods: {
             checkSession: function(){

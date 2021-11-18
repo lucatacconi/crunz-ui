@@ -1,4 +1,4 @@
-<template id="appfooter" lang="html">
+<template id="appfooter">
     <v-footer
       app inset
       dark

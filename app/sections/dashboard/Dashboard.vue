@@ -11,7 +11,7 @@
             </v-row>
 
             <v-row>
-                <environmentcheck v-on:environment-check="environmentStatus = $event"></environmentcheck>
+                <environmentcheck @environment-check="environmentStatus = $event"></environmentcheck>
             </v-row>
         </v-container>
     </div>

@@ -15,7 +15,7 @@
 
             "action":{
                 "path": "/dashboard",
-                "component": "../../app/sections/dashboard/Dashboard.vue"
+                "component": "../app/sections/dashboard/Dashboard.vue"
             },
 
             "layout":{
@@ -39,7 +39,7 @@
 
             "action":{
                 "path": "/taskTable/TaskTable",
-                "component": "../../app/sections/taskTable/TaskTable.vue"
+                "component": "../app/sections/taskTable/TaskTable.vue"
             },
 
             "layout":{
@@ -58,7 +58,7 @@
 
             "action":{
                 "path": "/executionHistory/ExecutionHistory",
-                "component": "../../app/sections/executionHistory/ExecutionHistory.vue"
+                "component": "../app/sections/executionHistory/ExecutionHistory.vue"
             },
 
             "layout":{
@@ -77,7 +77,7 @@
 
             "action":{
                 "path": "/monthlyCalendar/MonthlyCalendar",
-                "component": "../../app/sections/monthlyCalendar/MonthlyCalendar.vue"
+                "component": "../app/sections/monthlyCalendar/MonthlyCalendar.vue"
             },
 
             "layout":{
@@ -96,49 +96,11 @@
 
             "action":{
                 "path": "/dailyCalendar/DailyCalendar",
-                "component": "../../app/sections/dailyCalendar/DailyCalendar.vue"
+                "component": "../app/sections/dailyCalendar/DailyCalendar.vue"
             },
 
             "layout":{
                 "icon": "assignment_turned_in",
-                "disabled": false,
-                "color": false,
-                "class": false
-            }
-        },
-
-        {
-            "title": "Archived tasks",
-            "subtitle": "Show all archived tasks",
-            "allowed":["admin","user"],
-            "visible": true,
-
-            "action":{
-                "path": "/archivedTasks/ArchivedTasks",
-                "component": "../../app/sections/archivedTasks/ArchivedTasks.vue"
-            },
-
-            "layout":{
-                "icon": "archive-outline",
-                "disabled": false,
-                "color": false,
-                "class": false
-            }
-        },
-
-        {
-            "title": "Tasks' code checker",
-            "subtitle": "Lint PHP task file",
-            "allowed":["admin","user"],
-            "visible": true,
-
-            "action":{
-                "path": "/taskCheck/TaskCheck",
-                "component": "../../app/sections/taskCheck/TaskCheck.vue"
-            },
-
-            "layout":{
-                "icon": "microscope",
                 "disabled": false,
                 "color": false,
                 "class": false

@@ -24,7 +24,7 @@
 
             <v-card-text class="pt-3">
 
-                <tree-view v-on:select-folder="formData.path=$event"></tree-view>
+                <tree-view @select-folder="formData.path=$event"></tree-view>
 
                 <v-file-input
                     class="pt-5"

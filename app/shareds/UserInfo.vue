@@ -1,4 +1,4 @@
-<template id="userinfo" lang="html">
+<template id="userinfo">
     <div>
         <v-menu left bottom>
             <!-- Launch button on NavBar -->
@@ -29,7 +29,7 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn text>Close</v-btn>
-                    <v-btn text color="error" v-on:click="logout()">Logout</v-btn>
+                    <v-btn text color="error" @click="logout()">Logout</v-btn>
                 </v-card-actions>
             </v-card>
         </v-menu>

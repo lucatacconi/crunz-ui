@@ -48,7 +48,7 @@
         <script src="https://cdn.jsdelivr.net/npm/vee-validate@2.x/dist/vee-validate.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8.x/dist/sweetalert2.all.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/moment@2.x/moment.min.js"></script>
-        <script src="https://unpkg.com/http-vue-loader"></script>
+        <script src="https://unpkg.com/vue3-sfc-loader/dist/vue2-sfc-loader.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.6/ace.js" integrity="sha256-CVkji/u32aj2TeC+D13f7scFSIfphw2pmu4LaKWMSY8=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@2.x/dist/Chart.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js" integrity="sha512-nOQuvD9nKirvxDdvQ9OMqe2dgapbPB7vYAMrzJihw5m+aNcf0dX53m6YxM4LgA9u8e9eg9QX+/+mPu8kCNpV2A==" crossorigin="anonymous"></script>
@@ -80,7 +80,7 @@
                 router,
                 vuetify: new Vuetify(),
                 components: {
-                    'container': httpVueLoader('../app/shareds/Container.vue' + '?v=' + new Date().getTime())
+                    'container': () => Utils.loadFileVue('../app/shareds/Container.vue')
                 }
             })
         </script>

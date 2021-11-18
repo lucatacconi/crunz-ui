@@ -1,4 +1,4 @@
-<template id="loading" lang="html">
+<template id="loading">
     <div class="text-center">
         <v-overlay z-index="1005">
             <v-progress-circular

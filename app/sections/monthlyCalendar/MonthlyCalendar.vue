@@ -80,7 +80,7 @@
         </v-alert>
 
         <!-- Actions buttons -->
-        <actions-buttons v-on:read-data="readData()" v-on:new-task-modal="openNewTaskModal()" v-on:upload-modal="openUploadModal()"></actions-buttons>
+        <actions-buttons @read-data="readData()" @new-task-modal="openNewTaskModal()" @upload-modal="openUploadModal()"></actions-buttons>
 
     </div>
 </template>
@@ -131,7 +131,7 @@ module.exports = {
 
         stringToColor: function(str){
             for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
-            color = Math.floor(Math.abs((Math.sin(hash) * 10000) % 1 * 16777216)).toString(16);
+            var color = Math.floor(Math.abs((Math.sin(hash) * 10000) % 1 * 16777216)).toString(16);
             return '#' + Array(6 - color.length + 1).join('0') + color;
         },
 
@@ -219,10 +219,10 @@ module.exports = {
 
                                 let event_color = self.stringToColor(response.data[i].task_path);
 
-                                r = parseInt(event_color.substr(1,2),16);
-                                g = parseInt(event_color.substr(3,2),16);
-                                b = parseInt(event_color.substr(4,2),16);
-                                yiq = ( (r * 299) + (g * 587) + (b * 114)) / 1000;
+                                var r = parseInt(event_color.substr(1,2),16);
+                                var g = parseInt(event_color.substr(3,2),16);
+                                var b = parseInt(event_color.substr(4,2),16);
+                                var yiq = ( (r * 299) + (g * 587) + (b * 114)) / 1000;
 
                                 let event_color_text = "#FFFFFF";
                                 if (yiq >= 100) {
@@ -250,11 +250,11 @@ module.exports = {
     },
 
     components:{
-        'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue' + '?v=' + new Date().getTime()),
-        'tasks-upload': httpVueLoader('../../shareds/TasksUpload.vue' + '?v=' + new Date().getTime()),
-        'task-detail': httpVueLoader('../../shareds/TaskDetail.vue' + '?v=' + new Date().getTime()),
-        'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime()),
-        'new-task': httpVueLoader('../../shareds/NewTask.vue' + '?v=' + new Date().getTime())
+        'actions-buttons': () => Utils.loadFileVue('../app/shareds/ActionsButtons.vue'),
+        'tasks-upload': () => Utils.loadFileVue('../app/shareds/TasksUpload.vue'),
+        'task-detail': () => Utils.loadFileVue('../app/shareds/TaskDetail.vue'),
+        'task-log': () => Utils.loadFileVue('../app/shareds/ExecutionLog.vue'),
+        'new-task': () => Utils.loadFileVue('../app/shareds/NewTask.vue')
     }
 }
 </script>
