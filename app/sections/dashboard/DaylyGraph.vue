@@ -72,7 +72,7 @@
                     };
 
                     var graph_container_daily = document.getElementById('graph-area-daily');
-                    graphDaily = new Chart(graph_container_daily, config_graph_daily);
+                    var graphDaily = new Chart(graph_container_daily, config_graph_daily);
 
                 });
 

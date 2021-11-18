@@ -37,9 +37,9 @@
                 var moves = this.dayBack + this.dayFront + 1;
                 var day_start = moment().subtract(this.dayBack + 1, 'days');
 
-                for(i = 0; i < moves; i++){
+                for(var i = 0; i < moves; i++){
 
-                    day_focus_calc = day_start.add(1, 'days');
+                    var day_focus_calc = day_start.add(1, 'days');
 
                     this.stats[i] = {
                         id_day: i,
@@ -51,7 +51,7 @@
                         errors_not_planned: 0
                     }
 
-                    day_label = day_focus_calc.format("ddd MM-DD");
+                    var day_label = day_focus_calc.format("ddd MM-DD");
                     this.graphDaysLabel.push(day_label);
                 }
 
@@ -80,7 +80,7 @@
                         }
                     }
 
-                    for (key = 0; key < self.stats.length; key++) {
+                    for (var key = 0; key < self.stats.length; key++) {
                         self.graphPlanned.push(self.stats[key].planned);
                         self.graphExecuted.push(self.stats[key].executed);
                         self.graphWhitErrors.push(self.stats[key].with_errors);
@@ -141,7 +141,7 @@
                     };
 
                     let graph_container_weekly = document.getElementById('graph-area-weekly');
-                    graphWeekly = new Chart(graph_container_weekly, config_graph_weekly);
+                    var graphWeekly = new Chart(graph_container_weekly, config_graph_weekly);
 
                 });
             }

@@ -26,9 +26,9 @@
         },
 
         components: {
-            'dailygraph': httpVueLoader('../../../app/sections/dashboard/DaylyGraph.vue' + '?v=' + new Date().getTime()),
-            'weeklygraph': httpVueLoader('../../../app/sections/dashboard/WeeklyGraph.vue' + '?v=' + new Date().getTime()),
-            'environmentcheck': httpVueLoader('../../../app/sections/dashboard/EnvironmentCheck.vue' + '?v=' + new Date().getTime())
+            'dailygraph': () => Utils.loadFileVue('../app/sections/dashboard/DaylyGraph.vue'),
+            'weeklygraph': () => Utils.loadFileVue('../app/sections/dashboard/WeeklyGraph.vue'),
+            'environmentcheck': () => Utils.loadFileVue('../app/sections/dashboard/EnvironmentCheck.vue')
         }
     }
 </script>

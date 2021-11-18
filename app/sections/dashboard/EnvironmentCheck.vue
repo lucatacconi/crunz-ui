@@ -7,7 +7,7 @@
                 <v-btn
                     class="mx-2"
                     small
-                    @click="readData()"
+
                 >
                     <v-icon>mdi-refresh</v-icon>
                 </v-btn>
@@ -55,6 +55,7 @@
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
                                 </v-text-field>
                             </v-col>
+
                             <v-col cols="6" class="py-0 pb-2">
                                 <v-text-field
                                     label="Task path configured in Crunz YAML configuration file:"
@@ -79,6 +80,7 @@
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
                                 </v-text-field>
                             </v-col>
+
                             <v-col cols="6" class="py-0 pb-2">
                                 <v-text-field
                                     label="Time zone configured in Crunz YAML configuration file:"
@@ -100,6 +102,7 @@
                                     :error-messages="!(env_check.YAML_CONFIG_TIMEZONE_PRESENCE) ? 'Configure timezone in crunz.yml.' : '' "
                                 ></v-text-field>
                             </v-col>
+
                             <v-col cols="6" class="py-0 pb-2" v-if="!env_check.TASK_POSITION_EMBEDDED">
                                 <v-text-field
                                     label="Tasks directory position:"
@@ -116,6 +119,7 @@
                                     hide-details
                                 ></v-text-field>
                             </v-col>
+
                             <v-col cols="6" class="py-0 pb-2">
                                 <v-text-field
                                     label="Tasks dir is present:"
@@ -140,6 +144,7 @@
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
                                 </v-text-field>
                             </v-col>
+
                             <v-col cols="12" class="py-0 pb-2" v-if="!env_check.TASK_POSITION_EMBEDDED">
                                 <v-text-field
                                     label="Logs directory position:"
@@ -148,6 +153,7 @@
                                     hide-details
                                 ></v-text-field>
                             </v-col>
+
                             <v-col cols="6" class="py-0 pb-2">
                                 <v-text-field
                                     label="Logs path configured in Crunz-ui environment configuration file:"
@@ -187,7 +193,7 @@
                             </v-col>
                         </v-row>
                     </v-container>
-                <v-form>
+                </v-form>
             </v-card-text>
         </v-card>
     </div>
