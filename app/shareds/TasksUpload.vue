@@ -139,7 +139,7 @@ module.exports = {
     created:function() {
     },
     components:{
-        'tree-view': httpVueLoader('./TreeView.vue' + '?v=' + new Date().getTime())
+        'tree-view': () => Utils.loadFileVue('../app/shareds/TreeView.vue')
     }
 }
 </script>

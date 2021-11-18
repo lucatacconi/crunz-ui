@@ -44,7 +44,7 @@
                         </v-row>
 
                     </v-container>
-                <v-form>
+                </v-form>
             </v-card-text>
 
             <v-card-actions class="pt-0 pr-9 pb-3">
@@ -100,7 +100,7 @@ module.exports = {
             Utils.apiCall("get", "/task/",params)
             .then(function (response) {
                 if(response.data.length!=0){
-                    task_detail = response.data[0];
+                    var task_detail = response.data[0];
                     self.rowdata.task_content = task_detail.task_content
 
                     if(self.rowdata.task_content!=''){
@@ -165,7 +165,7 @@ module.exports = {
         }
     },
     components:{
-        'editor': httpVueLoader('./Editor.vue' + '?v=' + new Date().getTime())
+        'editor': () => Utils.loadFileVue('../app/shareds/Editor.vue')
     }
 }
 </script>

@@ -121,10 +121,10 @@
                                 {{item.expression_readable}}
                             </td>
                             <td class="text-center">
-                                {{ item.next_run == "" ? "Expired" : moment(item.next_run).format('YY-MM-DD HH:mm') }}
+                                {{ item.next_run == "" ? "Expired" : convertDate(item.next_run,'YY-MM-DD HH:mm') }}
                             </td>
                             <td class="text-center">
-                                {{ item.last_run == "" ? "" : moment(item.last_run).format('YY-MM-DD HH:mm') }}
+                                {{ item.last_run == "" ? "" : convertDate(item.last_run,'YY-MM-DD HH:mm') }}
 
                                 <template v-if="item.last_run_actually_executed != true">
                                     <v-tooltip bottom>
@@ -167,7 +167,7 @@
         </v-card>
 
         <!-- Actions buttons -->
-        <actions-buttons v-on:read-data="readData()" v-on:edit-modal="opendEditModal()" v-on:new-task-modal="openNewTaskModal()" v-on:upload-modal="openUploadModal()"></actions-buttons>
+        <actions-buttons @read-data="readData()" @edit-modal="opendEditModal()" @new-task-modal="openNewTaskModal()" @upload-modal="openUploadModal()"></actions-buttons>
 
     </div>
 </template>
@@ -208,6 +208,10 @@ module.exports = {
         }
     },
     methods: {
+        convertDate:function(date,format){
+            return moment(date).format(format);
+        },
+
         readData:function(options = {}){
             var self = this;
             var params = {}
@@ -501,11 +505,12 @@ module.exports = {
     },
 
     components:{
-        'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue' + '?v=' + new Date().getTime()),
-        'tasks-upload': httpVueLoader('../../shareds/TasksUpload.vue' + '?v=' + new Date().getTime()),
-        'new-task': httpVueLoader('../../shareds/NewTask.vue' + '?v=' + new Date().getTime()),
-        'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime()),
-        'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime())
+        'actions-buttons': () => Utils.loadFileVue('../app/shareds/ActionsButtons.vue'),
+        'tasks-upload': () => Utils.loadFileVue('../app/shareds/TasksUpload.vue'),
+        // 'task-detail': () => Utils.loadFileVue('../app/shareds/TaskDetail.vue'),
+        'task-log': () => Utils.loadFileVue('../app/shareds/ExecutionLog.vue'),
+        'task-edit': () => Utils.loadFileVue('../app/shareds/EditTask.vue'),
+        'new-task': () => Utils.loadFileVue('../app/shareds/NewTask.vue')
     }
 }
 </script>

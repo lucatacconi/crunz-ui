@@ -187,8 +187,8 @@ return $schedule;`
         });
     },
     components:{
-        'tree-view': httpVueLoader('./TreeView.vue' + '?v=' + new Date().getTime()),
-        'editor': httpVueLoader('./Editor.vue' + '?v=' + new Date().getTime()),
+        'editor': () => Utils.loadFileVue('../app/shareds/Editor.vue'),
+        'tree-view': () => Utils.loadFileVue('../app/shareds/TreeView.vue')
     }
 }
 </script>

@@ -65,19 +65,19 @@
                         :key="i"
                     >
                         <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                            class="mt-2 ml-2 pa-0"
-                            color="grey darken-2"
-                            small
-                            dense
-                            outlined
-                            style="width:160px;"
-                            @click="crunzButtonAction(item)"
-                            v-bind="attrs"
-                            v-on="on"
-                        >
-                            {{item.text}}
-                        </v-btn>
+                            <v-btn
+                                class="mt-2 ml-2 pa-0"
+                                color="grey darken-2"
+                                small
+                                dense
+                                outlined
+                                style="width:160px;"
+                                @click="crunzButtonAction(item)"
+                                v-bind="attrs"
+                                v-on="on"
+                            >
+                                {{item.text}}
+                            </v-btn>
                         </template>
                         <span v-html="item.tooltip"></span>
                     </v-tooltip>
@@ -99,7 +99,7 @@
         </div>
 
         <v-card-text class="pa-0">
-            <div id="task-edit"></div>
+            <div id="task-edit" style="height:500px;"></div>
         </v-card-text>
     </v-card>
 </template>
@@ -329,8 +329,4 @@ module.exports = {
 </script>
 
 <style>
-    #task-edit {
-        height: 500px;
-    }
-
 </style>
