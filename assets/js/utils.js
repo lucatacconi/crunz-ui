@@ -1,4 +1,5 @@
 var Utils = {
+
     loadFileVue:function(url){
         return new Promise((resolve, reject)=>{
             var { loadModule } = window['vue2-sfc-loader'];
@@ -10,7 +11,7 @@ var Utils = {
                 async getFile(url) {
                     const res = await fetch(url);
                     if ( !res.ok ){
-                        console.error("Errore file non trovato"+url);
+                        console.error("Error loading vue file. No file found"+url);
                         resolve(null);
                         return;
                     }
@@ -18,7 +19,12 @@ var Utils = {
                         getContentData: asBinary => asBinary ? res.arrayBuffer() : res.text(),
                     }
                 },
-                addStyle() { },
+                addStyle(textContent) {
+
+                    const style = Object.assign(document.createElement('style'), { textContent });
+                    const ref = document.head.getElementsByTagName('style')[0] || null;
+                    document.head.insertBefore(style, ref);
+                }
             }
             loadModule(url, options).then((component)=>{
                 resolve(component);
