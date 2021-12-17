@@ -133,8 +133,8 @@
             "visible": true,
 
             "action":{
-                "path": "/taskCheck/TaskCheck",
-                "component": "../../app/sections/taskCheck/TaskCheck.vue"
+                "path": "/taskLinter/TaskLinter",
+                "component": "../../app/sections/taskLinter/TaskLinter.vue"
             },
 
             "layout":{
