@@ -136,6 +136,7 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
                 $row["filename"] = $archFile->getFilename();
                 $row["real_path"] = $archFile->getRealPath();
+                $row["storage_datetime"] = date ("Y-m-d H:i:s", filemtime($row["real_path"]));
                 $row["subdir"] = str_replace( array( $TASKS_DIR, $row["filename"]),'',$row["real_path"]);
                 $row["task_path"] = str_replace($TASKS_DIR, '', $row["real_path"]);
 
