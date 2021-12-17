@@ -101,6 +101,7 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
         $aARCHs = [];
         $arch_counter = 0;
+
         foreach ($files as $archFile) {
 
             $file_content_orig = file_get_contents($archFile->getRealPath(), true);
@@ -326,7 +327,7 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
                 $row["custom_log"] = $custom_log;
 
-                $aTASKs[] = $row;
+                $aARCHs[] = $row;
 
                 if(!empty($params["UNIQUE_ID"])){
                     if($row["event_unique_key"] == $params["UNIQUE_ID"]){
@@ -336,7 +337,7 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
             }
         };
 
-        $data = $aTASKs;
+        $data = $aARCHs;
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
@@ -416,10 +417,12 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
             if(!is_writable($file_to_archive)) throw new Exception('ERROR - File not writable');
 
-            $out = rename($file_to_archive, str_replace(".php", ".arch", $file_to_archive));
+            $out = copy($file_to_archive, str_replace(".php", ".arch", $file_to_archive));
             if(!$out){
                 throw new Exception('ERROR - Archive error');
             }
+
+            unlink($file_to_archive);
 
             $data["result"] = true;
             $data["result_msg"] = '';
@@ -497,10 +500,12 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
             if(!is_writable($file_to_archive)) throw new Exception('ERROR - File not writable');
 
-            $out = rename($file_to_archive, str_replace(".arch", ".php", $file_to_archive));
+            $out = copy($file_to_archive, str_replace(".arch", ".php", $file_to_archive));
             if(!$out){
-                throw new Exception('ERROR - Archive error');
+                throw new Exception('ERROR - De-archive error');
             }
+
+            unlink($file_to_archive);
 
             $data["result"] = true;
             $data["result_msg"] = '';
