@@ -81,7 +81,7 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
         date_default_timezone_set($crunz_config["timezone"]);
 
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
-        $TASK_SUFFIX = ".arch";
+        $TASK_SUFFIX = str_replace(".php", ".arch", $crunz_config["suffix"]);
 
         $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
 
@@ -343,7 +343,7 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->post('/', function (Request $request, Response $response, array $args) {
+    $group->post('/archive', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
@@ -433,5 +433,87 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
         return $response->withStatus(200)
                         ->withHeader("Content-Type", "application/json");
     });
+
+
+    $group->post('/de-archive', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty($crunz_config["timezone"])) throw new Exception("ERROR - Wrong timezone configuration");
+
+        date_default_timezone_set($crunz_config["timezone"]);
+
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        $TASK_SUFFIX_DEST = $crunz_config["suffix"];
+        $TASK_SUFFIX = str_replace(".php", ".arch", $crunz_config["suffix"]);
+
+        if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
+
+        $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
+
+        if(empty($params["ARCH_PATH"])) throw new Exception("ERROR - No task file to archive submitted");
+
+        //File compliance check
+        $path_check = str_replace(".arch", '', $params["TASK_PATH"]);
+
+        if(
+            strpos($path_check, '.') !== false ||
+            substr($params["ARCH_PATH"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ||
+            strpos($path_check, $TASKS_DIR === false)
+        ){
+            throw new Exception("ERROR - Task path out of range");
+        }
+
+        $data["path"] = $params["ARCH_PATH"];
+        $file_to_archive = $base_tasks_path."/".ltrim($params["ARCH_PATH"],"/");
+
+        try {
+
+            if(!file_exists($file_to_archive)) throw new Exception('ERROR - File not present');
+
+            if(!is_writable($file_to_archive)) throw new Exception('ERROR - File not writable');
+
+            $out = rename($file_to_archive, str_replace(".arch", ".php", $file_to_archive));
+            if(!$out){
+                throw new Exception('ERROR - Archive error');
+            }
+
+            $data["result"] = true;
+            $data["result_msg"] = '';
+
+        } catch(Exception $e) {
+            $data["result"] = false;
+            $data["result_msg"] = $e->getMessage();
+        }
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
 
 });

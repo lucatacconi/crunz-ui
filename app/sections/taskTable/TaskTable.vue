@@ -382,7 +382,7 @@ module.exports = {
                     var params = {
                         "task_path": rowdata.task_path
                     }
-                    Utils.apiCall("post", "/task-archive/",params)
+                    Utils.apiCall("post", "/task-archive/archive",params)
                     .then(function (response) {
                         if(response.data.result){
                             Swal.fire({
