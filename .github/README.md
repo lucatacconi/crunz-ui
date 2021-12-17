@@ -232,7 +232,7 @@ To test access use the login **admin** and password **password**
 
 ## Contributing
 
-This project is maintained by a group of awesome and contributions are extremely welcome :heart:.
+This project is maintained by a group of awesome contributors. Contributions are extremely welcome :heart:.
 Please see [Contributing informations](CONTRIBUTING.md) for details.
 
 
