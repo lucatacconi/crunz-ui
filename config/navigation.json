@@ -128,7 +128,7 @@
 
         {
             "title": "Tasks code checker",
-            "subtitle": "Lint PHP task file",
+            "subtitle": "Lint PHP tasks' file",
             "allowed":["admin","user"],
             "visible": true,
 
