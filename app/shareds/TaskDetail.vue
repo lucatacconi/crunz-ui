@@ -102,7 +102,7 @@
                                                 outlined
                                                 bottom
                                                 color="grey darken-2">
-                                            <v-icon left>fas fa-file-alt</v-icon>
+                                            <v-icon left>mdi-clipboard-clock</v-icon>
                                             Execution log
                                         </v-btn>
                                     </div>

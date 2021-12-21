@@ -51,7 +51,7 @@
                     color="grey darken-2"
                     @click="saveFile(true)"
                 >
-                    <v-icon left>far fa-save</v-icon>
+                    <v-icon left>mdi-content-save-outline</v-icon>
                     Save
                 </v-btn>
             </v-card-actions>

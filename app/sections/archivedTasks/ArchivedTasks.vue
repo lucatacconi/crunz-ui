@@ -38,7 +38,7 @@
                                 <div class="text-center">
                                     <v-menu offset-y>
                                         <template v-slot:activator="{ on }">
-                                            <v-icon v-on="on" small>fa fa-ellipsis-h</v-icon>
+                                            <v-icon v-on="on">mdi-dots-horizontal</v-icon>
                                         </template>
                                         <v-list subheader dense>
                                             <v-subheader class="pl-4 blue-grey white--text font-weight-bold white">
@@ -46,22 +46,22 @@
                                             </v-subheader>
                                             <v-list-item-group color="primary">
                                                 <!-- <v-list-item @click="downloadTask(item,i)">
-                                                    <v-list-item-icon><v-icon small>fa-download </v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon small>mdi-download </v-icon></v-list-item-icon>
                                                     <v-list-item-title>Download task</v-list-item-title>
                                                 </v-list-item> -->
                                                 <v-list-item @click="openEditModal(item, i)">
-                                                    <v-list-item-icon><v-icon small>fa fa-edit</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon small>mdi-archive-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
                                                 </v-list-item>
 
 
                                                 <v-list-item @click="dearchiveItem(item, i)">
-                                                    <v-list-item-icon><v-icon small color="red">fas fa-undo</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon small color="red">mdi-archive-refresh</v-icon></v-list-item-icon>
                                                     <v-list-item-title > <span class="red--text">De-archive task</span> </v-list-item-title>
                                                 </v-list-item>
 
                                                 <v-list-item @click="deleteItem(item, i)">
-                                                    <v-list-item-icon><v-icon small color="red">fa fa-trash</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon small color="red">mdi-archive-remove</v-icon></v-list-item-icon>
                                                     <v-list-item-title > <span class="red--text">Delete task</span> </v-list-item-title>
                                                 </v-list-item>
                                             </v-list-item-group>
@@ -123,7 +123,7 @@
                     dark
                     fab
                 >
-                    <v-icon>fa fa-cog</v-icon>
+                    <v-icon large>mdi-cog</v-icon>
                 </v-btn>
             </template>
             <v-tooltip bottom>

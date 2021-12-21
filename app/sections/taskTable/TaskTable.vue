@@ -56,7 +56,7 @@
                                 <div class="text-center">
                                     <v-menu offset-y>
                                         <template v-slot:activator="{ on }">
-                                            <v-icon v-on="on" small>fa fa-ellipsis-h</v-icon>
+                                            <v-icon v-on="on">mdi-dots-horizontal</v-icon>
                                         </template>
                                         <v-list subheader dense>
                                             <v-subheader class="pl-4 blue-grey white--text font-weight-bold white">
@@ -64,31 +64,31 @@
                                             </v-subheader>
                                             <v-list-item-group color="primary">
                                                 <v-list-item @click="executeItem(item, false)" class="pt-2">
-                                                    <v-list-item-icon><v-icon small color="orange">fa fa-play</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon color="orange">mdi-play</v-icon></v-list-item-icon>
                                                     <v-list-item-title> <span class="orange--text">Execute</span> </v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="executeItem(item, true)">
-                                                    <v-list-item-icon><v-icon small color="orange">fas fa-file-alt</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon color="orange">mdi-clock</v-icon></v-list-item-icon>
                                                     <v-list-item-title> <span class="orange--text">Execute and wait log</span> </v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="openLogModal(item, i)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
-                                                    <v-list-item-icon><v-icon small>fa fa-folder-open</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon>mdi-clipboard-clock</v-icon></v-list-item-icon>
                                                     <v-list-item-title>View last log</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="downloadTask(item,i)">
-                                                    <v-list-item-icon><v-icon small>fa-download </v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon>mdi-file-download</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Download task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="openEditModal(item, i)">
-                                                    <v-list-item-icon><v-icon small>fa fa-edit</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon>mdi-file-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="archiveItem(item, i)">
-                                                    <v-list-item-icon><v-icon small color="red">fas fa-archive</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon color="red">mdi-archive</v-icon></v-list-item-icon>
                                                     <v-list-item-title > <span class="red--text">Archive task</span> </v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="deleteItem(item, i)">
-                                                    <v-list-item-icon><v-icon small color="red">fa fa-trash</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon color="red">mdi-delete</v-icon></v-list-item-icon>
                                                     <v-list-item-title > <span class="red--text">Delete task</span> </v-list-item-title>
                                                 </v-list-item>
                                             </v-list-item-group>
@@ -150,8 +150,8 @@
                                 <span v-else>--</span>
                             </td>
                             <td class="text-center" >
-                                <v-icon v-if="item.last_outcome=='OK'" color="green darken-2" @click="openLogModal(item,i)" small>fas fa-folder-open</v-icon>
-                                <v-icon v-else-if="item.last_outcome=='KO'" color="red" @click="openLogModal(item,i)" small>fas fa-folder-open</v-icon>
+                                <v-icon v-if="item.last_outcome=='OK'" color="green darken-2" @click="openLogModal(item,i)" small>mdi-clipboard-clock</v-icon>
+                                <v-icon v-else-if="item.last_outcome=='KO'" color="red" @click="openLogModal(item,i)" small>mdi-clipboard-clock</v-icon>
                                 <span v-else>--</span>
                             </td>
                         </tr>

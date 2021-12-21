@@ -57,7 +57,7 @@
                                 <div class="text-center">
                                     <v-menu offset-y>
                                         <template v-slot:activator="{ on }">
-                                            <v-icon v-on="on" small>fa fa-ellipsis-h</v-icon>
+                                            <v-icon v-on="on">mdi-dots-horizontal</v-icon>
                                         </template>
                                         <v-list subheader dense>
                                             <v-subheader class="pl-4 blue-grey white--text font-weight-bold white">
@@ -65,15 +65,15 @@
                                             </v-subheader>
                                             <v-list-item-group color="primary">
                                                 <v-list-item @click="downloadTask(item,i)">
-                                                    <v-list-item-icon><v-icon small>fa-download </v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon>mdi-file-download</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Download task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="openEditModal(item, i)">
-                                                    <v-list-item-icon><v-icon small>fa fa-edit</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon>fmdi-file-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="openLastLogModal(item, i)">
-                                                    <v-list-item-icon><v-icon small>fas fa-folder-open</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon>mdi-clipboard-clock</v-icon></v-list-item-icon>
                                                     <v-list-item-title>View last log</v-list-item-title>
                                                 </v-list-item>
                                             </v-list-item-group>
@@ -97,8 +97,8 @@
                                 {{ item.duration == 0 ? "&lt;1" : item.duration }} min.
                             </td>
                             <td class="text-center" >
-                                <v-icon v-if="item.outcome=='OK'" color="green darken-2" @click="openLogModal(item,i)" small>fas fa-folder-open</v-icon>
-                                <v-icon v-else-if="item.outcome=='KO'" color="red" @click="openLogModal(item,i)" small>fas fa-folder-open</v-icon>
+                                <v-icon v-if="item.outcome=='OK'" color="green darken-2" @click="openLogModal(item,i)" small>mdi-clipboard-clock</v-icon>
+                                <v-icon v-else-if="item.outcome=='KO'" color="red" @click="openLogModal(item,i)" small>mdi-clipboard-clock</v-icon>
                                 <span v-else>--</span>
                             </td>
                         </tr>
@@ -128,7 +128,7 @@
                     dark
                     fab
                 >
-                    <v-icon>fa fa-cog</v-icon>
+                    <v-icon large>mdi-cog</v-icon>
                 </v-btn>
             </template>
             <v-tooltip bottom>

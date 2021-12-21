@@ -35,7 +35,7 @@
                         <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn color="primary" @click.prevent="execLogin">
-                                <v-icon left>fas fa-key</v-icon>
+                                <v-icon left>mdi-key-variant</v-icon>
                                 Login
                             </v-btn>
                         </v-card-actions>

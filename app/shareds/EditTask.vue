@@ -55,7 +55,7 @@
                     color="grey darken-2"
                     @click="saveFile(false)"
                 >
-                    <v-icon left>far fa-save</v-icon>
+                    <v-icon left>mdi-content-save-outline</v-icon>
                     Save
                 </v-btn>
 
@@ -65,7 +65,7 @@
                     color="grey darken-2"
                     @click="saveFile(true)"
                 >
-                    <v-icon left>far fa-save</v-icon>
+                    <v-icon left>mdi-content-save-outline</v-icon>
                     Save & close
                 </v-btn>
                 <v-btn
@@ -75,7 +75,7 @@
                     color="grey darken-2"
                     @click="saveFile(true,true)"
                 >
-                    <v-icon left>far fa-save</v-icon>
+                    <v-icon left>mdi-content-save-outline</v-icon>
                     Save & Archive
                 </v-btn>
                 <v-btn
@@ -85,7 +85,7 @@
                     color="grey darken-2"
                     @click="saveFile(true,true)"
                 >
-                    <v-icon left>far fa-save</v-icon>
+                    <v-icon left>mdi-content-save-outline</v-icon>
                     Save & Restore
                 </v-btn>
             </v-card-actions>

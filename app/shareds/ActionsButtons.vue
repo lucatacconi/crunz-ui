@@ -14,7 +14,7 @@
                 dark
                 fab
             >
-                <v-icon>fa fa-cog</v-icon>
+                <v-icon large>mdi-cog</v-icon>
             </v-btn>
         </template>
         <v-tooltip bottom>
