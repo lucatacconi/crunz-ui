@@ -10,7 +10,7 @@
 
 ## Release history
 
-### v.2.6.1 (2021-12-XX)
+### v.2.7.5 (2021-12-XX)
 
 Crunz-ui updated stable release:
 * Removed all non-open icons migrated to material design
