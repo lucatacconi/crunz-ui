@@ -46,22 +46,22 @@
                                             </v-subheader>
                                             <v-list-item-group color="primary">
                                                 <!-- <v-list-item @click="downloadTask(item,i)">
-                                                    <v-list-item-icon><v-icon small>mdi-download </v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon>mdi-file-download </v-icon></v-list-item-icon>
                                                     <v-list-item-title>Download task</v-list-item-title>
                                                 </v-list-item> -->
                                                 <v-list-item @click="openEditModal(item, i)">
-                                                    <v-list-item-icon><v-icon small>mdi-archive-edit</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon>mdi-archive-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
                                                 </v-list-item>
 
 
                                                 <v-list-item @click="dearchiveItem(item, i)">
-                                                    <v-list-item-icon><v-icon small color="red">mdi-archive-refresh</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon color="red">mdi-archive-refresh</v-icon></v-list-item-icon>
                                                     <v-list-item-title > <span class="red--text">De-archive task</span> </v-list-item-title>
                                                 </v-list-item>
 
                                                 <v-list-item @click="deleteItem(item, i)">
-                                                    <v-list-item-icon><v-icon small color="red">mdi-archive-remove</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon color="red">mdi-archive-remove</v-icon></v-list-item-icon>
                                                     <v-list-item-title > <span class="red--text">Delete task</span> </v-list-item-title>
                                                 </v-list-item>
                                             </v-list-item-group>
