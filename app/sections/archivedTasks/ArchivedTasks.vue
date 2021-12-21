@@ -44,20 +44,20 @@
                                                 Archived Task Action Menu
                                             </v-subheader>
                                             <v-list-item-group color="primary">
-                                                <v-list-item @click="downloadTask(item,i)">
+                                                <!-- <v-list-item @click="downloadTask(item,i)">
                                                     <v-list-item-icon><v-icon small>fa-download </v-icon></v-list-item-icon>
                                                     <v-list-item-title>Download task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="openEditModal(item, i)">
                                                     <v-list-item-icon><v-icon small>fa fa-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
-                                                </v-list-item>
-
-                                                <!-- TODO - De archive task archived -->
-                                                <!-- <v-list-item @click="archiveItem(item, i)">
-                                                    <v-list-item-icon><v-icon small color="red">fas fa-archive</v-icon></v-list-item-icon>
-                                                    <v-list-item-title > <span class="red--text">Archive task</span> </v-list-item-title>
                                                 </v-list-item> -->
+
+
+                                                <v-list-item @click="dearchiveItem(item, i)">
+                                                    <v-list-item-icon><v-icon small color="red">fas fa-undo</v-icon></v-list-item-icon>
+                                                    <v-list-item-title > <span class="red--text">De-archive task</span> </v-list-item-title>
+                                                </v-list-item>
 
                                                 <v-list-item @click="deleteItem(item, i)">
                                                     <v-list-item-icon><v-icon small color="red">fa fa-trash</v-icon></v-list-item-icon>
@@ -187,9 +187,8 @@ module.exports = {
             self.message = "Loading archived tasks";
             Utils.apiCall("get", "/task-archive/",params, options)
             .then(function (response) {
-                if(response.data.length!=0){
-                    self.files = response.data;
-                }else{
+                self.files = response.data;
+                if(response.data.length==0){
                     self.message = "No archived tasks found on server. Eventually check tasks directory path."
                 }
             });
@@ -311,44 +310,42 @@ module.exports = {
             }
         },
 
-        //TODO de-archive
-
-        // archiveItem: function (rowdata) {
-        //     var self = this;
-        //     Swal.fire({
-        //         title: 'Archive task',
-        //         text: "Are you sure you want to archive task? The task file will be renamed and the task will no longer be visible in the dashboard.",
-        //         type: 'warning',
-        //         showCancelButton: true,
-        //         confirmButtonColor: '#f86c6b',
-        //         cancelButtonColor: '#20a8d8',
-        //         confirmButtonText: 'Archive',
-        //         cancelButtonText: 'Back'
-        //     }).then( function (result) {
-        //         if (result.value) {
-        //             var params = {
-        //                 "task_path": rowdata.task_path
-        //             }
-        //             Utils.apiCall("post", "/task-archive/archive",params)
-        //             .then(function (response) {
-        //                 if(response.data.result){
-        //                     Swal.fire({
-        //                         title: 'Task archived',
-        //                         text: response.data.result_msg,
-        //                         type: 'success'
-        //                     })
-        //                     self.readData();
-        //                 }else{
-        //                     Swal.fire({
-        //                         title: 'ERROR',
-        //                         text: response.data.result_msg,
-        //                         type: 'error'
-        //                     })
-        //                 }
-        //             });
-        //         }
-        //     });
-        // },
+        dearchiveItem: function (rowdata) {
+            var self = this;
+            Swal.fire({
+                title: 'De-archive task',
+                text: "Are you sure you want to de-archive task? The task file will be renamed and the task will be visible in the dashboard.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f86c6b',
+                cancelButtonColor: '#20a8d8',
+                confirmButtonText: 'De-archive',
+                cancelButtonText: 'Back'
+            }).then( function (result) {
+                if (result.value) {
+                    var params = {
+                        "arch_path": rowdata.task_path
+                    }
+                    Utils.apiCall("post", "/task-archive/de-archive",params)
+                    .then(function (response) {
+                        if(response.data.result){
+                            Swal.fire({
+                                title: 'Task de-archived',
+                                text: response.data.result_msg,
+                                type: 'success'
+                            })
+                            self.readData();
+                        }else{
+                            Swal.fire({
+                                title: 'ERROR',
+                                text: response.data.result_msg,
+                                type: 'error'
+                            })
+                        }
+                    });
+                }
+            });
+        },
 
         deleteItem: function (rowdata) {
             var self = this;
