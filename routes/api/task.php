@@ -1537,6 +1537,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
         $TASK_SUFFIX = $crunz_config["suffix"];
+        $TASK_SUFFIX_ARCH = str_replace(".php", ".arch", $crunz_config["suffix"]);
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
 
@@ -1561,7 +1562,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         if(
             strpos($path_check, '..') !== false ||
-            substr($params["TASK_PATH"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ||
+            (substr($params["TASK_PATH"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX && substr($params["TASK_PATH"], - strlen($TASK_SUFFIX_ARCH)) != $TASK_SUFFIX_ARCH) ||
             strpos($path_check, $TASKS_DIR === false)
         ){
             throw new Exception("ERROR - Task path out of range");
