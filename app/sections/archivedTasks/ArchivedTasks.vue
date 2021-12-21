@@ -6,6 +6,7 @@
             v-if="showEditModal"
             @on-close-modal="closeEditModal"
             :rowdata="logData"
+            origin="archived"
         ></task-edit>
 
         <v-card class="mb-16">
@@ -47,11 +48,11 @@
                                                 <!-- <v-list-item @click="downloadTask(item,i)">
                                                     <v-list-item-icon><v-icon small>fa-download </v-icon></v-list-item-icon>
                                                     <v-list-item-title>Download task</v-list-item-title>
-                                                </v-list-item>
+                                                </v-list-item> -->
                                                 <v-list-item @click="openEditModal(item, i)">
                                                     <v-list-item-icon><v-icon small>fa fa-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
-                                                </v-list-item> -->
+                                                </v-list-item>
 
 
                                                 <v-list-item @click="dearchiveItem(item, i)">

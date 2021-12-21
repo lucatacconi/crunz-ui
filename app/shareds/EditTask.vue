@@ -68,6 +68,26 @@
                     <v-icon left>far fa-save</v-icon>
                     Save & close
                 </v-btn>
+                <v-btn
+                    v-if="origin!='archived'"
+                    small
+                    outlined
+                    color="grey darken-2"
+                    @click="saveFile(true,true)"
+                >
+                    <v-icon left>far fa-save</v-icon>
+                    Save & Archive
+                </v-btn>
+                <v-btn
+                    v-else
+                    small
+                    outlined
+                    color="grey darken-2"
+                    @click="saveFile(true,true)"
+                >
+                    <v-icon left>far fa-save</v-icon>
+                    Save & Restore
+                </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -86,7 +106,7 @@ module.exports = {
         }
     },
 
-    props: ['rowdata'],
+    props: ['rowdata','origin'],
 
     mounted:function() {
         if(this.rowdata){
@@ -97,7 +117,7 @@ module.exports = {
                 "unique_id": self.rowdata.event_unique_key
             }
 
-            Utils.apiCall("get", "/task/",params)
+            Utils.apiCall("get", this.origin=='archived' ? "/task-archive/" : "/task/",params)
             .then(function (response) {
                 if(response.data.length!=0){
                     task_detail = response.data[0];
@@ -122,7 +142,7 @@ module.exports = {
         getEditor:function(editor){
             this.editor=editor
         },
-        saveFile: function (edit_modal_close) {
+        saveFile: function (edit_modal_close,restore_or_archived=false) {
             var self=this;
 
             if(this.editor==undefined) return
@@ -144,16 +164,71 @@ module.exports = {
             Utils.apiCall("post", "/task/", apiParams)
             .then(function (response) {
                 if(response.data.result){
-                    Swal.fire({
-                        title: 'Task updated',
-                        text: response.data.result_msg,
-                        type: 'success',
-                        onClose: () => {
-                            if(edit_modal_close){
-                                self.closeModal(true);
-                            }
+                    var msg="Task updated";
+                    if(restore_or_archived){
+                        var params = {
+                            "arch_path": self.rowdata.task_path,
+                            "task_path": self.rowdata.task_path
                         }
-                    })
+                        if(self.origin=="archived"){
+                            msg+=" and restored";
+                            Utils.apiCall("post", "/task-archive/de-archive",params)
+                            .then(function (response) {
+                                if(response.data.result){
+                                    Swal.fire({
+                                        title: msg,
+                                        text: response.data.result_msg,
+                                        type: 'success',
+                                        onClose: () => {
+                                            if(edit_modal_close){
+                                                self.closeModal(true);
+                                            }
+                                        }
+                                    })
+                                }else{
+                                    Swal.fire({
+                                        title: 'ERROR',
+                                        text: response.data.result_msg,
+                                        type: 'error'
+                                    })
+                                }
+                            });
+                        }else{
+                            msg+=" and archived";
+                            Utils.apiCall("post", "/task-archive/archive",params)
+                            .then(function (response) {
+                                if(response.data.result){
+                                    Swal.fire({
+                                        title: msg,
+                                        text: response.data.result_msg,
+                                        type: 'success',
+                                        onClose: () => {
+                                            if(edit_modal_close){
+                                                self.closeModal(true);
+                                            }
+                                        }
+                                    })
+                                }else{
+                                    Swal.fire({
+                                        title: 'ERROR',
+                                        text: response.data.result_msg,
+                                        type: 'error'
+                                    })
+                                }
+                            });
+                        }
+                    }else{
+                        Swal.fire({
+                            title: msg,
+                            text: response.data.result_msg,
+                            type: 'success',
+                            onClose: () => {
+                                if(edit_modal_close){
+                                    self.closeModal(true);
+                                }
+                            }
+                        })
+                    }
                 }else{
                     Swal.fire({
                         title: 'ERROR',
