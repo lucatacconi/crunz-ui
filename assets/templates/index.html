@@ -24,17 +24,11 @@
         <meta http-equiv="Clear-Site-Data" content="cache,cookies,storage">
         <meta http-equiv="Content-Security-Policy" content="child-src 'none'; connect-src 'self'; frame-src 'none'; object-src 'none'; worker-src 'none'; upgrade-insecure-requests; block-all-mixed-content">
 
-
         <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Material+Icons" rel="stylesheet">
-        <link href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
 
-        {% if run_mode == "PRODU" %}
-            <link href="https://cdn.jsdelivr.net/npm/vuetify@2.3.x/dist/vuetify.min.css" rel="stylesheet">
-        {% else %}
-            <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
-        {% endif %}
+        <link href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" rel="stylesheet">
 
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
@@ -50,13 +44,8 @@
             </v-app>
         </div>
 
-        {% if run_mode == "PRODU" %}
-            <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/vuetify@2.3.x/dist/vuetify.min.js"></script>
-        {% else %}
-            <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.js"></script>
-        {% endif %}
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue-router@3.x/dist/vue-router.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios@0.19.2/dist/axios.min.js"></script>
