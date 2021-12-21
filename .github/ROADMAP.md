@@ -2,15 +2,20 @@
 
 ## Upcoming/Desiderata implementations
 
-* System should log the user who entered a task on the system
-* System should log the user who manually run a task
-* In case of error, communication should be sent by email to the user who created the task or to specific configured users
+* Vue-cli scaffolding conversion
 * Light and dark mode switch
 * Session that allows for the massive verification of the syntax of the tasks loaded on the system
 * Crunz and Crunz-ui configuration for Doker
 
 
 ## Release history
+
+### v.2.6.1 (2021-12-XX)
+
+Crunz-ui updated stable release:
+* Removed all non-open icons migrated to material design
+* Implementation of Crunz [Lavary/Crunz](https://github.com/lavary/crunz) v3.1.0 in Crunz-ui
+
 
 ### v.2.6.1 (2021-09-02)
 
