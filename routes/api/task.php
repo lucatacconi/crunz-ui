@@ -1017,6 +1017,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
         $TASK_SUFFIX = $crunz_config["suffix"];
+        $TASK_SUFFIX_ARCH = str_replace(".php", ".arch", $crunz_config["suffix"]);
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
 
@@ -1053,8 +1054,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         if( !empty($params["NEW_FILE"]) && $params["NEW_FILE"] == 'Y'){
 
-            if(strpos($task_file_path, $TASK_SUFFIX) === false){
-                throw new Exception("ERROR - Task file name doesn't contains Crunz suffix and '.php' file extension");
+            if(strpos($task_file_path, $TASK_SUFFIX) === false && strpos($task_file_path, $TASK_SUFFIX_ARCH) === false){
+                throw new Exception("ERROR - Task file name doesn't contains Crunz suffix and '.php' or '.arch' file extension");
             }
 
             if(file_exists($task_file_path)) throw new Exception('ERROR - Task file already exist');
