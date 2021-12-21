@@ -28,31 +28,20 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
 
         //Parameters list
-        // CALC_RUN_LST - Y | N - set API to show all planned task execution
-        // PAST_PLANNED_TASKS - Y | N - Set API to show also planned task execution previous then today also if not executed. Set CALC_RUN_LST to Y
-        // OUTCOME_EXECUTED_TASK_LST - Y | N - Shows the list of the results of the single executions
         // RETURN_TASK_CONT - Y | N - set API to show content of the task (PHP code)
-
-        // DATE_REF - yyyy-mm-dd - Set reference date. Set to today if emtpy
-        // INTERVAL_FROM - yyyy-mm-dd - Set the start date of the time range that will be evaluated. If not set, it will be set to the first of the current month
-        // INTERVAL_TO - yyyy-mm-dd - Set the end date of the time range that will be evaluated. If not set, it will be set to the last day of the current month
-        // TASK_ID - int - Select task by ID
         // TASK_PATH - path - Select task by path
         // UNIQUE_ID - id - Select task by Unique ID
-
 
         $data = [];
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
-        // throw new Exception(print_r($params, true));
-
-        // $date_ref = date("Y-m-d H:i:s");
-        // if(!empty($params["DATE_REF"])){
-        //     $date_ref = date($params["DATE_REF"]);
-        // }
-
         $date_now = date("Y-m-d H:i:s");
+
+        $return_task_content = "N";
+        if(!empty($params["RETURN_TASK_CONT"])){
+            $return_task_content = $params["RETURN_TASK_CONT"];
+        }
 
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
