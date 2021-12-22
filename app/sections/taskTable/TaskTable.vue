@@ -293,36 +293,20 @@ module.exports = {
 
                     if(rowdata.task_content != '' && rowdata.filename != ''){
                         if(rowdata.task_content == ''){
-                            Swal.fire({
-                                title: 'Task content empty',
-                                text: "Task content is empty",
-                                type: 'error'
-                            })
+                            Utils.showAlertDialog('Task content empty','Task content is empty','error');
                             return;
                         }
                         if(rowdata.filename == ''){
-                            Swal.fire({
-                                title: 'Filename empty',
-                                text: "Filename is empty",
-                                type: 'error'
-                            })
+                            Utils.showAlertDialog('Filename empty','Filename is empty','error');
                             return;
                         }
                         var dec = atob(rowdata.task_content);
                         Utils.downloadFile(dec,rowdata.filename);
                     }else{
-                        Swal.fire({
-                            title: 'ERROR',
-                            text: error_dwl_msg,
-                            type: 'error'
-                        })
+                        Utils.showAlertDialog('ERROR',error_dwl_msg,'error');
                     }
                 }else{
-                    Swal.fire({
-                        title: 'ERROR',
-                        text: error_dwl_msg,
-                        type: 'error'
-                    })
+                    Utils.showAlertDialog('ERROR',error_dwl_msg,'error');
                 }
             });
         },
@@ -368,75 +352,49 @@ module.exports = {
 
         archiveItem: function (rowdata) {
             var self = this;
-            Swal.fire({
-                title: 'Archive task',
-                text: "Are you sure you want to archive task? The task file will be renamed and the task will no longer be visible in the dashboard.",
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#f86c6b',
-                cancelButtonColor: '#20a8d8',
-                confirmButtonText: 'Archive',
-                cancelButtonText: 'Back'
-            }).then( function (result) {
-                if (result.value) {
-                    var params = {
-                        "task_path": rowdata.task_path
-                    }
-                    Utils.apiCall("post", "/task-archive/archive",params)
-                    .then(function (response) {
-                        if(response.data.result){
-                            Swal.fire({
-                                title: 'Task archived',
-                                text: response.data.result_msg,
-                                type: 'success'
-                            })
-                            self.readData();
-                        }else{
-                            Swal.fire({
-                                title: 'ERROR',
-                                text: response.data.result_msg,
-                                type: 'error'
-                            })
-                        }
-                    });
+            Utils.showAlertDialog(
+                'Archive task',
+                'Are you sure you want to archive task? The task file will be renamed and the task will no longer be visible in the dashboard.',
+                'warning',{
+                    showCancelButton: true,
+                    confirmButtonText: 'Archive',
+                },()=>{
+                var params = {
+                    "task_path": rowdata.task_path
                 }
+                Utils.apiCall("post", "/task-archive/archive",params)
+                .then(function (response) {
+                    if(response.data.result){
+                        Utils.showAlertDialog('Task archived',response.data.result_msg,'success');
+                        self.readData();
+                    }else{
+                        Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
+                    }
+                });
             });
         },
 
         deleteItem: function (rowdata) {
             var self = this;
-            Swal.fire({
-                title: 'Delete task',
-                text: "Are you sure you want to delete task?",
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#f86c6b',
-                cancelButtonColor: '#20a8d8',
-                confirmButtonText: 'Delete',
-                cancelButtonText: 'Back'
-            }).then( function (result) {
-                if (result.value) {
-                    var params = {
-                        "task_path": rowdata.task_path
-                    }
-                    Utils.apiCall("delete", "/task/",params)
-                    .then(function (response) {
-                        if(response.data.result){
-                            Swal.fire({
-                                title: 'Task deleted',
-                                text: response.data.result_msg,
-                                type: 'success'
-                            })
-                            self.readData();
-                        }else{
-                            Swal.fire({
-                                title: 'ERROR',
-                                text: response.data.result_msg,
-                                type: 'error'
-                            })
-                        }
-                    });
+            Utils.showAlertDialog(
+                'Delete task',
+                'Are you sure you want to delete task?',
+                'warning',{
+                    showCancelButton: true,
+                    confirmButtonText: 'Delete',
+                },()=>{
+                var params = {
+                    "task_path": rowdata.task_path
                 }
+                Utils.apiCall("delete", "/task/",params)
+                .then(function (response) {
+                    if(response.data.result){
+                        Utils.showAlertDialog('Task deleted',response.data.result_msg,'success');
+                        self.readData();
+                    }else{
+                        Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
+                    }
+                });
             });
         },
 
@@ -454,18 +412,10 @@ module.exports = {
                         self.openLogModal(response.data);
                         self.readData();
                     }else{
-                        Swal.fire({
-                            title: 'Task launched. Execution in progress.',
-                            text: response.data.result_msg,
-                            type: 'success'
-                        })
+                        Utils.showAlertDialog('Task launched. Execution in progress',response.data.result_msg,'success');
                     }
                 }else{
-                    Swal.fire({
-                        title: 'ERROR',
-                        text: response.data.result_msg,
-                        type: 'error'
-                    })
+                    Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
                 }
             });
         },

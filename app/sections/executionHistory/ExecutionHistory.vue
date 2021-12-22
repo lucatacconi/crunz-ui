@@ -272,36 +272,20 @@ module.exports = {
 
                     if(rowdata.task_content != '' && rowdata.filename != ''){
                         if(rowdata.task_content == ''){
-                            Swal.fire({
-                                title: 'Task content empty',
-                                text: "Task content is empty",
-                                type: 'error'
-                            })
+                            Utils.showAlertDialog('Task content empty','Task content is empty','error');
                             return;
                         }
                         if(rowdata.filename == ''){
-                            Swal.fire({
-                                title: 'Filename empty',
-                                text: "Filename is empty",
-                                type: 'error'
-                            })
+                            Utils.showAlertDialog('Filename empty','Filename is empty','error');
                             return;
                         }
                         var dec = atob(rowdata.task_content);
                         Utils.downloadFile(dec,rowdata.filename);
                     }else{
-                        Swal.fire({
-                            title: 'ERROR',
-                            text: error_dwl_msg,
-                            type: 'error'
-                        })
+                        Utils.showAlertDialog('ERROR',error_dwl_msg,'error');
                     }
                 }else{
-                    Swal.fire({
-                        title: 'ERROR',
-                        text: error_dwl_msg,
-                        type: 'error'
-                    })
+                    Utils.showAlertDialog('ERROR',error_dwl_msg,'error');
                 }
             });
         },
