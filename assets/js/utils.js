@@ -42,13 +42,13 @@ var Utils = {
                 html:message
             }
         }
-        // if(localStorage.getItem('theme')==undefined||localStorage.getItem('theme')=='dark'){
-        //     tmp.title='<span style="color:white">'+title+'</span>'
-        //     tmp.html='<span style="color:white">'+message+'</span>'
-        //     if(tmp.background==undefined){
-        //         tmp.background="#272727"
-        //     }
-        // }
+        if(localStorage.getItem('theme')!=undefined&&localStorage.getItem('theme')!='false'){ //dark theme ON
+            tmp.title='<span style="color:white">'+title+'</span>'
+            tmp.html='<span style="color:white">'+message+'</span>'
+            if(tmp.background==undefined){
+                tmp.background="#272727"
+            }
+        }
 
         Swal.fire(tmp).then((result) => {
             if(options.showCancelButton!=undefined&&options.showCancelButton){

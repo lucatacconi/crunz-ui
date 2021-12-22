@@ -80,6 +80,31 @@
             }
 
             const router = new VueRouter();
+            const vuetify = new Vuetify({
+                theme: {
+                    dark: localStorage.getItem('theme')!=undefined&&localStorage.getItem('theme')!="false" ? true : false,
+                    themes: {
+                        // light: {
+                        //     primary: '#20a8d8',
+                        //     secondary: '#64B5F6',
+                        //     accent: '#8c9eff',
+                        //     error: '#f86c6b',
+                        //     info: '#63c2de',
+                        //     success: '#4dbd74',
+                        //     warning: '#ffc107'
+                        // },
+                        // dark: {
+                        //     primary: '#20a8d8',
+                        //     secondary: '#64B5F6',
+                        //     accent: '#8c9eff',
+                        //     error: '#f86c6b',
+                        //     info: '#63c2de',
+                        //     success: '#4dbd74',
+                        //     warning: '#ffc107'
+                        // }
+                    }
+                }
+            });
 
             const Edge = new Vue({
                 el: '#edge',
@@ -87,7 +112,7 @@
                     showloading: false
                 },
                 router,
-                vuetify: new Vuetify(),
+                vuetify: vuetify,
                 components: {
                     'container': httpVueLoader('../app/shareds/Container.vue' + '?v=' + new Date().getTime())
                 }

@@ -8,6 +8,12 @@
                         <v-toolbar dark color="primary">
                             <v-toolbar-title>Login form</v-toolbar-title>
                             <v-spacer></v-spacer>
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn icon v-bind="attrs" v-on="on" @click="changeTheme"><v-icon>mdi-theme-light-dark</v-icon></v-btn>
+                                </template>
+                                <span>Change theme dark/light</span>
+                            </v-tooltip>
                         </v-toolbar>
                         <validationobserver v-slot="{ handleSubmit, valid }">
                             <v-form @keyup.enter.native="handleSubmit(execLogin)">
@@ -66,6 +72,10 @@
         },
         props: [],
         methods: {
+            changeTheme:function () {
+                this.$vuetify.theme.dark=!this.$vuetify.theme.dark;
+                localStorage.setItem("theme",this.$vuetify.theme.dark);
+            },
             execLogin: function () {
 
                 var self = this;
