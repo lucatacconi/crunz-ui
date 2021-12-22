@@ -91,7 +91,7 @@
                                 {{item.expression_readable}}
                             </td>
                             <td class="text-center">
-                                {{ moment(item.execution_datatime).format('YY-MM-DD HH:mm') }}
+                                {{ dayjs(item.execution_datatime).format('YY-MM-DD HH:mm') }}
                             </td>
                             <td class="text-center">
                                 {{ item.duration == 0 ? "&lt;1" : item.duration }} min.

@@ -94,7 +94,7 @@
                                 {{item.expression_readable}}
                             </td>
                             <td class="text-center">
-                                {{ moment(item.storage_datetime).format('YY-MM-DD HH:mm') }}
+                                {{ dayjs(item.storage_datetime).format('YY-MM-DD HH:mm') }}
                             </td>
                         </tr>
                     </tbody>

@@ -35,7 +35,7 @@
                 var self = this;
 
                 var moves = this.dayBack + this.dayFront + 1;
-                var day_start = moment().subtract(this.dayBack + 1, 'days');
+                var day_start = dayjs().subtract(this.dayBack + 1, 'days');
 
                 for(i = 0; i < moves; i++){
 
@@ -60,8 +60,8 @@
                 };
 
                 var params = {
-                    "interval_from": moment().subtract(this.dayBack, 'days').format("YYYY-MM-DD"),
-                    "interval_to": moment().add(this.dayFront, 'days').format("YYYY-MM-DD")
+                    "interval_from": dayjs().subtract(this.dayBack, 'days').format("YYYY-MM-DD"),
+                    "interval_to": dayjs().add(this.dayFront, 'days').format("YYYY-MM-DD")
                 }
 
                 Utils.apiCall("get", "/task-stat/period",params, options)

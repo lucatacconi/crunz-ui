@@ -121,10 +121,10 @@
                                 {{item.expression_readable}}
                             </td>
                             <td class="text-center">
-                                {{ item.next_run == "" ? "Expired" : moment(item.next_run).format('YY-MM-DD HH:mm') }}
+                                {{ item.next_run == "" ? "Expired" : dayjs(item.next_run).format('YY-MM-DD HH:mm') }}
                             </td>
                             <td class="text-center">
-                                {{ item.last_run == "" ? "" : moment(item.last_run).format('YY-MM-DD HH:mm') }}
+                                {{ item.last_run == "" ? "" : dayjs(item.last_run).format('YY-MM-DD HH:mm') }}
 
                                 <template v-if="item.last_run_actually_executed != true">
                                     <v-tooltip bottom>

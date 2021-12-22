@@ -48,7 +48,7 @@
                 localStorage.removeItem("token");
                 localStorage.removeItem("accountData");
             }else{
-                if(moment().isAfter(accountData.sessionExpireDate, 'second')){
+                if(dayjs().isAfter(accountData.sessionExpireDate, 'second')){
                     localStorage.removeItem("token");
                     localStorage.removeItem("accountData");
                 }
