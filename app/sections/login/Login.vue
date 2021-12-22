@@ -9,36 +9,40 @@
                             <v-toolbar-title>Login form</v-toolbar-title>
                             <v-spacer></v-spacer>
                         </v-toolbar>
-                        <v-card-text>
-                            <v-form data-vv-scope="login-area" @keyup.enter.native="execLogin">
-                                <v-text-field
-                                    v-model.trim="credentials.username"
-                                    prepend-icon="person"
-                                    name="username"
-                                    label="Username"
-                                    type="text"
-                                    v-validate="{ required: true }"
-                                    autofocus=true
-                                    :error-messages="errors.collect('login-area.username')" >
-                                </v-text-field>
-                                <v-text-field
-                                    v-model.trim="password_orgin"
-                                    prepend-icon="lock"
-                                    name="password"
-                                    label="Password"
-                                    type="password"
-                                    v-validate="{ required: true }"
-                                    :error-messages="errors.collect('login-area.password')" >
-                                </v-text-field>
+                        <validationobserver v-slot="{ handleSubmit, valid }">
+                            <v-form @keyup.enter.native="handleSubmit(execLogin)">
+                                <v-card-text>
+                                    <validationprovider name="username" rules="required" v-slot="{ errors }">
+                                        <v-text-field
+                                            v-model.trim="credentials.username"
+                                            prepend-icon="person"
+                                            name="username"
+                                            label="Username"
+                                            type="text"
+                                            :autofocus=true
+                                            :error-messages="errors[0]" >
+                                        </v-text-field>
+                                    </validationprovider>
+                                    <validationprovider name="password" rules="required" v-slot="{ errors }">
+                                        <v-text-field
+                                            v-model.trim="password_orgin"
+                                            prepend-icon="lock"
+                                            name="password"
+                                            label="Password"
+                                            type="password"
+                                            :error-messages="errors[0]" >
+                                        </v-text-field>
+                                    </validationprovider>
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="primary" :disabled="!valid" @click.prevent="handleSubmit(execLogin)">
+                                        <v-icon left>mdi-key-variant</v-icon>
+                                        Login
+                                    </v-btn>
+                                </v-card-actions>
                             </v-form>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="primary" @click.prevent="execLogin">
-                                <v-icon left>mdi-key-variant</v-icon>
-                                Login
-                            </v-btn>
-                        </v-card-actions>
+                        </validationobserver>
                     </v-card>
                 </v-flex>
                 </v-layout>
@@ -68,21 +72,17 @@
 
                 self.credentials.password = CryptoJS.MD5(self.password_orgin).toString();
 
-                this.$validator.validateAll('login-area').then(function(result) {
-                    if (result) {
+                var config = {
+                    hideLoading: false
+                }
 
-                        var config = {
-                            hideLoading: false
-                        }
-
-                        Utils.apiCall("post", "/auth/login", self.credentials, config)
-                        .then(function (response) {
-                            localStorage.setItem("token", response.data.token);
-                            localStorage.setItem("accountData", response.data.accountData);
-                            Utils.goHome();
-                        });
-                    }
+                Utils.apiCall("post", "/auth/login", self.credentials, config)
+                .then(function (response) {
+                    localStorage.setItem("token", response.data.token);
+                    localStorage.setItem("accountData", response.data.accountData);
+                    Utils.goHome();
                 });
+
             }
         }
     }
