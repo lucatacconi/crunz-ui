@@ -12,6 +12,12 @@
 
 ## Release history
 
+### v.2.6.6 (2021-12-31)
+
+Crunz-ui updated stable release:
+* Security update
+* Happy new year
+
 ### v.2.6.1 (2021-09-02)
 
 Crunz-ui updated stable release:
