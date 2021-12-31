@@ -143,9 +143,6 @@
             </v-tooltip>
         </v-speed-dial>
 
-        <!-- Actions buttons -->
-        <actions-buttons v-on:read-data="readData()" v-on:edit-modal="opendEditModal()" v-on:new-task-modal="openNewTaskModal()" v-on:upload-modal="openUploadModal()"></actions-buttons>
-
     </div>
 </template>
 
