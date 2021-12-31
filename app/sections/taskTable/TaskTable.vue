@@ -214,9 +214,8 @@ module.exports = {
             self.message = "Loading tasks";
             Utils.apiCall("get", "/task/",params, options)
             .then(function (response) {
-                if(response.data.length!=0){
-                    self.files = response.data;
-                }else{
+                self.files = response.data;
+                if(response.data.length == 0){
                     self.message = "No tasks found on server. Eventually check tasks directory path."
                 }
             });
