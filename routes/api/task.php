@@ -2054,7 +2054,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
             $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
 
-            $row["err_msg"] = '';
+            $row["error_detected"] = '';
 
             if(strpos($file_check_result, 'No syntax errors detected in') !== false){
                 $row["syntax_check"] = true;
