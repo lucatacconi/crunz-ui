@@ -762,7 +762,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->get('/event_unique_key', function (Request $request, Response $response, array $args) {
+    $group->get('/event-unique-key', function (Request $request, Response $response, array $args) {
 
         $data = [];
 
