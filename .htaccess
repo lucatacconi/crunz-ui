@@ -1,0 +1,39 @@
+# prevent listing of directory contents
+Options -Indexes
+
+#Set master permission
+Order Allow,Deny
+Allow from all
+
+#block specific files from being read
+<Files .htaccess>
+    Deny from all
+</Files>
+
+<Files "*.yml">
+    Deny from all
+</Files>
+
+<Files "*.json">
+    Deny from all
+</Files>
+
+<Files "*.sh">
+    Deny from all
+</Files>
+
+<Files "*.env">
+    Deny from all
+</Files>
+
+<Files "*.gitignore">
+    Deny from all
+</Files>
+
+<Files "*.lock">
+    Deny from all
+</Files>
+
+<Files "TasksTreeReader.php">
+    Deny from all
+</Files>

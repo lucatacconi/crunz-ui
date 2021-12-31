@@ -1,10 +1,6 @@
-RewriteEngine On
+# prevent listing of directory contents
+Options -Indexes
 
-Options All -Indexes
-Options +FollowSymLinks
-ServerSignature Off
-
-<Files "*.log">
-    Order Deny,Allow
-    Deny from all
-</Files>
+#Set master permission
+Order Allow,Deny
+Deny from all
