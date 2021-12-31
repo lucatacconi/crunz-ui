@@ -186,7 +186,7 @@ module.exports = {
             Utils.apiCall("get", "/task-archive/",params, options)
             .then(function (response) {
                 self.files = response.data;
-                if(response.data.length==0){
+                if(response.data.length == 0){
                     self.message = "No archived tasks found on server. Eventually check tasks directory path."
                 }
             });

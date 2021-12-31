@@ -2050,7 +2050,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             $row["real_path"] = $taskFile->getRealPath();
             $row["subdir"] = str_replace( array( $TASKS_DIR, $row["filename"]),'',$row["real_path"]);
             $row["task_path"] = str_replace($TASKS_DIR, '', $row["real_path"]);
-            $row["create_date"] = date ("Y-m-d", filemtime($row["real_path"]));
+            $row["modification_date"] = date ("Y-m-d", filemtime($row["real_path"]));
 
             $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
 
@@ -2060,7 +2060,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["syntax_check"] = true;
             }else{
                 $row["syntax_check"] = false;
-                $row["err_msg"] = $file_check_result;
+                $row["error_detected"] = $file_check_result;
             }
 
             $data[] = $row;
