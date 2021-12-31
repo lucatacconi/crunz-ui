@@ -44,18 +44,6 @@
                                                 Task Action Menu
                                             </v-subheader>
                                             <v-list-item-group color="primary">
-                                                <!-- <v-list-item @click="executeItem(item, false)" class="pt-2">
-                                                    <v-list-item-icon><v-icon color="orange">mdi-play</v-icon></v-list-item-icon>
-                                                    <v-list-item-title> <span class="orange--text">Execute</span> </v-list-item-title>
-                                                </v-list-item>
-                                                <v-list-item @click="executeItem(item, true)">
-                                                    <v-list-item-icon><v-icon color="orange">mdi-clock</v-icon></v-list-item-icon>
-                                                    <v-list-item-title> <span class="orange--text">Execute and wait log</span> </v-list-item-title>
-                                                </v-list-item>
-                                                <v-list-item @click="openLogModal(item, i)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
-                                                    <v-list-item-icon><v-icon>mdi-clipboard-clock</v-icon></v-list-item-icon>
-                                                    <v-list-item-title>View last log</v-list-item-title>
-                                                </v-list-item> -->
                                                 <v-list-item @click="downloadTask(item,i)">
                                                     <v-list-item-icon><v-icon>mdi-file-download</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Download task</v-list-item-title>
@@ -86,6 +74,7 @@
                             <td class="text-center">
                                 <v-icon
                                     small
+                                    :color="item.syntax_check ? 'green' : 'red'"
                                 >
                                     {{ item.syntax_check ? 'mdi-check' : 'mdi-close' }}
                                 </v-icon>
