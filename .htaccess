@@ -1,0 +1,25 @@
+RewriteEngine On
+
+Options All -Indexes
+Options +FollowSymLinks
+ServerSignature Off
+
+<Files "*.json">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+<Files "*.lock">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+<Files "*.log">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+<Files ".env">
+    Order Deny,Allow
+    Deny from all
+</Files>

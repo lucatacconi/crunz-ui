@@ -9,7 +9,7 @@ ServerSignature Off
     Deny from all
 </Files>
 
-<Files "*.env">
+<Files ".env">
     Order Deny,Allow
     Deny from all
 </Files>
