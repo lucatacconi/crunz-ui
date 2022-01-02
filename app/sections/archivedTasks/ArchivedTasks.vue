@@ -11,7 +11,7 @@
 
         <v-card class="mb-16">
             <v-card-title >
-                Archived task list
+                Archived task files
                 <v-spacer></v-spacer>
                 <v-text-field
                     v-model="search"
@@ -45,10 +45,10 @@
                                                 Archived Task Action Menu
                                             </v-subheader>
                                             <v-list-item-group color="primary">
-                                                <!-- <v-list-item @click="downloadTask(item,i)">
+                                                <v-list-item @click="downloadTask(item,i)">
                                                     <v-list-item-icon><v-icon>mdi-file-download </v-icon></v-list-item-icon>
                                                     <v-list-item-title>Download task</v-list-item-title>
-                                                </v-list-item> -->
+                                                </v-list-item>
                                                 <v-list-item @click="openEditModal(item, i)">
                                                     <v-list-item-icon><v-icon>mdi-archive-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
@@ -70,22 +70,27 @@
                                 </div>
                             </td>
                             <td>
-                                {{ item.task_path }}
-                                <template v-if="item.high_frequency == true">
-                                    <v-tooltip bottom>
-                                        <template v-slot:activator="{ on, attrs }">
-                                            <v-icon
-                                                small
-                                                color="orange"
-                                                v-bind="attrs"
-                                                v-on="on"
-                                            >
-                                                mdi-clock-fast
-                                            </v-icon>
-                                        </template>
-                                        <span>High frequency task</span>
-                                    </v-tooltip>
-                                </template>
+                                <div>
+                                    {{ item.task_path }}
+                                    <template v-if="item.high_frequency == true">
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-icon
+                                                    small
+                                                    color="orange"
+                                                    v-bind="attrs"
+                                                    v-on="on"
+                                                >
+                                                    mdi-clock-fast
+                                                </v-icon>
+                                            </template>
+                                            <span>High frequency task</span>
+                                        </v-tooltip>
+                                    </template>
+                                </div>
+                                <div class="caption grey--text">
+                                    {{ item.event_unique_key }}
+                                </div>
                             </td>
                             <td>
                                 {{ item.task_description == "" ? "--" : item.task_description }}
@@ -164,7 +169,7 @@ module.exports = {
                     value: '',
                     align: 'center'
                 },
-                { text: 'Task', value: 'task_path' },
+                { text: 'Task file / Event ID', value: 'task_path' },
                 { text: 'Description', value: 'task_description', sortable: false },
                 { text: 'Execution', value: 'expression', sortable: false },
                 { text: 'Storade date', value: 'storage_datetime', align: 'center' }
@@ -252,7 +257,7 @@ module.exports = {
                 "unique_id": rowdata.event_unique_key
             }
 
-            Utils.apiCall("get", "/task/",params, {})
+            Utils.apiCall("get", "/task-archive/",params, {})
             .then(function (response) {
 
                 error_dwl_msg = "Error downloading task content";

@@ -10,7 +10,7 @@
 
         <v-card class="mb-16">
             <v-card-title >
-                Task list
+                Verified task files
                 <v-spacer></v-spacer>
                 <v-text-field
                     v-model="search"

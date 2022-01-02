@@ -97,22 +97,27 @@
                                 </div>
                             </td>
                             <td>
-                                {{ item.task_path }}
-                                <template v-if="item.high_frequency == true">
-                                    <v-tooltip bottom>
-                                        <template v-slot:activator="{ on, attrs }">
-                                            <v-icon
-                                                small
-                                                color="orange"
-                                                v-bind="attrs"
-                                                v-on="on"
-                                            >
-                                                mdi-clock-fast
-                                            </v-icon>
-                                        </template>
-                                        <span>High frequency task</span>
-                                    </v-tooltip>
-                                </template>
+                                <div>
+                                    {{ item.task_path }}
+                                    <template v-if="item.high_frequency == true">
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-icon
+                                                    small
+                                                    color="orange"
+                                                    v-bind="attrs"
+                                                    v-on="on"
+                                                >
+                                                    mdi-clock-fast
+                                                </v-icon>
+                                            </template>
+                                            <span>High frequency task</span>
+                                        </v-tooltip>
+                                    </template>
+                                </div>
+                                <div class="caption grey--text">
+                                    {{ item.event_unique_key }}
+                                </div>
                             </td>
                             <td>
                                 {{ item.task_description == "" ? "--" : item.task_description }}
@@ -190,7 +195,7 @@ module.exports = {
                     value: '',
                     align: 'center'
                 },
-                { text: 'Task', value: 'task_path' },
+                { text: 'Task file / Event ID', value: 'task_path' },
                 { text: 'Description', value: 'task_description', sortable: false },
                 { text: 'Execution', value: 'expression', sortable: false },
                 { text: 'Next execution', value: 'next_run', align: 'center' },

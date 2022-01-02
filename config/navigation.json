@@ -108,8 +108,8 @@
         },
 
         {
-            "title": "Archived tasks",
-            "subtitle": "Show all archived tasks",
+            "title": "Archived task files",
+            "subtitle": "Show all archived task files",
             "allowed":["admin","user"],
             "visible": true,
 
