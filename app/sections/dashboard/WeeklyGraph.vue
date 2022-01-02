@@ -3,7 +3,7 @@
         <v-card>
             <v-card-title>Weekly task's prospect</v-card-title>
             <v-card-text>
-                <canvas id="graph-area-weekly" height="100"></canvas>
+                <canvas id="graph-area-weekly"></canvas>
             </v-card-text>
         </v-card>
     </div>
@@ -134,8 +134,10 @@
                         },
                         options: {
                             responsive: true,
-                            legend: {
-                                position: 'right'
+                            plugins: {
+                                legend: {
+                                    position: 'right'
+                                }
                             }
                         }
                     };
@@ -154,4 +156,9 @@
 </script>
 
 <style>
+
+    #graph-area-weekly {
+        max-height: 300px;
+    }
+
 </style>
