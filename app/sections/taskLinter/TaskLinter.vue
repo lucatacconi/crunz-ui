@@ -73,10 +73,9 @@
                             </td>
                             <td class="text-center">
                                 <v-icon
-                                    small
                                     :color="item.syntax_check ? 'green' : 'red'"
                                 >
-                                    {{ item.syntax_check ? 'mdi-check' : 'mdi-close' }}
+                                    {{ item.syntax_check ? 'mdi-check' : 'mdi-bug' }}
                                 </v-icon>
                             </td>
                             <td>
