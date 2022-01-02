@@ -79,7 +79,7 @@
                                     {{ item.syntax_check ? 'mdi-check' : 'mdi-close' }}
                                 </v-icon>
                             </td>
-                            <td class="text-center">
+                            <td>
                                 {{ item.error_detected == "" ? "--" : item.error_detected }}
                             </td>
                         </tr>
@@ -150,7 +150,7 @@ module.exports = {
                 { text: 'Task path', value: 'task_path' },
                 { text: 'Last modification', value: 'modification_date', align: 'center', sortable: false },
                 { text: 'Syntax check', value: 'syntax_check', align: 'center', sortable: false },
-                { text: 'Error detected', value: 'error_detected', align: 'center', sortable: false },
+                { text: 'Error detected', value: 'error_detected', align: 'left', sortable: false },
             ],
             files: [],
             editData: false,
