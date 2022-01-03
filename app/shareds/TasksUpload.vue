@@ -99,11 +99,7 @@ module.exports = {
                 }
             }
             if(error!=''){
-                Swal.fire({
-                    title:"Upload error",
-                    html:error,
-                    type:"error"
-                })
+                Utils.showAlertDialog('Upload error',error,'error');
                 return
             }
 
@@ -118,20 +114,11 @@ module.exports = {
             Utils.fileUpload("/task/upload", formData)
             .then(function (response) {
                 if(response.data.result){
-                    Swal.fire({
-                        title: 'Task/s uploaded',
-                        text: response.data.result_msg,
-                        type: 'success',
-                        onClose: () => {
-                            self.closeModal(true)
-                        }
-                    })
+                    Utils.showAlertDialog('Task/s uploaded',response.data.result_msg,'success',{},()=>{
+                        self.closeModal(true)
+                    });
                 }else{
-                    Swal.fire({
-                        title: 'ERROR',
-                        text: response.data.result_msg,
-                        type: 'error'
-                    })
+                    Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
                 }
             });
         }

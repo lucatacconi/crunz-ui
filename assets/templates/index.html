@@ -27,14 +27,9 @@
 
         <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Material+Icons" rel="stylesheet">
-        <link href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
 
-        {% if run_mode == "PRODU" %}
-            <link href="https://cdn.jsdelivr.net/npm/vuetify@2.3.x/dist/vuetify.min.css" rel="stylesheet">
-        {% else %}
-            <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
-        {% endif %}
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
 
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
@@ -49,24 +44,22 @@
                 <container :showloading="showloading"></container>
             </v-app>
         </div>
-
         {% if run_mode == "PRODU" %}
-            <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/vuetify@2.3.x/dist/vuetify.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.min.js"></script>
         {% else %}
-            <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         {% endif %}
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.js"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue-router@3.x/dist/vue-router.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/axios@0.19.2/dist/axios.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vee-validate@2.x/dist/vee-validate.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8.x/dist/sweetalert2.all.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/moment@2.x/moment.min.js"></script>
-        <script src="https://unpkg.com/http-vue-loader"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vee-validate@3.x/dist/vee-validate.full.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.x/dist/sweetalert2.all.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.7/dayjs.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/http-vue-loader@1.4.2/src/httpVueLoader.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ace.js" integrity="sha512-OMjy8oWtPbx9rJmoprdaQdS2rRovgTetHjiBf7RL7LvRSouoMLks5aIcgqHb6vGEAduuPdBTDCoztxLR+nv45g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.x/dist/Chart.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js" integrity="sha512-nOQuvD9nKirvxDdvQ9OMqe2dgapbPB7vYAMrzJihw5m+aNcf0dX53m6YxM4LgA9u8e9eg9QX+/+mPu8kCNpV2A==" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.x/dist/chart.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
         <script src="../assets/js/utils.js"></script>
 
@@ -75,10 +68,11 @@
             var lang = document.documentElement.lang;
             var cronstrue = window.cronstrue;
 
-            Vue.use(VeeValidate, { locale: lang });
             Vue.use(Vuetify);
             Vue.use(VueRouter)
             Vue.config.productionTip = false;
+            Vue.component('validationprovider', VeeValidate.ValidationProvider);
+            Vue.component('validationobserver', VeeValidate.ValidationObserver);
 
             var run_mode = "{{run_mode}}";
             if(run_mode != "PRODU"){
@@ -86,6 +80,31 @@
             }
 
             const router = new VueRouter();
+            const vuetify = new Vuetify({
+                theme: {
+                    dark: localStorage.getItem('theme')!=undefined&&localStorage.getItem('theme')!="false" ? true : false,
+                    themes: {
+                        // light: {
+                        //     primary: '#20a8d8',
+                        //     secondary: '#64B5F6',
+                        //     accent: '#8c9eff',
+                        //     error: '#f86c6b',
+                        //     info: '#63c2de',
+                        //     success: '#4dbd74',
+                        //     warning: '#ffc107'
+                        // },
+                        // dark: {
+                        //     primary: '#20a8d8',
+                        //     secondary: '#64B5F6',
+                        //     accent: '#8c9eff',
+                        //     error: '#f86c6b',
+                        //     info: '#63c2de',
+                        //     success: '#4dbd74',
+                        //     warning: '#ffc107'
+                        // }
+                    }
+                }
+            });
 
             const Edge = new Vue({
                 el: '#edge',
@@ -93,7 +112,7 @@
                     showloading: false
                 },
                 router,
-                vuetify: new Vuetify(),
+                vuetify: vuetify,
                 components: {
                     'container': httpVueLoader('../app/shareds/Container.vue' + '?v=' + new Date().getTime())
                 }

@@ -130,20 +130,12 @@ module.exports = {
             var self=this
 
             if(this.new_folder_name==null||this.new_folder_name==''){
-                Swal.fire({
-                    title: 'ERROR',
-                    text: "Directory name is empty",
-                    type: 'error'
-                })
+                Utils.showAlertDialog('ERROR',"Directory name is empty",'error');
                 return
             }
             var regex = /[^a-zA-Z0-9_-]/g
             if(regex.test(this.new_folder_name)){
-                Swal.fire({
-                    title: 'ERROR',
-                    text: "Directory being added contains not allowed characters (Only a-z, A-Z, 0-9, -, _ characters allowed)",
-                    type: 'error'
-                })
+                Utils.showAlertDialog('ERROR',"Directory being added contains not allowed characters (Only a-z, A-Z, 0-9, -, _ characters allowed)",'error');
                 return
             }
 
@@ -155,57 +147,35 @@ module.exports = {
             .then(function (response) {
                 if(response.data.result){
                     self.readTree(path)
-                    Swal.fire({
-                        title: 'Folder created',
-                        text: response.data.result_msg,
-                        type: 'success',
-                        onClose: () => {
-                            self.add_folder=false
-                        }
-                    })
+                    Utils.showAlertDialog('Folder created',response.data.result_msg,'success',{},()=>{
+                        self.add_folder=false
+                    });
                 }else{
-                    Swal.fire({
-                        title: 'ERROR',
-                        text: response.data.result_msg,
-                        type: 'error'
-                    })
+                    Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
                 }
             });
         },
         removeFolder:function(item){
             var self = this;
-            Swal.fire({
-                title: 'Delete folder',
-                text: "Are you sure you want to delete folder?",
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#f86c6b',
-                cancelButtonColor: '#20a8d8',
-                confirmButtonText: 'Delete',
-                cancelButtonText: 'Back'
-            }).then( function (result) {
-                if (result.value) {
-                    var params = {
-                        path:item.path
-                    }
-                    Utils.apiCall("delete", "task-container/dir",params)
-                    .then(function (response) {
-                        if(response.data.result){
-                            self.readTree()
-                            Swal.fire({
-                                title: 'Folder deleted',
-                                text: response.data.result_msg,
-                                type: 'success'
-                            })
-                        }else{
-                            Swal.fire({
-                                title: 'ERROR',
-                                text: response.data.result_msg,
-                                type: 'error'
-                            })
-                        }
-                    });
+            Utils.showAlertDialog(
+                'Delete folder',
+                'Are you sure you want to delete folder?',
+                'warning',{
+                    showCancelButton: true,
+                    confirmButtonText: 'Delete',
+                },()=>{
+                var params = {
+                    path:item.path
                 }
+                Utils.apiCall("delete", "task-container/dir",params)
+                .then(function (response) {
+                    if(response.data.result){
+                        self.readTree()
+                        Utils.showAlertDialog('Folder deleted',response.data.result_msg,'success');
+                    }else{
+                        Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
+                    }
+                });
             });
         },
         searchChildren:function(tree, value, key){ //search the VALUE of the KEY in the TREE

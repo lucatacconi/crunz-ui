@@ -33,7 +33,7 @@
                 <v-col class="py-0">
 
                     <v-sheet height="64">
-                        <v-toolbar flat color="white">
+                        <v-toolbar flat>
                             <v-btn outlined class="mr-4" @click = "setToday">
                                 Today
                             </v-btn>
@@ -97,7 +97,7 @@ module.exports = {
             selectedEvent: false,
             logData:false,
 
-            dateFocus: moment().format('YYYY-MM-DD')
+            dateFocus: dayjs().format('YYYY-MM-DD')
         }
     },
 
@@ -108,14 +108,14 @@ module.exports = {
 
     computed: {
         title: function(){
-            return moment(this.dateFocus, 'YYYY-MM-DD').format('MMMM YYYY').toString();
+            return dayjs(this.dateFocus, 'YYYY-MM-DD').format('MMMM YYYY').toString();
         }
     },
 
     methods: {
 
         setToday: function(){
-            this.dateFocus = moment().format('YYYY-MM-DD');
+            this.dateFocus = dayjs().format('YYYY-MM-DD');
             this.readData();
         },
 
@@ -194,8 +194,8 @@ module.exports = {
             var apiParams={
                 "calc_run_lst": 'Y',
                 "outcome_executed_task_lst": "Y",
-                "interval_from": moment(self.dateFocus,'YYYY-MM-DD').set('date',1).format('YYYY-MM-DD').toString(),
-                "interval_to": moment(self.dateFocus,'YYYY-MM-DD').endOf('month').format('YYYY-MM-DD').toString()
+                "interval_from": dayjs(self.dateFocus,'YYYY-MM-DD').set('date',1).format('YYYY-MM-DD').toString(),
+                "interval_to": dayjs(self.dateFocus,'YYYY-MM-DD').endOf('month').format('YYYY-MM-DD').toString()
             }
 
             Utils.apiCall("get", "/task/", apiParams)

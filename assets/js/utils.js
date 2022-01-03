@@ -19,6 +19,48 @@ var Utils = {
         return JSON.parse(jsonPayload);
     },
 
+    showAlertDialog:function(title,message,icon,options={},action=null){
+        var tmp={}
+        if(Object.keys(options).length>0){
+            options.title=title
+            options.html=message
+            options.icon=icon
+            if(options.showCancelButton!=undefined&&options.showCancelButton){
+                if(options.confirmButtonColor==undefined) options.confirmButtonColor='#d33'
+                if(options.cancelButtonColor==undefined) options.cancelButtonColor='#3085d6'
+                if(options.confirmButtonText==undefined) options.confirmButtonText='Confirm'
+                if(options.cancelButtonText==undefined) options.cancelButtonText='Back'
+            }else{
+                if(options.confirmButtonColor==undefined) options.confirmButtonColor='#3085d6'
+                if(options.confirmButtonText==undefined) options.confirmButtonText='Ok'
+            }
+            tmp=options
+        }else{
+            tmp={
+                title:title,
+                icon:icon,
+                html:message
+            }
+        }
+        if(localStorage.getItem('theme')!=undefined&&localStorage.getItem('theme')!='false'){ //dark theme ON
+            tmp.title='<span style="color:white">'+title+'</span>'
+            tmp.html='<span style="color:white">'+message+'</span>'
+            if(tmp.background==undefined){
+                tmp.background="#272727"
+            }
+        }
+
+        Swal.fire(tmp).then((result) => {
+            if(options.showCancelButton!=undefined&&options.showCancelButton){
+                if (result.value) {
+                    if(action!=null) action()
+                }
+            }else{
+                if(action!=null) action()
+            }
+        })
+    },
+
     showLoading: function () {
         Edge.showloading = true;
     },
@@ -111,23 +153,10 @@ var Utils = {
         return axios(call_config).catch(function (error) {
 
             if(error.response.status == 401){
-                Swal.fire({
-                    type: 'error',
-                    title: 'Account error',
-                    text: "Login error or session expired",
-                }).then(function(result) {
-                    Utils.doLogoutAndGoHome();
-                }).catch(swal.noop);
+                Utils.showAlertDialog('Account error','Login error or session expired','error',{},Utils.doLogoutAndGoHome);
             }else{
                 Utils.hideLoading();
-                Swal.fire({
-                    type: 'error',
-                    title: error.response.data.status,
-                    text: error.response.data.message,
-                }).then(function(result) {
-                    return;
-                })
-                .catch(swal.noop);
+                Utils.showAlertDialog(error.response.data.status,error.response.data.message,'error');
             }
         });
     },

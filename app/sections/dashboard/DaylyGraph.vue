@@ -3,7 +3,7 @@
         <v-card>
             <v-card-title>Daily task's prospect</v-card-title>
             <v-card-text>
-                <canvas id="graph-area-daily" height="100"></canvas>
+                <canvas id="graph-area-daily"></canvas>
             </v-card-text>
         </v-card>
     </div>
@@ -13,7 +13,7 @@
     module.exports = {
         data: function() {
             return {
-                date: moment().format("YYYY-MM-DD"),
+                date: dayjs().format("YYYY-MM-DD"),
                 planned: 0,
                 executed: 0,
                 withErrors: 0
@@ -32,15 +32,15 @@
                 };
 
                 var params = {
-                    "interval_from": moment().format("YYYY-MM-DD"),
-                    "interval_to": moment().format("YYYY-MM-DD")
+                    "interval_from": dayjs().format("YYYY-MM-DD"),
+                    "interval_to": dayjs().format("YYYY-MM-DD")
                 }
 
                 Utils.apiCall("get", "/task-stat/period",params, options)
                 .then(function (response) {
-                    if((typeof(response.data[moment().format("YYYY-MM-DD")]) !== 'undefined') && response.data[moment().format("YYYY-MM-DD")] != 0){
+                    if((typeof(response.data[dayjs().format("YYYY-MM-DD")]) !== 'undefined') && response.data[dayjs().format("YYYY-MM-DD")] != 0){
 
-                        let day_stat = response.data[moment().format("YYYY-MM-DD")];
+                        let day_stat = response.data[dayjs().format("YYYY-MM-DD")];
 
                         let planned_calc = day_stat.planned -( day_stat.succesfull + day_stat.error );
 
@@ -65,8 +65,10 @@
                         },
                         options: {
                             responsive: true,
-                            legend: {
-                                position: 'right'
+                            plugins: {
+                                legend: {
+                                    position: 'right'
+                                }
                             }
                         }
                     };
@@ -86,4 +88,9 @@
 </script>
 
 <style>
+
+    #graph-area-daily {
+        max-height: 300px;
+    }
+
 </style>

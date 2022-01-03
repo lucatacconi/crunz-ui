@@ -166,7 +166,7 @@ module.exports = {
             }
 
             if(this.rowdata.data.last_outcome != ''){
-                this.exec_duration = moment(this.rowdata.end).diff(moment(this.rowdata.start), 'minutes')
+                this.exec_duration = dayjs(this.rowdata.end).diff(dayjs(this.rowdata.start), 'minutes')
             }else{
                 this.exec_duration = -1;
             }

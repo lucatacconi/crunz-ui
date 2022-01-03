@@ -149,11 +149,7 @@ module.exports = {
             if(this.editor==null) return
 
             if(this.editor.getValue().trim()==""){
-                Swal.fire({
-                    title: 'ERROR',
-                    text: "Task content is empty",
-                    type: 'error'
-                })
+                Utils.showAlertDialog('ERROR','Task content is empty','error');
                 return
             }
 
@@ -175,22 +171,14 @@ module.exports = {
                             Utils.apiCall("post", "/task-archive/de-archive",params)
                             .then(function (response) {
                                 if(response.data.result){
-                                    Swal.fire({
-                                        title: msg,
-                                        text: response.data.result_msg,
-                                        type: 'success',
-                                        onClose: () => {
-                                            if(edit_modal_close){
-                                                self.closeModal(true);
-                                            }
+                                    Utils.showAlertDialog(msg,response.data.result_msg,'success',{},
+                                        ()=>{
+                                        if(edit_modal_close){
+                                            self.closeModal(true);
                                         }
-                                    })
+                                    });
                                 }else{
-                                    Swal.fire({
-                                        title: 'ERROR',
-                                        text: response.data.result_msg,
-                                        type: 'error'
-                                    })
+                                    Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
                                 }
                             });
                         }else{
@@ -198,43 +186,27 @@ module.exports = {
                             Utils.apiCall("post", "/task-archive/archive",params)
                             .then(function (response) {
                                 if(response.data.result){
-                                    Swal.fire({
-                                        title: msg,
-                                        text: response.data.result_msg,
-                                        type: 'success',
-                                        onClose: () => {
-                                            if(edit_modal_close){
-                                                self.closeModal(true);
-                                            }
+                                    Utils.showAlertDialog(msg,response.data.result_msg,'success',{},
+                                        ()=>{
+                                        if(edit_modal_close){
+                                            self.closeModal(true);
                                         }
-                                    })
+                                    });
                                 }else{
-                                    Swal.fire({
-                                        title: 'ERROR',
-                                        text: response.data.result_msg,
-                                        type: 'error'
-                                    })
+                                    Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
                                 }
                             });
                         }
                     }else{
-                        Swal.fire({
-                            title: msg,
-                            text: response.data.result_msg,
-                            type: 'success',
-                            onClose: () => {
-                                if(edit_modal_close){
-                                    self.closeModal(true);
-                                }
+                        Utils.showAlertDialog(msg,response.data.result_msg,'success',{},
+                            ()=>{
+                            if(edit_modal_close){
+                                self.closeModal(true);
                             }
-                        })
+                        });
                     }
                 }else{
-                    Swal.fire({
-                        title: 'ERROR',
-                        text: response.data.result_msg,
-                        type: 'error'
-                    })
+                    Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
                 }
             });
         }
