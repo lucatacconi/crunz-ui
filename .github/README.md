@@ -76,6 +76,7 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 * Service ntp enabled
 * Apache and PHP 7.4 or newer, with rewrite.load module enabled
 * Composer
+* PHP enabled to run console commands (It can be dangerous and used by malicious people to hake on the server)
 
 
 > :warning: ***It is important that the system clock is correctly synchronized. In case of unsynchronized clock there could be misalignments in the execution of the tasks or in the management of the user sessions.***
