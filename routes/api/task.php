@@ -1796,6 +1796,24 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
+
+        $interval_from = '';
+        if(!empty($params["INTERVAL_FROM"])){
+            $interval_from = date($params["INTERVAL_FROM"]);
+            if(strlen($interval_from) == 10){
+                $interval_from .= " 00:00";
+            }
+        }
+
+        $interval_to = '';
+        if(!empty($params["INTERVAL_TO"])){
+            $interval_to = date($params["INTERVAL_TO"]);
+            if(strlen($interval_to) == 10){
+                $interval_to .= " 23:59";
+            }
+        }
+
+
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
@@ -1898,10 +1916,23 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["real_path"] = $taskFile->getRealPath();
                 $row["subdir"] = str_replace( array( $TASKS_DIR, $row["filename"]),'',$row["real_path"]);
                 $row["task_path"] = str_replace($TASKS_DIR, '', $row["real_path"]);
+
+                if(!empty($params["TASK_PATH"])){
+                    if($row["task_path"] != $params["TASK_PATH"]){
+                        continue;
+                    }
+                }
+
                 $row["task_description"] = $oEVENT->description;
                 $row["expression"] = $oEVENT->getExpression();
 
                 $row["event_unique_key"] = md5($row["task_path"] . $row["task_description"] . $row["expression"]);
+
+                if(!empty($params["UNIQUE_ID"])){
+                    if($row["event_unique_key"] != $params["UNIQUE_ID"]){
+                        continue;
+                    }
+                }
 
                 try {
                     $row["expression_readable"] = CronTranslator::translate($row["expression"]);
@@ -1913,13 +1944,21 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             }
         }
 
+        $log_filter = '*';
+        if(!empty($params["UNIQUE_ID"])){
+            $log_filter = $params["UNIQUE_ID"]."_*";
+        }
 
-        $aLOGNAME = glob($LOGS_DIR."/"."*.log");
+        $aLOGNAME = glob($LOGS_DIR."/"."$log_filter.log");
 
         if(!empty($aLOGNAME)){
             usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
 
             foreach ($aLOGNAME as $lognum => $logname) {
+
+                if(empty($aTASKs[$event_unique_key])){
+                    continue; //the task may have been deleted or archived
+                }
 
                 if(!empty($params["LST_LENGTH"])){
                     if($lognum >= $params["LST_LENGTH"]){
@@ -1948,9 +1987,16 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $interval = $task_start->diff($task_stop);
                 $task_duration = ($interval->format('%i') != 0 ? $interval->format('%i') : 1);
 
+                if(!empty($interval_from)){
+                    if($task_start < $interval_from){
+                        continue;
+                    }
+                }
 
-                if(empty($aTASKs[$event_unique_key])){
-                    continue; //the task may have been deleted or archived
+                if(!empty($interval_to)){
+                    if($task_start > $interval_to){
+                        continue;
+                    }
                 }
 
                 $row = $aTASKs[$event_unique_key];
