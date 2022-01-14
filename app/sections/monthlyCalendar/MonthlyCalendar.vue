@@ -58,6 +58,7 @@
                             color="primary"
                             event-height=18
                             :event-more=false
+                            :weekdays="[1, 2, 3, 4, 5, 6, 0]"
 
                             @click:more="viewDay"
                             @click:date="viewDay"

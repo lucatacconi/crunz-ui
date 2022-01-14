@@ -15,32 +15,92 @@
             :rowdata="logData"
         ></task-edit>
 
+        <!-- Picker modal -->
+        <picker-modal @result="closePicker($event)" ref="picker"></picker-modal>
+
         <v-card class="mb-16">
             <v-card-title >
                 Tasks' execution outcome list
             </v-card-title>
-            <v-layout row wrap class="ma-0 mr-4 ml-4">
-                <v-flex xs12 md6>
-                    <v-select
-                        v-model="amountLogs"
-                        label="Amount of logs"
-                        hide-details
-                        class="mt-0 mr-2"
-                        :items="['50','100','150','150+']"
-                        @change="readData"
-                    ></v-select>
-                </v-flex>
-                <v-flex xs12 md6>
-                    <v-text-field
-                        v-model="search"
-                        append-icon="mdi-magnify"
-                        label="Search in log interval"
-                        single-line
-                        hide-details
-                        class="mt-0"
-                    ></v-text-field>
-                </v-flex>
-            </v-layout>
+            <validationobserver v-slot="{ handleSubmit, valid }">
+                <v-form>
+                    <v-layout row wrap class="ma-0 mr-4 ml-4">
+                        <v-flex xs12 md6>
+                            <v-select
+                                v-model="search_params.taskPath"
+                                label="Task path"
+                                single-line
+                                hide-details
+                                :items="task_path_lovs"
+                                class="mt-0 mr-2"
+                                @change="handleSubmit(launchSearch)"
+                            ></v-select>
+                        </v-flex>
+                        <v-flex xs12 md6>
+                            <v-text-field
+                                v-model="search_params.eventUniqueId"
+                                label="Event univoque id"
+                                single-line
+                                hide-details
+                                class="mt-0"
+                                @keyup="handleSubmit(launchSearch)"
+                            ></v-text-field>
+                        </v-flex>
+                        <v-flex xs12 md6>
+                            <validationprovider name="Execution internal from" rules="date_format" v-slot="{ errors }">
+                                <v-text-field
+                                    id="execution_internal_from"
+                                    v-model="search_params.executionInternalFrom"
+                                    @click:append="openPicker('executionInternalFrom','execution_internal_from')"
+                                    append-icon="mdi-calendar"
+                                    label="Execution internal from"
+                                    hide-details="auto"
+                                    single-line
+                                    class="mt-3 mr-2"
+                                    :error-messages="errors[0]"
+                                    @keyup="valid ? launchSearch() : null"
+                                ></v-text-field>
+                            </validationprovider>
+                        </v-flex>
+                        <v-flex xs12 md6>
+                            <validationprovider name="Execution internal to" rules="date_format|confirm_to_date:@Execution internal from" v-slot="{ errors }">
+                                <v-text-field
+                                    id="execution_internal_to"
+                                    v-model="search_params.executionInternalTo"
+                                    @click:append="openPicker('executionInternalTo','execution_internal_to')"
+                                    append-icon="mdi-calendar"
+                                    label="Execution internal to"
+                                    hide-details="auto"
+                                    single-line
+                                    class="mt-3"
+                                    :error-messages="errors[0]"
+                                    @keyup="handleSubmit(launchSearch)"
+                                ></v-text-field>
+                            </validationprovider>
+                        </v-flex>
+                        <v-flex xs12 md6>
+                            <v-select
+                                v-model="search_params.amountLogs"
+                                label="Amount of logs"
+                                hide-details
+                                class="mt-3 mr-2"
+                                :items="['50','100','150','150+']"
+                                @change="readData"
+                            ></v-select>
+                        </v-flex>
+                        <v-flex xs12 md6>
+                            <v-text-field
+                                v-model="search"
+                                append-icon="mdi-magnify"
+                                label="Search in log interval"
+                                single-line
+                                hide-details
+                                class="mt-3"
+                            ></v-text-field>
+                        </v-flex>
+                    </v-layout>
+                </v-form>
+            </validationobserver>
 
             <v-data-table
                 :headers="headers"
@@ -160,9 +220,17 @@
 module.exports = {
     data:function(){
         return{
+            task_path_lovs:[],
+            search_params:{
+                taskPath:null,
+                eventUniqueId:null,
+                executionInternalFrom:null,
+                executionInternalTo:null,
+                amountLogs:'50'
+            },
+            pointer:null,
             sortBy:'execution_datatime',
             sortDesc:true,
-            amountLogs:'50',
             search: '',
             showEditModal: false,
             showLogModal: false,
@@ -190,18 +258,69 @@ module.exports = {
         }
     },
     methods: {
+        openPicker:function(key,fieldId){
+            document.getElementById(fieldId).focus();
+            this.pointer=key;
+            this.$refs.picker.showDatePickerModal(this.search_params[this.pointer],true);
+        },
+        closePicker:function(value){
+            var self=this
+            this.search_params[this.pointer]=value;
+            this.pointer=null;
+            VeeValidate.validate(this.search_params.executionInternalTo, 'date_format|confirm_to_date:@Execution internal from', {
+                name: 'Execution internal to',
+                values: {
+                    'Execution internal from':this.search_params.executionInternalFrom
+                }
+            }).then(result => {
+                // console.log("validate 1")
+                // console.log(result)
+                if (result.valid) {
+                    VeeValidate.validate(self.search_params.executionInternalFrom, 'date_format', {
+                        name: 'Execution internal to'
+                    }).then(res => {
+                        // console.log("validate 2")
+                        // console.log(res)
+                        if (res.valid) {
+                            self.launchSearch();
+                        }
+                    });
+                }
+            });
+        },
+
+        launchSearch:function(){
+            var self = this;
+            var params = {
+                lst_length:self.search_params.amountLogs,
+                unique_id:self.search_params.eventUniqueId,
+                task_path:self.search_params.taskPath,
+                interval_from:self.search_params.executionInternalFrom,
+                interval_to:self.search_params.executionInternalTo
+            };
+            // console.log("go")
+            // console.log(params)
+            Utils.apiCall("get", "/task/exec-history",params)
+            .then(function (response) {
+                self.tasksExecutions = response.data;
+                if(response.data.length==0){
+                    self.message = "No tasks execution log found on server.";
+                }
+            });
+        },
+
         readData:function(options = {}){
             var self = this;
             var params = {
-                lst_length:self.amountLogs
-            }
+                lst_length:self.search_params.amountLogs
+            };
             self.message = "Loading execution log";
             Utils.apiCall("get", "/task/exec-history",params, options)
             .then(function (response) {
-                if(response.data.length!=0){
-                    self.tasksExecutions = response.data;
-                }else{
-                    self.message = "No tasks execution log found on server."
+                self.tasksExecutions = response.data;
+                self.readLovs(options);
+                if(response.data.length==0){
+                    self.message = "No tasks execution log found on server.";
                 }
             });
         },
@@ -294,6 +413,21 @@ module.exports = {
                 }
             });
         },
+        readLovs:function(options={}){
+            var self = this;
+            self.search_params.taskPath=null
+            self.search_params.eventUniqueId=null
+            self.search_params.executionInternalFrom=null
+            self.search_params.executionInternalTo=null
+            self.search_params.amountLogs='50'
+            Utils.apiCall("get", "/task/filename",{},options)
+            .then(function (response) {
+                self.task_path_lovs=[]
+                for(var i=0;i<response.data.length;i++){
+                    self.task_path_lovs.push(response.data[i].task_path)
+                }
+            });
+        },
 
         openLogModal: function (rowdata) {
             this.showLogModal = true;
@@ -344,6 +478,32 @@ module.exports = {
 
     created:function() {
         this.readData();
+
+        VeeValidate.extend('date_format', value => {
+            var regex_date_or_datetime = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$|^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10}$/gm);
+            var regex_onlydatetime = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$/gm);
+            var regex_onlydate = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10}$/gm);
+            var regex_onlytime = new RegExp(/(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)/gm);
+            if(regex_date_or_datetime.test(value)) return true;
+
+            return 'The date of {_field_} is invalid';
+        });
+
+        VeeValidate.extend('confirm_to_date', {
+            params: ['target'],
+            validate(value, { target }) {
+                // console.log("confirm_to_date");
+                // console.log("value "+value)
+                // console.log("target "+target)
+                if(target == undefined ||target == null || target == '') return false;
+                if(value == target) return true;
+                if(dayjs(value).isAfter(target)){
+                    return true;
+                }
+                return false;
+            },
+            message: 'Date range is incorrect'
+        });
     },
 
     mounted:function(){
@@ -358,7 +518,8 @@ module.exports = {
 
     components:{
         'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime()),
-        'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime())
+        'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime()),
+        'picker-modal': httpVueLoader('../../shareds/PickerModal.vue' + '?v=' + new Date().getTime())
     }
 }
 </script>
