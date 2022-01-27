@@ -22,7 +22,7 @@
             <v-card-title >
                 Tasks' execution outcome list
             </v-card-title>
-            <validationobserver v-slot="{ handleSubmit, valid }">
+            <validationobserver ref="observer">
                 <v-form>
                     <v-layout row wrap class="ma-0 mr-4 ml-4">
                         <v-flex xs12 md6>
@@ -33,18 +33,19 @@
                                 hide-details
                                 :items="task_path_lovs"
                                 class="mt-0 mr-2"
-                                @change="handleSubmit(launchSearch)"
                             ></v-select>
                         </v-flex>
                         <v-flex xs12 md6>
-                            <v-text-field
-                                v-model="search_params.eventUniqueId"
-                                label="Event univoque id"
-                                single-line
-                                hide-details
-                                class="mt-0"
-                                @keyup="handleSubmit(launchSearch)"
-                            ></v-text-field>
+                            <validationprovider name="Event univoque id" rules="length:32" v-slot="{ errors }">
+                                <v-text-field
+                                    v-model="search_params.eventUniqueId"
+                                    label="Event univoque id"
+                                    single-line
+                                    hide-details="auto"
+                                    class="mt-0"
+                                    :error-messages="errors[0]"
+                                ></v-text-field>
+                            </validationprovider>
                         </v-flex>
                         <v-flex xs12 md6>
                             <validationprovider name="Execution internal from" rules="date_format" v-slot="{ errors }">
@@ -58,7 +59,6 @@
                                     single-line
                                     class="mt-3 mr-2"
                                     :error-messages="errors[0]"
-                                    @keyup="valid ? launchSearch() : null"
                                 ></v-text-field>
                             </validationprovider>
                         </v-flex>
@@ -74,7 +74,6 @@
                                     single-line
                                     class="mt-3"
                                     :error-messages="errors[0]"
-                                    @keyup="handleSubmit(launchSearch)"
                                 ></v-text-field>
                             </validationprovider>
                         </v-flex>
@@ -85,7 +84,6 @@
                                 hide-details
                                 class="mt-3 mr-2"
                                 :items="['50','100','150','150+']"
-                                @change="readData"
                             ></v-select>
                         </v-flex>
                         <v-flex xs12 md6>
@@ -260,53 +258,61 @@ module.exports = {
     methods: {
         openPicker:function(key,fieldId){
             document.getElementById(fieldId).focus();
-            this.pointer=key;
+            this.pointer = key;
             this.$refs.picker.showDatePickerModal(this.search_params[this.pointer],true);
         },
         closePicker:function(value){
             var self=this
-            this.search_params[this.pointer]=value;
-            this.pointer=null;
-            VeeValidate.validate(this.search_params.executionInternalTo, 'date_format|confirm_to_date:@Execution internal from', {
-                name: 'Execution internal to',
-                values: {
-                    'Execution internal from':this.search_params.executionInternalFrom
-                }
-            }).then(result => {
-                // console.log("validate 1")
-                // console.log(result)
-                if (result.valid) {
-                    VeeValidate.validate(self.search_params.executionInternalFrom, 'date_format', {
-                        name: 'Execution internal to'
-                    }).then(res => {
-                        // console.log("validate 2")
-                        // console.log(res)
-                        if (res.valid) {
-                            self.launchSearch();
-                        }
-                    });
-                }
-            });
+            this.search_params[this.pointer] = value;
+            this.pointer = null;
+        //     VeeValidate.validate(this.search_params.executionInternalTo, 'date_format|confirm_to_date:@Execution internal from', {
+        //         name: 'Execution internal to',
+        //         values: {
+        //             'Execution internal from':this.search_params.executionInternalFrom
+        //         }
+        //     }).then(result => {
+        //         if (result.valid) {
+        //             VeeValidate.validate(self.search_params.executionInternalFrom, 'date_format', {
+        //                 name: 'Execution internal to'
+        //             }).then(res => {
+        //                 if (res.valid) {
+        //                     self.launchSearch();
+        //                 }
+        //             });
+        //         }
+        //     });
         },
 
         launchSearch:function(){
             var self = this;
-            var params = {
-                lst_length:self.search_params.amountLogs,
-                unique_id:self.search_params.eventUniqueId,
-                task_path:self.search_params.taskPath,
-                interval_from:self.search_params.executionInternalFrom,
-                interval_to:self.search_params.executionInternalTo
-            };
-            // console.log("go")
-            // console.log(params)
-            Utils.apiCall("get", "/task/exec-history",params)
-            .then(function (response) {
-                self.tasksExecutions = response.data;
-                if(response.data.length==0){
-                    self.message = "No tasks execution log found on server.";
-                }
-            });
+
+            console.log(JSON.stringify(this.search_params));
+
+            this.$refs.observer.validate()
+            .then(res => {
+                console.log(res);
+            }, failure => {
+                console.error(failure); //expected output: Oopsy...
+            })
+
+
+
+
+            // var params = {
+            //     lst_length:self.search_params.amountLogs,
+            //     unique_id:self.search_params.eventUniqueId,
+            //     task_path:self.search_params.taskPath,
+            //     interval_from:self.search_params.executionInternalFrom,
+            //     interval_to:self.search_params.executionInternalTo
+            // };
+
+            // Utils.apiCall("get", "/task/exec-history",params)
+            // .then(function (response) {
+            //     self.tasksExecutions = response.data;
+            //     if(response.data.length==0){
+            //         self.message = "No tasks execution log found on server.";
+            //     }
+            // });
         },
 
         readData:function(options = {}){
@@ -319,7 +325,7 @@ module.exports = {
             .then(function (response) {
                 self.tasksExecutions = response.data;
                 self.readLovs(options);
-                if(response.data.length==0){
+                if(response.data.length == 0){
                     self.message = "No tasks execution log found on server.";
                 }
             });
@@ -415,15 +421,15 @@ module.exports = {
         },
         readLovs:function(options={}){
             var self = this;
-            self.search_params.taskPath=null
-            self.search_params.eventUniqueId=null
-            self.search_params.executionInternalFrom=null
-            self.search_params.executionInternalTo=null
-            self.search_params.amountLogs='50'
+            self.search_params.taskPath = null
+            self.search_params.eventUniqueId = null
+            self.search_params.executionInternalFrom = null
+            self.search_params.executionInternalTo = null
+            self.search_params.amountLogs = '50'
             Utils.apiCall("get", "/task/filename",{},options)
             .then(function (response) {
                 self.task_path_lovs=[]
-                for(var i=0;i<response.data.length;i++){
+                for(var i=0; i<response.data.length; i++){
                     self.task_path_lovs.push(response.data[i].task_path)
                 }
             });
@@ -492,9 +498,6 @@ module.exports = {
         VeeValidate.extend('confirm_to_date', {
             params: ['target'],
             validate(value, { target }) {
-                // console.log("confirm_to_date");
-                // console.log("value "+value)
-                // console.log("target "+target)
                 if(target == undefined ||target == null || target == '') return false;
                 if(value == target) return true;
                 if(dayjs(value).isAfter(target)){
@@ -514,6 +517,24 @@ module.exports = {
         this.reloadIntervalObj = setTimeout(function(){
             self.scheduleReload();
         }, self.reloadTime);
+    },
+
+    watch: {
+        'search_params.taskPath': function (newValue, preValue) {
+            this.launchSearch();
+        },
+        'search_params.eventUniqueId': function (newValue, preValue) {
+            this.launchSearch();
+        },
+        'search_params.executionInternalFrom': function (newValue, preValue) {
+            this.launchSearch();
+        },
+        'search_params.executionInternalTo': function (newValue, preValue) {
+            this.launchSearch();
+        },
+        'search_params.amountLogs': function (newValue, preValue) {
+            this.launchSearch();
+        }
     },
 
     components:{

@@ -135,7 +135,7 @@ module.exports = {
                 this.showTimePickerModal(this.originValue,this.addSeconds);
             }else{
                 // console.log("result: "+this.date);
-                // this.$emit('result',this.date);
+                this.$emit('result',this.date);
                 this.closeDatePickerModal();
             }
         },
