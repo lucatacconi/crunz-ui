@@ -88,9 +88,22 @@
                                         </v-tooltip>
                                     </template>
                                 </div>
-                                <div class="caption grey--text">
-                                    {{ item.event_unique_key }}
-                                </div>
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-chip
+                                            outlined
+                                            small
+                                            link
+                                            v-bind="attrs"
+                                            v-on="on"
+                                            @click="navigator.clipboard.writeText(item.event_unique_key)"
+                                            class="caption grey--text mb-2"
+                                        >
+                                            {{ item.event_unique_key }}
+                                        </v-chip>
+                                    </template>
+                                    <span>Click to copy Event ID</span>
+                                </v-tooltip>
                             </td>
                             <td>
                                 {{ item.task_description == "" ? "--" : item.task_description }}
