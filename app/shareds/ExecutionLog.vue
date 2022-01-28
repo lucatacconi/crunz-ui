@@ -193,12 +193,8 @@ module.exports = {
             if(editor == "custom-log"){
                 ed = this.customLogEditor;
             }
-            if(ed!=""){
-                var sel = ed.selection.toJSON();
-                ed.selectAll();
-                ed.focus();
-                document.execCommand('copy');
-                ed.selection.fromJSON(sel);
+            if(ed != ""){
+                navigator.clipboard.writeText(ed.getValue());
             }
         },
 

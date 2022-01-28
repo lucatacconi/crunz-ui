@@ -292,11 +292,7 @@ module.exports = {
                 ed = this.taskEditEditor;
             }
             if(ed != ""){
-                var sel = ed.selection.toJSON();
-                ed.selectAll();
-                ed.focus();
-                document.execCommand('copy');
-                ed.selection.fromJSON(sel);
+                navigator.clipboard.writeText(ed.getValue());
             }
         },
         redo:function(){
