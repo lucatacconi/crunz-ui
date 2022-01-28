@@ -39,7 +39,7 @@
                             <validationprovider name="Event univoque id" rules="length:32" v-slot="{ errors }">
                                 <v-text-field
                                     v-model="search_params.eventUniqueId"
-                                    label="Event univoque id"
+                                    label="Event ID"
                                     single-line
                                     hide-details="auto"
                                     class="mt-0"
