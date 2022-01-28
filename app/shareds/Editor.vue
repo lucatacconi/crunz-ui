@@ -299,10 +299,6 @@ module.exports = {
                 ed.selection.fromJSON(sel);
             }
         },
-        test:function(){
-            var cursor=this.taskEditEditor.selection.getCursor()
-            this.taskEditEditor.getSession().getDocument().insertInLine(cursor,"prova")
-        },
         redo:function(){
             this.taskEditEditor.redo()
         },
