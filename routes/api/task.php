@@ -1317,6 +1317,10 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
+        if(!(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec'))){
+            throw new Exception("ERROR - Tasks execution capability is disabled by server configuration. Tasks can only be scheduled");
+        }
+
         if( empty($params["EVENT_UNIQUE_KEY"]) && empty($params["TASK_ID"]) ) throw new Exception("ERROR - No event unique key or task ID to execute submitted");
 
         $exec_and_wait = "N";

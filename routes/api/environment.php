@@ -90,6 +90,7 @@ $app->group('/environment', function (RouteCollectorProxy $group) {
         $data["LOGS_DIR_CONFIG_PRESENCE"] = false;
         $data["LOGS_DIR_PRESENCE"] = false;
         $data["LOGS_DIR_WRITABLE"] = false;
+        $data["SHELL_EXEC_CAPABILITY"] = false;
         $data["ALL_CHECK"] = false;
 
         //===================================================================================================================================================
@@ -162,6 +163,12 @@ $app->group('/environment', function (RouteCollectorProxy $group) {
             }
         }
 
+        if(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec')){
+            $data["SHELL_EXEC_CAPABILITY"] = true;
+        }else{
+            $data["SHELL_EXEC_CAPABILITY"] = false;
+        }
+
         if(
             $data["YAML_CONFIG_PRESENCE"] == true &&
             $data["YAML_CONFIG_NOEMPTY"] == true &&
@@ -175,7 +182,8 @@ $app->group('/environment', function (RouteCollectorProxy $group) {
             $data["LOGS_DIR_PRESENCE"] == true &&
             $data["LOGS_DIR_WRITABLE"] == true &&
             $data["CRUNZ_SH_PRESENCE"] == true &&
-            $data["TREEREADER_PRESENCE"] == true
+            $data["TREEREADER_PRESENCE"] == true &&
+            $data["SHELL_EXEC_CAPABILITY"] = true
         ){
             $data["ALL_CHECK"] = true;
         }

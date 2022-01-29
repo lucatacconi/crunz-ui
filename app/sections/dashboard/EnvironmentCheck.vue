@@ -189,12 +189,12 @@
                             <v-col cols="6" class="py-0">
                                 <v-text-field
                                     label="Capability to perform tasks via web interface (Web server configuration):"
-                                    :value=" (env_check.LOGS_DIR_WRITABLE) ? 'Web interface can run tasks.' : 'Web interface cannot run tasks.' "
+                                    :value=" (env_check.SHELL_EXEC_CAPABILITY) ? 'Web interface can run tasks.' : 'Web interface cannot run tasks.' "
                                     readonly
-                                    :hide-details=" (env_check.LOGS_DIR_WRITABLE) "
-                                    :error-messages="!(env_check.LOGS_DIR_WRITABLE) ? 'If, for safety reasons, the bash execution capability is disabled, the tasks can only be scheduled.' : '' "
+                                    :hide-details=" (env_check.SHELL_EXEC_CAPABILITY) "
+                                    :error-messages="!(env_check.SHELL_EXEC_CAPABILITY) ? 'If, for safety reasons, the bash execution capability is disabled, the tasks can only be scheduled.' : '' "
                                 >
-                                    <v-icon v-if="env_check.LOGS_DIR_WRITABLE" slot="append" color="green">mdi-check-bold</v-icon>
+                                    <v-icon v-if="env_check.SHELL_EXEC_CAPABILITY" slot="append" color="green">mdi-check-bold</v-icon>
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
                                 </v-text-field>
                             </v-col>
