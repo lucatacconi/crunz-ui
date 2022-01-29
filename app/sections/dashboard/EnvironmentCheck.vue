@@ -160,7 +160,7 @@
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
                                 </v-text-field>
                             </v-col>
-                            <v-col cols="6" class="py-0  pb-2">
+                            <v-col cols="6" class="py-0 pb-2">
                                 <v-text-field
                                     label="Logs dir is present:"
                                     :value=" (env_check.LOGS_DIR_PRESENCE) ? 'Logs path is present.' : 'Logs path missing.' "
@@ -173,13 +173,26 @@
                                 </v-text-field>
                             </v-col>
 
-                            <v-col cols="6" class="py-0">
+                            <v-col cols="6" class="py-0 pb-2">
                                 <v-text-field
                                     label="Logs dir is writable:"
                                     :value=" (env_check.LOGS_DIR_WRITABLE) ? 'Logs path is writable.' : 'Logs path is not writable.' "
                                     readonly
                                     :hide-details=" (env_check.LOGS_DIR_WRITABLE) "
                                     :error-messages="!(env_check.LOGS_DIR_WRITABLE) ? 'Check log\'s dir. If not writable check permitions.' : '' "
+                                >
+                                    <v-icon v-if="env_check.LOGS_DIR_WRITABLE" slot="append" color="green">mdi-check-bold</v-icon>
+                                    <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
+                                </v-text-field>
+                            </v-col>
+
+                            <v-col cols="6" class="py-0">
+                                <v-text-field
+                                    label="Capability to perform tasks via web interface (Web server configuration):"
+                                    :value=" (env_check.LOGS_DIR_WRITABLE) ? 'Web interface can run tasks.' : 'Web interface cannot run tasks.' "
+                                    readonly
+                                    :hide-details=" (env_check.LOGS_DIR_WRITABLE) "
+                                    :error-messages="!(env_check.LOGS_DIR_WRITABLE) ? 'If, for safety reasons, the bash execution capability is disabled, the tasks can only be scheduled.' : '' "
                                 >
                                     <v-icon v-if="env_check.LOGS_DIR_WRITABLE" slot="append" color="green">mdi-check-bold</v-icon>
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
