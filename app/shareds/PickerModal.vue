@@ -36,7 +36,7 @@
                         @click="saveDate()"
                         v-if="addTime"
                     >
-                        Set time
+                        Select time
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -92,69 +92,75 @@ module.exports = {
         }
     },
     methods: {
-        showDatePickerModal:function(value=null,addTime=false,addSeconds=false){
-            this.originValue=value;
-            this.addTime=addTime;
-            this.addSeconds=addSeconds;
-            var regex_date_or_datetime = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$|^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10}$/gm);
-            var regex_onlydatetime = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$/gm);
+        showDatePickerModal:function(value = null, addTime = false, addSeconds = false){
+
+            this.originValue = value;
+            this.addTime = addTime;
+            this.addSeconds = addSeconds;
+
+            var regex_date_or_datetime_second = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$|^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10}$/gm);
+            var regex_date_or_datetime = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d)$|^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10}$/gm);
+            var regex_onlydatetime_second = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$/gm);
+            var regex_onlydatetime = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d)$/gm);
             var regex_onlydate = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10}$/gm);
-            var regex_onlytime = new RegExp(/(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)/gm);
-            // console.log("origin value: "+this.originValue);
-            if(!regex_date_or_datetime.test(this.originValue||this.originValue=='')) {
+            var regex_onlytime_second = new RegExp(/(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)/gm);
+            var regex_onlytime = new RegExp(/(?:[01]\d|2[0123]):(?:[012345]\d)/gm);
+
+            if( !regex_date_or_datetime.test( this.originValue || this.originValue == '') ){
                 this.date=dayjs().format("YYYY-MM-DD");
             }else{
                 this.date=dayjs(this.originValue).format("YYYY-MM-DD");
             }
-            this.datePickerModal=true;
+            this.datePickerModal = true;
         },
         closeDatePickerModal:function(){
-            this.originValue=null;
-            this.datePickerModal=false;
+            this.originValue = null;
+            this.datePickerModal = false;
         },
-        showTimePickerModal:function(value=null,addSeconds=false){
-            this.originValue=value;
-            this.addSeconds=addSeconds;
-            var regex_date_or_datetime = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$|^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10}$/gm);
-            var regex_onlydatetime = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$/gm);
+        showTimePickerModal:function(value = null, addSeconds = false){
+
+            this.originValue = value;
+            this.addSeconds = addSeconds;
+
+            var regex_date_or_datetime_second = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$|^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10}$/gm);
+            var regex_date_or_datetime = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d)$|^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10}$/gm);
+            var regex_onlydatetime_second = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$/gm);
+            var regex_onlydatetime = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d)$/gm);
             var regex_onlydate = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10}$/gm);
-            var regex_onlytime = new RegExp(/(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)/gm);
+            var regex_onlytime_second = new RegExp(/(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)/gm);
+            var regex_onlytime = new RegExp(/(?:[01]\d|2[0123]):(?:[012345]\d)/gm);
+
             if(regex_onlydatetime.test(this.originValue&&this.originValue!='')){
-                this.time=dayjs(this.originValue).format(this.addSeconds ? "HH:mm:ss" : "HH:mm");
+                this.time=dayjs(this.originValue).format(this.addSeconds == true ? "HH:mm:ss" : "HH:mm");
             }else{
                 this.time=dayjs().format(this.addSeconds ? "HH:mm:ss" : "HH:mm");
             }
             this.timePickerModal=true;
         },
         closeTimePickerModal:function(){
-            this.originValue=null;
-            this.timePickerModal=false;
+            this.originValue = null;
+            this.timePickerModal = false;
         },
         saveDate:function(setOnlyDate=false){
             if(this.addTime&&!setOnlyDate){
-                this.showTimePickerModal(this.originValue,this.addSeconds);
+                this.showTimePickerModal(this.originValue, this.addSeconds);
             }else{
-                // console.log("result: "+this.date);
                 this.$emit('result',this.date);
                 this.closeDatePickerModal();
             }
         },
         saveTime:function(){
             if(this.addTime){
-                if(this.addSeconds){
-                    // console.log("result: "+this.date+" "+this.time);
+                if(!this.addSeconds){
                     this.$emit('result',this.date+" "+this.time);
                 }else{
-                    // console.log("result: "+this.date+" "+this.time+":00");
                     this.$emit('result',this.date+" "+this.time+":00");
                 }
                 this.closeDatePickerModal();
             }else{
-                if(this.addSeconds){
-                    // console.log("result: "+this.time);
+                if(!this.addSeconds){
                     this.$emit('result',this.time);
                 }else{
-                    // console.log("result: "+this.time+":00");
                     this.$emit('result',this.time+":00");
                 }
             }
