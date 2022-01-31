@@ -182,8 +182,7 @@ $app->group('/environment', function (RouteCollectorProxy $group) {
             $data["LOGS_DIR_PRESENCE"] == true &&
             $data["LOGS_DIR_WRITABLE"] == true &&
             $data["CRUNZ_SH_PRESENCE"] == true &&
-            $data["TREEREADER_PRESENCE"] == true &&
-            $data["SHELL_EXEC_CAPABILITY"] = true
+            $data["TREEREADER_PRESENCE"] == true
         ){
             $data["ALL_CHECK"] = true;
         }

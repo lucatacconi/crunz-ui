@@ -63,13 +63,23 @@
                                                 Task Action Menu
                                             </v-subheader>
                                             <v-list-item-group color="primary">
-                                                <v-list-item @click="executeItem(item, false)" class="pt-2">
-                                                    <v-list-item-icon><v-icon color="orange">mdi-play</v-icon></v-list-item-icon>
-                                                    <v-list-item-title> <span class="orange--text">Execute</span> </v-list-item-title>
+                                                <v-list-item @click="executeItem(item, false)" :disabled="localStorage.getItem('taskExecutionEnabled') == 'false'">
+                                                    <template v-if="localStorage.getItem('taskExecutionEnabled') == 'true'">
+                                                        <v-list-item-icon><v-icon color="orange">mdi-play</v-icon></v-list-item-icon>
+                                                        <v-list-item-title> <span class="orange--text">Execute</span> </v-list-item-title>                                                    </template>
+                                                    <template v-else>
+                                                        <v-list-item-icon><v-icon color="grey lighten-3">mdi-play</v-icon></v-list-item-icon>
+                                                        <v-list-item-title> <span>Execute</span> </v-list-item-title>
+                                                    </template>
                                                 </v-list-item>
-                                                <v-list-item @click="executeItem(item, true)">
-                                                    <v-list-item-icon><v-icon color="orange">mdi-clock</v-icon></v-list-item-icon>
-                                                    <v-list-item-title> <span class="orange--text">Execute and wait log</span> </v-list-item-title>
+                                                <v-list-item @click="executeItem(item, true)" :disabled="localStorage.getItem('taskExecutionEnabled') == 'false'">
+                                                    <template v-if="localStorage.getItem('taskExecutionEnabled') == 'true'">
+                                                        <v-list-item-icon><v-icon color="orange">mdi-clock</v-icon></v-list-item-icon>
+                                                        <v-list-item-title> <span class="orange--text">Execute and wait log</span> </v-list-item-title>                                                    </template>
+                                                    <template v-else>
+                                                        <v-list-item-icon><v-icon color="grey lighten-3">mdi-clock</v-icon></v-list-item-icon>
+                                                        <v-list-item-title> <span>Execute and wait log</span> </v-list-item-title>
+                                                    </template>
                                                 </v-list-item>
                                                 <v-list-item @click="openLogModal(item, i)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
                                                     <v-list-item-icon><v-icon>mdi-clipboard-clock</v-icon></v-list-item-icon>

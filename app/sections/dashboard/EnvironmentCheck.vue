@@ -31,6 +31,19 @@
                                 </v-text-field>
                             </v-col>
 
+                            <v-col cols="12" class=" pb-2">
+                                <v-text-field
+                                    label="Capability to perform tasks via web interface (Web server configuration):"
+                                    :value=" (env_check.SHELL_EXEC_CAPABILITY) ? 'Web interface can run tasks.' : 'Web interface cannot run tasks. Tasks can only be scheduled and not manually executed.' "
+                                    readonly
+                                    :hide-details=" (env_check.SHELL_EXEC_CAPABILITY) "
+                                    :error-messages="!(env_check.SHELL_EXEC_CAPABILITY) ? 'If, for safety reasons, the bash execution capability is disabled, tasks can only be scheduled.' : '' "
+                                >
+                                    <v-icon v-if="env_check.SHELL_EXEC_CAPABILITY" slot="append" color="green">mdi-check-bold</v-icon>
+                                    <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
+                                </v-text-field>
+                            </v-col>
+
                             <v-col cols="6" class="py-0 pb-2">
                                 <v-text-field
                                     label="Crunz YAML configuration file presence:"
@@ -185,19 +198,6 @@
                                     <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
                                 </v-text-field>
                             </v-col>
-
-                            <v-col cols="6" class="py-0">
-                                <v-text-field
-                                    label="Capability to perform tasks via web interface (Web server configuration):"
-                                    :value=" (env_check.SHELL_EXEC_CAPABILITY) ? 'Web interface can run tasks.' : 'Web interface cannot run tasks.' "
-                                    readonly
-                                    :hide-details=" (env_check.SHELL_EXEC_CAPABILITY) "
-                                    :error-messages="!(env_check.SHELL_EXEC_CAPABILITY) ? 'If, for safety reasons, the bash execution capability is disabled, the tasks can only be scheduled.' : '' "
-                                >
-                                    <v-icon v-if="env_check.SHELL_EXEC_CAPABILITY" slot="append" color="green">mdi-check-bold</v-icon>
-                                    <v-icon v-else slot="append" color="red">mdi-alert-circle</v-icon>
-                                </v-text-field>
-                            </v-col>
                         </v-row>
                     </v-container>
                 <v-form>
@@ -237,6 +237,8 @@
                         }
 
                         self.$emit('environment-check', self.env_check);
+
+                        localStorage.setItem("taskExecutionEnabled", self.env_check.SHELL_EXEC_CAPABILITY);
 
                     }else{
                         self.message = "Error reading environment check data";
