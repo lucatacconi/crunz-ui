@@ -20,7 +20,6 @@ $task = $schedule->run(function() {
         $ip_ext = str_replace([chr(10), chr(13)], '', $ip_ext);
         curl_close($ch);
 
-        $ip = $_SERVER['SERVER_ADDR'];
         $aRESULT["DATA"] = "Hi, I'm Crunz-ui, I'm alive. My external IP is " .$ip_ext. " - ".date("Y-m-d H:i:s");
 
         $jRESULT = json_encode($aRESULT);
