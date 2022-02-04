@@ -44,6 +44,7 @@
                                     hide-details="auto"
                                     class="mt-0"
                                     :error-messages="errors[0]"
+                                    maxlength="32"
                                 ></v-text-field>
                             </validationprovider>
                         </v-flex>
@@ -59,6 +60,7 @@
                                     single-line
                                     class="mt-3 mr-md-2"
                                     :error-messages="errors[0]"
+                                    maxlength="16"
                                 ></v-text-field>
                             </validationprovider>
                         </v-flex>
@@ -74,6 +76,7 @@
                                     single-line
                                     class="mt-3"
                                     :error-messages="errors[0]"
+                                    maxlength="16"
                                 ></v-text-field>
                             </validationprovider>
                         </v-flex>
@@ -278,22 +281,6 @@ module.exports = {
             var self=this
             this.search_params[this.pointer] = value;
             this.pointer = null;
-        //     VeeValidate.validate(this.search_params.executionInternalTo, 'date_format|confirm_to_date:@Execution internal from', {
-        //         name: 'Execution internal to',
-        //         values: {
-        //             'Execution internal from':this.search_params.executionInternalFrom
-        //         }
-        //     }).then(result => {
-        //         if (result.valid) {
-        //             VeeValidate.validate(self.search_params.executionInternalFrom, 'date_format', {
-        //                 name: 'Execution internal to'
-        //             }).then(res => {
-        //                 if (res.valid) {
-        //                     self.launchSearch();
-        //                 }
-        //             });
-        //         }
-        //     });
         },
 
         launchSearch:function(){
@@ -499,11 +486,15 @@ module.exports = {
         this.readData();
 
         VeeValidate.extend('date_format', value => {
+
+            var regex_date_or_datetime_second = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$|^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10}$/gm);
             var regex_date_or_datetime = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d)$|^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10}$/gm);
-            var regex_date_or_datetimesecond = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$|^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10}$/gm);
-            var regex_onlydatetimesecond = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$/gm);
+            var regex_onlydatetime_second = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$/gm);
+            var regex_onlydatetime = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10} (?:[01]\d|2[0123]):(?:[012345]\d)$/gm);
             var regex_onlydate = new RegExp(/^(((\d{4}-((0[13578]-|1[02]-)(0[1-9]|[12]\d|3[01])|(0[13456789]-|1[012]-)(0[1-9]|[12]\d|30)|02-(0[1-9]|1\d|2[0-8])))|((([02468][048]|[13579][26])00|\d{2}([13579][26]|0[48]|[2468][048])))-02-29)){0,10}$/gm);
-            var regex_onlytimesecond = new RegExp(/(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)/gm);
+            var regex_onlytime_second = new RegExp(/(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)/gm);
+            var regex_onlytime = new RegExp(/(?:[01]\d|2[0123]):(?:[012345]\d)/gm);
+
             if(regex_date_or_datetime.test(value)) return true;
 
             return 'The date of {_field_} is invalid';
