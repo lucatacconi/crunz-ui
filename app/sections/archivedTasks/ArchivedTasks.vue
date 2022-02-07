@@ -185,7 +185,7 @@ module.exports = {
                 { text: 'Task file / Event ID', value: 'task_path' },
                 { text: 'Description', value: 'task_description', sortable: false },
                 { text: 'Execution', value: 'expression', sortable: false },
-                { text: 'Storage date', value: 'storage_datetime', align: 'center' }
+                { text: 'Archiving date', value: 'storage_datetime', align: 'center' }
             ],
             files: [],
             editData: false,
