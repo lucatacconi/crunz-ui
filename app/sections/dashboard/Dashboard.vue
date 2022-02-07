@@ -2,10 +2,10 @@
     <div>
         <v-container>
             <v-row class="pa-0" v-if="environmentStatus.ALL_CHECK">
-                <v-col lg="6" mf="12" class="pl-lg-0 pr-lg-1 mx-md-0 px-md-0">
+                <v-col lg="6" md="12" class="pl-lg-0 pr-lg-1 mx-md-0 px-md-0">
                     <dailygraph :environmentStatus="environmentStatus"></dailygraph>
                 </v-col>
-                <v-col lg="6" mf="12" class="pr-lg-0 pl-lg-1 mx-md-0 px-md-0">
+                <v-col lg="6" md="12" class="pr-lg-0 pl-lg-1 mx-md-0 px-md-0">
                     <weeklygraph :environmentStatus="environmentStatus"></weeklygraph>
                 </v-col>
             </v-row>

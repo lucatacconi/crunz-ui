@@ -2,7 +2,7 @@
     <div>
         <v-card>
             <v-card-title>Daily task's prospect</v-card-title>
-            <v-card-text>
+            <v-card-text id="graph-area-daily-container">
                 <canvas id="graph-area-daily"></canvas>
             </v-card-text>
         </v-card>
@@ -91,6 +91,9 @@
 
     #graph-area-daily {
         max-height: 300px;
+    }
+    #graph-area-daily-container {
+        height: 320px;
     }
 
 </style>

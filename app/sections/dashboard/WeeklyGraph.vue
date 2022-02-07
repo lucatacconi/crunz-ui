@@ -2,7 +2,7 @@
     <div>
         <v-card>
             <v-card-title>Weekly task's prospect</v-card-title>
-            <v-card-text>
+            <v-card-text id="graph-area-weekly-container">
                 <canvas id="graph-area-weekly"></canvas>
             </v-card-text>
         </v-card>
@@ -159,6 +159,9 @@
 
     #graph-area-weekly {
         max-height: 300px;
+    }
+    #graph-area-weekly-container {
+        height: 320px;
     }
 
 </style>
