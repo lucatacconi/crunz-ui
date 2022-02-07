@@ -24,7 +24,8 @@ tasks/*
 *.zip
 
 # Ignore all lib e vendor file
-/vendor/*
+vendor/*
+!vendor/.htaccess
 composer.lock
 
 # Ignore all crunz configuration
