@@ -37,9 +37,10 @@
                 var moves = this.dayBack + this.dayFront + 1;
                 var day_start = dayjs().subtract(this.dayBack + 1, 'days');
 
+                day_focus_calc = day_start;
                 for(i = 0; i < moves; i++){
 
-                    day_focus_calc = day_start.add(1, 'days');
+                    day_focus_calc = day_focus_calc.add(1, 'days');
 
                     this.stats[i] = {
                         id_day: i,
