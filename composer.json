@@ -30,6 +30,7 @@
         "http-interop/http-factory-guzzle": "^1",
         "laminas/laminas-diactoros": "^2",
         "php-di/php-di": "^6",
+        "swiftmailer/swiftmailer": "^6.0",
 
         "monolog/monolog": "^2",
         "tuupola/base62": "^2",
