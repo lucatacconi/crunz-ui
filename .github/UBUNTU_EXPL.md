@@ -30,7 +30,7 @@ sudo apt-get install php-curl
 Enable apache server as a service to be activated at boot time:
 
 ```
-systemctl enable apache2
+sudo systemctl enable apache2
 ```
 
 Editing to apache configuration file /etc/apache2/apache2.conf to add Crunz-ui location mapping:
@@ -46,13 +46,15 @@ Alias "/crunz-ui" "/var/www/html/crunz-ui"
 
 Configuration of the rewrite module necessary for the functioning of the Crunz-ui API. This operation require apache server restart.
 ```
-ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
+sudo ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
 sudo service apache2 restart
 ```
 
 Installation of composer
 ```
-sudo apt-get install composer
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+php -r "unlink('composer-setup.php');"
 ```
 
 Installation of Crunz-ui and permissions configuration:
