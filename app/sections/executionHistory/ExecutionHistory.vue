@@ -130,11 +130,11 @@
                                                     <v-list-item-title>Download task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="openEditModal(item, i)">
-                                                    <v-list-item-icon><v-icon>fmdi-file-edit</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon>mdi-file-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="openLastLogModal(item, i)">
-                                                    <v-list-item-icon><v-icon>mdi-clipboard-clock</v-icon></v-list-item-icon>
+                                                    <v-list-item-icon><v-icon>mdi-comment-check</v-icon></v-list-item-icon>
                                                     <v-list-item-title>View last log</v-list-item-title>
                                                 </v-list-item>
                                             </v-list-item-group>
@@ -176,8 +176,8 @@
                                 {{ item.duration == 0 ? "&lt;1" : item.duration }} min.
                             </td>
                             <td class="text-center" >
-                                <v-icon v-if="item.outcome=='OK'" color="green darken-2" @click="openLogModal(item,i)" small>mdi-clipboard-clock</v-icon>
-                                <v-icon v-else-if="item.outcome=='KO'" color="red" @click="openLogModal(item,i)" small>mdi-clipboard-clock</v-icon>
+                                <v-icon v-if="item.outcome=='OK'" color="green darken-2" @click="openLogModal(item,i)" small>mdi-comment-check</v-icon>
+                                <v-icon v-else-if="item.outcome=='KO'" color="red" @click="openLogModal(item,i)" small>mdi-comment-alert</v-icon>
                                 <span v-else>--</span>
                             </td>
                         </tr>
