@@ -28,11 +28,14 @@
                         <v-flex xs12 md6>
                             <v-select
                                 v-model="search_params.taskPath"
+                                ref="selTaskPath"
                                 label="Task path"
                                 single-line
                                 hide-details
                                 :items="task_path_lovs"
                                 class="mt-0 mr-md-2"
+                                append-icon="mdi-filter-remove-outline"
+                                @click:append="clearTaskPath();"
                             ></v-select>
                         </v-flex>
                         <v-flex xs12 md6>
@@ -51,32 +54,32 @@
                         <v-flex xs12 md6>
                             <validationprovider name="Execution internal from" rules="date_format" v-slot="{ errors }">
                                 <v-text-field
-                                    id="execution_internal_from"
-                                    v-model="search_params.executionInternalFrom"
-                                    @click:append="openPicker('executionInternalFrom','execution_internal_from')"
-                                    append-icon="mdi-calendar"
+                                    id="execution_interval_from"
+                                    v-model="search_params.executionIntervalFrom"
                                     label="Execution internal from"
                                     hide-details="auto"
                                     single-line
                                     class="mt-3 mr-md-2"
                                     :error-messages="errors[0]"
                                     maxlength="16"
-                                ></v-text-field>
+                                    append-icon="mdi-calendar"
+                                    @click:append="openPicker('executionIntervalFrom','execution_interval_from')"
+                                >2022-02-08</v-text-field>
                             </validationprovider>
                         </v-flex>
                         <v-flex xs12 md6>
                             <validationprovider name="Execution internal to" rules="date_format|confirm_to_date:@Execution internal from" v-slot="{ errors }">
                                 <v-text-field
-                                    id="execution_internal_to"
-                                    v-model="search_params.executionInternalTo"
-                                    @click:append="openPicker('executionInternalTo','execution_internal_to')"
-                                    append-icon="mdi-calendar"
+                                    id="execution_interval_to"
+                                    v-model="search_params.executionIntervalTo"
                                     label="Execution internal to"
                                     hide-details="auto"
                                     single-line
                                     class="mt-3"
                                     :error-messages="errors[0]"
                                     maxlength="16"
+                                    append-icon="mdi-calendar"
+                                    @click:append="openPicker('executionIntervalTo','execution_interval_to')"
                                 ></v-text-field>
                             </validationprovider>
                         </v-flex>
@@ -238,8 +241,8 @@ module.exports = {
             search_params:{
                 taskPath:null,
                 eventUniqueId:null,
-                executionInternalFrom:null,
-                executionInternalTo:null,
+                executionIntervalFrom:null,
+                executionIntervalTo:null,
                 amountLogs:'100'
             },
             pointer:null,
@@ -293,8 +296,8 @@ module.exports = {
                     lst_length:self.search_params.amountLogs,
                     unique_id:self.search_params.eventUniqueId,
                     task_path:self.search_params.taskPath,
-                    interval_from:self.search_params.executionInternalFrom,
-                    interval_to:self.search_params.executionInternalTo
+                    interval_from:self.search_params.executionIntervalFrom,
+                    interval_to:self.search_params.executionIntervalTo
                 };
 
                 if(form_valid){
@@ -421,8 +424,8 @@ module.exports = {
             var self = this;
             self.search_params.taskPath = null
             self.search_params.eventUniqueId = null
-            self.search_params.executionInternalFrom = null
-            self.search_params.executionInternalTo = null
+            self.search_params.executionIntervalFrom = null
+            self.search_params.executionIntervalTo = null
             self.search_params.amountLogs = '100'
             Utils.apiCall("get", "/task/filename",{},options)
             .then(function (response) {
@@ -477,6 +480,11 @@ module.exports = {
                     self.scheduleReload();
                 }, self.reloadTime);
             }
+        },
+
+        clearTaskPath() {
+            this.search_params.taskPath = null;
+            this.$refs.selTaskPath.blur()
         }
     },
 
@@ -510,6 +518,9 @@ module.exports = {
             },
             message: 'Date range is incorrect'
         });
+
+        // this.search_params.executionIntervalFrom = dayjs().subtract(1, 'days').format('YYYY-MM-DD HH:mm');
+        // this.search_params.executionIntervalTo = dayjs().format('YYYY-MM-DD HH:mm');
     },
 
     mounted:function(){
@@ -529,10 +540,10 @@ module.exports = {
         'search_params.eventUniqueId': function (newValue, preValue) {
             this.launchSearch();
         },
-        'search_params.executionInternalFrom': function (newValue, preValue) {
+        'search_params.executionIntervalFrom': function (newValue, preValue) {
             this.launchSearch();
         },
-        'search_params.executionInternalTo': function (newValue, preValue) {
+        'search_params.executionIntervalTo': function (newValue, preValue) {
             this.launchSearch();
         },
         'search_params.amountLogs': function (newValue, preValue) {

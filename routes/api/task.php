@@ -458,7 +458,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["last_duration"] = 0;
                 $row["last_outcome"] = '';
                 $row["last_run"] = '';
-                $row["last_outcome"] = '';
 
                 if($calc_run_lst == "Y"){
                     $row["planned_in_interval"] = 0;
