@@ -1959,10 +1959,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
             foreach ($aLOGNAME as $lognum => $logname) {
 
-                if(empty($aTASKs[$event_unique_key])){
-                    continue; //the task may have been deleted or archived
-                }
-
                 if(!empty($params["LST_LENGTH"])){
                     if($lognum >= $params["LST_LENGTH"]){
                         break;
@@ -1984,6 +1980,10 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 if(!empty($aLOGDETT[1])) $task_exec_outcome = $aLOGDETT[1];
                 if(!empty($aLOGDETT[2])) $datetime_start = $aLOGDETT[2];
                 if(!empty($aLOGDETT[3])) $datetime_end = $aLOGDETT[3];
+
+                if(empty($aTASKs[$event_unique_key])){
+                    continue; //the task may have been deleted or archived
+                }
 
                 $task_start = \DateTime::createFromFormat('YmdHi', $datetime_start);
                 $task_stop = \DateTime::createFromFormat('YmdHi', $datetime_end);
