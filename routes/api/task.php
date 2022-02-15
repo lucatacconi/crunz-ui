@@ -1957,10 +1957,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         if(!empty($aLOGNAME)){
             usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
 
+            $lognum_inserted = 0;
             foreach ($aLOGNAME as $lognum => $logname) {
 
                 if(!empty($params["LST_LENGTH"])){
-                    if($lognum >= $params["LST_LENGTH"]){
+                    if($lognum_inserted >= $params["LST_LENGTH"]){
                         break;
                     }
                 }
@@ -2010,6 +2011,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["outcome"] = $task_exec_outcome;
 
                 $data[] = $row;
+                $lognum_inserted++;
             }
         }
 

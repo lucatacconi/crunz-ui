@@ -149,22 +149,27 @@
                                 <div>
                                     {{ item.task_path }}
                                 </div>
-                                <v-tooltip bottom>
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-chip
-                                            outlined
-                                            small
-                                            link
-                                            v-bind="attrs"
-                                            v-on="on"
-                                            @click="navigator.clipboard.writeText(item.event_unique_key)"
-                                            class="caption grey--text mb-2"
-                                        >
-                                            {{ item.event_unique_key }}
-                                        </v-chip>
-                                    </template>
-                                    <span>Click to copy Event ID</span>
-                                </v-tooltip>
+                                <template v-if="clipboad_enabled">
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-chip
+                                                outlined
+                                                small
+                                                link
+                                                v-bind="attrs"
+                                                v-on="on"
+                                                @click="copyToClipboad(item.event_unique_key)"
+                                                class="caption grey--text mb-2"
+                                            >
+                                                {{ item.event_unique_key }}
+                                            </v-chip>
+                                        </template>
+                                        <span>Click to copy Event ID</span>
+                                    </v-tooltip>
+                                </template>
+                                <template v-else>
+                                    <caption class="grey--text">{{ item.event_unique_key }}</caption>
+                                </template>
                             </td>
                             <td>
                                 {{ item.task_description == "" ? "--" : item.task_description }}
@@ -269,7 +274,9 @@ module.exports = {
             editData: false,
             uploadData: false,
             logData: false,
-            message: 'No tasks execution log found on server.'
+            message: 'No tasks execution log found on server.',
+
+            clipboad_enabled: false
         }
     },
     methods: {
@@ -282,6 +289,10 @@ module.exports = {
             var self=this
             this.search_params[this.pointer] = value;
             this.pointer = null;
+        },
+
+        copyToClipboad:function(value){
+            navigator.clipboard.writeText(value);
         },
 
         launchSearch:function(){
@@ -470,6 +481,11 @@ module.exports = {
     },
 
     created:function() {
+
+        if (location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+            this.clipboad_enabled = true;
+        }
+
         this.readData();
 
         VeeValidate.extend('date_format', value => {
@@ -505,8 +521,7 @@ module.exports = {
     },
 
     mounted:function(){
-        var self = this;
-        this.readData(options);
+        this.readData();
     },
 
     watch: {
