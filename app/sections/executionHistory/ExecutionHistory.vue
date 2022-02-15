@@ -26,17 +26,17 @@
                 <v-form>
                     <v-layout row wrap class="ma-0 mr-4 ml-4">
                         <v-flex xs12 md6>
-                            <v-select
+                            <v-autocomplete
                                 v-model="search_params.taskPath"
                                 ref="selTaskPath"
-                                label="Task path"
-                                single-line
-                                hide-details
                                 :items="task_path_lovs"
+                                label="Task path"
+                                hide-details
                                 class="mt-0 mr-md-2"
                                 append-icon="mdi-filter-remove-outline"
                                 @click:append="clearTaskPath();"
-                            ></v-select>
+                                no-data-text="No task files with this path. Check the filter used."
+                            ></v-autocomplete>
                         </v-flex>
                         <v-flex xs12 md6>
                             <validationprovider name="Event univoque id" rules="length:32" v-slot="{ errors }">
@@ -269,9 +269,7 @@ module.exports = {
             editData: false,
             uploadData: false,
             logData: false,
-            message: 'No tasks execution log found on server.',
-            reloadIntervalObj: false,
-            reloadTime: 60000
+            message: 'No tasks execution log found on server.'
         }
     },
     methods: {
@@ -336,32 +334,30 @@ module.exports = {
 
             items.sort((a, b) => {
 
-                if (index[0] === "expression") {
+                if (index[0] === "last_outcome") {
 
-                    a_split = a[index[0]].split(" ");
-                    b_split = b[index[0]].split(" ");
+                    if(a[index[0]] == "OK"){
+                        a_conv = 2;
+                    }else if(a[index[0]] == "KO"){
+                        a_conv = 1;
+                    }else{
+                        a_conv = 0;
+                    }
 
-                    const zeroPad = (num, places) => String(num).padStart(places, '0');
+                    if(b[index[0]] == "OK"){
+                        b_conv = 2;
+                    }else if(b[index[0]] == "KO"){
+                        b_conv = 1;
+                    }else{
+                        b_conv = 0;
+                    }
 
-                    a_m = "00";
-                    if(!isNaN(a_split[0])) a_m = zeroPad(parseInt(a_split[0], 10), 2);
+                    console.log(!isDesc[0]);
 
-                    a_h = "00";
-                    if(!isNaN(a_split[1])) a_h = zeroPad(parseInt(a_split[1], 10), 2);
-
-                    b_m = "00";
-                    if(!isNaN(b_split[0])) b_m = zeroPad(parseInt(b_split[0], 10), 2);
-
-                    b_h = "00";
-                    if(!isNaN(b_split[1])) b_h = zeroPad(parseInt(b_split[1], 10), 2);
-
-                    console.log(a_h + a_m);
-                    console.log(b_h + b_m);
-
-                    if (!isDesc) {
-                        return (a_h + a_m) < (b_h + b_m) ? -1 : 1;
+                    if (isDesc[0]) {
+                        return a_conv >= b_conv ? 1 : -1;
                     } else {
-                        return (b_h + b_m) < (a_h + a_m) ? -1 : 1;
+                        return a_conv >= b_conv ? -11 : 1;
                     }
 
                 }else{
@@ -467,21 +463,6 @@ module.exports = {
             }
         },
 
-        scheduleReload: function () {
-            var self = this;
-            if(router.currentRoute.fullPath >= "/executionHistory/ExecutionHistory"){
-
-                var options = {
-                    showLoading: false
-                };
-
-                this.readData(options);
-                this.reloadIntervalObj = setTimeout(function(){
-                    self.scheduleReload();
-                }, self.reloadTime);
-            }
-        },
-
         clearTaskPath() {
             this.search_params.taskPath = null;
             this.$refs.selTaskPath.blur()
@@ -525,12 +506,7 @@ module.exports = {
 
     mounted:function(){
         var self = this;
-
-        if(this.reloadIntervalObj) clearTimeout(this.reloadIntervalObj);
-
-        this.reloadIntervalObj = setTimeout(function(){
-            self.scheduleReload();
-        }, self.reloadTime);
+        this.readData(options);
     },
 
     watch: {
