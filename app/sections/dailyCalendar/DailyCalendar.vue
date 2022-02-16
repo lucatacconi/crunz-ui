@@ -37,6 +37,7 @@
                             <v-btn outlined class="mr-4" @click = "setToday">
                                 Today
                             </v-btn>
+
                             <v-btn fab text small @click = "prev">
                                 <v-icon small>mdi-chevron-left</v-icon>
                             </v-btn>
@@ -44,6 +45,19 @@
                             <v-btn fab text small @click = "next">
                                 <v-icon small>mdi-chevron-right</v-icon>
                             </v-btn>
+
+                            <v-spacer></v-spacer>
+
+                            <v-slider class="zoom-button mt-5"
+                                v-model="zoomLevel"
+                                append-icon="mdi-magnify-plus-outline"
+                                prepend-icon="mdi-magnify-minus-outline"
+                                min="1"
+                                max="10"
+                                @click:append="zoomIn"
+                                @click:prepend="zoomOut"
+                            ></v-slider>
+
                         </v-toolbar>
                     </v-sheet>
 
@@ -57,6 +71,7 @@
                             type="day"
                             color="primary"
                             event-height=18
+                            :interval-height=zoomLevelDisplay
                             :event-more=false
 
                             @click:more="viewDay"
@@ -99,7 +114,18 @@ module.exports = {
             logData:false,
             taskTitleLength: 25,
 
-            dateFocus: dayjs().format('YYYY-MM-DD')
+            dateFocus: dayjs().format('YYYY-MM-DD'),
+            zoomLevel: 1
+        }
+    },
+
+    created () {
+        if (localStorage.getItem("zoomLevel") !== null) {
+            let zoomLevel = localStorage.getItem("zoomLevel");
+
+            if (!isNaN(zoomLevel)) {
+                this.zoomLevel = zoomLevel;
+            }
         }
     },
 
@@ -111,6 +137,10 @@ module.exports = {
     computed: {
         title () {
             return dayjs(this.dateFocus, 'YYYY-MM-DD').format('MMMM YYYY DD dddd').toString()
+        },
+
+        zoomLevelDisplay () {
+            return 48 * this.zoomLevel;
         }
     },
 
@@ -129,6 +159,13 @@ module.exports = {
         next: function(){
             this.$refs.calendar.next();
             this.readData();
+        },
+
+        zoomOut () {
+            this.zoomLevel = (this.zoomLevel - 1) || 0
+        },
+        zoomIn () {
+            this.zoomLevel = (this.zoomLevel + 1) || 10
         },
 
         stringToColor: function(str){
@@ -254,6 +291,18 @@ module.exports = {
         'task-detail': httpVueLoader('../../shareds/TaskDetail.vue' + '?v=' + new Date().getTime()),
         'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime()),
         'new-task': httpVueLoader('../../shareds/NewTask.vue' + '?v=' + new Date().getTime())
-    }
+    },
+
+    watch: {
+        'zoomLevel': function (newValue, preValue) {
+            localStorage.setItem("zoomLevel", newValue);
+        }
+    },
 }
 </script>
+
+<style scoped>
+    .zoom-button {
+        max-width: 15em;
+    }
+</style>
