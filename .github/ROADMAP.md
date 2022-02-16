@@ -3,18 +3,26 @@
 ## Upcoming/Desiderata implementations
 
 * Vue-cli scaffolding conversion
-* Crunz and Crunz-ui configuration for Doker
 
 
 ## Release history
 
-### v.2.7.5 (2022-12-XX)
+### v.2.7.5 (2022-02-28)
 
 Crunz-ui updated stable release:
 * Removed all non-open icons migrated to material design
-* Implementation of Crunz [Lavary/Crunz](https://github.com/lavary/crunz) v3.1.0 in Crunz-ui
-* Light and dark mode switch
-* Session that allows for the massive verification of the syntax of the tasks loaded on the system
+* Implementation of Crunz [Lavary/Crunz](https://github.com/lavary/crunz) v3.2.1 in Crunz-ui
+* Light and dark theme switch
+* Introduction of a new section for the management of archived tasks (viewing, editing, deletion, recovery)
+* Introduction of a new section that allows for the massive verification of the syntax of the tasks loaded on the system
+* Introduction of an advanced search tool to Tasks' execution outcome list section. It is now possible to search for the results of specific tasks on dates and times of interest
+
+![Advanced search tool](https://user-images.githubusercontent.com/9921890/154231756-d85229e6-5de5-44c6-893f-fdc8c6ecefe7.png)
+
+* Updated documentation for installation and configuration
+* Improvements in interface ergonomics
+* Bugfix and code cleanup
+
 
 ### v.2.6.6 (2021-12-31)
 
