@@ -16,12 +16,11 @@ Crunz-ui updated stable release:
 * Introduction of a new section for the management of archived tasks (viewing, editing, deletion, recovery)
 * Introduction of a new section that allows for the massive verification of the syntax of the tasks loaded on the system
 * Introduction of an advanced search tool to Tasks' execution outcome list section. It is now possible to search for the results of specific tasks on dates and times of interest
-
-![Advanced search tool](https://user-images.githubusercontent.com/9921890/154231756-d85229e6-5de5-44c6-893f-fdc8c6ecefe7.png)
-
 * Updated documentation for installation and configuration
 * Improvements in interface ergonomics
 * Bugfix and code cleanup
+
+![Advanced search tool](https://user-images.githubusercontent.com/9921890/154231756-d85229e6-5de5-44c6-893f-fdc8c6ecefe7.png)
 
 
 ### v.2.6.6 (2021-12-31)
