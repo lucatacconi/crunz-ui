@@ -44,6 +44,7 @@
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn
+                v-if="ifClipboardEnabled"
                 icon
                 @click="copyToClipboard('task-edit')"
             >
@@ -306,6 +307,13 @@ module.exports = {
             this.taskEditEditor.getSession().getDocument().insertInLine(cursor,item.function)
         },
     },
+
+    computed: {
+        ifClipboardEnabled: function () {
+            return Utils.ifClipboardEnabled();
+        }
+    },
+
     mounted:function() {
         var self=this
         setTimeout(function(){

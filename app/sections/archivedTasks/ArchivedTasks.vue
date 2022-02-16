@@ -88,22 +88,27 @@
                                         </v-tooltip>
                                     </template>
                                 </div>
-                                <v-tooltip bottom>
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-chip
-                                            outlined
-                                            small
-                                            link
-                                            v-bind="attrs"
-                                            v-on="on"
-                                            @click="navigator.clipboard.writeText(item.event_unique_key)"
-                                            class="caption grey--text mb-2"
-                                        >
-                                            {{ item.event_unique_key }}
-                                        </v-chip>
-                                    </template>
-                                    <span>Click to copy Event ID</span>
-                                </v-tooltip>
+                                <template v-if="ifClipboardEnabled">
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-chip
+                                                outlined
+                                                small
+                                                link
+                                                v-bind="attrs"
+                                                v-on="on"
+                                                @click="navigator.clipboard.writeText(item.event_unique_key)"
+                                                class="caption grey--text mb-2"
+                                            >
+                                                {{ item.event_unique_key }}
+                                            </v-chip>
+                                        </template>
+                                        <span>Click to copy Event ID</span>
+                                    </v-tooltip>
+                                </template>
+                                <template v-else>
+                                    <caption class="grey--text">{{ item.event_unique_key }}</caption>
+                                </template>
                             </td>
                             <td>
                                 {{ item.task_description == "" ? "--" : item.task_description }}
@@ -371,6 +376,12 @@ module.exports = {
                     self.scheduleReload();
                 }, self.reloadTime);
             }
+        }
+    },
+
+    computed: {
+        ifClipboardEnabled: function () {
+            return Utils.ifClipboardEnabled();
         }
     },
 

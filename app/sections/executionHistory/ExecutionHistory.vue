@@ -34,7 +34,7 @@
                                 hide-details
                                 class="mt-0 mr-md-2"
                                 append-icon="mdi-filter-remove-outline"
-                                @click:append="clearTaskPath();"
+                                @click:append="search_params.taskPath = null"
                                 no-data-text="No task files with this path. Check the filter used."
                             ></v-autocomplete>
                         </v-flex>
@@ -48,6 +48,8 @@
                                     class="mt-0"
                                     :error-messages="errors[0]"
                                     maxlength="32"
+                                    append-icon="mdi-filter-remove-outline"
+                                    @click:append="search_params.eventUniqueId = null"
                                 ></v-text-field>
                             </validationprovider>
                         </v-flex>
@@ -64,6 +66,8 @@
                                     maxlength="16"
                                     append-icon="mdi-calendar"
                                     @click:append="openPicker('executionIntervalFrom','execution_interval_from')"
+                                    append-outer-icon="mdi-filter-remove-outline"
+                                    @click:append-outer="search_params.executionIntervalFrom = null"
                                 >2022-02-08</v-text-field>
                             </validationprovider>
                         </v-flex>
@@ -80,6 +84,8 @@
                                     maxlength="16"
                                     append-icon="mdi-calendar"
                                     @click:append="openPicker('executionIntervalTo','execution_interval_to')"
+                                    append-outer-icon="mdi-filter-remove-outline"
+                                    @click:append-outer="search_params.executionIntervalTo = null"
                                 ></v-text-field>
                             </validationprovider>
                         </v-flex>
@@ -149,7 +155,7 @@
                                 <div>
                                     {{ item.task_path }}
                                 </div>
-                                <template v-if="clipboad_enabled">
+                                <template v-if="ifClipboardEnabled">
                                     <v-tooltip bottom>
                                         <template v-slot:activator="{ on, attrs }">
                                             <v-chip
@@ -472,19 +478,16 @@ module.exports = {
             if(typeof result !== 'undefined' && result){
                 this.readData();
             }
-        },
+        }
+    },
 
-        clearTaskPath() {
-            this.search_params.taskPath = null;
-            this.$refs.selTaskPath.blur()
+    computed: {
+        ifClipboardEnabled: function () {
+            return Utils.ifClipboardEnabled();
         }
     },
 
     created:function() {
-
-        if (location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-            this.clipboad_enabled = true;
-        }
 
         this.readData();
 

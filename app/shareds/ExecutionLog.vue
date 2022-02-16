@@ -77,6 +77,7 @@
                                     <v-toolbar-title>Standard log content</v-toolbar-title>
                                     <v-spacer></v-spacer>
                                     <v-btn
+                                        v-if="ifClipboardEnabled"
                                         icon
                                         @click="copyToClipboard('crunz-log')"
                                     >
@@ -104,6 +105,7 @@
                                     <v-toolbar-title>Custom log content</v-toolbar-title>
                                     <v-spacer></v-spacer>
                                     <v-btn
+                                        v-if="ifClipboardEnabled"
                                         icon
                                         @click="copyToClipboard('custom-log')"
                                     >
@@ -147,6 +149,12 @@ module.exports = {
     mounted:function() {
         if(this.rowdata){
             this.readData()
+        }
+    },
+
+    computed: {
+        ifClipboardEnabled: function () {
+            return Utils.ifClipboardEnabled();
         }
     },
 
