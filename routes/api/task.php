@@ -1806,6 +1806,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             if(strlen($interval_from) == 10){
                 $interval_from .= " 00:00";
             }
+            $interval_from = substr($interval_from, 0, 16);
         }
 
         $interval_to = '';
@@ -1814,6 +1815,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             if(strlen($interval_to) == 10){
                 $interval_to .= " 23:59";
             }
+            $interval_to = substr($interval_to, 0, 16);
         }
 
 
@@ -1992,13 +1994,15 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $task_duration = ($interval->format('%i') != 0 ? $interval->format('%i') : 1);
 
                 if(!empty($interval_from)){
-                    if($task_start < $interval_from){
+                    $interval_from_fdate = \DateTime::createFromFormat('Y-m-d H:i', $interval_from);
+                    if($task_start < $interval_from_fdate){
                         continue;
                     }
                 }
 
                 if(!empty($interval_to)){
-                    if($task_start > $interval_to){
+                    $interval_to_fdate = \DateTime::createFromFormat('Y-m-d H:i', $interval_to);
+                    if($task_start > $interval_to_fdate){
                         continue;
                     }
                 }

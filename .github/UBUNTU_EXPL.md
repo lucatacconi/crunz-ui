@@ -60,8 +60,8 @@ php -r "unlink('composer-setup.php');"
 Installation of Crunz-ui and permissions configuration:
 ```
 cd /var/www/html
-sudo composer create-project lucatacconi/crunz-ui
-sudo chown -R www-data:www-data crunz-ui
+composer create-project lucatacconi/crunz-ui
+chown -R www-data:www-data crunz-ui
 ```
 
 Configuration of Crunz time zone:
