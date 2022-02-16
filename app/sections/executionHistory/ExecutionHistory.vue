@@ -95,7 +95,7 @@
                                 label="Amount of logs"
                                 hide-details
                                 class="mt-3 mr-md-2"
-                                :items="['100','200','300','300+']"
+                                :items="['100','200','300','All']"
                             ></v-select>
                         </v-flex>
                         <v-flex xs12 md6>
