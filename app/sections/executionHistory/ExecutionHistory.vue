@@ -308,12 +308,15 @@ module.exports = {
             .then(form_valid => {
 
                 var params = {
-                    lst_length:self.search_params.amountLogs,
                     unique_id:self.search_params.eventUniqueId,
                     task_path:self.search_params.taskPath,
                     interval_from:self.search_params.executionIntervalFrom,
                     interval_to:self.search_params.executionIntervalTo
                 };
+
+                if(!isNaN(self.search_params.amountLogs)){
+                    params.lst_length = self.search_params.amountLogs;
+                }
 
                 if(form_valid){
                     Utils.apiCall("get", "/task/exec-history",params)
