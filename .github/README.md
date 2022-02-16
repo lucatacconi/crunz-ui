@@ -178,7 +178,7 @@ At this point it is necessary to configure all the users who must be able to acc
 Refer to [Accounts configuration](#Accounts-configuration) section to configure users. By default, in the basic configuration, the **admin** user is configured with the temporary password **password**.
 
 
-## Custom log directory configuration
+### Custom log directory configuration
 
 By default, the configured log folder is **./var/logs** inside Crunz / Crunz-ui folder. The folder must be accessible and writeable by the Apache user.
 
@@ -190,7 +190,7 @@ If you have configured a custom log folder, the crontab configuration must be ch
 ```
 
 
-## Accounts configuration
+### Accounts configuration
 
 All users enabled to access the application are configured in the configuration file **/config/accounts.json**.
 
