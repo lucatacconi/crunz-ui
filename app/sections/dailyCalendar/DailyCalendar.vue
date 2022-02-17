@@ -53,7 +53,7 @@
                                 append-icon="mdi-magnify-plus-outline"
                                 prepend-icon="mdi-magnify-minus-outline"
                                 min="1"
-                                max="10"
+                                max="20"
                                 @click:append="zoomIn"
                                 @click:prepend="zoomOut"
                             ></v-slider>
@@ -165,7 +165,7 @@ module.exports = {
             this.zoomLevel = (this.zoomLevel - 1) || 0
         },
         zoomIn () {
-            this.zoomLevel = (this.zoomLevel + 1) || 10
+            this.zoomLevel = (this.zoomLevel + 1) || 20
         },
 
         stringToColor: function(str){
