@@ -65,7 +65,7 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 ## Browser Support
 
-| ![Chrome](https://raw.github.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png) | ![Firefox](https://raw.github.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png) | ![Safari](https://raw.github.com/alrra/browser-logos/master/src/safari/safari_48x48.png) | ![Opera](https://raw.github.com/alrra/browser-logos/master/src/opera/opera_48x48.png) | ![Edge](https://raw.github.com/alrra/browser-logos/master/src/edge/edge_48x48.png) | ![IE](https://github.com/alrra/browser-logos/blob/master/src/archive/internet-explorer_9-11/internet-explorer_9-11_48x48.png) |
+| ![Chrome](https://user-images.githubusercontent.com/9921890/154512718-d0af67f3-7a39-4aaf-a79e-ef1e46743189.png) | ![Firefox](https://user-images.githubusercontent.com/9921890/154512729-21f8d38d-16b3-447a-8a7e-6e6226828e07.png) | ![Safari](https://user-images.githubusercontent.com/9921890/154512738-09127f91-4375-4a98-b758-40c40085947a.png) | ![Opera](https://user-images.githubusercontent.com/9921890/154512735-44201f45-89b3-4a46-b9ba-2d41c3183fde.png) | ![Edge](https://user-images.githubusercontent.com/9921890/154512725-ea83f2a0-b6b8-46f2-b543-0eafb5f998f2.png) | ![IE](https://user-images.githubusercontent.com/9921890/154512730-06941306-cf64-4bc7-9968-b9d503d4d446.png) |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 | Latest ✔ | Latest ✔ | Latest ✔  | Latest ✔  | Latest ✔  | **No** |
 
