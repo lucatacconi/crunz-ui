@@ -65,12 +65,12 @@ composer create-project lucatacconi/crunz-ui
 
 Configuration of Crunz time zone:
 ```
-sudo ./vendor/bin/crunz publish:config
+./vendor/bin/crunz publish:config
 ```
 
 Permissions configuration:
 ```
-chown -R www-data:www-data crunz-ui
+sudo chown -R www-data:www-data crunz-ui
 ```
 
 
