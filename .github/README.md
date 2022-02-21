@@ -81,11 +81,11 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 ## Pre-installation safety warnings
 
-> :warning: ***It is important that the system clock is correctly synchronized. In case of unsynchronized clock there could be misalignments in the execution of the tasks or in the management of the user sessions.***
-
 > :warning: ***Crunz and Crunz-ui need the ability to set crontab to schedule the regular execution of task management process. Crontab entry owner must be carefully selected: using high permissions level user (ex root) could allow tasks to access sensitive files or perform malicious operations on the entire server file system.***
 
 > :warning: ***It is very important to change the default password of the Crunz-ui admin user. Leaving the default password could allow malicious users to access the Crunz-ui task manager and load dangerous tasks with the capability to access sensitive files or perform malicious operations on the entire server file system***
+
+> :warning: ***It is important that the system clock is correctly synchronized. In case of unsynchronized clock there could be misalignments in the execution of the tasks or in the management of the user sessions.***
 
 ## Installation and application setup
 
@@ -97,21 +97,21 @@ composer create-project lucatacconi/crunz-ui
 ```
 This will install Crunz-ui and all required dependencies.
 
+There is no need to set a long time in PHP max_execution_time property in your php.ini: Crunz performs tasks as if they were run from the console. When running PHP from the command line the default setting is 0 therefore without time limits
+
 Cruz-ui can be installed in two ways: it can work using the Crunz embedded in the packages or using the tasks and configurations of Crunz previously installed on the user's system.
 
 If you have never used Crunz before or want to use the Crunz integrated into the packages, refer to the section [Never used Crunz before](#Never-used-Crunz-before).
 If you want to use Cruz-ui on a version of Crunz previously installed on the user's systems, refer to the section [Usage on a previous installation of Crunz](#Usage-on-a-previous-installation-of-Crunz).
 
-There is no need to set a long time in PHP max_execution_time property: Crunz performs tasks as if they were run from the console. When running PHP from the command line the default setting is 0 therefore without time limits
-
-> :information_source: ***In the case of servers with less computing power, checking the syntax of the tasks considerably slows down the display of tables and statistics. You can set the parameter CHECK_PHP_TASKS_SYNTAX to false o inhibit syntax checking. Configuring the parameter CHECK_PHP_TASKS_SYNTAX to false in case of syntax errors in the tasks could cause anomalous behavior in the Crunz-ui interfaces***
+In the case of servers with less computing power, checking the syntax of the tasks considerably slows down the display of tables and statistics. You can set the parameter CHECK_PHP_TASKS_SYNTAX to false o inhibit syntax checking. Configuring the parameter CHECK_PHP_TASKS_SYNTAX to false in case of syntax errors in the tasks could cause anomalous behavior in the Crunz-ui interfaces
 
 Crunz-ui can also be used with Xampp. However, it is necessary to create a symbolic link of the Xampp's PHP in your system executables folder:
 ```
 sudo ln -s /opt/lampp/bin/php /usr/bin/
 ```
 
-> :information_source: Using Crunz-ui on Xampp with PHP already present on the server in a separate installation from XAMPP, functions "Execute and wait log" present in the Tasks table section menu will fail with the following error: Unable to load dynamic library 'curl.so'. Check the [FAQ](FAQ.md) to solve the problem
+Using Crunz-ui on Xampp with PHP already present on the server in a separate installation from XAMPP, functions "Execute and wait log" present in the Tasks table section menu will fail with the following error: Unable to load dynamic library 'curl.so'. Check [FAQ](FAQ.md) to solve the problem.
 
 ### Never used Crunz before
 
