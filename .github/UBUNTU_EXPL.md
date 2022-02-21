@@ -1,6 +1,6 @@
 # Crunz-ui Ubuntu install example
 
-Here is the procedure for activating Crunz-ui with the use of Crunz embedded on a newly installed Ubuntu system.
+Here is the procedure for activating Crunz-ui with the use of Crunz embedded in a newly installed Ubuntu system.
 
 Update of system packages and installation of net-tools to have tools like ifconfig and others available:
 
@@ -25,6 +25,7 @@ Installation of Apache server, PHP, and Curl for PHP:
 sudo apt-get install apache2
 sudo apt-get install php libapache2-mod-php
 sudo apt-get install php-curl
+sudo apt-get install zip unzip php-zip
 ```
 
 Enable apache server as a service to be activated at boot time:
