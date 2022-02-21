@@ -83,7 +83,7 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 > :warning: **Crunz and Crunz-ui need the ability to set crontab to schedule the regular execution of task management process. Crontab entry owner must be carefully selected: using high permissions level user (ex root) could allow tasks to access sensitive files or perform malicious operations on the entire server file system.**
 
-> :warning: **It is very important to change the default password of the Crunz-ui admin user. Leaving the default password could allow malicious users to access the Crunz-ui task manager and load dangerous tasks with the capability to access sensitive files or perform malicious operations on the entire server file system**
+> :warning: **It is very important to change as soon as possible the default password of the Crunz-ui admin user. Leaving the default password could allow malicious users to access the Crunz-ui task manager and load dangerous tasks with the capability to access sensitive files or perform malicious operations on the entire server file system**
 
 > :warning: **It is important that the system clock is correctly synchronized. In case of unsynchronized clock there could be misalignments in the execution of the tasks or in the management of the user sessions.**
 
