@@ -72,7 +72,7 @@
                     v-if="origin!='archived'"
                     small
                     outlined
-                    color="grey darken-2"
+                    color="red"
                     @click="saveFile(true,true)"
                 >
                     <v-icon left>mdi-content-save-outline</v-icon>
