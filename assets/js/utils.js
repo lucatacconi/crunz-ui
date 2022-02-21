@@ -134,7 +134,11 @@ var Utils = {
         var call_config = {};
         call_config.method = method;
         call_config.url = url
-        call_config.params = parameters;
+        if(call_config.method.toUpperCase()=="GET"){
+            call_config.params = parameters;
+        }else{
+            call_config.data = parameters;
+        }
 
         //Security check
         call_config.headers = {};

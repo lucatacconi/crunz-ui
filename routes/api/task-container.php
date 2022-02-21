@@ -152,7 +152,9 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
 
         if(!isset($params["PATH"]) || $params["PATH"] == '') throw new Exception("ERROR - Missing name of the directory being added");
 

@@ -108,4 +108,5 @@ foreach (glob("./api/*.php") as $filename) {
     require $filename;
 }
 
+$app->addBodyParsingMiddleware();
 $app->run();

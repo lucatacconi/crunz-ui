@@ -1183,7 +1183,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
 
 
         $app_configs = $this->get('configs')["app_configs"];
@@ -1314,7 +1316,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
 
         if(!(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec'))){
             throw new Exception("ERROR - Tasks execution capability is disabled by server configuration. Tasks can only be scheduled");
@@ -1534,10 +1538,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
-        $paramsBody = array_change_key_case($request->getParsedBody(), CASE_UPPER);
-
-        $params = array_merge($params, $paramsBody);
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
 
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
@@ -1709,7 +1712,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
 
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];

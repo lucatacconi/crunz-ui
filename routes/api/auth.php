@@ -12,7 +12,9 @@ $app->group('/auth', function (RouteCollectorProxy $group) {
 
     $group->post('/login', function (Request $request, Response $response, array $args) {
 
-        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
 
         if(empty($params["USERNAME"])) throw new Exception("ERROR - Parameter non found (1)");
         if(empty($params["PASSWORD"])) throw new Exception("ERROR - Parameter non found (2)");

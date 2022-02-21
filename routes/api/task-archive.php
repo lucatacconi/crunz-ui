@@ -337,7 +337,9 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
 
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
@@ -431,7 +433,9 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
 
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
