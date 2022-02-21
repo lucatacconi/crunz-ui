@@ -57,11 +57,10 @@ sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 php -r "unlink('composer-setup.php');"
 ```
 
-Installation of Crunz-ui and permissions configuration:
+Installation of Crunz-ui:
 ```
 cd /var/www/html
 composer create-project lucatacconi/crunz-ui
-chown -R www-data:www-data crunz-ui
 ```
 
 Configuration of Crunz time zone:
@@ -69,10 +68,16 @@ Configuration of Crunz time zone:
 sudo ./vendor/bin/crunz publish:config
 ```
 
+Permissions configuration:
+```
+chown -R www-data:www-data crunz-ui
+```
+
+
 Configuration of crontab (crontab -e) adding crunz-ui service execution scheduling:
 
 ```
 * * * * * cd /var/www/html/crunz-ui && ./crunz-ui.sh
 ```
 
-
+> :warning: **Crunz and Crunz-ui need the ability to set crontab to schedule the regular execution of task management process. Crontab entry owner must be carefully selected: using high permissions level user (ex root) could allow tasks to access sensitive files or perform malicious operations on the entire server file system.**
