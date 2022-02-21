@@ -111,7 +111,7 @@ Crunz-ui can also be used with Xampp. However, it is necessary to create a symbo
 sudo ln -s /opt/lampp/bin/php /usr/bin/
 ```
 
-> :information_source: ***Using Crunz-ui on Xampp with PHP already present on the server in a separate installation from XAMPP, functions "Execute and wait log" present in the Tasks table section menu will fail with the following error: Unable to load dynamic library 'curl.so'***
+> :information_source: Using Crunz-ui on Xampp with PHP already present on the server in a separate installation from XAMPP, functions "Execute and wait log" present in the Tasks table section menu will fail with the following error: Unable to load dynamic library 'curl.so'. Check the [FAQ](FAQ.md) to solve the problem
 
 ### Never used Crunz before
 
