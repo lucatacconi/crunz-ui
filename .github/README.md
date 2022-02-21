@@ -66,7 +66,7 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 ## Browser Support
 
-| ![Chrome](https://user-images.githubusercontent.com/9921890/154514768-b913f122-396f-4639-950c-ebdbdf4eb75e.png) | ![Firefox](https://user-images.githubusercontent.com/9921890/154512729-21f8d38d-16b3-447a-8a7e-6e6226828e07.png) | ![Safari](https://user-images.githubusercontent.com/9921890/154512738-09127f91-4375-4a98-b758-40c40085947a.png) | ![Opera](https://user-images.githubusercontent.com/9921890/154512735-44201f45-89b3-4a46-b9ba-2d41c3183fde.png) | ![Edge](https://user-images.githubusercontent.com/9921890/154512725-ea83f2a0-b6b8-46f2-b543-0eafb5f998f2.png) | ![IE](https://user-images.githubusercontent.com/9921890/154514779-591b57bc-4948-4528-a4aa-f595a63ea382.png) |
+| ![Chrome](https://github.com/alrra/browser-logos/blob/main/src/chrome/chrome_48x48.png) | ![Firefox](https://github.com/alrra/browser-logos/blob/main/src/firefox/firefox_48x48.png) | ![Safari](https://github.com/alrra/browser-logos/blob/main/src/safari/safari_48x48.png) | ![Opera](https://github.com/alrra/browser-logos/blob/main/src/opera/opera_48x48.png) | ![Edge](https://github.com/alrra/browser-logos/blob/main/src/edge/edge_48x48.png) | ![IE](https://github.com/alrra/browser-logos/blob/main/src/archive/internet-explorer-tile_10-11/internet-explorer-tile_10-11_48x48.png) |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 | Latest ✔ | Latest ✔ | Latest ✔  | Latest ✔  | Latest ✔  | **No** |
 
