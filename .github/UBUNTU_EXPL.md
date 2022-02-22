@@ -1,6 +1,6 @@
-# APACHE on Ubuntu
+# Crunz-ui Ubuntu install example
 
-Here is the procedure for activating Crunz-ui with the use of Crunz embedded on a newly installed Ubuntu system.
+Here is the procedure for activating Crunz-ui with the use of Crunz embedded in a newly installed Ubuntu system.
 
 Update of system packages and installation of net-tools to have tools like ifconfig and others available:
 
@@ -25,6 +25,7 @@ Installation of Apache server, PHP, and Curl for PHP:
 sudo apt-get install apache2
 sudo apt-get install php libapache2-mod-php
 sudo apt-get install php-curl
+sudo apt-get install zip unzip php-zip
 ```
 
 Enable apache server as a service to be activated at boot time:
@@ -57,17 +58,22 @@ sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 php -r "unlink('composer-setup.php');"
 ```
 
-Installation of Crunz-ui and permissions configuration:
+Installation of Crunz-ui:
 ```
 cd /var/www/html
 composer create-project lucatacconi/crunz-ui
-chown -R www-data:www-data crunz-ui
 ```
 
 Configuration of Crunz time zone:
 ```
-sudo ./vendor/bin/crunz publish:config
+./vendor/bin/crunz publish:config
 ```
+
+Permissions configuration:
+```
+sudo chown -R www-data:www-data crunz-ui
+```
+
 
 Configuration of crontab (crontab -e) adding crunz-ui service execution scheduling:
 
@@ -75,4 +81,4 @@ Configuration of crontab (crontab -e) adding crunz-ui service execution scheduli
 * * * * * cd /var/www/html/crunz-ui && ./crunz-ui.sh
 ```
 
-
+> :warning: **Crunz and Crunz-ui need the ability to set crontab to schedule the regular execution of task management process. Crontab entry owner must be carefully selected: using high permissions level user (ex root) could allow tasks to access sensitive files or perform malicious operations on the entire server file system.**

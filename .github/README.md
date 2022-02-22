@@ -19,6 +19,7 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 - [What else can Crunz-ui do](#what-else-can-crunz-ui-do)
 - [Browser Support](#browser-support)
 - [System Requirements](#system-requirements)
+- [Pre-installation safety warnings](#pre-installation-safety-warnings)
 - [Installation and application setup](#installation-and-application-setup)
   - [Never used Crunz before](#never-used-crunz-before)
   - [Usage on a previous installation of Crunz](#usage-on-a-previous-installation-of-crunz)
@@ -65,7 +66,7 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 ## Browser Support
 
-| ![Chrome](https://user-images.githubusercontent.com/9921890/154514768-b913f122-396f-4639-950c-ebdbdf4eb75e.png) | ![Firefox](https://user-images.githubusercontent.com/9921890/154512729-21f8d38d-16b3-447a-8a7e-6e6226828e07.png) | ![Safari](https://user-images.githubusercontent.com/9921890/154512738-09127f91-4375-4a98-b758-40c40085947a.png) | ![Opera](https://user-images.githubusercontent.com/9921890/154512735-44201f45-89b3-4a46-b9ba-2d41c3183fde.png) | ![Edge](https://user-images.githubusercontent.com/9921890/154512725-ea83f2a0-b6b8-46f2-b543-0eafb5f998f2.png) | ![IE](https://user-images.githubusercontent.com/9921890/154514779-591b57bc-4948-4528-a4aa-f595a63ea382.png) |
+| ![Chrome](https://github.com/alrra/browser-logos/blob/main/src/chrome/chrome_48x48.png) | ![Firefox](https://github.com/alrra/browser-logos/blob/main/src/firefox/firefox_48x48.png) | ![Safari](https://github.com/alrra/browser-logos/blob/main/src/safari/safari_48x48.png) | ![Opera](https://github.com/alrra/browser-logos/blob/main/src/opera/opera_48x48.png) | ![Edge](https://github.com/alrra/browser-logos/blob/main/src/edge/edge_48x48.png) | ![IE](https://github.com/alrra/browser-logos/blob/main/src/archive/internet-explorer-tile_10-11/internet-explorer-tile_10-11_48x48.png) |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 | Latest ✔ | Latest ✔ | Latest ✔  | Latest ✔  | Latest ✔  | **No** |
 
@@ -76,42 +77,43 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 * Service ntp enabled
 * Apache and PHP 7.4 or newer, with rewrite.load module enabled
 * Composer
-* PHP enabled to run console commands (It can be dangerous and used by malicious people to hake on the server)
 * Sudo capabilities
 
+## Pre-installation safety warnings
 
-> :warning: ***It is important that the system clock is correctly synchronized. In case of unsynchronized clock there could be misalignments in the execution of the tasks or in the management of the user sessions.***
+> :warning: **Crunz and Crunz-ui need the ability to set crontab to schedule the regular execution of task management process. Crontab entry owner must be carefully selected: using high permissions level user (ex root) could allow tasks to access sensitive files or perform malicious operations on the entire server file system.**
 
+> :warning: **It is very important to change as soon as possible the default password of the Crunz-ui admin user. Leaving the default password could allow malicious users to access the Crunz-ui task manager and load dangerous tasks with the capability to access sensitive files or perform malicious operations on the entire server file system**
 
-It is advisable to use npm to keep the server time synchronized.
+> :warning: **It is important that the system clock is correctly synchronized. In case of unsynchronized clock there could be misalignments in the execution of the tasks or in the management of the user sessions.**
 
-There is no need to set a long time in PHP max_execution_time property: Crunz performs tasks as if they were run from the console. When running PHP from the command line the default setting is 0 therefore without time limits
+> :warning: **For browser security configurations, Ccopy to clipboard buttons are available only if Crunz-ui is released in localhost or in an https domain**
 
 ## Installation and application setup
 
 It's recommended that you use [Composer](https://getcomposer.org/) to install Crunz-ui.
 
-Start from your **Apache Server**'s **Document Root** folder or start from directory combined with one of the configured virtual hosts and type the following command:
+Start from your **Apache Server**'s **Document Root** folder or start from a directory combined with one of the configured virtual hosts and type the following command:
 ```
 composer create-project lucatacconi/crunz-ui
 ```
 This will install Crunz-ui and all required dependencies.
 
+There is no need to set a long time in PHP max_execution_time property in your php.ini: Crunz performs tasks as if they were run from the console. When running PHP from the command line the default setting is 0 therefore without time limits
+
 Cruz-ui can be installed in two ways: it can work using the Crunz embedded in the packages or using the tasks and configurations of Crunz previously installed on the user's system.
 
-If you have never used Crunz before or want to use the Crunz integrated in the packages, refer to the section [Never used Crunz before](#Never-used-Crunz-before).
+If you have never used Crunz before or want to use the Crunz integrated into the packages, refer to the section [Never used Crunz before](#Never-used-Crunz-before).
 If you want to use Cruz-ui on a version of Crunz previously installed on the user's systems, refer to the section [Usage on a previous installation of Crunz](#Usage-on-a-previous-installation-of-Crunz).
+
+> :information_source: By default Crunz checks the correctness of the php code before considering the task file. In case of servers with less computing power, checking the syntax of the tasks considerably slows down the display of tables and statistics. You can set the .env parameter CHECK_PHP_TASKS_SYNTAX to false to inhibit syntax checking. In case of syntax errors in the tasks, configuring parameter CHECK_PHP_TASKS_SYNTAX to false could cause anomalous behavior in the Crunz-ui interfaces
 
 Crunz-ui can also be used with Xampp. However, it is necessary to create a symbolic link of the Xampp's PHP in your system executables folder:
 ```
 sudo ln -s /opt/lampp/bin/php /usr/bin/
 ```
 
-> :warning: ***Using Crunz-ui on Xampp with PHP already present on the server in a separate installation from XAMPP, functions "Execute and wait log" present in the Tasks table section menu will fail with the following error: Unable to load dynamic library 'curl.so'***
-
-
-> :warning: ***In the case of servers with less computing power, checking the syntax of the tasks considerably slows down the display of tables and statistics. You can set the parameter CHECK_PHP_TASKS_SYNTAX to false o inhibit syntax checking. Configuring the parameter CHECK_PHP_TASKS_SYNTAX to false in case of syntax errors in the tasks could cause anomalous behavior in the Crunz-ui interfaces***
-
+Using Crunz-ui on Xampp with PHP already present on the server in a separate installation from XAMPP, functions "Execute and wait log" present in the Tasks table section menu will fail with the following error: Unable to load dynamic library 'curl.so'. Check [FAQ](FAQ.md) to solve the problem.
 
 ### Never used Crunz before
 
