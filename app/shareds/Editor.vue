@@ -13,7 +13,7 @@
                 small
                 dense
                 outlined
-                color="grey darken-2"
+                color="button"
                 @click="undo()"
             >
                 <v-icon left>mdi-undo</v-icon>
@@ -24,7 +24,7 @@
                 small
                 dense
                 outlined
-                color="grey darken-2"
+                color="button"
                 @click="redo()"
             >
                 <v-icon left>mdi-redo</v-icon>
@@ -35,7 +35,7 @@
                 small
                 dense
                 outlined
-                color="grey darken-2"
+                color="button"
                 @click="show_crunz_button=!show_crunz_button"
                 v-if="actionButton!=undefined"
             >
@@ -271,6 +271,9 @@ module.exports = {
             }
 
             ed = ace.edit(editor);
+            if(this.$vuetify.theme.dark){
+                ed.setTheme("ace/theme/twilight");
+            }
             ed.getSession().setMode("ace/mode/php");
             ed.getSession().setUndoManager(new ace.UndoManager())
 

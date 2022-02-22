@@ -78,7 +78,14 @@
             const vuetify = new Vuetify({
                 theme: {
                     dark: localStorage.getItem('theme')!=undefined&&localStorage.getItem('theme')!="false" ? true : false,
-                    themes: { }
+                    themes: {
+                        light: {
+                            button:'#616161',
+                        },
+                        dark: {
+                            button:'#ffffff',
+                        }
+                    }
                 }
             });
 

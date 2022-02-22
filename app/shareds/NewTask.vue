@@ -48,7 +48,7 @@
                 <v-btn
                     small
                     outlined
-                    color="grey darken-2"
+                    color="button"
                     @click="saveFile(true)"
                 >
                     <v-icon left>mdi-content-save-outline</v-icon>

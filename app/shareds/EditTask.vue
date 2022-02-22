@@ -52,7 +52,7 @@
                 <v-btn
                     small
                     outlined
-                    color="grey darken-2"
+                    color="button"
                     @click="saveFile(false)"
                 >
                     <v-icon left>mdi-content-save-outline</v-icon>
@@ -62,7 +62,7 @@
                 <v-btn
                     small
                     outlined
-                    color="grey darken-2"
+                    color="button"
                     @click="saveFile(true)"
                 >
                     <v-icon left>mdi-content-save-outline</v-icon>
@@ -82,7 +82,7 @@
                     v-else
                     small
                     outlined
-                    color="grey darken-2"
+                    color="button"
                     @click="saveFile(true,true)"
                 >
                     <v-icon left>mdi-content-save-outline</v-icon>

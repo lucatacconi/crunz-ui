@@ -49,7 +49,7 @@
                         <v-btn
                             outlined
                             small
-                            color="grey darken-2"
+                            color="button"
                             @click="uploadFile"
                         >
                             <v-icon left>mdi-file-upload-outline</v-icon>

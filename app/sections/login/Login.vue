@@ -5,7 +5,7 @@
                 <v-layout align-center justify-center>
                 <v-flex xs12 sm8 md4>
                     <v-card class="elevation-12">
-                        <v-toolbar dark color="primary">
+                        <v-toolbar color="blue-grey" dense dark>
                             <v-toolbar-title>Login form</v-toolbar-title>
                             <v-spacer></v-spacer>
                             <v-tooltip bottom>
@@ -42,7 +42,7 @@
                                 </v-card-text>
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
-                                    <v-btn color="primary" :disabled="!valid" @click.prevent="handleSubmit(execLogin)">
+                                    <v-btn :disabled="!valid" @click.prevent="handleSubmit(execLogin)">
                                         <v-icon left>mdi-key-variant</v-icon>
                                         Login
                                     </v-btn>
