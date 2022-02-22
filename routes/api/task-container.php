@@ -249,7 +249,10 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+        $params = [];
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
 
         if(empty($params["PATH"])) throw new Exception("ERROR - Missing name of the directory being deleted");
 
