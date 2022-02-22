@@ -176,6 +176,9 @@ module.exports = {
             }
 
             ed = ace.edit(editor);
+            if(this.$vuetify.theme.dark){
+                ed.setTheme("ace/theme/twilight");
+            }
             ed.getSession().setMode("ace/mode/text");
 
             ed.setOptions({

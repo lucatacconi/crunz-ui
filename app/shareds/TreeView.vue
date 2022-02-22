@@ -35,7 +35,7 @@
                     <v-spacer></v-spacer>
                     <v-btn outlined
                         small
-                        color="grey darken-2"
+                        color="button"
                         @click="addFolder()"
                     >
                         <v-icon left>
