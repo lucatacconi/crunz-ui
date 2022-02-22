@@ -12,6 +12,7 @@ $app->group('/auth', function (RouteCollectorProxy $group) {
 
     $group->post('/login', function (Request $request, Response $response, array $args) {
 
+        $params = [];
         if(!empty($request->getParsedBody())){
             $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
         }

@@ -152,6 +152,7 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         $data = [];
 
+        $params = [];
         if(!empty($request->getParsedBody())){
             $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
         }

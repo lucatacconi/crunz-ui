@@ -1183,6 +1183,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $data = [];
 
+        $params = [];
         if(!empty($request->getParsedBody())){
             $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
         }
@@ -1316,6 +1317,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $data = [];
 
+        $params = [];
         if(!empty($request->getParsedBody())){
             $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
         }
@@ -1538,6 +1540,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $data = [];
 
+        $params = [];
         if(!empty($request->getParsedBody())){
             $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
         }
@@ -1712,6 +1715,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $data = [];
 
+        $params = [];
         if(!empty($request->getParsedBody())){
             $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
         }
