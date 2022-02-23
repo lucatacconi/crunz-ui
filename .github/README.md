@@ -28,6 +28,7 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
   - [Ubuntu/Debian setup example](UBUNTU_EXPL.md)
 - [First login](#first-login)
 - [Contributing informations](CONTRIBUTING.md)
+- [Roadmap](ROADMAP.md)
 - [FAQ / Troubleshooting](FAQ.md)
 </details>
 

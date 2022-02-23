@@ -11,13 +11,14 @@
 
 Crunz-ui updated stable release:
 * Removed all non-open icons migrated to material design
-* Implementation of Crunz [Lavary/Crunz](https://github.com/lavary/crunz) v3.2.1 in Crunz-ui
+* Implementation of [Lavary/Crunz](https://github.com/lavary/crunz) v3.2.1 in Crunz-ui
 * Light and dark theme switch
 * Zoom control to have a better view of the tasks in  Daily calendar section
 * Introduction of a new section for the management of archived tasks (viewing, editing, deletion, recovery)
 * Introduction of a new section that allows for the massive verification of the syntax of the tasks loaded on the system
 * Introduction of an advanced search tool to Tasks' execution outcome list section. It is now possible to search for the results of specific tasks on dates and times of interest
 * Updated documentation for installation and configuration
+* Removed Swift mailer using Simphony mailer instead for [Lavary/Crunz](https://github.com/lavary/crunz) consistency
 * Improvements in interface ergonomics
 * System icons uniformed to material design icon
 * Bugfix and code cleanup
