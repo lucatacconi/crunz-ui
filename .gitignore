@@ -30,6 +30,7 @@ composer.lock
 
 # Ignore all crunz configuration
 crunz.yml
+!.github/DockerConfigs/crunz.yml
 
 #Ignore IDEs' configuration directory
 .vscode
