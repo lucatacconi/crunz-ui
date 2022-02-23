@@ -2,6 +2,10 @@
 
 use Crunz\Schedule;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Address;
 
 $schedule = new Schedule();
 
@@ -56,34 +60,30 @@ $task = $schedule->run(function() {
 
             $userPart = '';
             if(!empty($crunz_config["smtp"]["username"])){
-                $userPart = "{".$crunz_config["smtp"]["username"]."}:{".$crunz_config["smtp"]["password"]."}@";
+                $userPart = $crunz_config["smtp"]["username"].":".$crunz_config["smtp"]["password"]."@";
             }
 
-            $dsn = "smtp://{$userPart}{".$crunz_config["smtp"]["host"]."}:{".$crunz_config["smtp"]["port"]."}?verifyPeer={".$crunz_config["smtp"]["encryption"]."}";
+            $dsn = "smtp://".$userPart.$crunz_config["smtp"]["host"].":".$crunz_config["smtp"]["port"]."?verifyPeer=".$crunz_config["smtp"]["encryption"];
 
             $transport = Transport::fromDsn($dsn);
-            $mailer = new SymfonyMailer($transport);
+            $mailer = new Mailer($transport);
 
             $subject = 'Crunz-ui report';
             $message = $aRESULT["DATA"];
 
             $from = new Address($crunz_config["mailer"]["sender_email"], $crunz_config["mailer"]["sender_name"]);
-            $messageObject = new Email();
-            $messageObject
-                ->setFrom([$crunz_config["mailer"]["sender_email"] => $crunz_config["mailer"]["sender_name"]])
-                ->setTo($crunz_config["mailer"]["recipients"])
+
+            $messageObject = (new Email())
                 ->from($from)
                 ->subject($subject)
                 ->text($message)
             ;
-            foreach ($crunz_config["mailer"]["recipients"] ?? [] as $recipient) {
-                $messageObject->addTo($recipient);
+
+            foreach ($crunz_config["mailer"]["recipients"] ?? [] as $idx=>$recipient) {
+                $messageObject->addTo(new Address($idx, $recipient));
             }
 
-            $result = $mailer->send($messageObject);
-            if(!$result){
-                throw new Exception("ERROR - Error in sending the email");
-            }
+            $mailer->send($messageObject);
         }
 
     } catch (Exception $e) {
