@@ -194,7 +194,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         foreach($aLOGNAME_all as $logkey => $logfile){
             $aLOG =explode('_', str_replace($LOGS_DIR."/", "", $logfile));
 
-            if( count($aLOGNAME_perkey[$aLOG[0]]) == 0 ){
+            if( empty($aLOGNAME_perkey[$aLOG[0]]) || count($aLOGNAME_perkey[$aLOG[0]]) == 0 ){
                 $aLOGNAME_perkey[$aLOG[0]] = [];
             }
 
