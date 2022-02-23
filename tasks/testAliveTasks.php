@@ -55,26 +55,35 @@ $task = $schedule->run(function() {
         ){
 
             // Create the Transport
-            $transport = (new Swift_SmtpTransport($crunz_config["smtp"]["host"], $crunz_config["smtp"]["port"], $crunz_config["smtp"]["encryption"]));
-
+            $userPart = '';
             if(!empty($crunz_config["smtp"]["username"])){
-                $transport->setUsername($crunz_config["smtp"]["username"]);
-                $transport->setPassword($crunz_config["smtp"]["password"]);
+                $userPart = "{".$crunz_config["smtp"]["username"]."}:{".$crunz_config["smtp"]["password"]."}@";
             }
 
-            // Create the Mailer using your created Transport
-            $mailer = new Swift_Mailer($transport);
+            // $transport = (new Swift_SmtpTransport($crunz_config["smtp"]["host"], $crunz_config["smtp"]["port"], $crunz_config["smtp"]["encryption"]));
+            $dsn = "smtp://{$userPart}{".$crunz_config["smtp"]["host"]."}:{".$crunz_config["smtp"]["port"]."}?verifyPeer={".$crunz_config["smtp"]["encryption"]."}";
 
-            // Create a message
-            $message = (new Swift_Message('Crunz-ui report'))
-            ->setFrom([$crunz_config["mailer"]["sender_email"] => $crunz_config["mailer"]["sender_name"]])
-            ->setTo($crunz_config["mailer"]["recipients"])
-            ->setBody($aRESULT["DATA"]);
+            $transport = Transport::fromDsn($dsn);
+            $mailer = new SymfonyMailer($transport);
 
-            $recipients = [];
+            $subject = 'Crunz-ui report';
+            $message = $aRESULT["DATA"];
+
+            $from = new Address($crunz_config["mailer"]["sender_email"], $crunz_config["mailer"]["sender_name"]);
+            $messageObject = new Email();
+            $messageObject
+                ->setFrom([$crunz_config["mailer"]["sender_email"] => $crunz_config["mailer"]["sender_name"]])
+                ->setTo($crunz_config["mailer"]["recipients"])
+                ->from($from)
+                ->subject($subject)
+                ->text($message)
+            ;
+            foreach ($crunz_config["mailer"]["recipients"] ?? [] as $recipient) {
+                $messageObject->addTo($recipient);
+            }
 
             // Send the message
-            $result = $mailer->send($message);
+            $result = $mailer->send($messageObject);
             if(!$result){
                 throw new Exception("ERROR - Error in sending the email");
             }
