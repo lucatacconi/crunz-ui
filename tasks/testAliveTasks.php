@@ -54,13 +54,11 @@ $task = $schedule->run(function() {
             && !empty($crunz_config["smtp"]["port"])
         ){
 
-            // Create the Transport
             $userPart = '';
             if(!empty($crunz_config["smtp"]["username"])){
                 $userPart = "{".$crunz_config["smtp"]["username"]."}:{".$crunz_config["smtp"]["password"]."}@";
             }
 
-            // $transport = (new Swift_SmtpTransport($crunz_config["smtp"]["host"], $crunz_config["smtp"]["port"], $crunz_config["smtp"]["encryption"]));
             $dsn = "smtp://{$userPart}{".$crunz_config["smtp"]["host"]."}:{".$crunz_config["smtp"]["port"]."}?verifyPeer={".$crunz_config["smtp"]["encryption"]."}";
 
             $transport = Transport::fromDsn($dsn);
@@ -82,7 +80,6 @@ $task = $schedule->run(function() {
                 $messageObject->addTo($recipient);
             }
 
-            // Send the message
             $result = $mailer->send($messageObject);
             if(!$result){
                 throw new Exception("ERROR - Error in sending the email");
