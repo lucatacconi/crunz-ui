@@ -1264,9 +1264,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             if(!is_writable($task_file_path)) throw new Exception('ERROR - File not writable');
         }
 
-        $task_handle = fopen($task_file_path, "wb");
-        if($task_handle === false) throw new Exception('ERROR - File open error');
-
         $tester_file_name = date("Ymdhis")."_tester";
         $task_tester_handle = fopen($base_tasks_path."/".$tester_file_name, "w");
         if($task_tester_handle === false) throw new Exception('ERROR - Error in opening file for syntax check');
@@ -1298,11 +1295,14 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         fclose($task_tester_handle);
         unlink($base_tasks_path."/".$tester_file_name);
 
+        $task_handle = fopen($task_file_path, "wb");
+        if($task_handle === false) throw new Exception('ERROR - Destination file open error');
         fwrite($task_handle, $params["TASK_CONTENT"]);
         fclose($task_handle);
 
         $data["result"] = true;
         $data["result_msg"] = '';
+
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
