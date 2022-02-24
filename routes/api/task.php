@@ -1285,15 +1285,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         fclose($task_tester_handle);
 
         $file_check_result = exec("php -l \"".$base_tasks_path."/".$tester_file_name."\"");
+        unlink($base_tasks_path."/".$tester_file_name);
         if(strpos($file_check_result, 'No syntax errors detected in') === false){
             //Syntax error in file
-            fclose($task_tester_handle);
-            unlink($base_tasks_path."/".$tester_file_name);
             throw new Exception("ERROR - Syntax error in task file");
         }
-
-        fclose($task_tester_handle);
-        unlink($base_tasks_path."/".$tester_file_name);
 
         $task_handle = fopen($task_file_path, "wb");
         if($task_handle === false) throw new Exception('ERROR - Destination file open error');
