@@ -1609,30 +1609,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         if(!is_dir($destination_path)) throw new Exception('ERROR - Destination path not exist');
         if(!is_writable($destination_path)) throw new Exception('ERROR - File not writable');
 
-        // print_r($params);
-        // print_r($_FILES);
-
-        // Array (
-        //     [TASKS_DESTINATION_PATH] => /
-        //     [CAN_REWRITE] => N
-        //     [MULTIPLE_UPLOAD] => Y )
-        // Array (
-        //     [task_upload_1] =>
-        //         Array (
-        //             [name] => test1Tasks.php
-        //             [type] => application/x-php
-        //             [tmp_name] => /tmp/phpcDGFQh
-        //             [error] => 0
-        //             [size] => 3082
-        //         )
-        //     [task_upload_2] => Array (
-        //         [name] => test2Tasks.php
-        //         [type] => application/x-php
-        //         [tmp_name] => /tmp/phpAL0jFh
-        //         [error] => 0
-        //         [size] => 3082
-        //     )
-        // )
 
         //Check task file
         if(!empty($_FILES)){
