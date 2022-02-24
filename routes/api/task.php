@@ -1284,29 +1284,25 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             throw new Exception("ERROR - Wrong task configuration in task file");
         }
 
-        try {
+        fwrite($task_tester_handle, $params["TASK_CONTENT"]);
+        fclose($task_tester_handle);
 
-            fwrite($task_tester_handle, $params["TASK_CONTENT"]);
+        $file_check_result = exec("php -l \"".$base_tasks_path."/".$tester_file_name."\"");
+        if(strpos($file_check_result, 'No syntax errors detected in') === false){
+            //Syntax error in file
             fclose($task_tester_handle);
-
-            $file_check_result = exec("php -l \"".$base_tasks_path."/".$tester_file_name."\"");
-            if(strpos($file_check_result, 'No syntax errors detected in') === false){
-                //Syntax error in file
-                fclose($task_tester_handle);
-                unlink($base_tasks_path."/".$tester_file_name);
-                throw new Exception("ERROR - Syntax error in task file");
-            }
-
-            fwrite($task_handle, $params["TASK_CONTENT"]);
-            fclose($task_handle);
-
-            $data["result"] = true;
-            $data["result_msg"] = '';
-
-        } catch(Exception $e) {
-            $data["result"] = false;
-            $data["result_msg"] = $e->getMessage();
+            unlink($base_tasks_path."/".$tester_file_name);
+            throw new Exception("ERROR - Syntax error in task file");
         }
+
+        fclose($task_tester_handle);
+        unlink($base_tasks_path."/".$tester_file_name);
+
+        fwrite($task_handle, $params["TASK_CONTENT"]);
+        fclose($task_handle);
+
+        $data["result"] = true;
+        $data["result_msg"] = '';
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
