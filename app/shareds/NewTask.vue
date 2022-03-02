@@ -43,7 +43,7 @@
 
             </v-card-text>
 
-            <v-card-actions class="pt-0 pr-6">
+            <v-card-actions class="pt-0 pr-6 pb-3">
                 <v-spacer></v-spacer>
                 <v-btn
                     small

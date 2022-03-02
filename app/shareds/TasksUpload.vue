@@ -38,7 +38,7 @@
                 ></v-file-input>
             </v-card-text>
 
-            <v-card-actions class="pt-0 pl-7 pr-6">
+            <v-card-actions class="pt-0 pl-7 pr-6 pb-3">
                 <v-switch
                     class="pt-0 mt-0"
                     v-model="formData.rewrite"
