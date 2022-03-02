@@ -47,7 +47,7 @@
                 <v-form>
             </v-card-text>
 
-            <v-card-actions class="pt-0 pr-9 pb-3">
+            <v-card-actions class="pt-4 pr-9 pb-3">
                 <v-spacer></v-spacer>
                 <v-btn
                     small
