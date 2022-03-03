@@ -36,28 +36,27 @@
                     :multiple="formData.multipleUpload"
                     v-model="formData.files"
                 ></v-file-input>
-                <v-layout row wrap>
-                    <v-flex xs10 class="pl-3">
-                        <v-switch
-                            v-model="formData.rewrite"
-                            inset
-                            label="Rewrite task file if present in destination path"
-                            hide-details
-                        ></v-switch>
-                    </v-flex>
-                    <v-flex xs2 class="pt-4">
-                        <v-btn
-                            outlined
-                            small
-                            color="button"
-                            @click="uploadFile"
-                        >
-                            <v-icon left>mdi-file-upload-outline</v-icon>
-                            Upload
-                        </v-btn>
-                    </v-flex>
-                </v-layout>
             </v-card-text>
+
+            <v-card-actions class="pt-0 pl-7 pr-6 pb-3">
+                <v-switch
+                    class="pt-0 mt-0"
+                    v-model="formData.rewrite"
+                    inset
+                    label="Rewrite task file if present in destination path"
+                    hide-details
+                ></v-switch>
+                <v-spacer></v-spacer>
+                <v-btn
+                    outlined
+                    small
+                    color="button"
+                    @click="uploadFile"
+                >
+                    <v-icon left>mdi-file-upload-outline</v-icon>
+                    Upload
+                </v-btn>
+            </v-card-actions>
 
         </v-card>
     </v-dialog>
