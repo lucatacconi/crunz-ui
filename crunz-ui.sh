@@ -9,6 +9,7 @@ Usage:
     -h: show this help text
     -d <tasks_path>: set tasks directory to tasks_path (default: ./tasks; Read Crunz configuration file crunz.yml)
     -l <logs path>: set logs directory to logs_path (default: ./var/logs; Check environment configuration in Crunz-ui directory)
+    -p <executable>: set executable php location (Needed when using crunz-ui installed in a docker. default is '')
     -t <n>: Configure Crunz to run only specified task (Wait for task's execution end)
     -f: Forces Crunz to run task even if not programmed
 
@@ -25,6 +26,8 @@ absolute_tasks_path="$( cd "$(dirname "$0")" ; pwd -P )/${tasks_path#"./"}"
 logs_path="./var/logs"
 forced_execution=""
 id_task=-1
+php_executable=$(which php)
+
 
 declare -a a_no_due=("No event is due!")
 declare -a a_task_outcome=("success" "fail")
@@ -55,6 +58,7 @@ function runTask() {
     p_forced_execution=$2
     p_tasks_path=$3
     p_logs_path=$4
+    p_php_executable=$4
 
     file_uuid="."$(echo {A..Z} {a..z} {0..9} {0..9} | tr ' ' "\n" | shuf | xargs | tr -d ' ' | cut -b 1-32)
     file_seed=$(echo {A..Z} {a..z} {0..9} {0..9} | tr ' ' "\n" | shuf | xargs | tr -d ' ' | cut -b 1-4)
@@ -119,7 +123,7 @@ function runTask() {
             executed_task_outcome="KO"
         fi
 
-        event_unique_id=$(php -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getEventUniqueKey('$p_task_counter'); echo $res;')
+        event_unique_id=$(${p_php_executable} -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getEventUniqueKey('$p_task_counter'); echo $res;')
 
         log_task_name=$event_unique_id"_"$executed_task_outcome"_"$task_start_datetime"_"$task_stop_datetime"_"$file_seed".log"
         mv $p_logs_path/$file_uuid.log $p_logs_path/$log_task_name
@@ -169,6 +173,11 @@ do
             shift # past argument
             shift # past value
         ;;
+        -p)
+            php_executable="$2"
+            shift # past argument
+            shift # past value
+        ;;
         -f)
             forced_execution="-f"
             shift # past argument
@@ -191,15 +200,15 @@ if [ ! -w $logs_path ]; then
 fi
 
 if [ $id_task -gt 0 ]; then
-    runTask $id_task "$forced_execution" "$tasks_path" "$logs_path"
+    runTask $id_task "$forced_execution" "$tasks_path" "$logs_path" "$php_executable"
 else
 
-    tasks_count=$(php -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getMaxNumTasks(); echo $res;')
+    tasks_count=$(${php_executable} -r 'include  "./TasksTreeReader.php"; $res = TasksTreeReader::getMaxNumTasks(); echo $res;')
 
     task_counter=1
     while [ $task_counter -le $tasks_count ]
     do
-        runTask $task_counter "$forced_execution" "$tasks_path" "$logs_path" &
+        runTask $task_counter "$forced_execution" "$tasks_path" "$logs_path" "$php_executable" &
         ((task_counter++))
     done
 fi
