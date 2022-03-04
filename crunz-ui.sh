@@ -26,7 +26,7 @@ absolute_tasks_path="$( cd "$(dirname "$0")" ; pwd -P )/${tasks_path#"./"}"
 logs_path="./var/logs"
 forced_execution=""
 id_task=-1
-php_executable=$(which php)
+php_executable=$(command -v php)
 
 
 declare -a a_no_due=("No event is due!")
