@@ -1,5 +1,5 @@
 #!/bin/bash
-# sysinfo_page - Execute Crunz tasks, calculate execution duration, outcome e write specific log. Compatibile with Crunz version v2.0.2
+# sysinfo_page - Execute Crunz tasks, calculate execution duration, outcome e write specific log. Compatibile with Crunz version v3.X.X
 
 usage="
 ./$(basename "$0") [-h] [-d tasks_path ] [ -l logs_path] [-t n] [-f]
