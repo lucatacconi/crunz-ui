@@ -58,7 +58,7 @@ function runTask() {
     p_forced_execution=$2
     p_tasks_path=$3
     p_logs_path=$4
-    p_php_executable=$4
+    p_php_executable=$5
 
     file_uuid="."$(echo {A..Z} {a..z} {0..9} {0..9} | tr ' ' "\n" | shuf | xargs | tr -d ' ' | cut -b 1-32)
     file_seed=$(echo {A..Z} {a..z} {0..9} {0..9} | tr ' ' "\n" | shuf | xargs | tr -d ' ' | cut -b 1-4)
