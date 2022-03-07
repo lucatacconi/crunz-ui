@@ -26,8 +26,8 @@
 
                 <tree-view v-on:select-folder="formData.path=$event"></tree-view>
 
-                <v-layout row wrap class="pt-2 pb-2">
-                    <v-flex xs10 class="pl-3">
+                <v-layout row wrap class="pt-4 pb-4">
+                    <v-flex xs4 class="pl-3">
                         <v-text-field
                             hide-details
                             v-model="formData.task_name"
