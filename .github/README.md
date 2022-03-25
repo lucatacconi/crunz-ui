@@ -15,6 +15,7 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 <details>
  <summary><strong>Table of Contents</strong> (click to expand)</summary>
 
+- [Lazy Developer Shortcuts](#lazy-developer-shortcut)
 - [What Crunz is and how Crunz-ui connects to it](#what-crunz-is-and-how-crunz-ui-connects-to-it)
 - [What else can Crunz-ui do](#what-else-can-crunz-ui-do)
 - [Browser Support](#browser-support)
@@ -32,9 +33,15 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 - [FAQ / Troubleshooting](FAQ.md)
 </details>
 
+## Lazy Developer Shortcuts
+I'm a black belt in lazy developing so I understand you; You are in the right section! If you want to skip the information about crunz and crunz-ui and go straight to the installation instructions use the links below.
+
+[Docker](DOCKER.md) [Ubuntu/Debian setup example](UBUNTU_EXPL.md)
+
+
 
 ## What Crunz is and how Crunz-ui connects to it
- application that allows users to schedule tasks natively written in PHP, programming date and time of start, interval and conditions of execution and init.
+Crunz is an application that allows users to schedule tasks natively written in PHP, programming date and time of start, interval and conditions of execution and init.
 
 You can find details about Crunz and how to write and schedule tasks to the following address: https://github.com/lavary/crunz
 
