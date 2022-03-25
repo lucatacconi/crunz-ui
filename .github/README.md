@@ -10,7 +10,7 @@
 <br />
 <br />
 
-Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and is proposed as its natural graphical interface, optimal to make its usage more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees to the project its elastic and dynamic structure.
+Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and it's proposed to be its natural graphical interface, optimal to make its usage more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees to the project its elastic and dynamic structure.
 
 <details>
  <summary><strong>Table of Contents</strong> (click to expand)</summary>
@@ -34,11 +34,11 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 
 
 ## What Crunz is and how Crunz-ui connects to it
+ application that allows users to schedule tasks natively written in PHP, programming date and time of start, interval and conditions of execution and init.
 
-Crunz is an application that allows users to schedule tasks natively written in PHP, programming dates and time of start, intervals and conditions of execution and init.
+You can find details about Crunz and how to write and schedule tasks to the following address: https://github.com/lavary/crunz
 
-You can find details on Crunz and how to write tasks to the following address: https://github.com/lavary/crunz
-
+Crunz task example:
 ```php
 <?php
 // tasks/backupTasks.php

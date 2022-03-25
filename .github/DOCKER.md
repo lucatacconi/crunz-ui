@@ -22,18 +22,17 @@ docker -v
 
 Copy the Dockerfile and the files needed to configure Crunz-ui into the working directory
 
-- [Dockerfile](DockerConfigs/Dockerfile) - Docker container configuration file
-- [Crun-ui.conf](DockerConfigs/crunz-ui.conf) - Apache configuration for the directory where Crunz-ui will be installed
-- [Crunz.yml](DockerConfigs/crunz.yml) - Crunz configuration
+- [Dockerfile](dockerConf/Dockerfile) - Docker container configuration file
+- [Crunz.yml](dockerConf/crunz.yml) - Crunz configuration
 
 
 
-sudo docker build -t crunz-ui .
+sudo docker build -t crunz-ui --build-arg TIMEZONE=Europe/Rome .
 
 sudo docker run -dp 80:80 --name crunz-ui-app crunz-ui
 
 
-
+docker exec -it <container> bash
 
 
 
