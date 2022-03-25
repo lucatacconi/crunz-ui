@@ -6,7 +6,7 @@ I'm a black belt in lazy development so I understand you; you are in the right s
 
 ## Ready to use Docker container
 
-![docker](https://user-images.githubusercontent.com/9921890/160175881-1ca43a96-740a-494d-bc8a-676b073e3906.png)
+![docker](https://user-images.githubusercontent.com/9921890/160177107-15558348-d185-448d-8113-74fe700bd9f7.png)
 
 Instructions for installing Docker on a Linux machine and procedure for installing a Crunz-ui container using Dockerfile.
 
@@ -14,7 +14,7 @@ Instructions for installing Docker on a Linux machine and procedure for installi
 
 ## Crunz-ui in Apache/PHP Ubuntu server
 
-![apache](https://user-images.githubusercontent.com/9921890/160175877-ae13fbd5-1d72-4258-892e-61e2e939e400.png)
+![apache](https://user-images.githubusercontent.com/9921890/160177102-5ef7f54c-e10d-4e40-bde0-6303b9716b13.png)
 
 Instructions for setup a Apache/PHP Ubuntu server and installation and configuration of Crunz-ui
 
