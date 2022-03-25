@@ -36,8 +36,8 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 ## Lazy Developer Shortcuts
 I'm a black belt in lazy developing so I understand you; You are in the right section! If you want to skip the information about crunz and crunz-ui and go straight to the installation instructions use the links below.
 
-[Docker](DOCKER.md) [Ubuntu/Debian setup example](UBUNTU_EXPL.md)
-
+| Test | - [Docker](DOCKER.md)
+             - [Ubuntu/Debian setup example](UBUNTU_EXPL.md) |
 
 
 ## What Crunz is and how Crunz-ui connects to it
