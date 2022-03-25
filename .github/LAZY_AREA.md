@@ -10,12 +10,12 @@ I'm a black belt in lazy development so I understand you; you are in the right s
 
 Instructions for installing Docker on a Linux machine and procedure for installing a Crunz-ui container using Dockerfile.
 
-[Docker](DOCKER.md)
+[Crunz-ui Docker setup procedure](DOCKER.md)
 
 ## Crunz-ui in Apache/PHP Ubuntu server
 
 ![apache](https://user-images.githubusercontent.com/9921890/160177102-5ef7f54c-e10d-4e40-bde0-6303b9716b13.png)
 
-Instructions for setup a Apache/PHP Ubuntu server and installation and configuration of Crunz-ui
+Instructions for setup a Apache/PHP Ubuntu server and installing and configuring Crunz-ui
 
-[Ubuntu/Debian setup example](UBUNTU_EXPL.md) |
+[Ubuntu/Debian Crunz-ui setup example](UBUNTU_EXPL.md)
