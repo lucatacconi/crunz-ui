@@ -37,10 +37,7 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 
 ![Lazy Developer Shortcutsl](https://user-images.githubusercontent.com/9921890/160169471-292b008a-ce98-4c7a-9c5e-edf1ed11bd7e.png)
 
-Shortcuts to Docker and Apache/PHP server installation instructions.
-
-[Lazy Developer Shortcuts](LAZY_AREA.md)
-
+[Shortcuts to Docker and Apache/PHP server installation instructions](LAZY_AREA.md)
 
 ## What Crunz is and how Crunz-ui connects to it
 Crunz is an application that allows users to schedule tasks natively written in PHP, programming date and time of start, interval and conditions of execution and init.
