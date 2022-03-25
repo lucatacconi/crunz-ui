@@ -34,6 +34,9 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 </details>
 
 ## Lazy Developer Shortcuts
+
+Shortcuts to Docker and Apache/PHP server installation instructions.
+
 [Lazy Developer Shortcuts](LAZY_AREA.md)
 
 
