@@ -100,6 +100,15 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 ## Installation and application setup
 
+If it is not necessary to install Crunz-ui alongside an existing Crunz installation, the simplest way to install it is to configure it and do it through Docker.
+
+Inside the repository there are the Crunz configuration file and the Dockerfile for the preparation and configuration of the Doker container.
+
+- [Dockerfile](dockerConf/Dockerfile) - Docker container configuration file
+- [Crunz.yml](dockerConf/crunz.yml) - Crunz configuration
+
+
+
 It's recommended that you use [Composer](https://getcomposer.org/) to install Crunz-ui.
 
 Start from your **Apache Server**'s **Document Root** folder or start from a directory combined with one of the configured virtual hosts and type the following command:
