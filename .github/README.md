@@ -10,7 +10,7 @@
 <br />
 <br />
 
-Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and it's proposed to be its natural graphical interface, optimal to make its usage more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees to the project its elastic and dynamic structure.
+Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and it's proposed to be its natural graphical interface, developed to make its usage more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees the project its elastic and dynamic structure.
 
 <details>
  <summary><strong>Table of Contents</strong> (click to expand)</summary>
@@ -33,16 +33,18 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 - [FAQ / Troubleshooting](FAQ.md)
 </details>
 
-## Lazy Developer Shortcuts
+<!-- ## Lazy Developer Shortcuts
+
+If you want to skip information about Crunz and Crunz-ui and go straight to setup procedures use the link below.
 
 ![Lazy Developer Shortcutsl](https://user-images.githubusercontent.com/9921890/160169471-292b008a-ce98-4c7a-9c5e-edf1ed11bd7e.png)
 
-[Shortcuts to Docker and Apache/PHP server setup procedure](LAZY_AREA.md)
+[Shortcuts to Docker and Apache/PHP server setup procedure](LAZY_AREA.md) -->
 
 ## What Crunz is and how Crunz-ui connects to it
-Crunz is an application that allows users to schedule tasks natively written in PHP, programming date and time of start, interval and conditions of execution and init.
+Crunz is an application that allows users to schedule tasks natively written in PHP, programming date and time of start, interval and conditions of execution, and init.
 
-You can find details about Crunz and how to write and schedule tasks to the following address: https://github.com/lavary/crunz
+You can find details about Crunz and how to write and schedule tasks at the following address: https://github.com/lavary/crunz
 
 Crunz task example:
 ```php
@@ -65,11 +67,11 @@ Then presents tasks in a tabular or graphical display, showing them on a monthly
 ## What else can Crunz-ui do?
 
 In addition to displaying tasks in tabular or graphic format, Crunz-ui allows you to:
-* Load new tasks with an intuitive and simple file upload system
-* Download or view the content of the task via interface
+* Manage tasks through easy-to-use interfaces (Create, modify, archive, delete tasks)
+* Upload or download tasks with an intuitive and simple file manager system
 * Quick display of the execution result of the tasks that have been executed (Indicator icons easily show the result)
-* Display of the execution log of the tasks performed using the appropriate interface
-* Forced run of the task, even outside the scheduled time with eventual display of the log once the execution is completed
+* Search and display the outcome of task execution on a specific date or selected through various search parameters
+* Forced run of the task, even outside the scheduled time with an eventual display of the log once the execution is completed
 
 ## Browser Support
 
@@ -88,13 +90,13 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 ## Pre-installation safety warnings
 
-> :warning: **Crunz and Crunz-ui need the ability to set crontab to schedule the regular execution of task management process. Crontab entry owner must be carefully selected: using high permissions level user (ex root) could allow tasks to access sensitive files or perform malicious operations on the entire server file system.**
+> :warning: **Crunz and Crunz-ui need that the operator has the ability to setup crontab entry to schedule the regular execution of the task management process. Crontab entry owner must be carefully selected: using high permissions level user (ex root) could allow tasks to access sensitive files or perform malicious operations on the entire server file system.**
 
 > :warning: **It is very important to change as soon as possible the default password of the Crunz-ui admin user. Leaving the default password could allow malicious users to access the Crunz-ui task manager and load dangerous tasks with the capability to access sensitive files or perform malicious operations on the entire server file system**
 
-> :warning: **It is important that the system clock is correctly synchronized. In case of unsynchronized clock there could be misalignments in the execution of the tasks or in the management of the user sessions.**
+> :warning: **It is important that the system clock is correctly synchronized. In case of an unsynchronized clock there could be misalignments in the execution of the tasks or in the management of the user sessions.**
 
-> :warning: **For browser security configurations, Ccopy to clipboard buttons are available only if Crunz-ui is released in localhost or in an https domain**
+> :warning: **For browser security configurations, copy to clipboard buttons are available only if Crunz-ui is released in localhost or in an https domain**
 
 ## Installation and application setup
 
