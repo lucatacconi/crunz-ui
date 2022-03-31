@@ -98,6 +98,8 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 > :warning: **For browser security configurations, copy to clipboard buttons are available only if Crunz-ui is released in localhost or in an https domain**
 
+> :warning: **In countries with daylight saving time, there may be discrepancies in the task execution time on the day of the time change**
+
 ## Installation and application setup
 
 The two quickest ways to install Crunz-ui are with a Docker container or by installing via Composer
