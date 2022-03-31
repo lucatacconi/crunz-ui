@@ -147,8 +147,6 @@ http://LOCAL_IP/crunz-ui (Ex. http://192.168.1.127/crunz-ui)
 
 Please refer to [Ubuntu/Debian Docker setup example](DOCKER.md) for suggestion.
 
-<br />
-
 ### Composer setup
 
 ![Composer](https://user-images.githubusercontent.com/9921890/161096990-07c1a090-bfc7-4a2f-b2c6-824f92d6b9f5.png)
@@ -176,8 +174,6 @@ sudo ln -s /opt/lampp/bin/php /usr/bin/
 ```
 
 Using Crunz-ui on Xampp with PHP already present on the server in a separate installation from XAMPP, functions "Execute and wait log" present in the Tasks table section menu will fail with the following error: Unable to load dynamic library 'curl.so'. Check [FAQ](FAQ.md) to solve the problem.
-
-<br />
 
 ### Never used Crunz before
 
@@ -211,8 +207,6 @@ If you have configured a custom log folder, the crontab configuration must be ch
 
 Please refer to [Ubuntu/Debian setup example](UBUNTU_EXPL.md) for suggestion.
 
-<br />
-
 ### Usage on a previous installation of Crunz
 
 First of all you need to tell Crunz-ui the exact location where Crunz is installed.
@@ -244,8 +238,6 @@ If you have configured a custom log folder, the crontab configuration must be ch
 At this point it is necessary to configure all the users who must be able to access the application.
 Refer to [Accounts configuration](#Accounts-configuration) section to configure users. By default, in the basic configuration, the **admin** user is configured with the temporary password **password**.
 
-<br />
-
 ### Custom log directory configuration
 
 By default, the configured log folder is **./var/logs** inside Crunz / Crunz-ui folder. The folder must be accessible and writeable by the Apache user.
@@ -256,8 +248,6 @@ If you have configured a custom log folder, the crontab configuration must be ch
 ```
 * * * * * cd /[BASE_CRUNZ_PATH / BASE_CRUNZUI_PATH] && ./crunz-ui.sh -l [LOGS_PATH]
 ```
-
-<br />
 
 ### Accounts configuration
 
