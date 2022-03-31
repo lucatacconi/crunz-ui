@@ -84,7 +84,6 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 | Latest ✔ | Latest ✔ | Latest ✔  | Latest ✔  | Latest ✔  | **No** |
 
-<br />
 
 ## System Requirements
 
