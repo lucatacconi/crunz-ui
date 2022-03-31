@@ -22,6 +22,8 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 - [System Requirements](#system-requirements)
 - [Pre-installation safety warnings](#pre-installation-safety-warnings)
 - [Installation and application setup](#installation-and-application-setup)
+  - [Docker setup](#docker-setup)
+  - [Composer setup](#composer-setup)
   - [Never used Crunz before](#never-used-crunz-before)
   - [Usage on a previous installation of Crunz](#usage-on-a-previous-installation-of-crunz)
   - [Custom log directory configuration](#custom-log-directory-configuration)
@@ -98,7 +100,7 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 > :warning: **For browser security configurations, copy to clipboard buttons are available only if Crunz-ui is released in localhost or in an https domain**
 
-> :warning: **In countries with daylight saving time, there may be discrepancies in the task execution time on the day of the time change**
+> :warning: **In countries where is present daylight saving time switch, there may be discrepancies in the task execution time and task outcome display on the day of the time switch**
 
 ## Installation and application setup
 
@@ -143,17 +145,17 @@ Please refer to [Ubuntu/Debian Docker setup example](DOCKER.md) for suggestion.
 
 ![Composer](https://user-images.githubusercontent.com/9921890/161096990-07c1a090-bfc7-4a2f-b2c6-824f92d6b9f5.png)
 
-It's recommended that you use [Composer](https://getcomposer.org/) to install Crunz-ui.
+Otherwise It's recommended that you use [Composer](https://getcomposer.org/) to install Crunz-ui.
 
-Start from your **Apache Server**'s **Document Root** folder or start from a directory combined with one of the configured virtual hosts and type the following command:
+Starting from your **Apache Server**'s **Document Root** folder or from a directory configured in a virtual host, begin the application setup by Composer command:
 ```
 composer create-project lucatacconi/crunz-ui
 ```
 This will install Crunz-ui and all required dependencies.
 
-There is no need to set a long time in PHP max_execution_time property in your php.ini: Crunz performs tasks as if they were run from the console. When running PHP from the command line the default setting is 0 therefore without time limits
+There is no need to set a large max_execution_time property in your php.ini: Crunz performs tasks as if they were run from the console. When running PHP from the command line the default setting is 0 therefore without time limits.
 
-Cruz-ui can be installed in two ways: it can work using the Crunz embedded in the packages or using the tasks and configurations of Crunz previously installed on the user's system.
+Cruz-ui installed by Composer can work using the Crunz embedded in the packages or using the tasks and configurations of Crunz previously installed on the user's system.
 
 If you have never used Crunz before or want to use the Crunz integrated into the packages, refer to the section [Never used Crunz before](#Never-used-Crunz-before).
 If you want to use Cruz-ui on a version of Crunz previously installed on the user's systems, refer to the section [Usage on a previous installation of Crunz](#Usage-on-a-previous-installation-of-Crunz).
