@@ -104,7 +104,7 @@ The two quickest ways to install Crunz-ui are with a Docker container or by inst
 
 ### Docker setup
 
-![docker](https://user-images.githubusercontent.com/9921890/160177107-15558348-d185-448d-8113-74fe700bd9f7.png)
+![Docker](https://user-images.githubusercontent.com/9921890/160177107-15558348-d185-448d-8113-74fe700bd9f7.png)
 
 If it is not necessary to install Crunz-ui alongside an existing Crunz installation, the simplest way to install it is to configure and do the startup through Docker. The Crunz-ui Docker container is the quickest way to have a running and ready-to-use application.
 
@@ -139,6 +139,8 @@ Please refer to [Ubuntu/Debian Docker setup example](DOCKER.md) for suggestion.
 
 
 ### Composer setup
+
+![Composer](https://user-images.githubusercontent.com/9921890/161096990-07c1a090-bfc7-4a2f-b2c6-824f92d6b9f5.png)
 
 It's recommended that you use [Composer](https://getcomposer.org/) to install Crunz-ui.
 
