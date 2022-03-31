@@ -35,7 +35,7 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 - [FAQ / Troubleshooting](FAQ.md)
 </details>
 
-> :information_source: If you want to skip information about Crunz and Crunz-ui and go straight to setup procedures use the link below. [Shortcuts to Docker and Apache/PHP server setup procedure](LAZY_AREA.md)
+> :information_source: **If you want to skip information about Crunz and Crunz-ui and go straight to setup procedures use the link below. [Shortcuts to Docker and Apache/PHP server setup procedure](LAZY_AREA.md)**
 
 
 ## What Crunz is and how Crunz-ui connects to it
@@ -89,13 +89,13 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 > :warning: **Crunz and Crunz-ui need that the operator has the permissions to set up crontab entry to schedule the regular execution of the task management process. Crontab entry owner must be carefully selected: using high permissions level user (ex root) could allow tasks to access sensitive files or perform malicious operations on the entire server file system.**
 
-> :warning: **It is very important to change as soon as possible the default password of the Crunz-ui admin user. Leaving the default password could allow malicious users to access the Crunz-ui task manager and load dangerous tasks with the capability to access sensitive files or perform malicious operations on the entire server file system**
+> :warning: **It is very important to change as soon as possible the default password of the Crunz-ui admin user. Leaving the default password could allow malicious users to access the Crunz-ui task manager and load dangerous tasks with the capability to access sensitive files or perform malicious operations on the entire server file system.**
 
 > :warning: **It is important to keep system clock synchronized. In the case of an unsynchronized clock, there could be misalignments in the execution of the tasks or the management of the user sessions.**
 
-> :warning: **For browser security configurations, copy to clipboard buttons are available only if Crunz-ui is released in localhost or in an https domain**
+> :warning: **For browser security configurations, copy to clipboard buttons are available only if Crunz-ui is released in localhost or in an https domain.**
 
-> :warning: **In countries where is present daylight saving time switch, there may be discrepancies in the task execution time and task outcome display on the day of the time switch**
+> :warning: **In countries where is present daylight saving time switch, there may be discrepancies in the task execution time and task outcome display on the day of the time switch.**
 
 ## Installation and application setup
 
