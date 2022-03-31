@@ -35,13 +35,7 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 - [FAQ / Troubleshooting](FAQ.md)
 </details>
 
-> :information_source: If you want to skip information about Crunz and Crunz-ui and go straight to setup procedures use the link below.
-<br />
-
-[Shortcuts to Docker and Apache/PHP server setup procedure](LAZY_AREA.md)
-<br />
-
-![Lazy Developer Shortcutsl](https://user-images.githubusercontent.com/9921890/160169471-292b008a-ce98-4c7a-9c5e-edf1ed11bd7e.png)
+> :information_source: If you want to skip information about Crunz and Crunz-ui and go straight to setup procedures use the link below. [Shortcuts to Docker and Apache/PHP server setup procedure](LAZY_AREA.md)
 
 
 ## What Crunz is and how Crunz-ui connects to it
