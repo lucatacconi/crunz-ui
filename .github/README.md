@@ -12,6 +12,9 @@
 
 Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and it's proposed to be its natural graphical interface, developed to make its usage more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees the project its elastic and dynamic structure.
 
+<br />
+<br />
+
 <details>
  <summary><strong>Table of Contents</strong> (click to expand)</summary>
 
@@ -35,10 +38,11 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 - [Lazy Developer Shortcuts](LAZY_AREA.md)
 </details>
 
+<br />
+<br />
 
 > :warning: **If you want to skip information about Crunz and Crunz-ui and go straight to setup procedures use the link below. [Shortcuts to Docker and Composer setup procedure](LAZY_AREA.md)**
 
-<br />
 <br />
 <br />
 
