@@ -90,26 +90,50 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 ## Pre-installation safety warnings
 
-> :warning: **Crunz and Crunz-ui need that the operator has the ability to setup crontab entry to schedule the regular execution of the task management process. Crontab entry owner must be carefully selected: using high permissions level user (ex root) could allow tasks to access sensitive files or perform malicious operations on the entire server file system.**
+> :warning: **Crunz and Crunz-ui need that the operator has the ability to set up crontab entry to schedule the regular execution of the task management process. Crontab entry owner must be carefully selected: using high permissions level user (ex root) could allow tasks to access sensitive files or perform malicious operations on the entire server file system.**
 
 > :warning: **It is very important to change as soon as possible the default password of the Crunz-ui admin user. Leaving the default password could allow malicious users to access the Crunz-ui task manager and load dangerous tasks with the capability to access sensitive files or perform malicious operations on the entire server file system**
 
-> :warning: **It is important that the system clock is correctly synchronized. In case of an unsynchronized clock there could be misalignments in the execution of the tasks or in the management of the user sessions.**
+> :warning: **It is important to keep system clock synchronized. In the case of an unsynchronized clock there could be misalignments in the execution of the tasks or the management of the user sessions.**
 
 > :warning: **For browser security configurations, copy to clipboard buttons are available only if Crunz-ui is released in localhost or in an https domain**
 
 ## Installation and application setup
 
-The two quickest ways to install crunz-ui are with a Docker container or by installing via Composer
+The two quickest ways to install Crunz-ui are with a Docker container or by installing via Composer
 
 ### Docker setup
 
 If it is not necessary to install Crunz-ui alongside an existing Crunz installation, the simplest way to install it is to configure and do the startup through Docker. The Crunz-ui Docker container is the quickest way to have a running and ready-to-use application.
 
-Inside the repository there are the Crunz configuration file and the Dockerfile for the preparation and configuration of the Doker container.
+Inside the repository, there are the Crunz configuration file and the Dockerfile for the preparation and configuration of the Doker container.
 
 - [Dockerfile](dockerConf/Dockerfile) - Docker container configuration file
 - [Crunz.yml](dockerConf/crunz.yml) - Crunz configuration
+
+First of all, download both files to the server.
+
+Manually edit the Crunz configuration present in the Crunz.yml file. Inside the files there are indications and suggestions on the individual configuration parameters. Please refer to https://github.com/lavary/crunz for more details on the configuration.
+
+
+Initialize the Crunz-iu Docker container. Enter the correct timezone in the command line (ex. TIMEZONE=Europe/Rome)
+```
+sudo docker build -t crunz-ui --build-arg TIMEZONE=Europe/Rome .
+```
+
+Starts the docker container indicating the port through which to access the web interface (ex. 80)
+
+```
+sudo docker run -dp 80:80 --name crunz-ui-app crunz-ui
+```
+
+Access the application via browser (Refer to [First login](#first-login) section for connection details)
+```
+http://192.168.1.127/crunz-ui
+```
+
+
+Please refer to [Ubuntu/Debian Docker setup example](DOCKER.md) for suggestion.
 
 
 ### Composer setup
