@@ -65,6 +65,7 @@ return $schedule;
 Crunz-ui natively uses Crunz libraries and functions to read and interpret the configured tasks.
 Then presents tasks in a tabular or graphical display, showing them on a monthly or daily view.
 
+<br />
 
 ## What else can Crunz-ui do?
 
@@ -75,12 +76,15 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 * Search and display the outcome of task execution on a specific date or selected through various search parameters
 * Forced run of the task, even outside the scheduled time with an eventual display of the log once the execution is completed
 
+<br />
+
 ## Browser Support
 
 | ![Chrome](https://github.com/alrra/browser-logos/blob/main/src/chrome/chrome_48x48.png) | ![Firefox](https://github.com/alrra/browser-logos/blob/main/src/firefox/firefox_48x48.png) | ![Safari](https://github.com/alrra/browser-logos/blob/main/src/safari/safari_48x48.png) | ![Opera](https://github.com/alrra/browser-logos/blob/main/src/opera/opera_48x48.png) | ![Edge](https://github.com/alrra/browser-logos/blob/main/src/edge/edge_48x48.png) | ![IE](https://github.com/alrra/browser-logos/blob/main/src/archive/internet-explorer-tile_10-11/internet-explorer-tile_10-11_48x48.png) |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 | Latest ✔ | Latest ✔ | Latest ✔  | Latest ✔  | Latest ✔  | **No** |
 
+<br />
 
 ## System Requirements
 
@@ -89,6 +93,8 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 * Apache and PHP 7.4 or newer, with rewrite.load module enabled
 * Composer
 * Sudo capabilities
+
+<br />
 
 ## Pre-installation safety warnings
 
@@ -101,6 +107,8 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 > :warning: **For browser security configurations, copy to clipboard buttons are available only if Crunz-ui is released in localhost or in an https domain.**
 
 > :warning: **In countries where is present daylight saving time switch, there may be discrepancies in the task execution time and task outcome display on the day of the time switch.**
+
+<br />
 
 ## Installation and application setup
 
@@ -280,6 +288,7 @@ The accounts.json configuration file has the following format:
 Among the various information listed, the type of user is also induced, information that is then used to filter the menu items enabled for the user.
 For simplicity's choice the access configurations have been inserted in a file. However, nothing prevents the implementation of user management based on database reading.
 
+<br />
 
 ## First login
 
@@ -287,28 +296,33 @@ The application is preconfigured with a single access user to verify the login p
 
 To test access use the login **admin** and password **password**
 
+<br />
 
 ## Contributing
 
 This project is maintained by a group of awesome contributors. Contributions are extremely welcome :heart:.
 Please see [Contributing informations](CONTRIBUTING.md) for details.
 
+<br />
 
 ## Roadmap
 
 Please see [Roadmap](ROADMAP.md) for details.
 
+<br />
 
 ## FAQ and Troubleshooting
 
 For help, FAQ or troubleshooting please refer to [FAQ and Troubleshooting](FAQ.md).
 
+<br />
 
 ## Credits
 
 * [Luca Tacconi](https://github.com/lucatacconi)
 * [Emanuele Marchesotti](https://github.com/flagellarmirror)
 
+<br />
 
 ## License
 
