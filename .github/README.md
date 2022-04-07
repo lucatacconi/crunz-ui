@@ -39,7 +39,7 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 
 <br />
 
-> :information_source: **Use the link below if you want to skip information about Crunz and Crunz-ui and go straight to setup procedures.
+> :information_source: **Use the link below if you want to skip information about Crunz and Crunz-ui and go straight to setup procedures:
 <br /> [Shortcuts to Docker and Composer setup procedure](LAZY_AREA.md)**
 
 <br />
@@ -63,17 +63,17 @@ $task->daily();
 return $schedule;
 ```
 
-Crunz-ui natively uses Crunz libraries and functions to read and interpret the configured tasks.
-Then presents tasks in a tabular or graphical display, showing them on a monthly or daily view.
+Crunz-ui natively uses Crunz libraries and functions to read and interpret the configured tasks;
+then presents tasks in a tabular or graphical display, showing them on a monthly or daily view.
 
 <br />
 
 ## What else can Crunz-ui do?
 
 In addition to displaying tasks in tabular or graphic format, Crunz-ui allows you to:
-* Manage tasks through easy-to-use interfaces (Create, modify, archive, delete tasks)
+* Manage tasks through easy-to-use interfaces (create, modify, archive, delete tasks)
 * Upload or download tasks with an intuitive and simple file manager system
-* Quick display of the execution result of the tasks that have been executed (Indicator icons easily show the result)
+* Quick display of results of the tasks that have been executed (The indicator icons easily show whether the task was performed with errors or successfully)
 * Search and display the outcome of task execution on a specific date or selected through various search parameters
 * Forced run of the task, even outside the scheduled time with an eventual display of the log once the execution is completed
 
