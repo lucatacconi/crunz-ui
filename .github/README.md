@@ -39,7 +39,8 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 
 <br />
 
-> :warning: **Use the link below if you want to skip information about Crunz and Crunz-ui and go straight to setup procedures. [Shortcuts to Docker and Composer setup procedure](LAZY_AREA.md)**
+> :info: **Use the link below if you want to skip information about Crunz and Crunz-ui and go straight to setup procedures.
+<br /> [Shortcuts to Docker and Composer setup procedure](LAZY_AREA.md)**
 
 <br />
 
