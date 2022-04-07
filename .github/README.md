@@ -162,8 +162,8 @@ This will install Crunz-ui and all required dependencies.
 
 Cruz-ui installed by Composer can work using the Crunz embedded in the packages or using the tasks and configurations of Crunz previously installed on the user's system.
 
-If you have never used Crunz before or want to use the Crunz integrated into the packages, refer to the section [Never used Crunz before](#Never-used-Crunz-before).
-If you want to use Cruz-ui on a version of Crunz previously installed on the user's systems, refer to the section [Usage on a previous installation of Crunz](#Usage-on-a-previous-installation-of-Crunz).
+If you have never used Crunz before or want to use the Crunz integrated into the packages, refer to the [Never used Crunz before](#Never-used-Crunz-before) section.
+If you want to use Cruz-ui on a version of Crunz previously installed on the user's systems, refer to the [Usage on a previous installation of Crunz](#Usage-on-a-previous-installation-of-Crunz) section.
 
 > :information_source: By default Crunz checks the correctness of the php code before considering the task file. In case of servers with less computing power, checking the syntax of the tasks considerably slows down the display of tables and statistics. You can set the .env parameter CHECK_PHP_TASKS_SYNTAX to false to inhibit syntax checking. In case of syntax errors in the tasks, configuring parameter CHECK_PHP_TASKS_SYNTAX to false could cause anomalous behavior in the Crunz-ui interfaces
 
@@ -176,11 +176,11 @@ Using Crunz-ui on Xampp with PHP already present on the server in a separate ins
 
 ### Never used Crunz before
 
-Cruz-ui has Crunz packages in its libraries. Once configured, it can then start viewing, managing and executing tasks.
+Cruz-ui has Crunz packages embedded in its libraries. Once configured, the application can then start viewing, managing and executing tasks.
 
-To work in this mode, once Crunz-ui is installed, proceed as follows:
+To configure the application in this way, once Crunz-ui is installed, proceed as follows:
 
-By accessing the project folder, we can use the specific function of Crunz to generate the basic configuration file of Crunz itself:
+By accessing the project folder, you can use the specific function of Crunz to generate the basic configuration file of Crunz itself:
 ```
 ./vendor/bin/crunz publish:config
 ```
