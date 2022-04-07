@@ -158,7 +158,7 @@ composer create-project lucatacconi/crunz-ui
 ```
 This will install Crunz-ui and all required dependencies.
 
-There is no need to set a large max_execution_time property in your php.ini: Crunz performs tasks as if they were run from the console. When running PHP from the command line the default setting is 0 therefore without time limits.
+> :information_source: There is no need to set a large max_execution_time property in your php.ini: Crunz performs tasks as if they were run from the console. When running PHP from the command line the default setting is 0 therefore without time limits.
 
 Cruz-ui installed by Composer can work using the Crunz embedded in the packages or using the tasks and configurations of Crunz previously installed on the user's system.
 
