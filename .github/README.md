@@ -120,12 +120,10 @@ The two quickest ways to install Crunz-ui are with a **Docker** container or by 
 
 If it is not necessary to install Crunz-ui alongside an existing Crunz installation, the simplest way to install it is to configure the software and do its startup through Docker. The Crunz-ui Docker container is the quickest way to have a running and ready-to-use application.
 
-Inside the repository, there are Crunz configuration file and Dockerfile for the preparation and configuration of the Doker container.
+First of all, download both files to Github server.
 
 - [Dockerfile](dockerConf/Dockerfile) - Docker container configuration file
 - [Crunz.yml](dockerConf/crunz.yml) - Crunz configuration file
-
-First of all, download both files to the server.
 
 Manually edit Crunz configurations present in the Crunz.yml file. Inside the file, there are suggestions about the individual configuration parameters. Please refer to [Lavary/Crunz](https://github.com/lavary/crunz) for more details on the configuration.
 
@@ -154,7 +152,7 @@ Please refer to [Ubuntu/Debian Docker setup example](DOCKER.md) for suggestion.
 
 Otherwise It's recommended that you use [Composer](https://getcomposer.org/) to install Crunz-ui.
 
-Starting from your **Apache Server**'s **Document Root** folder or from a directory configured in a virtual host, begin the application setup by Composer command:
+Starting from your **Apache Server**'s **Document Root** folder or from a directory served by a virtual host, begin the application setup by Composer command:
 ```
 composer create-project lucatacconi/crunz-ui
 ```
