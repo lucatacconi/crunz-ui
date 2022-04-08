@@ -107,4 +107,4 @@ Use the ip address retrived in your browser (The initial password for the **admi
 http://IP_ADDRESS_RETRIVED/crunz-ui
 ```
 
-That's all. Have a good time
+That's all. Have a good time :blush:
