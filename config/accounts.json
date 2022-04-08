@@ -4,7 +4,7 @@
         "name":"Admin User",
         "userType":"admin",
         "email":"admin@nomail.com",
-        "password":"crunzui_admin",
+        "password":"password",
         "active":"Y",
         "expireDate":"2040-10-10",
         "customSessionDuration":""

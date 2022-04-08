@@ -101,7 +101,7 @@ Identify the IP address of the server and use it to access the application.
 ifconfig
 ```
 
-Use the ip address retrived in your browser (The initial password for the admin user is crunzui_admin):
+Use the ip address retrived in your browser (The initial password for the **admin** user is **password** ):
 
 ```
 http://IP_ADDRESS_RETRIVED/crunz-ui

@@ -260,7 +260,7 @@ The accounts.json configuration file has the following format:
         "name":"Admin User",
         "userType":"admin",
         "email":"admin@nomail.com",
-        "password":"crunzui_admin",
+        "password":"password",
         "active":"Y",
         "expireDate":"2020-10-10",
         "customSessionDuration":""
@@ -288,7 +288,7 @@ For simplicity's choice the access configurations have been inserted in a file. 
 
 The application is preconfigured with a single access user to verify the login procedure and access the dashboard and the main menu.
 
-To test access use the login **admin** and password **crunzui_admin**
+To test access use the login **admin** and password **password**
 
 <br />
 
