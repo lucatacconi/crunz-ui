@@ -147,5 +147,5 @@ In countries where is present daylight saving time switch, there may be discrepa
 
 The problem is only related to the graphical display of the execution status of the tasks and to the recognition of the logs of the executed files. The effect will be to see the tasks performed before the time change as manually launched tasks.
 
-If there are no accuracy problems in the task execution time, a solution could be to disable the ntp server at the beginning of the day and re-enable it at 23:59-
+If there are no accuracy problems in the task execution time, a solution could be to disable the ntp server at the beginning of the day and re-enable it at 23:59.
 
