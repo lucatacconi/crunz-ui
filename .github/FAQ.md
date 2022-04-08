@@ -11,6 +11,7 @@ Below are a number of useful tips for configuring the system and for solving com
 - [I already have Crunz installed on my server. How do I configure Crunz-ui?](#i-already-have-crunz-installed-on-my-server-how-do-i-configure-crunz-ui)
 - [I don't know the password to access the system](#i-dont-know-the-password-to-access-the-system)
 - [After successful login the system returns to the login page](#after-successful-login-the-system-returns-to-the-login-page)
+- [Time discrepancies in execution task during daylight saving time switch](#time-discrepancies-in-execution-task-during-daylight-saving-time-switch)
 
 
 ## In the initial check on the dashboard I am reported configuration errors
@@ -138,3 +139,13 @@ timedatectl
 ```
 
 Replace TIMEZONE with the desired time zone. Refer to [Timezone Database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) for values.
+
+
+## Time discrepancies in execution task during daylight saving time switch
+
+In countries where is present daylight saving time switch, there may be discrepancies in the task execution time and task outcome display on the day of the time switch.
+
+The problem is only related to the graphical display of the execution status of the tasks and to the recognition of the logs of the executed files. The effect will be to see the tasks performed before the time change as manually launched tasks.
+
+If there are no accuracy problems in the task execution time, a solution could be to disable the ntp server at the beginning of the day and re-enable it at 23:59-
+
