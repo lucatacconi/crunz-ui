@@ -144,7 +144,7 @@ Access the application via browser (Refer to [First login](#first-login) section
 http://LOCAL_IP/crunz-ui (Ex. http://192.168.1.127/crunz-ui)
 ```
 
-Please refer to [Ubuntu/Debian Docker setup example](DOCKER.md) for suggestion.
+Please refer to [Ubuntu/Debian Docker setup example](DOCKER_EXPL.md) for suggestion.
 
 ### Composer setup
 

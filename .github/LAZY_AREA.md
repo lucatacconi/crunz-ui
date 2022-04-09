@@ -10,7 +10,7 @@ I'm a black belt in lazy development so I understand you; you are in the right s
 
 Instructions for installing Docker on a Linux machine and procedure for installing a Crunz-ui container using Dockerfile.
 
-[Crunz-ui Docker setup procedure example](DOCKER.md)
+[Crunz-ui Docker setup procedure example](DOCKER_EXPL.md)
 
 ## Crunz-ui in Apache/PHP Ubuntu server
 
