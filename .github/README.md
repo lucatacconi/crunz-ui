@@ -123,7 +123,7 @@ If it is not necessary to install Crunz-ui alongside an existing Crunz installat
 First of all, download both files to Github server.
 
 - [Dockerfile](dockerConf/Dockerfile) - Docker container configuration file
-- [Crunz.yml](dockerConf/crunz.yml) - Crunz configuration file
+- [Crunz.yml](dockerConf/crunz.yml) - Crunz standard configuration file
 
 Manually edit Crunz configurations present in the Crunz.yml file. Inside the file, there are suggestions about the individual configuration parameters. Please refer to [Lavary/Crunz](https://github.com/lavary/crunz) for more details on the configuration.
 
@@ -133,7 +133,7 @@ Initialize Crunz-iu Docker container. Be careful to select the correct timezone 
 sudo docker build -t crunz-ui --build-arg TIMEZONE=Europe/Rome:
 ```
 
-Start Crunz-iu Docker container indicating the port through which to access the web interface (ex. 80):
+Start Crunz-iu Docker container indicating the port through which to access the web interface (ex. DEST_PORT:ORIG_PORT 80:80 ):
 
 ```
 sudo docker run -dp 80:80 --name crunz-ui-app crunz-ui
