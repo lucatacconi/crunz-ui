@@ -84,4 +84,3 @@ sudo docker start crunz-ui-app
 ```
 
 That's all. Have a good time :blush:
-s
