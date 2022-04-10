@@ -13,6 +13,7 @@ RUN apt-get update
 #
 RUN apt-get install -y ntp
 ARG TIMEZONE=Europe/Rome
+RUN echo "TIMEZONE selected: $TIMEZONE"
 RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime && echo $TIMEZONE > /etc/timezone
 
 RUN service ntp restart
@@ -33,7 +34,8 @@ RUN php -r "unlink('composer-setup.php');"
 
 #PHP.ini timezone configuration
 RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
-RUN sed -ie 's/\;date\.timezone\ =/date\.timezone\ =\ '$TIMEZONE'/g' /usr/local/etc/php/php.ini
+ARG TIMEZONE=Europe/Rome
+RUN sed -i -r "s|;date.timezone =|date.timezone = ${TIMEZONE}|g" /usr/local/etc/php/php.ini
 
 
 RUN cd /var/www/html/
