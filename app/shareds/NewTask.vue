@@ -114,8 +114,7 @@ return $schedule;`
             }
             var suffix=this.formData.task_name.slice((this.formData.task_name.length -  this.suffix.length), this.formData.task_name.length)
             if(suffix.toLowerCase()==this.suffix.toLowerCase()){
-                Utils.showAlertDialog('ERROR',"Task file name must not end with "+this.suffix,'error');
-                return
+                this.formData.task_name = this.formData.task_name.slice(0, (this.formData.task_name.length -  this.suffix.length));
             }
             var regex = /[^a-zA-Z0-9_-]/g
             if(regex.test(this.formData.task_name)){
