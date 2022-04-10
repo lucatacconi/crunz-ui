@@ -29,6 +29,10 @@ Copy the Dockerfile and the files needed to configure Crunz-ui into the working 
 wget https://raw.githubusercontent.com/lucatacconi/crunz-ui/master/.github/dockerConf/Dockerfile
 wget https://raw.githubusercontent.com/lucatacconi/crunz-ui/master/.github/dockerConf/crunz.yml
 
+##If you want to build the development branch:
+wget https://raw.githubusercontent.com/lucatacconi/crunz-ui/devel/.github/dockerConf/Dockerfile
+wget https://raw.githubusercontent.com/lucatacconi/crunz-ui/devel/.github/dockerConf/crunz.yml
+
 ```
 
 Construction of the docker container. Replace the example timezone with the correct one.
@@ -36,7 +40,7 @@ Construction of the docker container. Replace the example timezone with the corr
 ```
 sudo docker build -t crunz-ui --build-arg TIMEZONE=Europe/Rome .
 
-#If you want to build the development version
+#If you want to build the development branch:
 sudo docker build -t crunz-ui --build-arg TIMEZONE=Europe/Rome --build-arg VERSION=":dev-devel" .
 
 ```
