@@ -31,6 +31,11 @@ RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 RUN php -r "unlink('composer-setup.php');"
 
 
+#PHP.ini timezone configuration
+RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+RUN sed -ie 's/\;date\.timezone\ =/date\.timezone\ =\ '$TIMEZONE'/g' /usr/local/etc/php/php.ini
+
+
 RUN cd /var/www/html/
 ARG VERSION=""
 RUN composer create-project lucatacconi/crunz-ui$VERSION
