@@ -7,10 +7,9 @@
 
 ## Release history
 
-### v.2.7.5 (2022-04-28)
+### v.2.7.5 (2022-04-22)
 
 Crunz-ui updated stable release:
-* Removed all non-open icons migrated to material design
 * Implementation of [Lavary/Crunz](https://github.com/lavary/crunz) v3.2.1 in Crunz-ui
 * Light and dark theme switch
 * Zoom control to have a better view of the tasks in  Daily calendar section
@@ -21,7 +20,7 @@ Crunz-ui updated stable release:
 * Removed Swift mailer using Simphony mailer instead for [Lavary/Crunz](https://github.com/lavary/crunz) consistency
 * Improvements in interface ergonomics
 * System icons uniformed to material design icon
-* Bugfix and code cleanup
+* Several improvements, bug fixes and and code cleanup throughout the application
 
 ![Advanced search tool](https://user-images.githubusercontent.com/9921890/154231756-d85229e6-5de5-44c6-893f-fdc8c6ecefe7.png)
 
