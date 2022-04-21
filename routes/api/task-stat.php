@@ -53,6 +53,10 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
             }
         }
 
+        $show_not_executed = "N";
+        if(!empty($params["SHOW_NOT_EXECUTED"])){
+            $show_not_executed = $params["SHOW_NOT_EXECUTED"];
+        }
 
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
@@ -115,7 +119,14 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
         while($data_calc <= substr($interval_to, 0, 10)){
             if(empty($aSTATs[$data_calc])){
-                $aSTATs[$data_calc] = array( "planned" => 0, "executed" => 0, "error" => 0, "succesfull" => 0, "executed_not_planned" => 0, "succesfull_not_planned" => 0, "error_not_planned" => 0);
+                $aSTATs[$data_calc] = array( "planned" => 0, "planned_hft" => 0, "planned_std" => 0,
+                                             "executed" => 0, "executed_hft" => 0, "executed_std" => 0,
+                                             "error" => 0, "error_hft" => 0, "error_std" => 0,
+                                             "succesfull" => 0, "executed_not_planned" => 0, "succesfull_not_planned" => 0, "error_not_planned" => 0);
+
+                if($show_not_executed == "Y"){
+                    $aSTATs[$data_calc]["not_executed"] = [];
+                }
             }
 
             $data_calc = date('Y-m-d', strtotime("$data_calc + 1 days"));
@@ -341,17 +352,26 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                             $calc_run_short = substr($calc_run_ref, 0, 10);
 
                             $aSTATs[$calc_run_short]["planned"]++;
+                            $aSTATs[$calc_run_short]["planned_hft"]++;
 
                             if(array_key_exists($calc_run_ref, $aLOGNAME)){
                                 $aSTATs[$calc_run_short]["executed"]++;
+                                $aSTATs[$calc_run_short]["executed_hft"]++;
 
                                 if($aLOGNAME[$calc_run_ref] == 'OK'){
                                     $aSTATs[$calc_run_short]["succesfull"]++;
+                                    $aSTATs[$calc_run_short]["succesfull_hft"]++;
                                 }else{
                                     $aSTATs[$calc_run_short]["error"]++;
+                                    $aSTATs[$calc_run_short]["error_hft"]++;
                                 }
 
                                 unset($aLOGNAME[$calc_run_ref]);
+
+                            }else{
+                                if($show_not_executed == "Y"){
+                                    $aSTATs[$data_calc]["not_executed"][] = $calc_run_ref." - ".$event_unique_key;
+                                }
                             }
                         }
 
@@ -371,17 +391,26 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                         $calc_run_short = substr($calc_run, 0, 10);
 
                         $aSTATs[$calc_run_short]["planned"]++;
+                        $aSTATs[$calc_run_short]["planned_std"]++;
 
                         if(array_key_exists($calc_run, $aLOGNAME)){
                             $aSTATs[$calc_run_short]["executed"]++;
+                            $aSTATs[$calc_run_short]["executed_std"]++;
 
                             if($aLOGNAME[$calc_run] == 'OK'){
                                 $aSTATs[$calc_run_short]["succesfull"]++;
+                                $aSTATs[$calc_run_short]["succesfull_std"]++;
                             }else{
                                 $aSTATs[$calc_run_short]["error"]++;
+                                $aSTATs[$calc_run_short]["error_std"]++;
                             }
 
                             unset($aLOGNAME[$calc_run]);
+
+                        }else{
+                            if($show_not_executed == "Y"){
+                                $aSTATs[$data_calc]["not_executed"][] = $calc_run." - ".$event_unique_key;
+                            }
                         }
                     }
                 }
