@@ -1,0 +1,6 @@
+# prevent listing of directory contents
+Options -Indexes
+
+#Set master permission
+Order Allow,Deny
+Deny from all
