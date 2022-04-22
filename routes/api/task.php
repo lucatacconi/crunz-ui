@@ -218,11 +218,13 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 continue;
             }
 
-            if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
-                $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
-                if(strpos($file_check_result, 'No syntax errors detected in') === false){
-                    //Syntax error in file
-                    continue;
+            if(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec')){
+                if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
+                    $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
+                    if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                        //Syntax error in file
+                        continue;
+                    }
                 }
             }
 
@@ -1868,11 +1870,13 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 continue;
             }
 
-            if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
-                $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
-                if(strpos($file_check_result, 'No syntax errors detected in') === false){
-                    //Syntax error in file
-                    continue;
+            if(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec')){
+                if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
+                    $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
+                    if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                        //Syntax error in file
+                        continue;
+                    }
                 }
             }
 
