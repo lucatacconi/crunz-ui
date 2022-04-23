@@ -1,6 +1,6 @@
 # Crunz-ui Docker install example
 
-Here is the procedure for activating Crunz-ui with the use of Crunz embedded in a new **php:7.4-apache** Docker container.
+Here is the procedure to activate Crunz-ui, with Crunz embedded, in a new Docker container **php: 7.4-apache** installed on an Ubuntu system.
 
 Update of system packages and installation of net-tools to have tools like ifconfig and others available:
 

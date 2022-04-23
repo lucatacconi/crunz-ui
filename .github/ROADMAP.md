@@ -7,9 +7,11 @@
 
 ## Release history
 
-### v.2.7.5 (2022-04-22)
+### v.2.7.5 (2022-04-23)
 
 Crunz-ui updated stable release:
+* **Docker version**
+* Docker help e traccia per l'installazione
 * Implementation of [Lavary/Crunz](https://github.com/lavary/crunz) v3.2.1 in Crunz-ui
 * Light and dark theme switch
 * Zoom control to have a better view of the tasks in  Daily calendar section
