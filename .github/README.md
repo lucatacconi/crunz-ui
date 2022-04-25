@@ -86,7 +86,7 @@ It is possible to test the application in the demo area. All functions are activ
 
 It is possible to access the demo area from the following link:
 
-[Demo area](https://www.monolite.net/crunz-ui/public/index.php)
+**[Demo area](https://www.monolite.net/crunz-ui/public/index.php)**
 
 <br />
 
@@ -133,8 +133,8 @@ If it is not necessary to install Crunz-ui alongside an existing Crunz installat
 
 First of all, download both files to Github server.
 
-- [Dockerfile](dockerConf/Dockerfile) - Docker container configuration file
-- [Crunz.yml](dockerConf/crunz.yml) - Crunz standard configuration file
+- **[Dockerfile](dockerConf/Dockerfile)** - Docker container configuration file
+- **[Crunz.yml](dockerConf/crunz.yml)** - Crunz standard configuration file
 
 Manually edit Crunz configurations present in the Crunz.yml file. Inside the file, there are suggestions about the individual configuration parameters. Please refer to [Lavary/Crunz](https://github.com/lavary/crunz) for more details on the configuration.
 
