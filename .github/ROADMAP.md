@@ -10,7 +10,7 @@
 ### v.2.7.5 (2022-04-25)
 
 Crunz-ui updated stable release:
-* **Docker version**
+* **Dockerfile for setup of a Doker container complete with Crunz and Crunz-ui configured and ready to use**
 * Complete documentation on the installation and startup procedure via Docker
 * Implementation of [Lavary/Crunz](https://github.com/lavary/crunz) v3.2.1 in Crunz-ui
 * Light and dark theme switch
@@ -24,6 +24,7 @@ Crunz-ui updated stable release:
 * System icons uniformed to material design icon
 * Several improvements, bug fixes and and code cleanup throughout the application
 * Demo environment for testing the application
+* Happy Italian Liberation Day
 
 ![Advanced search tool](https://user-images.githubusercontent.com/9921890/154231756-d85229e6-5de5-44c6-893f-fdc8c6ecefe7.png)
 
