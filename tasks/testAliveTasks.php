@@ -79,8 +79,8 @@ $task = $schedule->run(function() {
                 ->text($message)
             ;
 
-            foreach ($crunz_config["mailer"]["recipients"] ?? [] as $idx=>$recipient) {
-                $messageObject->addTo(new Address($idx, $recipient));
+            foreach ($crunz_config["mailer"]["recipients"] ?? [] as $recipient_name => $recipient_mail) {
+                $messageObject->addTo(new Address($recipient_mail, $recipient_name));
             }
 
             $mailer->send($messageObject);
