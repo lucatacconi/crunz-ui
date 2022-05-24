@@ -19,7 +19,6 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 
 - [What Crunz is and how Crunz-ui connects to it](#what-crunz-is-and-how-crunz-ui-connects-to-it)
 - [What else can Crunz-ui do](#what-else-can-crunz-ui-do)
-<!-- - [Demo environment](#demo-environment) -->
 - [Browser Support](#browser-support)
 - [System Requirements](#system-requirements)
 - [Pre-installation safety warnings](#pre-installation-safety-warnings)
@@ -37,6 +36,8 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 - [FAQ / Troubleshooting](FAQ.md)
 - [Lazy Developer Shortcuts](LAZY_AREA.md)
 </details>
+
+<!-- - [Demo environment](#demo-environment) -->
 
 <br />
 
