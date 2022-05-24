@@ -23,7 +23,7 @@ Crunz-ui updated stable release:
 * Improvements in interface ergonomics
 * System icons uniformed to material design icon
 * Several improvements, bug fixes and and code cleanup throughout the application
-* Demo environment for testing the application
+<!-- * Demo environment for testing the application -->
 * Happy Italian Liberation Day
 
 ![Advanced search tool](https://user-images.githubusercontent.com/9921890/154231756-d85229e6-5de5-44c6-893f-fdc8c6ecefe7.png)
