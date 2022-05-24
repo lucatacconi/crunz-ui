@@ -19,7 +19,7 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 
 - [What Crunz is and how Crunz-ui connects to it](#what-crunz-is-and-how-crunz-ui-connects-to-it)
 - [What else can Crunz-ui do](#what-else-can-crunz-ui-do)
-- [Demo environment](#demo-environment)
+<!-- - [Demo environment](#demo-environment) -->
 - [Browser Support](#browser-support)
 - [System Requirements](#system-requirements)
 - [Pre-installation safety warnings](#pre-installation-safety-warnings)
@@ -80,7 +80,7 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 <br />
 
-## Demo environment
+<!-- ## Demo environment
 
 It is possible to test the application in the demo area. All functions are active except the execution of the tasks loaded on the system.
 User and password for access are pre-filled in the login section.
@@ -88,7 +88,7 @@ It is possible to access the demo area from the following link:
 
 :link: **[Demo area](https://www.monolite.net/crunz-ui/public/index.php)** - Click to access demo area
 
-<br />
+<br /> -->
 
 ## Browser Support
 
