@@ -10,7 +10,7 @@
 <br />
 <br />
 
-Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and it's proposed to be its natural graphical interface, developed to make its usage more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees the project its elastic and dynamic structure.
+Crunz-ui starts from the most famous GitHub [Crunzphp/Crunz](https://github.com/crunzphp/crunz) project and it's proposed to be its natural graphical interface, developed to make its usage more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees the project its elastic and dynamic structure.
 
 <br />
 
@@ -137,7 +137,7 @@ First of all, download both files to Github server.
 - **[Dockerfile](dockerConf/Dockerfile)** - Docker container configuration file
 - **[Crunz.yml](dockerConf/crunz.yml)** - Crunz standard configuration file
 
-Manually edit Crunz configurations present in the Crunz.yml file. Inside the file, there are suggestions about the individual configuration parameters. Please refer to [Lavary/Crunz](https://github.com/lavary/crunz) for more details on the configuration.
+Manually edit Crunz configurations present in the Crunz.yml file. Inside the file, there are suggestions about the individual configuration parameters. Please refer to [Crunzphp/Crunz](https://github.com/crunzphp/crunz) for more details on the configuration.
 
 
 Initialize Crunz-iu Docker container. Be careful to select the correct timezone before running the command. (ex. TIMEZONE=Europe/Rome)

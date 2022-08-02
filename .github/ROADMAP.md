@@ -12,14 +12,14 @@
 Crunz-ui updated stable release:
 * **Dockerfile for setup of a Doker container complete with Crunz and Crunz-ui configured and ready to use**
 * Complete documentation on the installation and startup procedure via Docker
-* Implementation of [Lavary/Crunz](https://github.com/lavary/crunz) v3.2.1 in Crunz-ui
+* Implementation of [Crunzphp/Crunz](https://github.com/crunzphp/crunz) v3.2.1 in Crunz-ui
 * Light and dark theme switch
 * Zoom control to have a better view of the tasks in  Daily calendar section
 * Introduction of a new section for the management of archived tasks (viewing, editing, deletion, recovery)
 * Introduction of a new section that allows for the massive verification of the syntax of the tasks loaded on the system
 * Introduction of an advanced search tool to Tasks' execution outcome list section. It is now possible to search for the results of specific tasks on dates and times of interest
 * Updated documentation for installation and configuration
-* Removed Swift mailer using Simphony mailer instead for [Lavary/Crunz](https://github.com/lavary/crunz) consistency
+* Removed Swift mailer using Simphony mailer instead for [Crunzphp/Crunz](https://github.com/crunzphp/crunz) consistency
 * Improvements in interface ergonomics
 * System icons uniformed to material design icon
 * Several improvements, bug fixes and and code cleanup throughout the application
@@ -50,7 +50,7 @@ Crunz-ui updated stable release:
 * Disable via parameter of the task syntax check, an operation that can slow down a lot of obsolete servers
 * Introduction of the faq and troubleshooting page
 * Updated documentation for installation and configuration
-* Implementation of Crunz [Lavary/Crunz](https://github.com/lavary/crunz) v3.0.1 in Crunz-ui
+* Implementation of Crunz [Crunzphp/Crunz](https://github.com/crunzphp/crunz) v3.0.1 in Crunz-ui
 
 ### v.2.0.0 (2021-01-26)
 
