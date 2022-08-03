@@ -104,8 +104,24 @@ $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 
 
-foreach (glob("./api/*.php") as $filename) {
-    require $filename;
+$route_path = "./api";
+
+$directoryIterator = new \RecursiveDirectoryIterator($route_path);
+$recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
+
+
+$quotedSuffix = \preg_quote('.php', '/');
+$regexIterator = new \RegexIterator( $recursiveIterator, "/^.+{$quotedSuffix}$/i", \RecursiveRegexIterator::GET_MATCH );
+
+$files = \array_map(
+    static function (array $file) {
+        return new \SplFileInfo(\reset($file));
+    },
+    \iterator_to_array($regexIterator)
+);
+
+foreach ($files as $route_file) {
+    require_once $route_file;
 }
 
 $app->addBodyParsingMiddleware();

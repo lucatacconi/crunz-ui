@@ -10,7 +10,7 @@
 <br />
 <br />
 
-Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/lavary/crunz) project and it's proposed to be its natural graphical interface, developed to make its usage more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees the project its elastic and dynamic structure.
+Crunz-ui starts from the most famous GitHub [Crunzphp/Crunz](https://github.com/crunzphp/crunz) project and it's proposed to be its natural graphical interface, developed to make its usage more accessible and easy to use. Designed to be extremely light, it uses [lucatacconi/silly-vue-scaffolding](https://github.com/lucatacconi/silly-vue-scaffolding) which guarantees the project its elastic and dynamic structure.
 
 <br />
 
@@ -19,7 +19,6 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 
 - [What Crunz is and how Crunz-ui connects to it](#what-crunz-is-and-how-crunz-ui-connects-to-it)
 - [What else can Crunz-ui do](#what-else-can-crunz-ui-do)
-- [Demo environment](#demo-environment)
 - [Browser Support](#browser-support)
 - [System Requirements](#system-requirements)
 - [Pre-installation safety warnings](#pre-installation-safety-warnings)
@@ -37,6 +36,8 @@ Crunz-ui starts from the most famous GitHub [Lavary/Crunz](https://github.com/la
 - [FAQ / Troubleshooting](FAQ.md)
 - [Lazy Developer Shortcuts](LAZY_AREA.md)
 </details>
+
+<!-- - [Demo environment](#demo-environment) -->
 
 <br />
 
@@ -80,7 +81,7 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 
 <br />
 
-## Demo environment
+<!-- ## Demo environment
 
 It is possible to test the application in the demo area. All functions are active except the execution of the tasks loaded on the system.
 User and password for access are pre-filled in the login section.
@@ -88,7 +89,7 @@ It is possible to access the demo area from the following link:
 
 :link: **[Demo area](https://www.monolite.net/crunz-ui/public/index.php)** - Click to access demo area
 
-<br />
+<br /> -->
 
 ## Browser Support
 
@@ -136,7 +137,7 @@ First of all, download both files to Github server.
 - **[Dockerfile](dockerConf/Dockerfile)** - Docker container configuration file
 - **[Crunz.yml](dockerConf/crunz.yml)** - Crunz standard configuration file
 
-Manually edit Crunz configurations present in the Crunz.yml file. Inside the file, there are suggestions about the individual configuration parameters. Please refer to [Lavary/Crunz](https://github.com/lavary/crunz) for more details on the configuration.
+Manually edit Crunz configurations present in the Crunz.yml file. Inside the file, there are suggestions about the individual configuration parameters. Please refer to [Crunzphp/Crunz](https://github.com/crunzphp/crunz) for more details on the configuration.
 
 
 Initialize Crunz-iu Docker container. Be careful to select the correct timezone before running the command. (ex. TIMEZONE=Europe/Rome)
