@@ -26,8 +26,7 @@
         "slim/psr7": "^1",
         "nyholm/psr7": "^1",
         "nyholm/psr7-server": "^0",
-        "guzzlehttp/psr7": "^1",
-        "http-interop/http-factory-guzzle": "^1",
+        "guzzlehttp/psr7": "^2",
         "laminas/laminas-diactoros": "^2",
         "php-di/php-di": "^6",
 
