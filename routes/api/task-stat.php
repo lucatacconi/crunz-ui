@@ -299,7 +299,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                 $event_interval_to_orig = $event_interval_to;
 
                 unset($cron);
-                $cron = Cron\CronExpression::factory($expression);
+                $cron = new Cron\CronExpression($expression);
 
                 $aLOGNAME = [];
                 $aLOGNAME_tmp = [];
@@ -345,7 +345,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                     do{
 
                         if(empty($calc_run_ref)){
-                            $calc_run_ref = $calc_run_ref = $cron->getNextRunDate($event_interval_from_orig, 0, true)->format('Y-m-d H:i');
+                            $calc_run_ref = $cron->getNextRunDate($event_interval_from_orig, 0, true)->format('Y-m-d H:i');
                         }else{
                             $calc_run_ref = $cron->getNextRunDate($calc_run_ref, 1, true)->format('Y-m-d H:i');
                         }
