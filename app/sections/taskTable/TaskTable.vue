@@ -434,19 +434,29 @@ module.exports = {
                 "exec_and_wait": wait ? 'Y' : 'N'
             }
 
-            Utils.apiCall("post", "/task/execute", params)
-            .then(function (response) {
-                if(response.data.result){
-                    if(wait){
+            if(wait){
+                if(this.reloadIntervalObj) clearTimeout(this.reloadIntervalObj);
+
+                Utils.apiCall("post", "/task/execute", params)
+                .then(function (response) {
+                    if(response.data.result){
                         self.openLogModal(response.data);
                         self.readData();
                     }else{
-                        Utils.showAlertDialog('Task launched. Execution in progress',response.data.result_msg,'success');
+                        Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
                     }
-                }else{
-                    Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
-                }
-            });
+                });
+
+            }else{
+                Utils.apiCall("post", "/task/execute", params)
+                .then(function (response) {
+                    if(!response.data.result){
+                        Utils.showAlertDialog('Task launched. Execution in progress',response.data.result_msg,'success');
+                    }else{
+                        Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
+                    }
+                });
+            }
         },
 
         scheduleReload: function () {
