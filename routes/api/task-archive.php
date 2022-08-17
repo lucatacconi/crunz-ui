@@ -281,9 +281,6 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                     $row["expression"] = '0 0'.substr($row["expression"],3);
                 }
 
-                unset($cron);
-                $cron = Cron\CronExpression::factory($row["expression"]);
-
 
                 //Check log file configured by user appendOutputTo() or sendOutputTo()
                 $custom_log = '';
