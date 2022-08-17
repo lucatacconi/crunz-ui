@@ -338,6 +338,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                 $calc_run = false;
                 $tmp_interval_lst = [];
                 $nincrement = 0;
+                $calc_run_ref = '';
 
                 if($high_frequency){
 
