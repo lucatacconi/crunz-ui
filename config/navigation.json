@@ -143,6 +143,25 @@
                 "color": false,
                 "class": false
             }
+        },
+
+        {
+            "title": "Crunz configuration editor",
+            "subtitle": "Manage Crunz configuration",
+            "allowed":["admin"],
+            "visible": true,
+
+            "action":{
+                "path": "/crunzConfigMgr/CrunzConfigMgr",
+                "component": "../../app/sections/crunzConfigMgr/CrunzConfigMgr.vue"
+            },
+
+            "layout":{
+                "icon": "mdi-tune-vertical-variant",
+                "disabled": false,
+                "color": false,
+                "class": false
+            }
         }
     ]
 }
