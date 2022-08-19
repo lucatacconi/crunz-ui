@@ -40,7 +40,7 @@
                 v-if="actionButton!=undefined"
             >
                 <v-icon left>{{show_crunz_button ? 'mdi-eye-off' : 'mdi-eye'}}</v-icon>
-                {{show_crunz_button ? 'Hide crunz button' : 'Show crunz button'}}
+                {{show_crunz_button ? 'Hide Crunz rules' : 'Show crunz rules'}}
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn
@@ -125,7 +125,7 @@ module.exports = {
                 {
                     text:"on",
                     function:"->on($date)",
-                    tooltip:"chedule the event to run on a certain date"
+                    tooltip:"Schedule the event to run on a certain date"
                 },
                 {
                     text:"at",
@@ -225,17 +225,17 @@ module.exports = {
                 {
                     text:"days",
                     function:"->days($days)",
-                    tooltip:"Set the days of the week the command should run on"
+                    tooltip:"Set the days of the week the command should run on  (ex: ->days('15'), ->days([10,15,20])"
                 },
                 {
                     text:"hour",
                     function:"->hour($value)",
-                    tooltip:"Set hour for the cron job"
+                    tooltip:"Set hour for the cron job (ex: ->hour('15'), ->hour([10,15,20])"
                 },
                 {
                     text:"minute",
                     function:"->minute($value)",
-                    tooltip:"Set minute for the cron job"
+                    tooltip:"Set minute for the cron job (ex: ->minute('15'), ->minute([10,15,20])"
                 },
                 {
                     text:"day Of Month",
@@ -251,6 +251,26 @@ module.exports = {
                     text:"day Of Week",
                     function:"->dayOfWeek($value)",
                     tooltip:"Set day of week for the cron job"
+                },
+                {
+                    text:"every five minute",
+                    function:"->everyFiveMinutes()",
+                    tooltip:"Schedule the event to run the job every five minutes"
+                },
+                {
+                    text:"every ten minute",
+                    function:"->everyTenMinutes()",
+                    tooltip:"Schedule the event to run the job every ten minutes"
+                },
+                {
+                    text:"every fifteen minute",
+                    function:"->everyFifteenMinutes()",
+                    tooltip:"Schedule the event to run the job every fifteen minutes"
+                },
+                {
+                    text:"every thirty minute",
+                    function:"->everyThirtyMinutes()",
+                    tooltip:"Schedule the event to run the job every thirty minutes"
                 },
                 {
                     text:"prevent Overlapping",
