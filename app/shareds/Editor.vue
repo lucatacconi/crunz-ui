@@ -37,7 +37,6 @@
                 outlined
                 color="button"
                 @click="show_crunz_button=!show_crunz_button"
-                v-if="actionButton!=undefined"
             >
                 <v-icon left>{{show_crunz_button ? 'mdi-eye-off' : 'mdi-eye'}}</v-icon>
                 {{show_crunz_button ? 'Hide Crunz rules' : 'Show crunz rules'}}
@@ -53,7 +52,6 @@
         </v-toolbar>
 
         <div
-            v-if="actionButton!=undefined"
             class="pb-2"
         >
             <center v-if="show_crunz_button">
