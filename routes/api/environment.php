@@ -78,6 +78,55 @@ $app->group('/environment', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
+    $group->post('/crunz-config', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $params = [];
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        $crunz_config_path = $base_path."/crunz.yml";
+
+        if(!file_exists($crunz_config_path)){
+            if(!is_writable($base_path)) throw new Exception('ERROR - Config file path not writable');
+        }else{
+            if(!is_writable($crunz_config_path)) throw new Exception('ERROR - Config file not writable');
+        }
+
+        if(empty($params["CONFIG_CONTENT"])) throw new Exception("ERROR - Crunz configuration empty");
+
+        $crunz_config_content = base64_decode($params["CONFIG_CONTENT"]);
+
+        if(empty($crunz_config_content)) throw new Exception("ERROR - Crunz configuration empty");
+
+
+        $crunz_config_handle = fopen($crunz_config_path, "w");
+        if($crunz_config_handle === false) throw new Exception('ERROR - Error in opening config file');
+
+        fwrite($crunz_config_handle, $crunz_config_content);
+        fclose($crunz_config_handle);
+
+
+        $data["result"] = true;
+        $data["result_msg"] = '';
+
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
     $group->get('/check', function (Request $request, Response $response, array $args) {
 
         $data = [];
