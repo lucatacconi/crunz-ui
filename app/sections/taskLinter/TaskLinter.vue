@@ -76,7 +76,7 @@
                                     :color="item.syntax_check ? 'green' : 'red'"
                                     small
                                 >
-                                    {{ item.syntax_check ? 'mdi-check-circle' : 'mdi-bug' }}
+                                    {{ item.syntax_check ? 'mdi-check-circle' : 'mdi-alert-circle' }}
                                 </v-icon>
                             </td>
                             <td>
@@ -279,6 +279,7 @@ module.exports = {
         },
 
         openEditModal: function (rowdata) {
+            console.log(JSON.stringify(rowdata));
             this.showEditModal = true;
             this.logData = rowdata != undefined ? rowdata : false;
         },
