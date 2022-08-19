@@ -228,6 +228,32 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 }
             }
 
+
+            //Cron expression check
+            $cron_presence = false;
+            if(strpos($file_content, '->cron(\'') !== false){
+                $pos_start = strpos($file_content, '->cron(\'');
+                $cron_presence = true;
+            }
+            if(strpos($file_content, '->cron("') !== false){
+                $pos_start = strpos($file_content, '->cron("');
+                $cron_presence = true;
+            }
+
+            if($cron_presence){
+                $cron_str_tmp = str_replace( ['->cron(\'', '->cron("'], '', substr($file_content, $pos_start) );
+                $aTMP = explode(")", $cron_str_tmp);
+
+                $cron_str = str_replace( ['\'', '"'], '', $aTMP[0] );
+
+                try {
+                    $cron_check = new Cron\CronExpression($cron_str);
+                } catch (Exception $e) {
+                    continue;
+                }
+            }
+
+
             unset($schedule);
             require $taskFile->getRealPath();
             if (empty($schedule) || !$schedule instanceof Schedule) {
@@ -419,7 +445,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 }
 
                 unset($cron);
-                $cron = Cron\CronExpression::factory($row["expression"]);
+                $cron = new Cron\CronExpression($row["expression"]);
 
 
                 //Check log file configured by user appendOutputTo() or sendOutputTo()
@@ -1654,6 +1680,32 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 throw new Exception("ERROR - Wrong task configuration in task file ($file_name)");
             }
 
+            //Cron expression check
+            //Cron expression check
+            $cron_presence = false;
+            if(strpos($file_content, '->cron(\'') !== false){
+                $pos_start = strpos($file_content, '->cron(\'');
+                $cron_presence = true;
+            }
+            if(strpos($file_content, '->cron("') !== false){
+                $pos_start = strpos($file_content, '->cron("');
+                $cron_presence = true;
+            }
+
+            if($cron_presence){
+                $cron_str_tmp = str_replace( ['->cron(\'', '->cron("'], '', substr($file_content, $pos_start) );
+                $aTMP = explode(")", $cron_str_tmp);
+
+                $cron_str = str_replace( ['\'', '"'], '', $aTMP[0] );
+
+                try {
+                    $cron_check = new Cron\CronExpression($cron_str);
+                } catch (Exception $e) {
+                    throw new Exception("ERROR - Wrong crontab expression in task file ($file_name)");
+                }
+            }
+
+
             $file_check_result = exec("php -l \"".$file_data["tmp_name"]."\"");
             if(strpos($file_check_result, 'No syntax errors detected in') === false){
                 //Syntax error in file
@@ -2067,6 +2119,17 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             \iterator_to_array($regexIterator)
         );
 
+
+        //Check configurations erros in task
+        $aOUTPUT=null;
+        $retval=null;
+        $config_error = false;
+        exec("cd $crunz_base_dir && vendor/bin/crunz schedule:list 2>&1", $aOUTPUT, $retval);
+
+        if( strpos($aOUTPUT[0], "PHP Fatal error") !== false ){
+            $config_error = true;
+        }
+
         foreach ($files as $taskFile) {
 
             $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
@@ -2097,6 +2160,14 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             }else{
                 $row["syntax_check"] = false;
                 $row["error_detected"] = $file_check_result;
+            }
+
+
+            if($config_error && $row["syntax_check"]){
+                if(strpos($aOUTPUT[0], $taskFile->getRealPath()) !== false){
+                    $row["syntax_check"] = false;
+                    $row["error_detected"] = $aOUTPUT[0];
+                }
             }
 
             $data[] = $row;
