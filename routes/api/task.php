@@ -1309,6 +1309,32 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             throw new Exception("ERROR - Wrong task configuration in task file");
         }
 
+
+        //Cron expression check
+        $cron_presence = false;
+        if(strpos($file_content, '->cron(\'') !== false){
+            $pos_start = strpos($file_content, '->cron(\'');
+            $cron_presence = true;
+        }
+        if(strpos($file_content, '->cron("') !== false){
+            $pos_start = strpos($file_content, '->cron("');
+            $cron_presence = true;
+        }
+
+        if($cron_presence){
+            $cron_str_tmp = str_replace( ['->cron(\'', '->cron("'], '', substr($file_content, $pos_start) );
+            $aTMP = explode(")", $cron_str_tmp);
+
+            $cron_str = str_replace( ['\'', '"'], '', $aTMP[0] );
+
+            try {
+                $cron_check = new Cron\CronExpression($cron_str);
+            } catch (Exception $e) {
+                throw new Exception("ERROR - Wrong crontab expression in task file ($file_name)");
+            }
+        }
+
+
         fwrite($task_tester_handle, $params["TASK_CONTENT"]);
         fclose($task_tester_handle);
 
@@ -1680,7 +1706,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 throw new Exception("ERROR - Wrong task configuration in task file ($file_name)");
             }
 
-            //Cron expression check
+
             //Cron expression check
             $cron_presence = false;
             if(strpos($file_content, '->cron(\'') !== false){
@@ -2162,11 +2188,35 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["error_detected"] = $file_check_result;
             }
 
-
             if($config_error && $row["syntax_check"]){
                 if(strpos($aOUTPUT[0], $taskFile->getRealPath()) !== false){
                     $row["syntax_check"] = false;
                     $row["error_detected"] = $aOUTPUT[0];
+                }
+            }
+
+            if($row["syntax_check"]){
+                if(strpos($file_content, '->cron(\'') !== false){
+                    $pos_start = strpos($file_content, '->cron(\'');
+                    $cron_presence = true;
+                }
+                if(strpos($file_content, '->cron("') !== false){
+                    $pos_start = strpos($file_content, '->cron("');
+                    $cron_presence = true;
+                }
+
+                if($cron_presence){
+                    $cron_str_tmp = str_replace( ['->cron(\'', '->cron("'], '', substr($file_content, $pos_start) );
+                    $aTMP = explode(")", $cron_str_tmp);
+
+                    $cron_str = str_replace( ['\'', '"'], '', $aTMP[0] );
+
+                    try {
+                        $cron_check = new Cron\CronExpression($cron_str);
+                    } catch (Exception $e) {
+                        $row["syntax_check"] = false;
+                        $row["error_detected"] = $e->getMessage();
+                    }
                 }
             }
 
