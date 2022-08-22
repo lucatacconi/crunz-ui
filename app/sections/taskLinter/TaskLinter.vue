@@ -278,59 +278,55 @@ module.exports = {
 
         archiveItem: function (rowdata) {
             var self = this;
-            Swal.fire({
-                title: 'Archive task',
-                text: "Are you sure you want to archive task? The task file will be renamed and the task will no longer be visible in the dashboard.",
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#f86c6b',
-                cancelButtonColor: '#20a8d8',
-                confirmButtonText: 'Archive',
-                cancelButtonText: 'Back'
-            }).then( function (result) {
-                if (result.value) {
-                    var params = {
-                        "task_path": rowdata.task_path
-                    }
-                    Utils.apiCall("post", "/task-archive/archive",params)
-                    .then(function (response) {
-                        if(response.data.result){
-                            Utils.showAlertDialog('Task archived',response.data.result_msg,'success');
-                            self.readData();
-                        }else{
-                            Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
-                        }
-                    });
+            Utils.showAlertDialog(
+                'Archive task',
+                'Are you sure you want to archive task? The task file will be renamed and the task will no longer be visible in the dashboard.',
+                'warning',{
+                    showCancelButton: true,
+                    confirmButtonColor: '#f86c6b',
+                    cancelButtonColor: '#20a8d8',
+                    confirmButtonText: 'Archive',
+                    cancelButtonText: 'Back'
+                },()=>{
+                var params = {
+                    "task_path": rowdata.task_path
                 }
+                Utils.apiCall("post", "/task-archive/archive",params)
+                .then(function (response) {
+                    if(response.data.result){
+                        Utils.showAlertDialog('Task archived',response.data.result_msg,'success');
+                        self.readData();
+                    }else{
+                        Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
+                    }
+                });
             });
         },
 
         deleteItem: function (rowdata) {
             var self = this;
-            Swal.fire({
-                title: 'Delete task',
-                text: "Are you sure you want to delete task?",
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#f86c6b',
-                cancelButtonColor: '#20a8d8',
-                confirmButtonText: 'Delete',
-                cancelButtonText: 'Back'
-            }).then( function (result) {
-                if (result.value) {
-                    var params = {
-                        "task_path": rowdata.task_path
-                    }
-                    Utils.apiCall("delete", "/task/",params)
-                    .then(function (response) {
-                        if(response.data.result){
-                            Utils.showAlertDialog('Task deleted',response.data.result_msg,'success');
-                            self.readData();
-                        }else{
-                            Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
-                        }
-                    });
+            Utils.showAlertDialog(
+                'Delete task',
+                'Are you sure you want to delete task?',
+                'warning',{
+                    showCancelButton: true,
+                    confirmButtonColor: '#f86c6b',
+                    cancelButtonColor: '#20a8d8',
+                    confirmButtonText: 'Delete',
+                    cancelButtonText: 'Back'
+                },()=>{
+                var params = {
+                    "task_path": rowdata.task_path
                 }
+                Utils.apiCall("delete", "/task/",params)
+                .then(function (response) {
+                    if(response.data.result){
+                        Utils.showAlertDialog('Task deleted',response.data.result_msg,'success');
+                        self.readData();
+                    }else{
+                        Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
+                    }
+                });
             });
         },
 
