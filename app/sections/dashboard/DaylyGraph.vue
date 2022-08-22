@@ -78,7 +78,7 @@
                     graphDaily = new Chart(graph_container_daily, config_graph_daily);
 
                     if(self.syntaxErrorTask != 0){
-                        Utils.showAlertDialog('Syntax error in task file','Check lint section to fix issue and save file','error');
+                        Utils.showAlertDialog('Syntax error in task file','Check Lint section to fix issue','error');
                         return;
                     }
                 });
