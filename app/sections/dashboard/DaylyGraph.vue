@@ -49,17 +49,18 @@
                         self.withErrors = day_stat.error;
                         self.succesfullNotPlanned = day_stat.succesfull_not_planned;
                         self.errorNotPlanned = day_stat.error_not_planned;
+                        self.syntaxErrorTask = day_stat.syntax_error_task;
                     }
 
                     var config_graph_daily = {
                         type: 'pie',
                         data: {
-                            labels: [ 'Planned', 'Executed', 'With errors', 'Executed not planned', 'Error in not planned' ],
+                            labels: [ 'Planned', 'Executed', 'With errors', 'Executed not planned', 'Error in not planned', 'Syntax error in task file' ],
                             datasets: [{
-                                data: [ self.planned, self.executed, self.withErrors, self.succesfullNotPlanned, self.errorNotPlanned ],
+                                data: [ self.planned, self.executed, self.withErrors, self.succesfullNotPlanned, self.errorNotPlanned, self.syntaxErrorTask ],
                                 label: 'Daily task\'s distribution',
-                                backgroundColor: [ "#6DCEE8", "#A7E683", "#FFA182", "#FFD149", "#EA9EFF" ],
-                                borderColor: [ "#9199FE", "#5C9476", "#FF5074", "#FF9D00", "#D84FFF" ],
+                                backgroundColor: [ "#6DCEE8", "#A7E683", "#FFA182", "#FFD149", "#EA9EFF", "#FF3333" ],
+                                borderColor: [ "#9199FE", "#5C9476", "#FF5074", "#FF9D00", "#D84FFF", "#990000" ],
                                 borderWidth: 1
                             }]
                         },
@@ -76,8 +77,15 @@
                     var graph_container_daily = document.getElementById('graph-area-daily');
                     graphDaily = new Chart(graph_container_daily, config_graph_daily);
 
+                    if(self.syntaxErrorTask != 0){
+                        Swal.fire({
+                            title: 'Syntax error in task file',
+                            text: "Check lint section to fix issue and save file",
+                            type: 'error'
+                        })
+                        return;
+                    }
                 });
-
             }
         },
 

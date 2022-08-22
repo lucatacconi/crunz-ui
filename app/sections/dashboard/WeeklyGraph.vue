@@ -24,6 +24,7 @@
                 graphWhitErrors: [],
                 graphExecutedNotPlanned: [],
                 graphErrorsNotPlanned: [],
+                graphSyntaxError: []
             }
         },
 
@@ -49,7 +50,8 @@
                         executed: 0,
                         with_errors: 0,
                         executed_not_planned: 0,
-                        errors_not_planned: 0
+                        errors_not_planned: 0,
+                        syntax_error_task: 0
                     }
 
                     day_label = day_focus_calc.format("ddd MM-DD");
@@ -78,6 +80,7 @@
                             self.stats[key].with_errors = response.data[stat_data.date_ref].error;
                             self.stats[key].executed_not_planned = response.data[stat_data.date_ref].succesfull_not_planned;
                             self.stats[key].errors_not_planned = response.data[stat_data.date_ref].error_not_planned;
+                            self.stats[key].syntax_error_task = response.data[stat_data.date_ref].syntax_error_task;
                         }
                     }
 
@@ -87,6 +90,7 @@
                         self.graphWhitErrors.push(self.stats[key].with_errors);
                         self.graphExecutedNotPlanned.push(self.stats[key].executed_not_planned);
                         self.graphErrorsNotPlanned.push(self.stats[key].errors_not_planned);
+                        self.graphSyntaxError.push(self.stats[key].syntax_error_task);
                     }
 
                     var config_graph_weekly = {
@@ -130,6 +134,13 @@
                                     borderWidth: 1,
                                     stack: 'Stack 0',
                                     data: self.graphErrorsNotPlanned
+                                }, {
+                                    label: 'Syntax error in task file',
+                                    backgroundColor: "#FF3333",
+                                    borderColor: "#990000",
+                                    borderWidth: 1,
+                                    stack: 'Stack 0',
+                                    data: self.graphSyntaxError
                                 }
                             ]
                         },

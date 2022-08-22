@@ -192,7 +192,6 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
 
             //Check presence of error
-
             $error_presence = false;
             if(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec')){
                 if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
@@ -203,7 +202,6 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                     }
                 }
             }
-
 
             //Cron expression check
             $cron_presence = false;
@@ -240,8 +238,6 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
             }
 
             //If not jumped there are no errors in task
-
-
             unset($schedule);
             require $taskFile->getRealPath();
             if (empty($schedule) || !$schedule instanceof Schedule) {
