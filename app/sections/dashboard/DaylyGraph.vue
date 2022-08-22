@@ -78,11 +78,7 @@
                     graphDaily = new Chart(graph_container_daily, config_graph_daily);
 
                     if(self.syntaxErrorTask != 0){
-                        Swal.fire({
-                            title: 'Syntax error in task file',
-                            text: "Check lint section to fix issue and save file",
-                            type: 'error'
-                        })
+                        Utils.showAlertDialog('Syntax error in task file','Check lint section to fix issue and save file','error');
                         return;
                     }
                 });
