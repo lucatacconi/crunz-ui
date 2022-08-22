@@ -1,7 +1,7 @@
 <template id="navigator" lang="html">
     <div>
-        <navbar v-on:drawer="drawer=!drawer" :activesection="activeSection"></navbar>
-        <navdrawer :drawer="drawer" v-on:select="selection=$event" :navmap="navmap" :selection="selection" v-on:selectedsection="onSelectedSection"></navdrawer>
+        <navbar @drawer="drawer=!drawer" :activesection="activeSection"></navbar>
+        <navdrawer :drawer="drawer" @auto-change="drawer=$event" :navmap="navmap" @selectedsection="onSelectedSection"></navdrawer>
 
         <v-main>
             <v-container fluid fill-height>
@@ -24,7 +24,6 @@
                 drawer: "true",
                 routes: [],
                 navmap: [],
-                selection: 0,
                 activeSection: ''
             }
         },
