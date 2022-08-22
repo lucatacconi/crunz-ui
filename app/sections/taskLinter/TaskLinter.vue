@@ -244,36 +244,22 @@ module.exports = {
 
                     if(rowdata.task_content != '' && rowdata.filename != ''){
                         if(rowdata.task_content == ''){
-                            Swal.fire({
-                                title: 'Task content empty',
-                                text: "Task content is empty",
-                                type: 'error'
-                            })
+                            Utils.showAlertDialog('Task content empty','Task content is empty','error');
                             return;
                         }
                         if(rowdata.filename == ''){
-                            Swal.fire({
-                                title: 'Filename empty',
-                                text: "Filename is empty",
-                                type: 'error'
-                            })
+                            Utils.showAlertDialog('Filename empty','Filename is empty','error');
                             return;
                         }
                         var dec = atob(rowdata.task_content);
                         Utils.downloadFile(dec,rowdata.filename);
                     }else{
-                        Swal.fire({
-                            title: 'ERROR',
-                            text: error_dwl_msg,
-                            type: 'error'
-                        })
+                        Utils.showAlertDialog('ERROR',error_dwl_msg,'error');
+                        return;
                     }
                 }else{
-                    Swal.fire({
-                        title: 'ERROR',
-                        text: error_dwl_msg,
-                        type: 'error'
-                    })
+                    Utils.showAlertDialog('ERROR',error_dwl_msg,'error');
+                    return;
                 }
             });
         },
@@ -309,18 +295,10 @@ module.exports = {
                     Utils.apiCall("post", "/task-archive/archive",params)
                     .then(function (response) {
                         if(response.data.result){
-                            Swal.fire({
-                                title: 'Task archived',
-                                text: response.data.result_msg,
-                                type: 'success'
-                            })
+                            Utils.showAlertDialog('Task archived',response.data.result_msg,'success');
                             self.readData();
                         }else{
-                            Swal.fire({
-                                title: 'ERROR',
-                                text: response.data.result_msg,
-                                type: 'error'
-                            })
+                            Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
                         }
                     });
                 }
@@ -346,18 +324,10 @@ module.exports = {
                     Utils.apiCall("delete", "/task/",params)
                     .then(function (response) {
                         if(response.data.result){
-                            Swal.fire({
-                                title: 'Task deleted',
-                                text: response.data.result_msg,
-                                type: 'success'
-                            })
+                            Utils.showAlertDialog('Task deleted',response.data.result_msg,'success');
                             self.readData();
                         }else{
-                            Swal.fire({
-                                title: 'ERROR',
-                                text: response.data.result_msg,
-                                type: 'error'
-                            })
+                            Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
                         }
                     });
                 }
