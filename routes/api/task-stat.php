@@ -122,7 +122,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                 $aSTATs[$data_calc] = array( "planned" => 0, "planned_hft" => 0, "planned_std" => 0,
                                              "executed" => 0, "executed_hft" => 0, "executed_std" => 0,
                                              "error" => 0, "error_hft" => 0, "error_std" => 0,
-                                             "succesfull" => 0, "executed_not_planned" => 0, "succesfull_not_planned" => 0, "error_not_planned" => 0);
+                                             "succesfull" => 0, "executed_not_planned" => 0, "succesfull_not_planned" => 0, "error_not_planned" => 0, "syntax_error_task" => 0);
 
                 if($show_not_executed == "Y"){
                     $aSTATs[$data_calc]["not_executed"] = [];
@@ -190,15 +190,57 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                 continue;
             }
 
+
+            //Check presence of error
+
+            $error_presence = false;
             if(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec')){
                 if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
                     $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
                     if(strpos($file_check_result, 'No syntax errors detected in') === false){
                         //Syntax error in file
-                        continue;
+                        $error_presence = true;
                     }
                 }
             }
+
+
+            //Cron expression check
+            $cron_presence = false;
+            if(strpos($file_content, '->cron(\'') !== false){
+                $pos_start = strpos($file_content, '->cron(\'');
+                $cron_presence = true;
+            }
+            if(strpos($file_content, '->cron("') !== false){
+                $pos_start = strpos($file_content, '->cron("');
+                $cron_presence = true;
+            }
+
+            if($cron_presence){
+                $cron_str_tmp = str_replace( ['->cron(\'', '->cron("'], '', substr($file_content, $pos_start) );
+                $aTMP = explode(")", $cron_str_tmp);
+
+                $cron_str = str_replace( ['\'', '"'], '', $aTMP[0] );
+
+                try {
+                    $cron_check = new Cron\CronExpression($cron_str);
+                } catch (Exception $e) {
+                    $error_presence = true;
+                }
+            }
+
+            if($error_presence){
+                $data_calc = substr($interval_from, 0, 10);
+                while($data_calc <= substr($interval_to, 0, 10)){
+
+                    $aSTATs[$data_calc]["syntax_error_task"]++;
+                    $data_calc = date('Y-m-d', strtotime("$data_calc + 1 days"));
+                }
+                continue;
+            }
+
+            //If not jumped there are no errors in task
+
 
             unset($schedule);
             require $taskFile->getRealPath();
