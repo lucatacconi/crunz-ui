@@ -789,6 +789,101 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
+    $group->get('/draft', function (Request $request, Response $response, array $args) {
+
+        // RETURN_TASK_CONT - Y | N - set API to show content of the task (PHP code)
+
+        $data = [];
+
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+
+        $return_task_content = "N";
+        if(!empty($params["RETURN_TASK_CONT"])){
+            $return_task_content = $params["RETURN_TASK_CONT"];
+        }
+
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty($crunz_config["timezone"])) throw new Exception("ERROR - Wrong timezone configuration");
+
+        date_default_timezone_set($crunz_config["timezone"]);
+
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        $TASK_SUFFIX = $crunz_config["suffix"];
+
+
+        $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
+
+        $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
+        $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
+
+
+        $quotedSuffix = \preg_quote($TASK_SUFFIX, '/');
+        $regexIterator = new \RegexIterator( $recursiveIterator, "/^.+{$quotedSuffix}$/i", \RecursiveRegexIterator::GET_MATCH );
+
+        $files = \array_map(
+            static function (array $file) {
+                return new \SplFileInfo(\reset($file));
+            },
+            \iterator_to_array($regexIterator)
+        );
+
+        $aFILEs = [];
+        $task_counter = 0;
+        foreach ($files as $taskFile) {
+
+            $row = [];
+
+            $row["filename"] = $taskFile->getFilename();
+            $row["real_path"] = $taskFile->getRealPath();
+            $row["subdir"] = str_replace( array( $TASKS_DIR, $row["filename"]),'',$row["real_path"]);
+            $row["task_path"] = str_replace($TASKS_DIR, '', $row["real_path"]);
+
+            if(!empty($params["TASK_PATH"])){
+                if($row["task_path"] != $params["TASK_PATH"]){
+                    continue;
+                }
+            }
+
+            $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
+            $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content_orig);
+
+            if($return_task_content == "Y"){
+                $row["task_content"] = base64_encode($file_content_orig);
+            }
+
+            $aFILEs[] = $row;
+        }
+
+        $data = $aFILEs;
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
     $group->get('/event-unique-key', function (Request $request, Response $response, array $args) {
 
         $data = [];
@@ -1330,7 +1425,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             try {
                 $cron_check = new Cron\CronExpression($cron_str);
             } catch (Exception $e) {
-                throw new Exception("ERROR - Wrong crontab expression in task file ($file_name)");
+                throw new Exception("ERROR - Wrong crontab expression in task file");
             }
         }
 

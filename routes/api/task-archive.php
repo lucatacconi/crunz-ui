@@ -115,6 +115,32 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                 }
             }
 
+
+            //Cron expression check
+            $cron_presence = false;
+            if(strpos($file_content, '->cron(\'') !== false){
+                $pos_start = strpos($file_content, '->cron(\'');
+                $cron_presence = true;
+            }
+            if(strpos($file_content, '->cron("') !== false){
+                $pos_start = strpos($file_content, '->cron("');
+                $cron_presence = true;
+            }
+
+            if($cron_presence){
+                $cron_str_tmp = str_replace( ['->cron(\'', '->cron("'], '', substr($file_content, $pos_start) );
+                $aTMP = explode(")", $cron_str_tmp);
+
+                $cron_str = str_replace( ['\'', '"'], '', $aTMP[0] );
+
+                try {
+                    $cron_check = new Cron\CronExpression($cron_str);
+                } catch (Exception $e) {
+                    continue;
+                }
+            }
+
+
             unset($schedule);
             require $archFile->getRealPath();
             if (empty($schedule) || !$schedule instanceof Schedule) {

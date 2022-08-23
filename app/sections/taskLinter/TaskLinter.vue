@@ -6,6 +6,7 @@
             v-if="showEditModal"
             @on-close-modal="closeEditModal"
             :rowdata="logData"
+            origin="linted"
         ></task-edit>
 
         <v-card class="mb-16">
@@ -51,10 +52,6 @@
                                                 <v-list-item @click="openEditModal(item, i)">
                                                     <v-list-item-icon><v-icon>mdi-file-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
-                                                </v-list-item>
-                                                <v-list-item @click="archiveItem(item, i)">
-                                                    <v-list-item-icon><v-icon color="red">mdi-archive</v-icon></v-list-item-icon>
-                                                    <v-list-item-title > <span class="red--text">Archive task</span> </v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="deleteItem(item, i)">
                                                     <v-list-item-icon><v-icon color="red">mdi-delete</v-icon></v-list-item-icon>
@@ -233,7 +230,7 @@ module.exports = {
                 "task_path": rowdata.task_path
             }
 
-            Utils.apiCall("get", "/task/",params, {})
+            Utils.apiCall("get", "/task/draft",params, {})
             .then(function (response) {
 
                 error_dwl_msg = "Error downloading task content";
@@ -274,33 +271,6 @@ module.exports = {
             if(typeof result !== 'undefined' && result){
                 this.readData();
             }
-        },
-
-        archiveItem: function (rowdata) {
-            var self = this;
-            Utils.showAlertDialog(
-                'Archive task',
-                'Are you sure you want to archive task? The task file will be renamed and the task will no longer be visible in the dashboard.',
-                'warning',{
-                    showCancelButton: true,
-                    confirmButtonColor: '#f86c6b',
-                    cancelButtonColor: '#20a8d8',
-                    confirmButtonText: 'Archive',
-                    cancelButtonText: 'Back'
-                },()=>{
-                var params = {
-                    "task_path": rowdata.task_path
-                }
-                Utils.apiCall("post", "/task-archive/archive",params)
-                .then(function (response) {
-                    if(response.data.result){
-                        Utils.showAlertDialog('Task archived',response.data.result_msg,'success');
-                        self.readData();
-                    }else{
-                        Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
-                    }
-                });
-            });
         },
 
         deleteItem: function (rowdata) {
