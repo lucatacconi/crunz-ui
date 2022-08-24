@@ -119,6 +119,8 @@
                 :sort-by.sync="sortBy"
                 :custom-sort="customSort"
                 :search="search"
+                :items-per-page="10"
+                :footer-props='{ "items-per-page-options": [10, 30, 50, -1]}'
             >
                 <template v-if="tasksExecutions.length!=0" v-slot:body="{ items }">
                     <tbody>
