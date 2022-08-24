@@ -2288,7 +2288,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     $row["syntax_check"] = false;
                     $row["error_detected"] = $aOUTPUT[0];
                 }
-            }
+	    }
+
+	    $row["cron_presence"] = $cron_presence = false;
 
             if($row["syntax_check"]){
                 if(strpos($file_content, '->cron(\'') !== false){
@@ -2298,7 +2300,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 if(strpos($file_content, '->cron("') !== false){
                     $pos_start = strpos($file_content, '->cron("');
                     $cron_presence = true;
-                }
+		}
+
+		$row["cron_presence"] = $cron_presence;
 
                 if($cron_presence){
                     $cron_str_tmp = str_replace( ['->cron(\'', '->cron("'], '', substr($file_content, $pos_start) );
@@ -2312,7 +2316,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         $row["syntax_check"] = false;
                         $row["error_detected"] = $e->getMessage();
                     }
-                }
+		}
             }
 
             $data[] = $row;

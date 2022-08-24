@@ -146,7 +146,7 @@ module.exports = {
                 },
                 { text: 'Task path', value: 'task_path' },
                 { text: 'Last modification', value: 'modification_date', align: 'center', sortable: false },
-                { text: 'Syntax check', value: 'syntax_check', align: 'center', sortable: false },
+                { text: 'Syntax check', value: 'syntax_check', align: 'center', sortable: true },
                 { text: 'Error detected', value: 'error_detected', align: 'left', sortable: false },
             ],
             files: [],
