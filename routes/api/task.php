@@ -717,7 +717,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }else{
 
                         while($nincrement < 1000){ //Use the same hard limit of cron-expression library
-                            $calc_run = $cron->getNextRunDate($event_interval_from_orig, $nincrement, true)->format('Y-m-d H:i:s');
+                            try {
+                                $calc_run = $cron->getNextRunDate($event_interval_from_orig, $nincrement, true)->format('Y-m-d H:i:s');
+                            } catch (\Throwable $th) {
+                                break;
+                            }
 
                             if($calc_run > $event_interval_to){
                                 break;
