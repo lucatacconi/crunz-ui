@@ -452,7 +452,7 @@ module.exports = {
             }else{
                 Utils.apiCall("post", "/task/execute", params)
                 .then(function (response) {
-                    if(!response.data.result){
+                    if(response.data.result){
                         Utils.showAlertDialog('Task launched. Execution in progress',response.data.result_msg,'success');
                     }else{
                         Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
