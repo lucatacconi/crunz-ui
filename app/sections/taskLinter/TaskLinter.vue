@@ -278,7 +278,6 @@ module.exports = {
         },
 
         openEditModal: function (rowdata) {
-            console.log(JSON.stringify(rowdata));
             this.showEditModal = true;
             this.logData = rowdata != undefined ? rowdata : false;
         },
@@ -291,7 +290,6 @@ module.exports = {
 
         openNewTaskModal: function (item) {
             this.oldTaskContent=null;
-            console.log(item)
             if(item!=undefined){
                 this.oldTaskContent = {
                     subdir: item.subdir,

@@ -500,7 +500,6 @@ module.exports = {
 
         openNewTaskModal: function (item) {
             this.oldTaskContent=null;
-            console.log(item)
             if(item!=undefined){
                 this.oldTaskContent = {
                     subdir: item.subdir,
