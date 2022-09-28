@@ -24,7 +24,7 @@
 
             <v-card-text class="pt-3">
 
-                <tree-view v-on:select-folder="formData.path=$event"></tree-view>
+                <tree-view v-on:select-folder="formData.path=$event" v-if="showTree" :path-folder="pathFolder"></tree-view>
 
                 <v-layout row wrap class="pt-4 pb-4">
                     <v-flex xs4 class="pl-3">
@@ -69,6 +69,8 @@ module.exports = {
                 path:null,
             },
             modalTitle:"New task",
+            pathFolder:null,
+            showTree:false,
             editor:null,
             suffix:null,
             task_content:
@@ -95,6 +97,7 @@ $task
 return $schedule;`
         }
     },
+    props:['oldTaskContent','origin'],
     methods: {
         closeModal: function (result) {
             var self = this;
@@ -147,10 +150,45 @@ return $schedule;`
     },
     created:function() {
         var self=this
+
         Utils.apiCall("get", "/environment/crunz-config")
         .then(function (response) {
             if(response.data.suffix){
                 self.suffix=response.data.suffix
+                if(self.oldTaskContent){
+                    var params = {
+                        "return_task_cont": "Y",
+                        "unique_id": self.oldTaskContent.event_unique_key,
+                        "task_path": self.oldTaskContent.task_path
+                    };
+
+                    let dest = '/task/';
+                    if(self.origin=='archived'){
+                        dest = '/task-archive/';
+                    }
+                    if(self.origin=='linted'){
+                        dest = '/task/draft';
+                    }
+
+                    Utils.apiCall("get", dest, params)
+                    .then(function (responseTask) {
+                        if(responseTask.data.length!=0){
+                            task_detail = responseTask.data[0];
+                            self.task_content = atob(task_detail.task_content);
+                            if(self.origin=='archived'){
+                                var split = task_detail.filename.split(".");
+                                task_detail.filename=split[0]+".php";
+                                self.formData.task_name = task_detail.filename.substring(0,task_detail.filename.indexOf(self.suffix));
+                            }else{
+                                self.formData.task_name = task_detail.filename.substring(0,task_detail.filename.indexOf(self.suffix));
+                            }
+                            self.pathFolder = task_detail.subdir;
+                        }
+                        self.showTree = true;
+                    });
+                }else{
+                    self.showTree = true;
+                }
             }else{
                 Utils.showAlertDialog('ERROR',response.data.result_msg,'error');
             }

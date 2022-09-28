@@ -4,6 +4,7 @@
         <!-- New task modal -->
         <new-task
             v-if="showNewTaskModal"
+            :old-task-content="oldTaskContent"
             @on-close-modal="closeNewTaskModal($event)"
         ></new-task>
 
@@ -94,6 +95,10 @@
                                                 <v-list-item @click="openEditModal(item, i)">
                                                     <v-list-item-icon><v-icon>mdi-file-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item @click="openNewTaskModal(item, i)">
+                                                    <v-list-item-icon><v-icon>mdi-content-duplicate</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>Copy task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="archiveItem(item, i)">
                                                     <v-list-item-icon><v-icon color="red">mdi-archive</v-icon></v-list-item-icon>
@@ -234,6 +239,7 @@ module.exports = {
                 { text: 'Last exec. outcome', value: 'last_outcome', align: 'center' },
             ],
             files: [],
+            oldTaskContent:null,
             editData: false,
             uploadData: false,
             logData: false,
@@ -352,7 +358,17 @@ module.exports = {
             }
         },
 
-        openNewTaskModal: function () {
+        openNewTaskModal: function (item) {
+            this.oldTaskContent=null;
+            if(item!=undefined){
+                this.oldTaskContent = {
+                    subdir: item.subdir,
+                    real_path: item.real_path,
+                    task_path: item.task_path,
+                    filename: item.filename,
+                    event_unique_key: item.event_unique_key
+                }
+            };
             this.showNewTaskModal = true;
         },
         closeNewTaskModal: function (result) {

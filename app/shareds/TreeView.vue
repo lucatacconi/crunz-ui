@@ -55,6 +55,8 @@
             :items="items"
             item-key="path"
             :active="selectFolder==null ? ['/'] : selectFolder"
+            :open="openNodes"
+            v-if="ready"
             activatable
             @update:active="checkFolder($event)"
         >
@@ -110,8 +112,11 @@ module.exports = {
             add_folder:false,
             new_folder_name:'',
             temp_item:null,
+            openNodes:[],
+            ready:false
         }
     },
+    props:['pathFolder'],
     methods: {
         checkFolder:function(event) {
             if(event.length!=0){
@@ -189,17 +194,52 @@ module.exports = {
                 }
             }
         },
-        readTree:function(selectFolder=null){
-            var self=this
+        readTree:function(selectFolder=null, openNodes=[]){
+            var self = this;
             Utils.apiCall("get", "/task-container/tree/display")
             .then(function (response) {
-                self.items=[response.data]
-                if(selectFolder!=null) self.selectFolder=[selectFolder]
+                self.items = [response.data];
+                if(selectFolder != null){
+                    self.selectFolder = [selectFolder];
+                }
+                if(openNodes.length > 0){
+                    self.openNodes = openNodes;
+                }
+                self.ready = true;
             });
         }
     },
     created:function() {
-        this.readTree()
-    },
+        var selectFolder = null;
+        var openNodes = [];
+        if(this.pathFolder){
+            var countSlash = 0;
+            var chars = this.pathFolder.split("");
+            for(var indx in chars){
+                if(chars[indx] == '/') countSlash++;
+            }
+            selectFolder = "/";
+            if(countSlash >1 ){
+                removedLastSlash = this.pathFolder.substring(0,this.pathFolder.length-1);
+                selectFolder = removedLastSlash;
+            }
+
+            if(countSlash > 1){
+                var split = selectFolder.split("/");
+                for(var i = 0; i < split.length-1; i++){
+                    if(i == 0){
+                        openNodes.push("/");
+                    }else{
+                        var concat = '';
+                        for(var k = 1; k <= i; k++){
+                            concat += "/" + split[k];
+                        }
+                        openNodes.push(concat);
+                    }
+                }
+            }
+        }
+        this.readTree(selectFolder,openNodes);
+    }
 }
 </script>

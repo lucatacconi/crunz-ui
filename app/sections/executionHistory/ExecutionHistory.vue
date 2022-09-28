@@ -15,6 +15,13 @@
             :rowdata="logData"
         ></task-edit>
 
+        <!-- New task modal -->
+        <new-task
+            v-if="showNewTaskModal"
+            :old-task-content="oldTaskContent"
+            @on-close-modal="closeNewTaskModal($event)"
+        ></new-task>
+
         <!-- Picker modal -->
         <picker-modal @result="closePicker($event)" ref="picker"></picker-modal>
 
@@ -144,6 +151,10 @@
                                                     <v-list-item-icon><v-icon>mdi-file-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
                                                 </v-list-item>
+                                                <v-list-item @click="openNewTaskModal(item, i)">
+                                                    <v-list-item-icon><v-icon>mdi-content-duplicate</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>Copy task</v-list-item-title>
+                                                </v-list-item>
                                                 <v-list-item @click="openLastLogModal(item, i)">
                                                     <v-list-item-icon><v-icon>mdi-comment-check</v-icon></v-list-item-icon>
                                                     <v-list-item-title>View last log</v-list-item-title>
@@ -263,6 +274,7 @@ module.exports = {
             sortDesc:true,
             search: '',
             showEditModal: false,
+            showNewTaskModal:false,
             showLogModal: false,
             headers: [
                 {
@@ -279,6 +291,7 @@ module.exports = {
                 { text: 'Outcome', value: 'outcome', align: 'center' }
             ],
             tasksExecutions: [],
+            oldTaskContent:null,
             editData: false,
             uploadData: false,
             logData: false,
@@ -483,7 +496,28 @@ module.exports = {
             if(typeof result !== 'undefined' && result){
                 this.readData();
             }
-        }
+        },
+
+        openNewTaskModal: function (item) {
+            this.oldTaskContent=null;
+            console.log(item)
+            if(item!=undefined){
+                this.oldTaskContent = {
+                    subdir: item.subdir,
+                    real_path: item.real_path,
+                    task_path: item.task_path,
+                    filename: item.filename,
+                    event_unique_key: item.event_unique_key
+                }
+            };
+            this.showNewTaskModal = true;
+        },
+        closeNewTaskModal: function (result) {
+            this.showNewTaskModal = false;
+            if(typeof result !== 'undefined' && result){
+                this.readData();
+            }
+        },
     },
 
     computed: {
@@ -553,7 +587,8 @@ module.exports = {
     components:{
         'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime()),
         'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime()),
-        'picker-modal': httpVueLoader('../../shareds/PickerModal.vue' + '?v=' + new Date().getTime())
+        'picker-modal': httpVueLoader('../../shareds/PickerModal.vue' + '?v=' + new Date().getTime()),
+        'new-task': httpVueLoader('../../shareds/NewTask.vue' + '?v=' + new Date().getTime())
     }
 }
 </script>

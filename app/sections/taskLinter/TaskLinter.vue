@@ -1,6 +1,14 @@
 <template>
     <div>
 
+        <!-- New task modal -->
+        <new-task
+            v-if="showNewTaskModal"
+            :old-task-content="oldTaskContent"
+            @on-close-modal="closeNewTaskModal($event)"
+            origin="linted"
+        ></new-task>
+
         <!-- Edit modal -->
         <task-edit
             v-if="showEditModal"
@@ -54,6 +62,10 @@
                                                 <v-list-item @click="openEditModal(item, i)">
                                                     <v-list-item-icon><v-icon>mdi-file-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item @click="openNewTaskModal(item, i)">
+                                                    <v-list-item-icon><v-icon>mdi-content-duplicate</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>Copy task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="deleteItem(item, i)">
                                                     <v-list-item-icon><v-icon color="red">mdi-delete</v-icon></v-list-item-icon>
@@ -139,6 +151,7 @@ module.exports = {
             sortBy:'',
             search: '',
             showEditModal: false,
+            showNewTaskModal:false,
             headers: [
                 {
                     text: 'Actions',
@@ -152,6 +165,7 @@ module.exports = {
                 { text: 'Error detected', value: 'error_detected', align: 'left', sortable: false },
             ],
             files: [],
+            oldTaskContent:null,
             editData: false,
             message: 'No tasks found on server. Eventually check tasks directory path.',
             reloadIntervalObj: false,
@@ -275,6 +289,27 @@ module.exports = {
             }
         },
 
+        openNewTaskModal: function (item) {
+            this.oldTaskContent=null;
+            console.log(item)
+            if(item!=undefined){
+                this.oldTaskContent = {
+                    subdir: item.subdir,
+                    real_path: item.real_path,
+                    task_path: item.task_path,
+                    filename: item.filename,
+                    event_unique_key: item.event_unique_key
+                }
+            };
+            this.showNewTaskModal = true;
+        },
+        closeNewTaskModal: function (result) {
+            this.showNewTaskModal = false;
+            if(typeof result !== 'undefined' && result){
+                this.readData();
+            }
+        },
+
         deleteItem: function (rowdata) {
             var self = this;
             Utils.showAlertDialog(
@@ -333,7 +368,8 @@ module.exports = {
     },
 
     components:{
-        'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime())
+        'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime()),
+        'new-task': httpVueLoader('../../shareds/NewTask.vue' + '?v=' + new Date().getTime())
     }
 }
 </script>
