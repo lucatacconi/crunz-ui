@@ -22,7 +22,7 @@
                 </v-toolbar-items>
             </v-toolbar>
 
-            <v-card-text class="pt-0 pb-0">
+            <v-card-text class="pt-2 pb-0">
                 <v-form>
                     <v-container>
 
