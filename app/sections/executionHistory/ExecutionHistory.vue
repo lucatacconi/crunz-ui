@@ -153,7 +153,7 @@
                                                 </v-list-item>
                                                 <v-list-item @click="openNewTaskModal(item, i)">
                                                     <v-list-item-icon><v-icon>mdi-content-duplicate</v-icon></v-list-item-icon>
-                                                    <v-list-item-title>Copy task</v-list-item-title>
+                                                    <v-list-item-title>Clone task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="openLastLogModal(item, i)">
                                                     <v-list-item-icon><v-icon>mdi-comment-check</v-icon></v-list-item-icon>
