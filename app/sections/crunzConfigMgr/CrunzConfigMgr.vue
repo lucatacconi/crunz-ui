@@ -108,9 +108,6 @@ module.exports = {
         saveConfig:function(){
             var self=this;
 
-            console.log("----");
-            console.log((self.content));
-
             if(self.configEditor==undefined) return
             if(self.configEditor==null) return
 
