@@ -145,23 +145,58 @@
             }
         },
 
+
+
         {
-            "title": "Crunz configuration editor",
-            "subtitle": "Manage Crunz configuration",
-            "allowed":["admin"],
+            "title": "App administration",
+            "subtitle": "Setup and configs",
+            "allowed": ["admin"],
             "visible": true,
-
-            "action":{
-                "path": "/crunzConfigMgr/CrunzConfigMgr",
-                "component": "../../app/sections/crunzConfigMgr/CrunzConfigMgr.vue"
-            },
-
-            "layout":{
+            "layout": {
                 "icon": "mdi-tune-vertical-variant",
+                "expanded": false,
                 "disabled": false,
                 "color": false,
                 "class": false
-            }
+            },
+            "subMenuItems":[
+                {
+                    "title": "Crunz configuration editor",
+                    "subtitle": "Manage Crunz configuration",
+                    "allowed": ["admin"],
+                    "visible": true,
+
+                    "action":{
+                        "path": "/crunzConfigMgr/CrunzConfigMgr",
+                        "component": "../../app/sections/crunzConfigMgr/CrunzConfigMgr.vue"
+                    },
+
+                    "layout":{
+                        "icon": "mdi-cog-outline",
+                        "disabled": false,
+                        "color": false,
+                        "class": false
+                    }
+                },
+                {
+                    "title": "User configuration",
+                    "subtitle": "Manage users and levels",
+                    "allowed": ["admin"],
+                    "visible": true,
+
+                    "action":{
+                        "path": "/accountMgr/AccountMgr",
+                        "component": "../../app/sections/accountMgr/AccountMgr.vue"
+                    },
+
+                    "layout":{
+                        "icon": "mdi-account-multiple",
+                        "disabled": false,
+                        "color": false,
+                        "class": false
+                    }
+                }
+            ]
         }
     ]
 }
