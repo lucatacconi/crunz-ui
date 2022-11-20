@@ -178,14 +178,18 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
         foreach ($files as $taskFile) {
 
-            $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
+            $file_content_check = $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
             $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content_orig);
 
+            $file_content_check = preg_replace('/\/\*[\s\S]+?\*\//', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\r/', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\n/', '', $file_content_check);
+
             if(
-                strpos($file_content, 'use Crunz\Schedule;') === false ||
-                strpos($file_content, '= new Schedule()') === false ||
-                strpos($file_content, '->run(') === false ||
-                strpos($file_content, 'return $schedule;') === false
+                strpos($file_content_check, 'use Crunz\Schedule;') === false ||
+                strpos($file_content_check, '= new Schedule()') === false ||
+                strpos($file_content_check, '->run(') === false ||
+                strpos($file_content_check, 'return $schedule;') === false
             ){
                 continue;
             }
@@ -205,17 +209,17 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
             //Cron expression check
             $cron_presence = false;
-            if(strpos($file_content, '->cron(\'') !== false){
-                $pos_start = strpos($file_content, '->cron(\'');
+            if(strpos($file_content_check, '->cron(\'') !== false){
+                $pos_start = strpos($file_content_check, '->cron(\'');
                 $cron_presence = true;
             }
-            if(strpos($file_content, '->cron("') !== false){
-                $pos_start = strpos($file_content, '->cron("');
+            if(strpos($file_content_check, '->cron("') !== false){
+                $pos_start = strpos($file_content_check, '->cron("');
                 $cron_presence = true;
             }
 
             if($cron_presence){
-                $cron_str_tmp = str_replace( ['->cron(\'', '->cron("'], '', substr($file_content, $pos_start) );
+                $cron_str_tmp = str_replace( ['->cron(\'', '->cron("'], '', substr($file_content_check, $pos_start) );
                 $aTMP = explode(")", $cron_str_tmp);
 
                 $cron_str = str_replace( ['\'', '"'], '', $aTMP[0] );
@@ -283,7 +287,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                                     . preg_quote($endTag, $delimiter)
                                     . $delimiter
                                     . 's';
-                preg_match($regex, $file_content, $matches);
+                preg_match($regex, $file_content_check, $matches);
                 if(!empty($matches) and strpos($matches[1], ',') !== false){
                     $aTIMELIFE = explode(",", $matches[1]);
                     $lifetime_from = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[0] ));
@@ -299,7 +303,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                                         . preg_quote($endTag, $delimiter)
                                         . $delimiter
                                         . 's';
-                    preg_match($regex, $file_content,$matches);
+                    preg_match($regex, $file_content_check, $matches);
                     if(!empty($matches)){
                         $lifetime_from = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
                     }
@@ -314,7 +318,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                                         . preg_quote($endTag, $delimiter)
                                         . $delimiter
                                         . 's';
-                    preg_match($regex, $file_content,$matches);
+                    preg_match($regex, $file_content_check, $matches);
                     if(!empty($matches)){
                         $lifetime_to = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
                     }
