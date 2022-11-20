@@ -102,7 +102,7 @@
                                 label="Amount of logs"
                                 hide-details
                                 class="mt-3 mr-md-2"
-                                :items="['100','200','300','All']"
+                                :items="['50','100','200','300','All']"
                             ></v-select>
                         </v-flex>
                         <v-flex xs12 md6>
@@ -267,7 +267,7 @@ module.exports = {
                 eventUniqueId:null,
                 executionIntervalFrom:null,
                 executionIntervalTo:null,
-                amountLogs:'100'
+                amountLogs:'50'
             },
             pointer:null,
             sortBy:'execution_datatime',
@@ -457,7 +457,7 @@ module.exports = {
             self.search_params.eventUniqueId = null
             self.search_params.executionIntervalFrom = null
             self.search_params.executionIntervalTo = null
-            self.search_params.amountLogs = '100'
+            self.search_params.amountLogs = '50'
             Utils.apiCall("get", "/task/filename",{},options)
             .then(function (response) {
                 self.task_path_lovs=[]
