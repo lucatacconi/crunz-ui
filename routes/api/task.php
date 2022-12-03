@@ -352,8 +352,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 //Check task lifetime
                 $from = '';
                 $to = '';
-                $lifetime_from = '';
-                $lifetime_to = '';
+                $life_datetime_from = '';
+                $life_datetime_to = '';
 
                 $delimiter = '#';
                 $startTag = '->between(';
@@ -366,11 +366,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 preg_match($regex, $file_content_check, $matches);
                 if(!empty($matches) and strpos($matches[1], ',') !== false){
                     $aTIMELIFE = explode(",", $matches[1]);
-                    $lifetime_from = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[0] ));
-                    $lifetime_to = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[1] ));
+                    $life_datetime_from = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[0] ));
+                    $life_datetime_to = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[1] ));
                 }
 
-                if(empty($lifetime_from)){
+                if(empty($life_datetime_from)){
                     $delimiter = '#';
                     $startTag = '->from(';
                     $endTag = ')';
@@ -381,11 +381,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                                         . 's';
                     preg_match($regex, $file_content_check,$matches);
                     if(!empty($matches)){
-                        $lifetime_from = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
+                        $life_datetime_from = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
                     }
                 }
 
-                if(empty($lifetime_to)){
+                if(empty($life_datetime_to)){
                     $delimiter = '#';
                     $startTag = '->to(';
                     $endTag = ')';
@@ -396,20 +396,20 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                                         . 's';
                     preg_match($regex, $file_content_check,$matches);
                     if(!empty($matches)){
-                        $lifetime_to = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
+                        $life_datetime_to = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
                     }
                 }
 
-                if(!empty($lifetime_from)){
-                    $row["lifetime_from"] = date('Y-m-d H:i:s', $lifetime_from);
-                    if($event_interval_from <  $row["lifetime_from"]){
-                        $event_interval_from = $row["lifetime_from"];
+                if(!empty($life_datetime_from)){
+                    $row["life_datetime_from"] = date('Y-m-d H:i:s', $life_datetime_from);
+                    if($event_interval_from <  $row["life_datetime_from"]){
+                        $event_interval_from = $row["life_datetime_from"];
                     }
                 }
-                if(!empty($lifetime_to)){
-                    $row["lifetime_to"] = date('Y-m-d H:i:s', $lifetime_to);
-                    if($event_interval_to >  $row["lifetime_to"]){
-                        $event_interval_to = $row["lifetime_to"];
+                if(!empty($life_datetime_to)){
+                    $row["life_datetime_to"] = date('Y-m-d H:i:s', $life_datetime_to);
+                    if($event_interval_to >  $row["life_datetime_to"]){
+                        $event_interval_to = $row["life_datetime_to"];
                     }
                 }
 
@@ -417,16 +417,16 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $event_interval_to_orig = $event_interval_to;
 
 
-                if(!empty($row["lifetime_from"]) || !empty($row["lifetime_to"])){
+                if(!empty($row["life_datetime_from"]) || !empty($row["life_datetime_to"])){
 
                     $lifetime_descr = " (Executed";
 
-                    if(!empty($row["lifetime_from"])){
-                        $lifetime_descr .= " from ".$row["lifetime_from"];
+                    if(!empty($row["life_datetime_from"])){
+                        $lifetime_descr .= " from ".$row["life_datetime_from"];
                     }
 
-                    if(!empty($row["lifetime_to"])){
-                        $lifetime_descr .= " to ".$row["lifetime_to"];
+                    if(!empty($row["life_datetime_to"])){
+                        $lifetime_descr .= " to ".$row["life_datetime_to"];
                     }
 
                     $lifetime_descr .= ")";
@@ -587,9 +587,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
 
                 //Next run calculation
-                if(empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
+                if(empty($row["life_datetime_from"]) && empty($row["life_datetime_to"])){
                     $next_run = $cron->getNextRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
-                }else if(!empty($row["lifetime_to"]) && $row["lifetime_to"] < $date_ref){
+                }else if(!empty($row["life_datetime_to"]) && $row["life_datetime_to"] < $date_ref){
                     $next_run = '';
                 }else{
 
@@ -601,18 +601,18 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                         if($calc_run > $interval_to) break;
 
-                        if(!empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
-                            if($calc_run <= $row["lifetime_to"]  ){
+                        if(!empty($row["life_datetime_from"]) && empty($row["life_datetime_to"])){
+                            if($calc_run <= $row["life_datetime_to"]  ){
                                 $next_run = $calc_run;
                                 break;
                             }
-                        }else if(empty($row["lifetime_from"]) && !empty($row["lifetime_to"])){
-                            if($calc_run <= $row["lifetime_to"]  ){
+                        }else if(empty($row["life_datetime_from"]) && !empty($row["life_datetime_to"])){
+                            if($calc_run <= $row["life_datetime_to"]  ){
                                 $next_run = $calc_run;
                                 break;
                             }
-                        }else if(!empty($row["lifetime_from"]) && !empty($row["lifetime_to"])){
-                            if($calc_run >= $row["lifetime_from"] && $calc_run <= $row["lifetime_to"]  ){
+                        }else if(!empty($row["life_datetime_from"]) && !empty($row["life_datetime_to"])){
+                            if($calc_run >= $row["life_datetime_from"] && $calc_run <= $row["life_datetime_to"]  ){
                                 $next_run = $calc_run;
                                 break;
                             }
@@ -625,9 +625,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["next_run"] = $next_run;
 
                 //Calculeted but not necessarily executed
-                if(empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
+                if(empty($row["life_datetime_from"]) && empty($row["life_datetime_to"])){
                     $calculeted_last_run = $cron->getPreviousRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
-                }else if(!empty($row["lifetime_from"]) && $row["lifetime_from"] > $date_ref){
+                }else if(!empty($row["life_datetime_from"]) && $row["life_datetime_from"] > $date_ref){
                     $calculeted_last_run = '';
                 }else{
 
@@ -639,18 +639,18 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                         if($calc_run < $interval_from) break;
 
-                        if(!empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
-                            if($calc_run >= $row["lifetime_from"] ){
+                        if(!empty($row["life_datetime_from"]) && empty($row["life_datetime_to"])){
+                            if($calc_run >= $row["life_datetime_from"] ){
                                 $calculeted_last_run = $calc_run;
                                 break;
                             }
-                        }else if(empty($row["lifetime_from"]) && !empty($row["lifetime_to"])){
-                            if($calc_run <= $row["lifetime_to"]  ){
+                        }else if(empty($row["life_datetime_from"]) && !empty($row["life_datetime_to"])){
+                            if($calc_run <= $row["life_datetime_to"]  ){
                                 $calculeted_last_run = $calc_run;
                                 break;
                             }
-                        }else if(!empty($row["lifetime_from"]) && !empty($row["lifetime_to"])){
-                            if($calc_run >= $row["lifetime_from"] && $calc_run <= $row["lifetime_to"]  ){
+                        }else if(!empty($row["life_datetime_from"]) && !empty($row["life_datetime_to"])){
+                            if($calc_run >= $row["life_datetime_from"] && $calc_run <= $row["life_datetime_to"]  ){
                                 $calculeted_last_run = $calc_run;
                                 break;
                             }

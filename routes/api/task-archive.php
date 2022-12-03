@@ -227,8 +227,8 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                 //Check task lifetime
                 $from = '';
                 $to = '';
-                $lifetime_from = '';
-                $lifetime_to = '';
+                $life_datetime_from = '';
+                $life_datetime_to = '';
 
                 $delimiter = '#';
                 $startTag = '->between(';
@@ -241,11 +241,11 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                 preg_match($regex, $file_content_check, $matches);
                 if(!empty($matches) and strpos($matches[1], ',') !== false){
                     $aTIMELIFE = explode(",", $matches[1]);
-                    $lifetime_from = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[0] ));
-                    $lifetime_to = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[1] ));
+                    $life_datetime_from = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[0] ));
+                    $life_datetime_to = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[1] ));
                 }
 
-                if(empty($lifetime_from)){
+                if(empty($life_datetime_from)){
                     $delimiter = '#';
                     $startTag = '->from(';
                     $endTag = ')';
@@ -256,11 +256,11 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                                         . 's';
                     preg_match($regex, $file_content_check, $matches);
                     if(!empty($matches)){
-                        $lifetime_from = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
+                        $life_datetime_from = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
                     }
                 }
 
-                if(empty($lifetime_to)){
+                if(empty($life_datetime_to)){
                     $delimiter = '#';
                     $startTag = '->to(';
                     $endTag = ')';
@@ -271,27 +271,27 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                                         . 's';
                     preg_match($regex, $file_content_check, $matches);
                     if(!empty($matches)){
-                        $lifetime_to = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
+                        $life_datetime_to = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
                     }
                 }
 
-                if(!empty($lifetime_from)){
-                    $row["lifetime_from"] = date('Y-m-d H:i:s', $lifetime_from);
+                if(!empty($life_datetime_from)){
+                    $row["life_datetime_from"] = date('Y-m-d H:i:s', $life_datetime_from);
                 }
-                if(!empty($lifetime_to)){
-                    $row["lifetime_to"] = date('Y-m-d H:i:s', $lifetime_to);
+                if(!empty($life_datetime_to)){
+                    $row["life_datetime_to"] = date('Y-m-d H:i:s', $life_datetime_to);
                 }
 
-                if(!empty($row["lifetime_from"]) || !empty($row["lifetime_to"])){
+                if(!empty($row["life_datetime_from"]) || !empty($row["life_datetime_to"])){
 
                     $lifetime_descr = " (Executed";
 
-                    if(!empty($row["lifetime_from"])){
-                        $lifetime_descr .= " from ".$row["lifetime_from"];
+                    if(!empty($row["life_datetime_from"])){
+                        $lifetime_descr .= " from ".$row["life_datetime_from"];
                     }
 
-                    if(!empty($row["lifetime_to"])){
-                        $lifetime_descr .= " to ".$row["lifetime_to"];
+                    if(!empty($row["life_datetime_to"])){
+                        $lifetime_descr .= " to ".$row["life_datetime_to"];
                     }
 
                     $lifetime_descr .= ")";
