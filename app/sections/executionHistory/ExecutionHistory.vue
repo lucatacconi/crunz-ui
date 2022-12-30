@@ -75,7 +75,7 @@
                                     @click:append="openPicker('executionIntervalFrom','execution_interval_from')"
                                     append-outer-icon="mdi-filter-remove-outline"
                                     @click:append-outer="search_params.executionIntervalFrom = null"
-                                >2022-02-08</v-text-field>
+                                ></v-text-field>
                             </validationprovider>
                         </v-flex>
                         <v-flex xs12 md6>
@@ -108,12 +108,25 @@
                         <v-flex xs12 md6>
                             <v-text-field
                                 v-model="search"
-                                append-icon="mdi-magnify"
+                                append-icon="biotech"
                                 label="Search in log interval"
                                 single-line
                                 hide-details
                                 class="mt-3"
                             ></v-text-field>
+                        </v-flex>
+                        <v-flex xs12 md12 class="text-right">
+                            <v-btn
+                                class="mt-3 mr-md-2"
+                                outlined
+                                color="red"
+                                @click="launchSearch()"
+                            >
+                                <v-icon left>
+                                    mdi-magnify
+                                </v-icon>
+                                Search
+                            </v-btn>
                         </v-flex>
                     </v-layout>
                 </v-form>
@@ -128,6 +141,7 @@
                 :search="search"
                 :items-per-page="10"
                 :footer-props='{ "items-per-page-options": [10, 30, 50, -1]}'
+                class="mt-3"
             >
                 <template v-if="tasksExecutions.length!=0" v-slot:body="{ items }">
                     <tbody>
@@ -218,42 +232,6 @@
             </v-data-table>
 
         </v-card>
-
-        <v-speed-dial
-            absolute
-            fixed
-            bottom
-            right
-            direction="left"
-            transition="slide-y-reverse-transition"
-            style="margin-bottom:30px;"
-        >
-            <template v-slot:activator>
-                <v-btn
-                    color="blue darken-2"
-                    dark
-                    fab
-                >
-                    <v-icon large>mdi-cog</v-icon>
-                </v-btn>
-            </template>
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                    <v-btn
-                        fab
-                        dark
-                        small
-                        color="indigo"
-                        @click="readData()"
-                        v-on="on"
-                    >
-                        <v-icon>mdi-refresh</v-icon>
-                    </v-btn>
-                </template>
-                <span>Refresh</span>
-            </v-tooltip>
-        </v-speed-dial>
-
     </div>
 </template>
 
@@ -295,7 +273,7 @@ module.exports = {
             editData: false,
             uploadData: false,
             logData: false,
-            message: 'No tasks execution log found on server.',
+            message: 'No tasks execution log found. Modify your search criteria and press Search button.',
 
             clipboad_enabled: false
         }
@@ -338,7 +316,7 @@ module.exports = {
                     .then(function (response) {
                         self.tasksExecutions = response.data;
                         if(response.data.length==0){
-                            self.message = "No tasks execution log found on server.";
+                            self.message = "No tasks execution log found. Modify your search criteria and press Search button.";
                         }
                     });
                 }
@@ -360,7 +338,7 @@ module.exports = {
                 self.tasksExecutions = response.data;
                 self.readLovs(options);
                 if(response.data.length == 0){
-                    self.message = "No tasks execution log found on server.";
+                    self.message = "No tasks execution log found. Modify your search criteria and press Search button.";
                 }
             });
         },
@@ -493,30 +471,30 @@ module.exports = {
         },
         closeEditModal: function (result) {
             this.showEditModal = false;
-            if(typeof result !== 'undefined' && result){
-                this.readData();
-            }
+            // if(typeof result !== 'undefined' && result){
+            //     this.readData();
+            // }
         },
 
-        openNewTaskModal: function (item) {
-            this.oldTaskContent=null;
-            if(item!=undefined){
-                this.oldTaskContent = {
-                    subdir: item.subdir,
-                    real_path: item.real_path,
-                    task_path: item.task_path,
-                    filename: item.filename,
-                    event_unique_key: item.event_unique_key
-                }
-            };
-            this.showNewTaskModal = true;
-        },
-        closeNewTaskModal: function (result) {
-            this.showNewTaskModal = false;
-            if(typeof result !== 'undefined' && result){
-                this.readData();
-            }
-        },
+        // openNewTaskModal: function (item) {
+        //     this.oldTaskContent=null;
+        //     if(item!=undefined){
+        //         this.oldTaskContent = {
+        //             subdir: item.subdir,
+        //             real_path: item.real_path,
+        //             task_path: item.task_path,
+        //             filename: item.filename,
+        //             event_unique_key: item.event_unique_key
+        //         }
+        //     };
+        //     this.showNewTaskModal = true;
+        // },
+        // closeNewTaskModal: function (result) {
+        //     this.showNewTaskModal = false;
+        //     if(typeof result !== 'undefined' && result){
+        //         this.readData();
+        //     }
+        // },
     },
 
     computed: {
@@ -527,7 +505,7 @@ module.exports = {
 
     created:function() {
 
-        this.readData();
+        // this.readData();
 
         VeeValidate.extend('date_format', value => {
 
@@ -562,25 +540,25 @@ module.exports = {
     },
 
     mounted:function(){
-        this.readData();
+        // this.readData();
     },
 
     watch: {
-        'search_params.taskPath': function (newValue, preValue) {
-            this.launchSearch();
-        },
-        'search_params.eventUniqueId': function (newValue, preValue) {
-            this.launchSearch();
-        },
-        'search_params.executionIntervalFrom': function (newValue, preValue) {
-            this.launchSearch();
-        },
-        'search_params.executionIntervalTo': function (newValue, preValue) {
-            this.launchSearch();
-        },
-        'search_params.amountLogs': function (newValue, preValue) {
-            this.launchSearch();
-        }
+        // 'search_params.taskPath': function (newValue, preValue) {
+        //     this.launchSearch();
+        // },
+        // 'search_params.eventUniqueId': function (newValue, preValue) {
+        //     this.launchSearch();
+        // },
+        // 'search_params.executionIntervalFrom': function (newValue, preValue) {
+        //     this.launchSearch();
+        // },
+        // 'search_params.executionIntervalTo': function (newValue, preValue) {
+        //     this.launchSearch();
+        // },
+        // 'search_params.amountLogs': function (newValue, preValue) {
+        //     this.launchSearch();
+        // }
     },
 
     components:{
