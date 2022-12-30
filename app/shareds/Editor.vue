@@ -272,7 +272,7 @@ module.exports = {
                 },
                 {
                     text:"prevent Overlapping",
-                    function:"->preventOverlapping(object $store = null)",
+                    function:"->preventOverlapping()",
                     tooltip:"Do not allow the event to overlap each other<br>By default, the lock is acquired through file system locks. Alternatively, you can pass a symfony lock store that will be responsible for the locking"
                 }
             ],
