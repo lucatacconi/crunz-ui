@@ -115,11 +115,12 @@
                                 class="mt-3"
                             ></v-text-field>
                         </v-flex>
-                        <v-flex xs12 md12 class="text-right">
+                        <v-flex xs12 md6 offset-md6 class="text-right">
                             <v-btn
                                 class="mt-3 mr-md-2"
                                 outlined
                                 color="red"
+                                block
                                 @click="launchSearch()"
                             >
                                 <v-icon left>
