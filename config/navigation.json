@@ -145,7 +145,24 @@
             }
         },
 
+        {
+            "title": "Analytics",
+            "subtitle": "Analytics and statistics",
+            "allowed":["admin","user"],
+            "visible": true,
 
+            "action":{
+                "path": "/analytics/Analytics",
+                "component": "../../app/sections/analytics/Analytics.vue"
+            },
+
+            "layout":{
+                "icon": "mdi-speedometer",
+                "disabled": false,
+                "color": false,
+                "class": false
+            }
+        },
 
         {
             "title": "App administration",
