@@ -3,93 +3,94 @@
         <v-container>
             <v-row class="pa-0">
 
-                <v-col lg="4" md="6" xs="12">
+                <v-col lg="4" md="6" sm="12" xs="12">
                     <v-card class="fill-height">
                         <v-card-title >
-                            Number of tasks:
+                            System Uptime:
                         </v-card-title>
                         <v-card-text>
-                            <div>Number of tasks (task's files):</div>
                             <p>
                                 <span class="text-h1 text--primary">
-                                    <strong>10</strong>
+                                    <strong>{{ uptime['uptime-days'] === false ? "--" : uptime['uptime-days'] }}</strong>
                                 </span>
-                                <span class="text-h4 text--primary">
-                                    <strong>(10)</strong>
+                                <span class="text-h4 text--gray">
+                                    day/s
+                                    <strong>({{ uptime['uptime-date'] === false  ? "--" : uptime['uptime-date'] }})</strong>
                                 </span>
                             </p>
                             <div>
-                                relating to or dependent on charity; charitable.<br>
-                                "an eleemosynary educational institution."
+                                Days of system uptime calculated based on the date the first unarchived task was loaded and activated.
                             </div>
                         </v-card-text>
                     </v-card>
                 </v-col>
 
-                <v-col lg="4" md="6" xs="12">
+                <v-col lg="4" md="6" sm="12" xs="12">
                     <v-card class="fill-height">
                         <v-card-title >
-                            Uptime:
+                            Active tasks:
                         </v-card-title>
                         <v-card-text>
-                            <div>Uptime:</div>
                             <p>
                                 <span class="text-h1 text--primary">
-                                    <strong>10 days</strong>
+                                    <strong>{{ activeTasks['num-files'] === false ? "--" : activeTasks['num-files'] }}</strong>
+                                </span>
+                                <span class="text-h4 text--gray">
+
+                                    (<strong>{{ activeTasks['files-size'] === false  ? "--" : activeTasks['files-size'] }}</strong> Kb)
                                 </span>
                             </p>
                             <div>
-                                relating to or dependent on charity; charitable.<br>
-                                "an eleemosynary educational institution."
+                                Number of active tasks present and total size of task files.
                             </div>
                         </v-card-text>
                     </v-card>
                 </v-col>
 
-                <v-col lg="4" md="6" xs="12">
+                <v-col lg="4" md="6" sm="12" xs="12">
                     <v-card class="fill-height">
                         <v-card-title >
-                            Executed tasks:
+                            Archived tasks:
                         </v-card-title>
                         <v-card-text>
-                            <div>daily (month):</div>
                             <p>
                                 <span class="text-h1 text--primary">
-                                    <strong>200</strong>
+                                    <strong>{{ archivedTasks['num-files'] === false ? "--" : archivedTasks['num-files'] }}</strong>
                                 </span>
-                                <span class="text-h4 text--primary">
-                                    <strong>(123123)</strong>
+                                <span class="text-h4 text--gray">
+
+                                    (<strong>{{ archivedTasks['files-size'] === false  ? "--" : archivedTasks['files-size'] }}</strong> Kb)
                                 </span>
                             </p>
                             <div>
-                                relating to or dependent on charity; charitable.<br>
-                                "an eleemosynary educational institution."
+                                Number of archived tasks present and total size of task files.
                             </div>
                         </v-card-text>
                     </v-card>
                 </v-col>
 
-
-
-                <v-col lg="4" md="6" xs="12">
+                <v-col lg="4" md="6" sm="12" xs="12">
                     <v-card class="fill-height">
                         <v-card-title >
-                            Log size:
+                            Logs size:
                         </v-card-title>
                         <v-card-text>
-                            <div>Log size:</div>
                             <p>
                                 <span class="text-h1 text--primary">
-                                    <strong>10 Gb</strong>
+                                    <strong>{{ logs['logs-size'] === false ? "--" : logs['logs-size'] }}</strong>
+                                </span>
+                                <span class="text-h4 text--gray">
+                                    Mb
+                                    (<strong>{{ logs['num-files'] === false  ? "--" : logs['num-files'] }}</strong> num. tasks)
                                 </span>
                             </p>
                             <div>
-                                relating to or dependent on charity; charitable.<br>
-                                "an eleemosynary educational institution."
+                                Calcualated log size in megabytes, based on the size of all log files, and number of log present in the logs directory.
                             </div>
                         </v-card-text>
                     </v-card>
                 </v-col>
+
             </v-row>
         </v-container>
     </div>
@@ -99,12 +100,88 @@
 module.exports = {
     data:function(){
         return{
-            task_path_lovs:[]
+            "uptime" : {
+                "uptime-date": false,
+                "uptime-days": false
+            },
+            "logs" : {
+                "logs-size": false,
+                "num-files": false
+            },
+            "activeTasks" : {
+                "files-size": false,
+                "num-files": false
+            },
+            "archivedTasks" : {
+                "files-size": false,
+                "num-files": false
+            }
         }
     },
     methods: {
-        readData:function(options = {}){
+
+        readUptime:function(){
+
             var self = this;
+
+            var options = {
+                showLoading: false
+            };
+
+            var params = {}
+
+            Utils.apiCall("get", "/task-stat/uptime",params, options)
+            .then(function (response) {
+                self.uptime = response.data;
+            });
+        },
+
+        readLogInfo:function(){
+
+            var self = this;
+
+            var options = {
+                showLoading: false
+            };
+
+            var params = {}
+
+            Utils.apiCall("get", "/task-stat/logs",params, options)
+            .then(function (response) {
+                self['logs'] = response.data;
+            });
+        },
+
+        activeTasksInfo:function(){
+
+            var self = this;
+
+            var options = {
+                showLoading: false
+            };
+
+            var params = {}
+
+            Utils.apiCall("get", "/task-stat/active-tasks",params, options)
+            .then(function (response) {
+                self['activeTasks'] = response.data;
+            });
+        },
+
+        archivedTasksInfo:function(){
+
+            var self = this;
+
+            var options = {
+                showLoading: false
+            };
+
+            var params = {}
+
+            Utils.apiCall("get", "/task-stat/archived-tasks",params, options)
+            .then(function (response) {
+                self['archivedTasks'] = response.data;
+            });
         },
     },
 
@@ -112,12 +189,11 @@ module.exports = {
 
     },
 
-    created:function() {
-        // this.readData();
-    },
-
     mounted:function(){
-        // this.readData();
+        this.readUptime();
+        this.readLogInfo();
+        this.activeTasksInfo();
+        this.archivedTasksInfo();
     },
 
     components:{ }

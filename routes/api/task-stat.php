@@ -535,4 +535,196 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         return $response->withStatus(200)
                         ->withHeader("Content-Type", "application/json");
     });
+
+    $group->get('/uptime', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        $aFILES = array_diff(scandir($crunz_base_dir), array('..', '.'));
+
+        $min_date = false;
+        foreach($aFILES as $file_name){
+            $file_path = $crunz_base_dir."/".$file_name;
+            $file_date = date("Y-m-d", filemtime($file_path));
+
+            if($min_date === false || $file_date < $min_date){
+                $min_date = $file_date;
+            }
+        }
+
+        $data = [];
+        $data["uptime-date"] = $min_date;
+        $data["uptime-days"] = ceil((time() - strtotime($min_date)) / 86400);
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
+    $group->get('/logs', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
+        }else{
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
+        }
+
+
+        $log_size = 0;
+        $num_files = 0;
+        foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($LOGS_DIR)) as $file){
+            if($file->isFile() && substr($file->getFilename(), -4) == ".log"){
+                $log_size += $file->getSize();
+                $num_files++;
+            }
+        }
+
+        $log_size_mb = number_format(($log_size / 1024 / 1024), 2, '.', '');
+
+        $data = [];
+        $data["logs-size"] = $log_size_mb;
+        $data["num-files"] = $num_files;
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
+    $group->get('/active-tasks', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
+
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        $TASK_SUFFIX = $crunz_config["suffix"];
+
+
+        $directoryIterator = new \RecursiveDirectoryIterator($TASKS_DIR);
+        $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
+
+
+        $quotedSuffix = \preg_quote($TASK_SUFFIX, '/');
+        $regexIterator = new \RegexIterator( $recursiveIterator, "/^.+{$quotedSuffix}$/i", \RecursiveRegexIterator::GET_MATCH );
+
+        $files = \array_map(
+            static function (array $file) {
+                return new \SplFileInfo(\reset($file));
+            },
+            \iterator_to_array($regexIterator)
+        );
+
+        $active_tasks_size = 0;
+        $num_active_tasks = 0;
+        foreach($files as $file){
+            $active_tasks_size += intval($file->getSize());
+            $num_active_tasks++;
+        }
+
+        $active_tasks_size = number_format(($active_tasks_size / 1024 ), 2, '.', '');
+
+        $data = [];
+        $data["files-size"] = $active_tasks_size;
+        $data["num-files"] = $num_active_tasks;
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
+    $group->get('/archived-tasks', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+
+        $archived_tasks_size = 0;
+        $num_archived_tasks = 0;
+        foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($TASKS_DIR)) as $file){
+            if($file->isFile() && substr($file->getFilename(), -5) == ".arch"){
+                $archived_tasks_size += $file->getSize();
+                $num_archived_tasks++;
+            }
+        }
+
+        $archived_tasks_size = number_format(($archived_tasks_size / 1024 ), 2, '.', '');
+
+        $data = [];
+        $data["files-size"] = $archived_tasks_size;
+        $data["num-files"] = $num_archived_tasks;
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
+
 });
