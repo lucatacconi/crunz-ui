@@ -177,7 +177,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                 if( substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1) == substr(date('Ymd', strtotime($interval_to)), $chr_selector, 1) ){
                     $glob_filter_from .= substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1);
-                    $glob_filter_to .= substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1);
+                    $glob_filter_to .= substr(date('Ymd', strtotime($interval_to)), $chr_selector, 1);
                 }else{
                     break;
                 }
@@ -188,7 +188,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             $glob_filter .= ".log";
         }
 
-        $aLOGNAME_all = glob($glob_filter); //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
+        array_multisort(array_map('filemtime', ($aLOGNAME_all = glob($glob_filter))), SORT_DESC, $aLOGNAME_all);
 
         $aLOGNAME_perkey = [];
         foreach($aLOGNAME_all as $logkey => $logfile){
@@ -255,7 +255,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     continue;
                 }
             }
-
 
             unset($schedule);
             require $taskFile->getRealPath();
@@ -357,7 +356,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $life_time_from = '';
                 $life_time_to = '';
 
-
                 //Evaluate task lifetime between
                 $matches_details = null;
                 $pattern = '/->between\((.*?)\)/';
@@ -366,7 +364,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 foreach($matches_between[1] as $match_between){
                     $match_between = str_replace(' ', '', $match_between);
 
-                    $pattern = '/["\'](\d{4}-\d{2}-\d{2} \d{2}:\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})["\'],["\'](\d{4}-\d{2}-\d{2} \d{2}:\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})["\']/';
+                    $pattern = '/["\'](\d{2}:\d{2} \d{4}-\d{2}-\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})["\'],["\'](\d{2}:\d{2} \d{4}-\d{2}-\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})["\']/';
                     preg_match_all($pattern, $match_between, $matches_details);
 
                     if(!empty($matches_details[0])){
@@ -378,13 +376,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         }
 
                         if (preg_match('/^([0-9]*):([0-9]*)$/', $matches_details[2][0])) {
-                            $life_time_to = $matches_details[1][0];
+                            $life_time_to = $matches_details[2][0];
                         }else{
-                            $life_datetime_to = $matches_details[1][0];
+                            $life_datetime_to = $matches_details[2][0];
                         }
                     }
                 }
-
 
                 //Evaluate task lifetime from
                 $matches_details = null;
@@ -393,7 +390,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                 if(!empty($matches_from[1])){
                     foreach($matches_from[1] as $match_from){
-                        $pattern = '/(\d{4}-\d{2}-\d{2} \d{2}:\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})/';
+                        $pattern = '/(\d{2}:\d{2} \d{4}-\d{2}-\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})/';
                         preg_match_all($pattern, $match_from, $matches_details);
 
                         foreach($matches_details[1] as $match_tmp){
@@ -406,7 +403,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }
                 }
 
-
                 //Evaluate task lifetime to
                 $matches_details = null;
                 $pattern = '/->to\(["\'](.*?)["\']\)/';
@@ -414,17 +410,25 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                 if(!empty($matches_to[1])){
                     foreach($matches_to[1] as $match_to){
-                        $pattern = '/(\d{4}-\d{2}-\d{2} \d{2}:\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})/';
+                        $pattern = '/(\d{2}:\d{2} \d{4}-\d{2}-\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})/';
                         preg_match_all($pattern, $match_to, $matches_details);
 
                         foreach($matches_details[1] as $match_tmp){
                             if (preg_match('/^([0-9]*):([0-9]*)$/', $match_tmp)) {
-                                $life_time_from = $match_tmp;
+                                $life_time_to = $match_tmp;
                             }else{
-                                $life_datetime_from = $match_tmp;
+                                $life_datetime_to = $match_tmp;
                             }
                         }
                     }
+                }
+
+                if(!empty($life_datetime_from)){
+                    $life_datetime_from = date('Y-m-d H:i:s', strtotime($life_datetime_from));
+                }
+
+                if(!empty($life_datetime_to)){
+                    $life_datetime_to = date('Y-m-d H:i:s', strtotime($life_datetime_to));
                 }
 
                 $row["life_datetime_from"] = $life_datetime_from;
@@ -432,15 +436,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["life_time_from"] = $life_time_from;
                 $row["life_time_to"] = $life_time_to;
 
-
                 if(!empty($life_datetime_from)){
-                    $row["life_datetime_from"] = date('Y-m-d H:i:s', $life_datetime_from);
                     if($event_interval_from <  $row["life_datetime_from"]){
                         $event_interval_from = $row["life_datetime_from"];
                     }
                 }
                 if(!empty($life_datetime_to)){
-                    $row["life_datetime_to"] = date('Y-m-d H:i:s', $life_datetime_to);
                     if($event_interval_to >  $row["life_datetime_to"]){
                         $event_interval_to = $row["life_datetime_to"];
                     }
@@ -455,7 +456,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                 $event_interval_from_orig = $event_interval_from;
                 $event_interval_to_orig = $event_interval_to;
-
 
                 if(!empty($row["life_datetime_from"]) || !empty($row["life_datetime_to"]) || !empty($row["life_time_from"]) || !empty($row["life_time_to"])){
 
@@ -504,9 +504,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 if(substr($row["expression"], 0, 3) == '* *' && substr($row["expression"], 4) != '* * *'){
                     $row["expression"] = '0 0'.substr($row["expression"],3);
                 }
-
-                unset($cron);
-                $cron = new Cron\CronExpression($row["expression"]);
 
 
                 //Check log file configured by user appendOutputTo() or sendOutputTo()
@@ -567,7 +564,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 }
 
                 if(!empty($aLOGNAME)){
-                    usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
 
                     //0 UNIQUE_KEY
                     //1 Outcome
@@ -650,6 +646,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }
                 }
 
+                unset($cron);
+                $cron = new Cron\CronExpression($row["expression"]);
+
 
                 //Next run calculation
                 $nincrement = 0;
@@ -676,8 +675,13 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                     while($nincrement < 1000){ //Use the same hard limit of cron-expression library
 
-                        $calc_run = $cron->getNextRunDate($date_ref_tmp, $nincrement, true)->format('Y-m-d H:i:s');
-                        $nincrement++;
+                        try{
+                            $calc_run = $cron->getNextRunDate($date_ref_tmp, $nincrement, true)->format('Y-m-d H:i:s');
+                            $nincrement++;
+                        }catch(Exception $e){
+                            // die(print_r($row,true)."-$nincrement-".$e->getMessage());
+                            break;
+                        }
 
                         if(!empty($row["life_time_from"]) && date('H:i', strtotime($calc_run)) < $row["life_time_from"] ){
                             continue;
@@ -738,8 +742,13 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                     while($nincrement < 1000){ //Use the same hard limit of cron-expression library
 
-                        $calc_run = $cron->getPreviousRunDate($date_ref_tmp, $nincrement, true)->format('Y-m-d H:i:s');
-                        $nincrement++;
+                        try{
+                            $calc_run = $cron->getPreviousRunDate($date_ref_tmp, $nincrement, true)->format('Y-m-d H:i:s');
+                            $nincrement++;
+                        }catch(Exception $e){
+                            // die(print_r($row,true)."-$nincrement-".$e->getMessage());
+                            break;
+                        }
 
                         if(!empty($row["life_time_from"]) && date('H:i', strtotime($calc_run)) < $row["life_time_from"] ){
                             continue;
@@ -802,8 +811,13 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                                 $calc_run_ref = $event_interval_from_orig;
                             }
 
-                            $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $nincrement, true)->format('Y-m-d H:i:s');
-                            if($nincrement == 0) $nincrement++;
+                            try{
+                                $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $nincrement, true)->format('Y-m-d H:i:s');
+                                if($nincrement == 0) $nincrement++;
+                            }catch(Exception $e){
+                                // die(print_r($row,true)."-$nincrement-".$e->getMessage());
+                                break;
+                            }
 
                             if(!empty($row["life_time_from"]) && date('H:i', strtotime($calc_run_ref)) < $row["life_time_from"] ){
                                 continue;
@@ -839,9 +853,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }else{
 
                         while($nincrement < 1000){ //Use the same hard limit of cron-expression library
-                            try {
+
+                            try{
                                 $calc_run_ref = $cron->getNextRunDate($event_interval_from_orig, $nincrement, true)->format('Y-m-d H:i:s');
-                            } catch (\Throwable $th) {
+                            }catch(Exception $e){
+                                // die(print_r($row,true)."-$nincrement-".$e->getMessage());
                                 break;
                             }
 
@@ -852,7 +868,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                                 continue;
                             }
 
-                            if($calc_run_ref > $event_interval_to){
+                            if($calc_run_ref > $event_interval_to_orig){
                                 break;
                             }
 
@@ -878,11 +894,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         }
 
                         foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
-                            if($exec_task_start >= $event_interval_from_orig && $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $tmp_interval_lst)){
+                            if($exec_task_start >= $event_interval_from_orig && $exec_task_start <= $event_interval_to_orig && !array_key_exists($exec_task_start, $tmp_interval_lst)){
                                 $tmp_interval_lst[$calc_run_ref] = $calc_run_ref;
                             }
 
-                            if($exec_task_start >= $event_interval_from && $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
+                            if($exec_task_start >= $event_interval_from && $exec_task_start <= $event_interval_to_orig && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
                                 $row["interval_run_lst"][$exec_task_start] = $exec_task_end;
                             }
                         }
