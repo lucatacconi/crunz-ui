@@ -40,20 +40,40 @@
                     hide-details
                     class="mt-0"
                 ></v-text-field>
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            fab
+                            rounded
+                            :outlined="!caseSensitive"
+                            @click="caseSensitive=!caseSensitive;customSearch(search)"
+                            color="green"
+                            dark
+                            x-small
+                            class="mt-2"
+                            v-bind="attrs"
+                            v-on="on"
+                        >
+                            <v-icon>
+                                mdi-format-letter-case
+                            </v-icon>
+                        </v-btn>
+                    </template>
+                    <span>Case sensitive search ON/OFF</span>
+                </v-tooltip>
             </v-card-title>
 
             <v-data-table
                 :headers="headers"
-                :items="files"
+                :items="search.length > 0 ? searchResult : files"
                 :sort-desc.sync="sortDesc"
                 :sort-by.sync="sortBy"
                 :custom-sort="customSort"
-                :search="search"
                 :items-per-page="10"
                 :footer-props='{ "items-per-page-options": [10, 30, 50, -1]}'
             >
-                <template v-if="files.length!=0" v-slot:body="{ items }">
-                    <tbody>
+                <template v-slot:body="{ items }">
+                    <tbody v-if="items.length!=0">
                         <tr v-for="(item,i) in items" :key="i">
                             <td>
                                 <div class="text-center">
@@ -232,13 +252,15 @@ module.exports = {
                 },
                 { text: 'Task file / Event ID', value: 'task_path' },
                 { text: 'Description', value: 'task_description', sortable: false },
-                { text: 'Execution', value: 'expression', sortable: false },
+                { text: 'Execution', value: 'expression_readable', sortable: false },
                 { text: 'Next execution', value: 'next_run', align: 'center' },
                 { text: 'Last execution', value: 'last_run', align: 'center' },
                 { text: 'Last duration', value: 'last_duration', align: 'center' },
                 { text: 'Last exec. outcome', value: 'last_outcome', align: 'center' },
             ],
             files: [],
+            searchResult: [],
+            caseSensitive:true,
             oldTaskContent:null,
             editData: false,
             uploadData: false,
@@ -260,6 +282,43 @@ module.exports = {
                     self.message = "No tasks found on server. Eventually check tasks directory path."
                 }
             });
+        },
+
+        customSearch: function (val){
+            console.log("Search: "+val);
+            console.log("file")
+            console.log(this.files)
+            var res=[];
+            var searchInProperties=[];
+            var extraSearchInProperties=[
+                "event_unique_key"
+            ];
+            for(var i=0;i<this.headers.length;i++){
+                if(this.headers[i]['value']==undefined || this.headers[i]['value']=='') continue;
+                searchInProperties.push(this.headers[i]['value']);
+            }
+            searchInProperties=searchInProperties.concat(extraSearchInProperties);
+
+            for(var k=0;k<this.files.length;k++){
+                for(var i=0;i<searchInProperties.length;i++){
+                    if(this.files[k][searchInProperties[i]]==undefined || this.files[k][searchInProperties[i]]=='') continue;
+                    var valSearchProperties=this.files[k][searchInProperties[i]];
+                    var valSearch=val;
+                    if(!this.caseSensitive){
+                        valSearchProperties=valSearchProperties.toLowerCase();
+                        valSearch=valSearch.toLowerCase();
+                    }
+                    if(valSearchProperties.includes(valSearch)){
+                        res.push(this.files[k]);
+                        break;
+                    }
+                }
+            }
+            console.log("result")
+            console.log(res)
+            this.searchResult=res;
+            console.log("searchResult")
+            console.log(this.searchResult)
         },
 
         customSort(items, index, isDesc) {
@@ -496,6 +555,12 @@ module.exports = {
     computed: {
         ifClipboardEnabled: function () {
             return Utils.ifClipboardEnabled();
+        }
+    },
+
+    watch: {
+        search: function (val) {
+            this.customSearch(val);
         }
     },
 
