@@ -285,9 +285,7 @@ module.exports = {
         },
 
         customSearch: function (val){
-            console.log("Search: "+val);
-            console.log("file")
-            console.log(this.files)
+            // console.log("Search: "+val);
             var res=[];
             var searchInProperties=[];
             var extraSearchInProperties=[
@@ -299,26 +297,46 @@ module.exports = {
             }
             searchInProperties=searchInProperties.concat(extraSearchInProperties);
 
+            var split=[];
+
+            split=val.split("+");
+            var count=0;
+
             for(var k=0;k<this.files.length;k++){
+                count=0;
+                // console.log("file number: " + k)
+                var trovato=[];
                 for(var i=0;i<searchInProperties.length;i++){
                     if(this.files[k][searchInProperties[i]]==undefined || this.files[k][searchInProperties[i]]=='') continue;
+
                     var valSearchProperties=this.files[k][searchInProperties[i]];
                     var valSearch=val;
-                    if(!this.caseSensitive){
-                        valSearchProperties=valSearchProperties.toLowerCase();
-                        valSearch=valSearch.toLowerCase();
-                    }
-                    if(valSearchProperties.includes(valSearch)){
-                        res.push(this.files[k]);
-                        break;
+                    // console.log("search properties: " + searchInProperties[i] + " value: " + valSearchProperties);
+
+                    for(var c=0;c<split.length;c++){
+                        valSearch=split[c];
+                        if(!this.caseSensitive){
+                            valSearchProperties=valSearchProperties.toLowerCase();
+                            valSearch=valSearch.toLowerCase();
+                        }
+                        if(valSearchProperties.includes(valSearch)){
+                            if(trovato.includes(valSearch)) continue;
+                            trovato.push(valSearch);
+                            // console.log("FOUND!!! "+valSearchProperties+"="+valSearch)
+                            count++;
+                        }
                     }
                 }
+                // console.log("COUNT: "+count+" SPLIT LENGTH: "+ split.length)
+                if(count>=split.length){
+                    res.push(this.files[k]);
+                }
             }
-            console.log("result")
-            console.log(res)
+            // console.log("result")
+            // console.log(res)
             this.searchResult=res;
-            console.log("searchResult")
-            console.log(this.searchResult)
+            // console.log("searchResult")
+            // console.log(this.searchResult)
         },
 
         customSort(items, index, isDesc) {
