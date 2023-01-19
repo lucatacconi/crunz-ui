@@ -29,20 +29,40 @@
                     hide-details
                     class="mt-0"
                 ></v-text-field>
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            fab
+                            rounded
+                            :outlined="!caseSensitive"
+                            @click="caseSensitive=!caseSensitive;customSearch(search)"
+                            color="green"
+                            dark
+                            x-small
+                            class="mt-2"
+                            v-bind="attrs"
+                            v-on="on"
+                        >
+                            <v-icon>
+                                mdi-format-letter-case
+                            </v-icon>
+                        </v-btn>
+                    </template>
+                    <span>Case sensitive search ON/OFF</span>
+                </v-tooltip>
             </v-card-title>
 
             <v-data-table
                 :headers="headers"
-                :items="files"
+                :items="search.length > 0 ? searchResult : files"
                 :sort-desc.sync="sortDesc"
                 :sort-by.sync="sortBy"
                 :custom-sort="customSort"
-                :search="search"
                 :items-per-page="10"
                 :footer-props='{ "items-per-page-options": [10, 30, 50, -1]}'
             >
-                <template v-if="files.length!=0" v-slot:body="{ items }">
-                    <tbody>
+                <template v-slot:body="{ items }">
+                    <tbody v-if="files.length!=0">
                         <tr v-for="(item,i) in items" :key="i">
                             <td>
                                 <div class="text-center">
@@ -165,6 +185,8 @@ module.exports = {
                 { text: 'Error detected', value: 'error_detected', align: 'left', sortable: false },
             ],
             files: [],
+            searchResult: [],
+            caseSensitive:true,
             oldTaskContent:null,
             editData: false,
             message: 'No tasks found on server. Eventually check tasks directory path.',
@@ -184,6 +206,60 @@ module.exports = {
                     self.message = "No tasks found on server. Eventually check tasks directory path."
                 }
             });
+        },
+
+        customSearch: function (val){
+            // console.log("Search: "+val);
+            var res=[];
+            var searchInProperties=[];
+            var extraSearchInProperties=[
+            ];
+            for(var i=0;i<this.headers.length;i++){
+                if(this.headers[i]['value']==undefined || this.headers[i]['value']=='') continue;
+                searchInProperties.push(this.headers[i]['value']);
+            }
+            searchInProperties=searchInProperties.concat(extraSearchInProperties);
+
+            var split=[];
+
+            split=val.split("+");
+            var count=0;
+
+            for(var k=0;k<this.files.length;k++){
+                count=0;
+                // console.log("file number: " + k)
+                var trovato=[];
+                for(var i=0;i<searchInProperties.length;i++){
+                    if(this.files[k][searchInProperties[i]] == undefined || this.files[k][searchInProperties[i]] == '' || typeof this.files[k][searchInProperties[i]] == 'boolean' || this.files[k][searchInProperties[i]] == 'object') continue;
+
+                    var valSearchProperties=this.files[k][searchInProperties[i]];
+                    var valSearch=val;
+                    // console.log("search properties: " + searchInProperties[i] + " value: " + valSearchProperties);
+
+                    for(var c=0;c<split.length;c++){
+                        valSearch=split[c];
+                        if(!this.caseSensitive){
+                            valSearchProperties=valSearchProperties.toLowerCase();
+                            valSearch=valSearch.toLowerCase();
+                        }
+                        if(valSearchProperties.includes(valSearch)){
+                            if(trovato.includes(valSearch)) continue;
+                            trovato.push(valSearch);
+                            // console.log("FOUND!!! "+valSearchProperties+"="+valSearch)
+                            count++;
+                        }
+                    }
+                }
+                // console.log("COUNT: "+count+" SPLIT LENGTH: "+ split.length)
+                if(count>=split.length){
+                    res.push(this.files[k]);
+                }
+            }
+            // console.log("result")
+            // console.log(res)
+            this.searchResult=res;
+            // console.log("searchResult")
+            // console.log(this.searchResult)
         },
 
         customSort(items, index, isDesc) {
@@ -348,6 +424,12 @@ module.exports = {
                     self.scheduleReload();
                 }, self.reloadTime);
             }
+        }
+    },
+
+    watch: {
+        search: function (val) {
+            this.customSearch(val);
         }
     },
 

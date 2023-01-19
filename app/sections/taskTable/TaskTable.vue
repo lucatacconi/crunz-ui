@@ -307,7 +307,7 @@ module.exports = {
                 // console.log("file number: " + k)
                 var trovato=[];
                 for(var i=0;i<searchInProperties.length;i++){
-                    if(this.files[k][searchInProperties[i]]==undefined || this.files[k][searchInProperties[i]]=='') continue;
+                    if(this.files[k][searchInProperties[i]] == undefined || this.files[k][searchInProperties[i]] == '' || typeof this.files[k][searchInProperties[i]] == 'boolean' || this.files[k][searchInProperties[i]] == 'object') continue;
 
                     var valSearchProperties=this.files[k][searchInProperties[i]];
                     var valSearch=val;
