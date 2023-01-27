@@ -26,7 +26,7 @@
         },
 
         components: {
-            'dailygraph': httpVueLoader('../../../app/sections/dashboard/DaylyGraph.vue' + '?v=' + new Date().getTime()),
+            'dailygraph': httpVueLoader('../../../app/sections/dashboard/DailyGraph.vue' + '?v=' + new Date().getTime()),
             'weeklygraph': httpVueLoader('../../../app/sections/dashboard/WeeklyGraph.vue' + '?v=' + new Date().getTime()),
             'environmentcheck': httpVueLoader('../../../app/sections/dashboard/EnvironmentCheck.vue' + '?v=' + new Date().getTime())
         }
