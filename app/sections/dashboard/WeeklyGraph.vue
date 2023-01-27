@@ -3,7 +3,14 @@
         <v-card>
             <v-card-title>Weekly task's prospect</v-card-title>
             <v-card-text id="graph-area-weekly-container">
-                <canvas id="graph-area-weekly"></canvas>
+                <canvas v-show="calcStatExecuted" id="graph-area-weekly"></canvas>
+                <v-progress-circular
+                :size="100"
+                :width="7"
+                color="blue-grey"
+                indeterminate
+                v-show="!calcStatExecuted"
+                ></v-progress-circular>
             </v-card-text>
         </v-card>
     </div>
@@ -24,7 +31,9 @@
                 graphWhitErrors: [],
                 graphExecutedNotPlanned: [],
                 graphErrorsNotPlanned: [],
-                graphSyntaxError: []
+                graphSyntaxError: [],
+
+                calcStatExecuted: false
             }
         },
 
@@ -69,6 +78,9 @@
 
                 Utils.apiCall("get", "/task-stat/period",params, options)
                 .then(function (response) {
+
+                    self.calcStatExecuted = true;
+
                     if(response.data.length != 0){
 
                         for (let  stat_data of self.stats) {

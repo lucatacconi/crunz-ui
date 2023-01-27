@@ -3,7 +3,14 @@
         <v-card>
             <v-card-title>Daily task's prospect</v-card-title>
             <v-card-text id="graph-area-daily-container">
-                <canvas id="graph-area-daily"></canvas>
+                <canvas v-show="calcStatExecuted" id="graph-area-daily"></canvas>
+                <v-progress-circular
+                :size="100"
+                :width="7"
+                color="blue-grey"
+                indeterminate
+                v-show="!calcStatExecuted"
+                ></v-progress-circular>
             </v-card-text>
         </v-card>
     </div>
@@ -16,7 +23,8 @@
                 date: dayjs().format("YYYY-MM-DD"),
                 planned: 0,
                 executed: 0,
-                withErrors: 0
+                withErrors: 0,
+                calcStatExecuted: false
             }
         },
 
@@ -38,6 +46,9 @@
 
                 Utils.apiCall("get", "/task-stat/period",params, options)
                 .then(function (response) {
+
+                    self.calcStatExecuted = true;
+
                     if((typeof(response.data[dayjs().format("YYYY-MM-DD")]) !== 'undefined') && response.data[dayjs().format("YYYY-MM-DD")] != 0){
 
                         let day_stat = response.data[dayjs().format("YYYY-MM-DD")];
