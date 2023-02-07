@@ -109,7 +109,7 @@
                             <v-text-field
                                 v-model="search"
                                 append-icon="biotech"
-                                label="Search in row data shown by criteria"
+                                label="Search in row data shown as result of entered criteria"
                                 single-line
                                 hide-details
                                 class="mt-3"
