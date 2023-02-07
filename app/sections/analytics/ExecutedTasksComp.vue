@@ -1,5 +1,5 @@
 <template>
-    <v-col xl="4" lg="6" md="6" sm="12" xs="12">
+    <v-col xl="4" lg="6" md="12" sm="12" xs="12">
         <v-card class="fill-height">
             <v-card-title >
                 Executed tasks:
@@ -17,11 +17,25 @@
 
                     <template v-else>
                         <span class="text-h2 text--primary">
-                            <strong>{{ executedTasks['num-daily'] }}</strong>
+                            <template v-if="executedTasks['num-daily'] > 1000">
+                                <strong>{{ (executedTasks['num-daily'] / 1000).toFixed(2) }}</strong>
+                            </template>
+                            <template v-else>
+                                <strong>{{ executedTasks['num-daily'] }}</strong>
+                            </template>
                         </span>
                         <span class="text-h5 text--gray">
-                                daily
-                            (<strong>{{ executedTasks['num-monthly'] }}</strong> monthly)
+
+                            <template v-if="executedTasks['num-daily'] > 1000">
+                                K
+                            </template>
+                            daily
+                            <template v-if="executedTasks['num-monthly'] > 1000">
+                                (<strong>{{ (executedTasks['num-monthly'] / 1000).toFixed(2) }}</strong>K monthly)
+                            </template>
+                            <template v-else>
+                                (<strong>{{ executedTasks['num-monthly'] }}</strong> monthly)
+                            </template>
                         </span>
                     </template>
                 </p>
@@ -40,8 +54,6 @@
                 "executedTasks" : {
                     "num-daily": false,
                     "num-monthly": false,
-                    "num-daily-with-errors": false,
-                    "num-monthly-with-errors": false
                 }
             }
         },
@@ -59,7 +71,21 @@
 
                 Utils.apiCall("get", "/task-stat/executed-tasks",params, options)
                 .then(function (response) {
-                    self['executedTasks'] = response.data;
+                    if(response.data && response.data['num-period']){
+                        self['executedTasks']['num-monthly'] = response.data['num-period'];
+                    }
+                });
+
+                var params = {
+                    "interval_from": dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
+                    "interval_to": dayjs().subtract(1, 'day').format('YYYY-MM-DD')
+                }
+
+                Utils.apiCall("get", "/task-stat/executed-tasks",params, options)
+                .then(function (response) {
+                    if(response.data && response.data['num-period']){
+                        self['executedTasks']['num-daily'] = response.data['num-period'];
+                    }
                 });
             }
         },

@@ -1,5 +1,5 @@
 <template>
-    <v-col xl="4" lg="6" md="6" sm="12" xs="12">
+    <v-col xl="4" lg="6" md="12" sm="12" xs="12">
         <v-card class="fill-height">
             <v-card-title >
                 Archived tasks:

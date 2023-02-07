@@ -1,5 +1,5 @@
 <template>
-    <v-col xl="4" lg="6" md="6" sm="12" xs="12">
+    <v-col xl="4" lg="6" md="12" sm="12" xs="12">
         <v-card class="fill-height">
             <v-card-title >
                 System load average:
@@ -21,6 +21,7 @@
                         </span>
                         <span class="text-h5 text--gray">
                             /1 min.
+                            <br>
                             <strong>({{ sysload['load-5'] }}</strong>/5 min., <strong>{{ sysload['load-15'] }}</strong>/15 min.)
                         </span>
                     </template>

@@ -762,6 +762,25 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
         $data = [];
 
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        $date_ref = date("Y-m-d H:i:s");
+        if(!empty($params["DATE_REF"])){
+            $date_ref = date($params["DATE_REF"]);
+        }
+
+        $date_now = date("Y-m-d H:i:s");
+
+        $interval_from = date("Y-m-d", strtotime('-1 month'));
+        if(!empty($params["INTERVAL_FROM"])){
+            $interval_from = date("Y-m-d", strtotime($params["INTERVAL_FROM"]));
+        }
+
+        $interval_to = date("Y-m-d", strtotime('-1 day'));
+        if(!empty($params["INTERVAL_TO"])){
+            $interval_to = date("Y-m-d", strtotime($params["INTERVAL_TO"]));
+        }
+
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
@@ -779,31 +798,44 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
             $LOGS_DIR = $_ENV["LOGS_DIR"];
         }
 
-        $num_daily = 0;
-        $num_monthly = 0;
-        $num_daily_with_errors = 0;
-        $num_monthly_with_errors = 0;
-
+        $num_executed = 0;
+        $num_executed_with_errors = 0;
 
         $glob_filter = $LOGS_DIR."/";
         $glob_filter .= "*";
-        $glob_filter .= date('Ymd', strtotime('-1 month'))."*_"; // 1 month ago
-        $glob_filter .= date('Ymd')."*"; // today
         $glob_filter .= ".log";
-
 
         $aLOGNAME_all = glob($glob_filter); //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
 
         $aLOGNAME_perkey = [];
         foreach($aLOGNAME_all as $logkey => $logfile){
+
             $aLOG =explode('_', str_replace($LOGS_DIR."/", "", $logfile));
+
+            //0 UNIQUE_KEY
+            //1 Outcome
+            //2 Start datetime
+            //3 End datetime
+
+            $task_start = \DateTime::createFromFormat('YmdHi', $aLOG[2]);
+            $task_stop = \DateTime::createFromFormat('YmdHi', $aLOG[3]);
+
+            $task_start_Ymd = $task_start->format('Y-m-d');
+            $task_stop_Ymd = $task_stop->format('Y-m-d');
+
+            if ($task_start_Ymd >= $interval_from && $task_start_Ymd <= $interval_to){
+
+                if($aLOG[1] == "OK"){
+                    $num_executed++;
+                }else{
+                    $num_executed_with_errors++;
+                }
+            }
         }
 
         $data = [];
-        $data["num-daily"] = $num_daily;
-        $data["num-monthly"] = $num_monthly;
-        $data["num-daily-with-errors"] = $num_daily_with_errors;
-        $data["num-monthly-with-errors"] = $num_monthly_with_errors;
+        $data["num-period"] = $num_executed;
+        $data["num-period-with-errors"] = $num_executed_with_errors;
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
