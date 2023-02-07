@@ -109,7 +109,7 @@
                             <v-text-field
                                 v-model="search"
                                 append-icon="biotech"
-                                label="Search in log interval"
+                                label="Search in row data shown by criteria"
                                 single-line
                                 hide-details
                                 class="mt-3"
@@ -274,7 +274,7 @@ module.exports = {
             editData: false,
             uploadData: false,
             logData: false,
-            message: 'No tasks execution log found. Modify your search criteria and press Search button.',
+            message: 'No tasks execution log selected by criteria. Modify your search criteria and press Search button.',
 
             clipboad_enabled: false
         }
@@ -317,7 +317,7 @@ module.exports = {
                     .then(function (response) {
                         self.tasksExecutions = response.data;
                         if(response.data.length==0){
-                            self.message = "No tasks execution log found. Modify your search criteria and press Search button.";
+                            self.message = "No tasks execution log selected by criteria. Modify your search criteria and press Search button.";
                         }
                     });
                 }
@@ -337,9 +337,8 @@ module.exports = {
             Utils.apiCall("get", "/task/exec-history",params, options)
             .then(function (response) {
                 self.tasksExecutions = response.data;
-                self.readLovs(options);
                 if(response.data.length == 0){
-                    self.message = "No tasks execution log found. Modify your search criteria and press Search button.";
+                    self.message = "No tasks execution log selected by criteria. Modify your search criteria and press Search button.";
                 }
             });
         },
@@ -444,6 +443,9 @@ module.exports = {
                     self.task_path_lovs.push(response.data[i].task_path)
                 }
             });
+
+            self.search_params.executionIntervalFrom = dayjs().subtract(1, 'days').format('YYYY-MM-DD HH:mm');
+            self.search_params.executionIntervalTo = dayjs().format('YYYY-MM-DD HH:mm');
         },
 
         openLogModal: function (rowdata) {
@@ -472,30 +474,7 @@ module.exports = {
         },
         closeEditModal: function (result) {
             this.showEditModal = false;
-            // if(typeof result !== 'undefined' && result){
-            //     this.readData();
-            // }
-        },
-
-        // openNewTaskModal: function (item) {
-        //     this.oldTaskContent=null;
-        //     if(item!=undefined){
-        //         this.oldTaskContent = {
-        //             subdir: item.subdir,
-        //             real_path: item.real_path,
-        //             task_path: item.task_path,
-        //             filename: item.filename,
-        //             event_unique_key: item.event_unique_key
-        //         }
-        //     };
-        //     this.showNewTaskModal = true;
-        // },
-        // closeNewTaskModal: function (result) {
-        //     this.showNewTaskModal = false;
-        //     if(typeof result !== 'undefined' && result){
-        //         this.readData();
-        //     }
-        // },
+        }
     },
 
     computed: {
@@ -505,8 +484,6 @@ module.exports = {
     },
 
     created:function() {
-
-        // this.readData();
 
         VeeValidate.extend('date_format', value => {
 
@@ -535,38 +512,19 @@ module.exports = {
             },
             message: 'Date range is incorrect'
         });
-
-        // this.search_params.executionIntervalFrom = dayjs().subtract(1, 'days').format('YYYY-MM-DD HH:mm');
-        // this.search_params.executionIntervalTo = dayjs().format('YYYY-MM-DD HH:mm');
     },
 
     mounted:function(){
-        // this.readData();
+        this.readLovs();
     },
 
     watch: {
-        // 'search_params.taskPath': function (newValue, preValue) {
-        //     this.launchSearch();
-        // },
-        // 'search_params.eventUniqueId': function (newValue, preValue) {
-        //     this.launchSearch();
-        // },
-        // 'search_params.executionIntervalFrom': function (newValue, preValue) {
-        //     this.launchSearch();
-        // },
-        // 'search_params.executionIntervalTo': function (newValue, preValue) {
-        //     this.launchSearch();
-        // },
-        // 'search_params.amountLogs': function (newValue, preValue) {
-        //     this.launchSearch();
-        // }
     },
 
     components:{
         'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime()),
         'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime()),
-        'picker-modal': httpVueLoader('../../shareds/PickerModal.vue' + '?v=' + new Date().getTime()),
-        'new-task': httpVueLoader('../../shareds/NewTask.vue' + '?v=' + new Date().getTime())
+        'picker-modal': httpVueLoader('../../shareds/PickerModal.vue' + '?v=' + new Date().getTime())
     }
 }
 </script>
