@@ -266,8 +266,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                 $task_description = $oEVENT->description;
                 $expression = $oEVENT->getExpression();
 
-                // $event_unique_key = md5($task_path . $task_description . $expression);
-                $event_unique_key = md5(str_replace("/var/www/html/crunz-ui/tasks", '', $real_path) . $task_description . $expression);
+                $event_unique_key = md5($task_path . $task_description . $expression);
 
                 if(!empty($params["TASK_ID"])){
                     if($event_file_id != $params["TASK_ID"]){
