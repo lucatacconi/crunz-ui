@@ -162,7 +162,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             $glob_filter = $LOGS_DIR."/";
             $glob_filter .= "*";
             $glob_filter .= date('Ymd', strtotime($interval_from))."*_";
-            $glob_filter .= date('Ymd', strtotime($interval_to))."*";
+            $glob_filter .= "*";
             $glob_filter .= ".log";
 
         }else{
@@ -177,18 +177,17 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                 if( substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1) == substr(date('Ymd', strtotime($interval_to)), $chr_selector, 1) ){
                     $glob_filter_from .= substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1);
-                    $glob_filter_to .= substr(date('Ymd', strtotime($interval_to)), $chr_selector, 1);
                 }else{
                     break;
                 }
             }
 
             $glob_filter .= $glob_filter_from."*_";
-            $glob_filter .= $glob_filter_to."*";
+            $glob_filter .= "*";
             $glob_filter .= ".log";
         }
 
-        array_multisort(array_map('filemtime', ($aLOGNAME_all = glob($glob_filter))), SORT_DESC, $aLOGNAME_all);
+        array_multisort(array_map('filemtime', ($aLOGNAME_all = glob($glob_filter))), SORT_DESC, $aLOGNAME_all); //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
 
         $aLOGNAME_perkey = [];
         foreach($aLOGNAME_all as $logkey => $logfile){
@@ -222,8 +221,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 continue;
             }
 
-            if(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec')){
-                if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
+            if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
+                if(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec')){
                     $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
                     if(strpos($file_check_result, 'No syntax errors detected in') === false){
                         //Syntax error in file
@@ -457,6 +456,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $event_interval_from_orig = $event_interval_from;
                 $event_interval_to_orig = $event_interval_to;
 
+                $date1 = new DateTime($event_interval_from);
+                $date2 = new DateTime($event_interval_to);
+                $diff = date_diff($date1, $date2);
+                $round_limit = 1 + $diff->i + $diff->h * 60 + $diff->days * 24 * 60;
+
                 if(!empty($row["life_datetime_from"]) || !empty($row["life_datetime_to"]) || !empty($row["life_time_from"]) || !empty($row["life_time_to"])){
 
                     $interval_descr = " (Executed";
@@ -587,7 +591,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                             $task_start = DateTime::createFromFormat('YmdHi', $aLOGFOCUS[2]);
                             $task_stop = DateTime::createFromFormat('YmdHi', $aLOGFOCUS[3]);
 
-                            if($task_start->format('Y-m-d H:i:s') < $event_interval_from || $task_start->format('Y-m-d H:i:s') > $event_interval_to){
+                            if($task_start->format('Y-m-d H:i:s') < $event_interval_from_orig || $task_start->format('Y-m-d H:i:s') > $event_interval_to_orig){
                                 continue;
                             }
 
@@ -673,7 +677,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         }
                     }
 
-                    while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+                    while($nincrement < $round_limit){ //Use the same hard limit of cron-expression library
 
                         try{
                             $calc_run = $cron->getNextRunDate($date_ref_tmp, $nincrement, true)->format('Y-m-d H:i:s');
@@ -740,7 +744,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         }
                     }
 
-                    while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+                    while($nincrement < $round_limit){ //Use the same hard limit of cron-expression library
 
                         try{
                             $calc_run = $cron->getPreviousRunDate($date_ref_tmp, $nincrement, true)->format('Y-m-d H:i:s');
@@ -852,7 +856,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                     }else{
 
-                        while($nincrement < 1000){ //Use the same hard limit of cron-expression library
+                        while($nincrement < $round_limit){ //Use the same hard limit of cron-expression library
 
                             try{
                                 $calc_run_ref = $cron->getNextRunDate($event_interval_from_orig, $nincrement, true)->format('Y-m-d H:i:s');
@@ -876,7 +880,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                             $tmp_interval_lst[$calc_run_ref] = $calc_run_ref;
 
-                            if($calc_run_ref < $event_interval_from){
+                            if($calc_run_ref < $event_interval_from_orig){
                                 continue;
                             }
 
@@ -898,7 +902,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                                 $tmp_interval_lst[$calc_run_ref] = $calc_run_ref;
                             }
 
-                            if($exec_task_start >= $event_interval_from && $exec_task_start <= $event_interval_to_orig && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
+                            if($exec_task_start >= $event_interval_from_orig && $exec_task_start <= $event_interval_to_orig && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
                                 $row["interval_run_lst"][$exec_task_start] = $exec_task_end;
                             }
                         }
