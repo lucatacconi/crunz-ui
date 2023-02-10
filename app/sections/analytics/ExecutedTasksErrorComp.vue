@@ -1,10 +1,11 @@
 <template>
     <v-col xl="4" lg="6" md="12" sm="12" xs="12">
         <v-card class="fill-height">
-            <v-card-title >
+            <v-card-title class="grey lighten-4">
                 Executed tasks with execution error:
             </v-card-title>
             <v-card-text>
+                <br>
                 <p>
                     <template v-if="executedTasksError['num-daily-with-errors'] === false">
                         <v-progress-circular
