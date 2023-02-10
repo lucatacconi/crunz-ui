@@ -727,6 +727,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }
                 }
 
+                $row["next_run"] = $next_run;
+
 
                 //Last run calculation - Calculated but not necessarily executed
                 $nincrement = 0;
