@@ -455,7 +455,6 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                 $nincrement = 0;
                 $step = 0;
 
-
                 $date1 = new DateTime($event_interval_from);
                 $date2 = new DateTime($event_interval_to);
                 $diff = date_diff($date1, $date2);
@@ -469,8 +468,12 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                         $date_ref = date('Y-m-d H:i', strtotime($aDATEREF[0].' '.$life_time_from));
 
                         $step = 0;
-                        $date_ref = $cron->getNextRunDate($date_ref, $step, true)->format('Y-m-d H:i');
-
+                        try{
+                            $date_ref = $cron->getNextRunDate($date_ref, $step, true)->format('Y-m-d H:i');
+                            $nincrement++;
+                        }catch(Exception $e){
+                            break;
+                        }
                         $step = 1;
 
                     }else{
@@ -492,6 +495,10 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                         }
 
                         $step = 0;
+                        continue;
+                    }
+
+                    if($date_ref < $event_interval_from){
                         continue;
                     }
 

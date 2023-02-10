@@ -346,6 +346,17 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     $row["high_frequency_day_round"] = $round_day;
                 }
 
+                if(!empty($params["TASK_TYPE"])){
+                    if($params["TASK_TYPE"] == "STD"){
+                        if($row["high_frequency"]){
+                            continue;
+                        }
+                    }else if($params["TASK_TYPE"] == "HFT"){
+                        if(!$row["high_frequency"]){
+                            continue;
+                        }
+                    }
+                }
 
                 //Check task lifetime
                 $from = '';
@@ -656,131 +667,124 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                 //Next run calculation
                 $nincrement = 0;
-                $next_run = '';
-                $aDATEREF_tmp = explode(' ', $date_ref);
+                $step = 0;
                 $date_ref_tmp = $date_ref;
+                $next_run = '';
 
                 if(!empty($row["life_datetime_to"]) && $row["life_datetime_to"] < $date_ref_tmp){
-                    //Task is out of life time
+                    //Task is out of life date time
                 }else{
+                    while($nincrement < $round_limit){ //Use the maximum number of minutes in the given range
 
-                    if(!empty($row["life_time_from"]) && $date_ref_tmp < date('Y-m-d H:i:s', strtotime($aDATEREF_tmp[0].' '.$row["life_time_from"]))){
-                        $date_ref_tmp = date('Y-m-d H:i:s', strtotime($aDATEREF_tmp[0].' '.$row["life_time_from"]));
-                        $aDATEREF_tmp = explode(' ', $date_ref_tmp);
-                    }
+                        $aDATEREF = explode(' ', $date_ref_tmp);
 
-                    if(!empty($row["life_time_to"]) && $date_ref_tmp > date('Y-m-d H:i:s', strtotime($aDATEREF_tmp[0].' '.$row["life_time_to"]))){
-                        if(!empty($row["life_time_from"])){
-                            $date_ref_tmp = date('Y-m-d H:i:s', strtotime($aDATEREF_tmp[0]." ".$row["life_time_from"]." +1 day"));
+                        if(!empty($life_time_from) && date('Y-m-d H:i:s', strtotime($date_ref_tmp)) < date('Y-m-d H:i:s', strtotime($aDATEREF[0].' '.$life_time_from))){
+                            $date_ref_tmp = date('Y-m-d H:i', strtotime($aDATEREF[0].' '.$life_time_from));
+
+                            $step = 0;
+                            try{
+                                $date_ref_tmp = $cron->getNextRunDate($date_ref_tmp, $step, true)->format('Y-m-d H:i');
+                                $nincrement++;
+                            }catch(Exception $e){
+                                break;
+                            }
+                            $step = 1;
+
                         }else{
-                            $date_ref_tmp = date('Y-m-d H:i:s', strtotime($aDATEREF_tmp[0]." +1 day"));
+                            try{
+                                $date_ref_tmp = $cron->getNextRunDate($date_ref_tmp, $step, true)->format('Y-m-d H:i');
+                                $nincrement++;
+                            }catch(Exception $e){
+                                break;
+                            }
                         }
-                    }
 
-                    while($nincrement < $round_limit){ //Use the same hard limit of cron-expression library
+                        $aDATEREF = explode(' ', $date_ref_tmp);
 
-                        try{
-                            $calc_run = $cron->getNextRunDate($date_ref_tmp, $nincrement, true)->format('Y-m-d H:i:s');
-                            $nincrement++;
-                        }catch(Exception $e){
-                            // die(print_r($row,true)."-$nincrement-".$e->getMessage());
+                        if(!empty($life_time_to) && date('Y-m-d H:i:s', strtotime($date_ref_tmp)) > date('Y-m-d H:i:s', strtotime($aDATEREF[0].' '.$life_time_to))){
+                            if(!empty($row["life_time_from"])){
+                                $date_ref_tmp = date('Y-m-d H:i:s', strtotime($aDATEREF[0]." ".$life_time_from." +1 day"));
+                            }else{
+                                $date_ref_tmp = date('Y-m-d H:i:s', strtotime($aDATEREF[0]." +1 day"));
+                            }
+
+                            $step = 0;
+                            continue;
+                        }
+
+                        if($date_ref_tmp < $event_interval_from_orig){
+                            continue;
+                        }
+
+                        if($date_ref_tmp > $event_interval_to_orig){
                             break;
                         }
 
-                        if(!empty($row["life_time_from"]) && date('H:i', strtotime($calc_run)) < $row["life_time_from"] ){
-                            continue;
-                        }
-                        if(!empty($row["life_time_to"]) && date('H:i', strtotime($calc_run)) > $row["life_time_to"] ){
-                            continue;
-                        }
+                        $step = 1;
 
-                        if($calc_run > $interval_to) break;
-
-                        if(!empty($row["life_datetime_from"]) && empty($row["life_datetime_to"])){
-                            if($calc_run >= $row["life_datetime_from"]  ){
-                                $next_run = $calc_run;
-                                break;
-                            }
-                        }else if(empty($row["life_datetime_from"]) && !empty($row["life_datetime_to"])){
-                            if($calc_run <= $row["life_datetime_to"]  ){
-                                $next_run = $calc_run;
-                                break;
-                            }
-                        }else if(!empty($row["life_datetime_from"]) && !empty($row["life_datetime_to"])){
-                            if($calc_run >= $row["life_datetime_from"] && $calc_run <= $row["life_datetime_to"]  ){
-                                $next_run = $calc_run;
-                                break;
-                            }
-                        }
-
-                        $next_run = $calc_run;
+                        $next_run = $date_ref_tmp;
                         break;
                     }
                 }
 
-                $row["next_run"] = $next_run;
-
 
                 //Last run calculation - Calculated but not necessarily executed
                 $nincrement = 0;
-                $calculated_last_run = '';
-                $aDATEREF_tmp = explode(' ', $date_ref);
+                $step = 0;
                 $date_ref_tmp = $date_ref;
+                $calculated_last_run = '';
 
-                if(!empty($row["life_datetime_to"]) && $row["life_datetime_to"] < $date_ref_tmp){
-                    //Task is out of life time
+                if(!empty($row["life_datetime_from"]) && $row["life_datetime_from"] > $date_ref_tmp){
+                    //Task is out of life date time
                 }else{
+                    while($nincrement < $round_limit){ //Use the maximum number of minutes in the given range
 
-                    if(!empty($row["life_time_to"]) && $date_ref_tmp > date('Y-m-d H:i:s', strtotime($aDATEREF_tmp[0].' '.$row["life_time_to"]))){
-                        $date_ref_tmp = date('Y-m-d H:i:s', strtotime($aDATEREF_tmp[0].' '.$row["life_time_to"]));
-                        $aDATEREF_tmp = explode(' ', $date_ref_tmp);
-                    }
+                        $aDATEREF = explode(' ', $date_ref_tmp);
 
-                    if(!empty($row["life_time_from"]) && $date_ref < date('Y-m-d H:i:s', strtotime($aDATEREF[0].' '.$row["life_time_from"]))){
-                        if(!empty($row["life_time_to"])){
-                            $date_ref_tmp = date('Y-m-d H:i:s', strtotime($aDATEREF[0]." ".$row["life_time_to"]." -1 day"));
+                        if(!empty($life_time_to) && date('Y-m-d H:i:s', strtotime($date_ref_tmp)) > date('Y-m-d H:i:s', strtotime($aDATEREF[0].' '.$life_time_to))){
+                            $date_ref_tmp = date('Y-m-d H:i', strtotime($aDATEREF[0].' '.$life_time_to));
+
+                            $step = 0;
+                            try{
+                                $date_ref_tmp = $cron->getPreviousRunDate($date_ref_tmp, $step, true)->format('Y-m-d H:i');
+                                $nincrement++;
+                            }catch(Exception $e){
+                                break;
+                            }
+                            $step = 1;
                         }else{
-                            $date_ref_tmp = date('Y-m-d H:i:s', strtotime($aDATEREF[0]." 23:59:59 -1 day"));
+                            try{
+                                $date_ref_tmp = $cron->getPreviousRunDate($date_ref_tmp, $step, true)->format('Y-m-d H:i');
+                                $nincrement++;
+                            }catch(Exception $e){
+                                break;
+                            }
                         }
-                    }
 
-                    while($nincrement < $round_limit){ //Use the same hard limit of cron-expression library
+                        $aDATEREF = explode(' ', $date_ref_tmp);
 
-                        try{
-                            $calc_run = $cron->getPreviousRunDate($date_ref_tmp, $nincrement, true)->format('Y-m-d H:i:s');
-                            $nincrement++;
-                        }catch(Exception $e){
-                            // die(print_r($row,true)."-$nincrement-".$e->getMessage());
+                        if(!empty($life_time_from) && date('Y-m-d H:i:s', strtotime($date_ref_tmp)) < date('Y-m-d H:i:s', strtotime($aDATEREF[0].' '.$life_time_from))){
+                            if(!empty($row["life_time_to"])){
+                                $date_ref_tmp = date('Y-m-d H:i:s', strtotime($aDATEREF[0]." ".$life_time_to." -1 day"));
+                            }else{
+                                $date_ref_tmp = date('Y-m-d H:i:s', strtotime($aDATEREF[0]." -1 day"));
+                            }
+
+                            $step = 0;
+                            continue;
+                        }
+
+                        if($date_ref_tmp > $event_interval_to_orig){
+                            continue;
+                        }
+
+                        if($date_ref_tmp < $event_interval_from_orig){
                             break;
                         }
 
-                        if(!empty($row["life_time_from"]) && date('H:i', strtotime($calc_run)) < $row["life_time_from"] ){
-                            continue;
-                        }
-                        if(!empty($row["life_time_to"]) && date('H:i', strtotime($calc_run)) > $row["life_time_to"] ){
-                            continue;
-                        }
+                        $step = 1;
 
-                        if($calc_run < $interval_from) break;
-
-                        if(!empty($row["life_datetime_from"]) && empty($row["life_datetime_to"])){
-                            if($calc_run >= $row["life_datetime_from"]  ){
-                                $calculated_last_run = $calc_run;
-                                break;
-                            }
-                        }else if(empty($row["life_datetime_from"]) && !empty($row["life_datetime_to"])){
-                            if($calc_run <= $row["life_datetime_to"]  ){
-                                $calculated_last_run = $calc_run;
-                                break;
-                            }
-                        }else if(!empty($row["life_datetime_from"]) && !empty($row["life_datetime_to"])){
-                            if($calc_run >= $row["life_datetime_from"] && $calc_run <= $row["life_datetime_to"]  ){
-                                $calculated_last_run = $calc_run;
-                                break;
-                            }
-                        }
-
-                        $calculated_last_run = $calc_run;
+                        $calculated_last_run = $date_ref_tmp;
                         break;
                     }
                 }
@@ -803,6 +807,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $calc_run_ref = false;
                 $tmp_interval_lst = [];
                 $nincrement = 0;
+                $step = 0;
 
                 if($calc_run_lst == "Y"){
 
@@ -856,19 +861,47 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                     }else{
 
-                        while($nincrement < $round_limit){ //Use the same hard limit of cron-expression library
+                        $calc_run_ref = $event_interval_from_orig;
 
-                            try{
-                                $calc_run_ref = $cron->getNextRunDate($event_interval_from_orig, $nincrement, true)->format('Y-m-d H:i:s');
-                            }catch(Exception $e){
-                                // die(print_r($row,true)."-$nincrement-".$e->getMessage());
-                                break;
+                        while($nincrement < $round_limit){ //Use the maximum number of minutes in the given range
+
+                            $aDATEREF = explode(' ', $event_interval_from_orig);
+
+                            if(!empty($life_time_from) && date('Y-m-d H:i:s', strtotime($calc_run_ref)) < date('Y-m-d H:i:s', strtotime($aDATEREF[0].' '.$life_time_from))){
+                                $calc_run_ref = date('Y-m-d H:i', strtotime($aDATEREF[0].' '.$life_time_from));
+
+                                $step = 0;
+                                try{
+                                    $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $step, true)->format('Y-m-d H:i');
+                                    $nincrement++;
+                                }catch(Exception $e){
+                                    break;
+                                }
+                                $step = 1;
+
+                            }else{
+                                try{
+                                    $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $step, true)->format('Y-m-d H:i');
+                                    $nincrement++;
+                                }catch(Exception $e){
+                                    break;
+                                }
                             }
 
-                            if(!empty($row["life_time_from"]) && date('H:i', strtotime($calc_run_ref)) < $row["life_time_from"] ){
+                            $aDATEREF = explode(' ', $calc_run_ref);
+
+                            if(!empty($life_time_to) && date('Y-m-d H:i:s', strtotime($calc_run_ref)) > date('Y-m-d H:i:s', strtotime($aDATEREF[0].' '.$life_time_to))){
+                                if(!empty($row["life_time_from"])){
+                                    $calc_run_ref = date('Y-m-d H:i:s', strtotime($aDATEREF[0]." ".$life_time_from." +1 day"));
+                                }else{
+                                    $calc_run_ref = date('Y-m-d H:i:s', strtotime($aDATEREF[0]." +1 day"));
+                                }
+
+                                $step = 0;
                                 continue;
                             }
-                            if(!empty($row["life_time_to"]) && date('H:i', strtotime($calc_run_ref)) > $row["life_time_to"] ){
+
+                            if($calc_run_ref < $event_interval_from_orig){
                                 continue;
                             }
 
@@ -876,13 +909,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                                 break;
                             }
 
-                            $nincrement++;
-
-                            $tmp_interval_lst[$calc_run_ref] = $calc_run_ref;
-
-                            if($calc_run_ref < $event_interval_from_orig){
-                                continue;
-                            }
+                            $step = 1;
 
                             if($calc_run_ref < $date_now && $past_planned_tasks != "Y"){
                                 if(array_key_exists($calc_run_ref, $row["executed_task_lst"])){
