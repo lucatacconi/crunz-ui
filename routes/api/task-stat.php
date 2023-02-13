@@ -30,11 +30,6 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
-        $date_ref = date("Y-m-d H:i:s");
-        if(!empty($params["DATE_REF"])){
-            $date_ref = date($params["DATE_REF"]);
-        }
-
         $date_now = date("Y-m-d H:i:s");
 
         $interval_from = date("Y-m-01 00:00:00");
@@ -469,7 +464,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
                         $step = 0;
                         try{
-                            $date_ref = $cron->getNextRunDate($date_ref, $step, true)->format('Y-m-d H:i');
+                            $date_ref = $cron->getNextRunDate($date_ref, $step, true)->format('Y-m-d H:i:s');
                             $nincrement++;
                         }catch(Exception $e){
                             break;
@@ -478,7 +473,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
                     }else{
                         try{
-                            $date_ref = $cron->getNextRunDate($date_ref, $step, true)->format('Y-m-d H:i');
+                            $date_ref = $cron->getNextRunDate($date_ref, $step, true)->format('Y-m-d H:i:s');
                             $nincrement++;
                         }catch(Exception $e){
                             break;
@@ -508,24 +503,25 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
                     $step = 1;
 
-                    $date_ref_short = substr($date_ref, 0, 10);
+                    $date_ref_short_10 = substr($date_ref, 0, 10);
+                    $date_ref_short_16 = substr($date_ref, 0, 16);
 
-                    $aSTATs[$date_ref_short]["planned"]++;
-                    $aSTATs[$date_ref_short]["planned_$task_type"]++;
+                    $aSTATs[$date_ref_short_10]["planned"]++;
+                    $aSTATs[$date_ref_short_10]["planned_$task_type"]++;
 
-                    if(array_key_exists($date_ref, $aLOGNAME)){
-                        $aSTATs[$date_ref_short]["executed"]++;
-                        $aSTATs[$date_ref_short]["executed_$task_type"]++;
+                    if(array_key_exists($date_ref_short_16, $aLOGNAME)){
+                        $aSTATs[$date_ref_short_10]["executed"]++;
+                        $aSTATs[$date_ref_short_10]["executed_$task_type"]++;
 
-                        if($aLOGNAME[$date_ref] == 'OK'){
-                            $aSTATs[$date_ref_short]["succesfull"]++;
-                            $aSTATs[$date_ref_short]["succesfull_$task_type"]++;
+                        if($aLOGNAME[$date_ref_short_16] == 'OK'){
+                            $aSTATs[$date_ref_short_10]["succesfull"]++;
+                            $aSTATs[$date_ref_short_10]["succesfull_$task_type"]++;
                         }else{
-                            $aSTATs[$date_ref_short]["error"]++;
-                            $aSTATs[$date_ref_short]["error_$task_type"]++;
+                            $aSTATs[$date_ref_short_10]["error"]++;
+                            $aSTATs[$date_ref_short_10]["error_$task_type"]++;
                         }
 
-                        unset($aLOGNAME[$date_ref]);
+                        unset($aLOGNAME[$date_ref_short_16]);
 
                     }else{
                         if($show_not_executed == "Y"){
