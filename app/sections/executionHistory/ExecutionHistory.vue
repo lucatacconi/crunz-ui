@@ -123,7 +123,7 @@
                             <v-text-field
                                 v-model="search"
                                 append-icon="biotech"
-                                label="Search in row data shown as result of entered criteria"
+                                label="Search in row data shown as result of entered criteria (+ to concatenate criteria)"
                                 single-line
                                 hide-details
                             >

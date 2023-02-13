@@ -24,7 +24,7 @@
                 <v-text-field
                     v-model="search"
                     append-icon="mdi-magnify"
-                    label="Search"
+                    label="Search (Use + to concatenate search criteria)"
                     single-line
                     hide-details
                     class="mt-0"
