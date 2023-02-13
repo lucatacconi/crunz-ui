@@ -1,7 +1,7 @@
 <template>
     <v-col xl="4" lg="6" md="12" sm="12" xs="12">
         <v-card class="fill-height">
-            <v-card-title class="grey lighten-4">
+            <v-card-title :class="getTheme ? '' : 'grey lighten-4'">
                 Executed tasks:
             </v-card-title>
             <v-card-text>
@@ -56,6 +56,13 @@
                     "num-daily": false,
                     "num-monthly": false,
                 }
+            }
+        },
+
+        computed:{
+            getTheme:function(){
+                var self = this;
+                return self.$vuetify.theme.dark
             }
         },
 

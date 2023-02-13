@@ -1,7 +1,7 @@
 <template>
     <v-col xl="4" lg="6" md="12" sm="12" xs="12">
         <v-card class="fill-height">
-            <v-card-title class="grey lighten-4">
+            <v-card-title :class="getTheme ? '' : 'grey lighten-4'">
                 Logs size:
             </v-card-title>
             <v-card-text>
@@ -53,6 +53,13 @@
                     "logs-size": false,
                     "num-files": false
                 }
+            }
+        },
+
+        computed:{
+            getTheme:function(){
+                var self = this;
+                return self.$vuetify.theme.dark
             }
         },
 
