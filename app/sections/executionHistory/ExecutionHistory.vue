@@ -368,7 +368,6 @@ module.exports = {
         },
 
         customSearch: function (val){
-            // console.log("Search: "+val);
             var res=[];
             var searchInProperties=[];
             var extraSearchInProperties=[
@@ -387,14 +386,12 @@ module.exports = {
 
             for(var k=0;k<this.tasksExecutions.length;k++){
                 count=0;
-                // console.log("file number: " + k)
                 var find=[];
                 for(var i=0;i<searchInProperties.length;i++){
                     if(this.tasksExecutions[k][searchInProperties[i]] == undefined || this.tasksExecutions[k][searchInProperties[i]] == '' || typeof this.tasksExecutions[k][searchInProperties[i]] == 'boolean' || this.tasksExecutions[k][searchInProperties[i]] == 'object') continue;
 
                     var valSearchProperties=this.tasksExecutions[k][searchInProperties[i]];
                     var valSearch=val;
-                    // console.log("search properties: " + searchInProperties[i] + " value: " + valSearchProperties);
 
                     for(var c=0;c<split.length;c++){
                         valSearch=split[c];
@@ -405,21 +402,16 @@ module.exports = {
                         if(valSearchProperties.includes(valSearch)){
                             if(find.includes(valSearch)) continue;
                             find.push(valSearch);
-                            // console.log("FOUND!!! "+valSearchProperties+"="+valSearch)
                             count++;
                         }
                     }
                 }
-                // console.log("COUNT: "+count+" SPLIT LENGTH: "+ split.length)
                 if(count>=split.length){
                     res.push(this.tasksExecutions[k]);
                 }
             }
-            // console.log("result")
-            // console.log(res)
+
             this.searchResult=res;
-            // console.log("searchResult")
-            // console.log(this.searchResult)
         },
 
         customSort(items, index, isDesc) {
@@ -443,8 +435,6 @@ module.exports = {
                     }else{
                         b_conv = 0;
                     }
-
-                    console.log(!isDesc[0]);
 
                     if (isDesc[0]) {
                         return a_conv >= b_conv ? 1 : -1;
