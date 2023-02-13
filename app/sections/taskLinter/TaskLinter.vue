@@ -228,7 +228,7 @@ module.exports = {
             for(var k=0;k<this.files.length;k++){
                 count=0;
                 // console.log("file number: " + k)
-                var trovato=[];
+                var find=[];
                 for(var i=0;i<searchInProperties.length;i++){
                     if(this.files[k][searchInProperties[i]] == undefined || this.files[k][searchInProperties[i]] == '' || typeof this.files[k][searchInProperties[i]] == 'boolean' || this.files[k][searchInProperties[i]] == 'object') continue;
 
@@ -243,8 +243,8 @@ module.exports = {
                             valSearch=valSearch.toLowerCase();
                         }
                         if(valSearchProperties.includes(valSearch)){
-                            if(trovato.includes(valSearch)) continue;
-                            trovato.push(valSearch);
+                            if(find.includes(valSearch)) continue;
+                            find.push(valSearch);
                             // console.log("FOUND!!! "+valSearchProperties+"="+valSearch)
                             count++;
                         }

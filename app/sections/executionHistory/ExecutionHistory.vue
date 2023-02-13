@@ -106,18 +106,8 @@
                             ></v-select>
                         </v-flex>
                         <v-flex xs12 md6>
-                            <v-text-field
-                                v-model="search"
-                                append-icon="biotech"
-                                label="Search in row data shown as result of entered criteria"
-                                single-line
-                                hide-details
-                                class="mt-3"
-                            ></v-text-field>
-                        </v-flex>
-                        <v-flex xs12 md6 offset-md6 class="text-right">
                             <v-btn
-                                class="mt-3 mr-md-2"
+                                class="mt-5 mr-md-2"
                                 outlined
                                 color="red"
                                 block
@@ -128,6 +118,38 @@
                                 </v-icon>
                                 Search
                             </v-btn>
+                        </v-flex>
+                        <v-flex xs12 md6 offset-md6 class="text-right">
+                            <v-text-field
+                                v-model="search"
+                                append-icon="biotech"
+                                label="Search in row data shown as result of entered criteria"
+                                single-line
+                                hide-details
+                            >
+                                <template v-slot:append-outer>
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-btn
+                                                fab
+                                                rounded
+                                                :outlined="!caseSensitive"
+                                                @click="caseSensitive=!caseSensitive;customSearch(search)"
+                                                color="green"
+                                                dark
+                                                x-small
+                                                v-bind="attrs"
+                                                v-on="on"
+                                            >
+                                                <v-icon>
+                                                    mdi-format-letter-case
+                                                </v-icon>
+                                            </v-btn>
+                                        </template>
+                                        <span>Case sensitive search ON/OFF</span>
+                                    </v-tooltip>
+                                </template>
+                            </v-text-field>
                         </v-flex>
                     </v-layout>
                 </v-form>
@@ -270,6 +292,8 @@ module.exports = {
                 { text: 'Outcome', value: 'outcome', align: 'center' }
             ],
             tasksExecutions: [],
+            searchResult: [],
+            caseSensitive:true,
             oldTaskContent:null,
             editData: false,
             uploadData: false,
@@ -341,6 +365,61 @@ module.exports = {
                     self.message = "No tasks execution log selected by criteria. Modify your search criteria and press Search button.";
                 }
             });
+        },
+
+        customSearch: function (val){
+            // console.log("Search: "+val);
+            var res=[];
+            var searchInProperties=[];
+            var extraSearchInProperties=[
+                "event_unique_key"
+            ];
+            for(var i=0;i<this.headers.length;i++){
+                if(this.headers[i]['value']==undefined || this.headers[i]['value']=='') continue;
+                searchInProperties.push(this.headers[i]['value']);
+            }
+            searchInProperties=searchInProperties.concat(extraSearchInProperties);
+
+            var split=[];
+
+            split=val.split("+");
+            var count=0;
+
+            for(var k=0;k<this.tasksExecutions.length;k++){
+                count=0;
+                // console.log("file number: " + k)
+                var find=[];
+                for(var i=0;i<searchInProperties.length;i++){
+                    if(this.tasksExecutions[k][searchInProperties[i]] == undefined || this.tasksExecutions[k][searchInProperties[i]] == '' || typeof this.tasksExecutions[k][searchInProperties[i]] == 'boolean' || this.tasksExecutions[k][searchInProperties[i]] == 'object') continue;
+
+                    var valSearchProperties=this.tasksExecutions[k][searchInProperties[i]];
+                    var valSearch=val;
+                    // console.log("search properties: " + searchInProperties[i] + " value: " + valSearchProperties);
+
+                    for(var c=0;c<split.length;c++){
+                        valSearch=split[c];
+                        if(!this.caseSensitive){
+                            valSearchProperties=valSearchProperties.toLowerCase();
+                            valSearch=valSearch.toLowerCase();
+                        }
+                        if(valSearchProperties.includes(valSearch)){
+                            if(find.includes(valSearch)) continue;
+                            find.push(valSearch);
+                            // console.log("FOUND!!! "+valSearchProperties+"="+valSearch)
+                            count++;
+                        }
+                    }
+                }
+                // console.log("COUNT: "+count+" SPLIT LENGTH: "+ split.length)
+                if(count>=split.length){
+                    res.push(this.tasksExecutions[k]);
+                }
+            }
+            // console.log("result")
+            // console.log(res)
+            this.searchResult=res;
+            // console.log("searchResult")
+            // console.log(this.searchResult)
         },
 
         customSort(items, index, isDesc) {
@@ -474,6 +553,12 @@ module.exports = {
         },
         closeEditModal: function (result) {
             this.showEditModal = false;
+        }
+    },
+
+    watch: {
+        search: function (val) {
+            this.customSearch(val);
         }
     },
 
