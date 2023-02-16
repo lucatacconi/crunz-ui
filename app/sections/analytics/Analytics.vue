@@ -3,7 +3,6 @@
         <v-container>
             <v-row class="pa-0">
 
-
                 <systemuptime></systemuptime>
                 <sysloadcomp></sysloadcomp>
                 <activetaskscomp></activetaskscomp>
