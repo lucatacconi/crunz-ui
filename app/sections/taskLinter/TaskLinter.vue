@@ -62,7 +62,7 @@
                 :footer-props='{ "items-per-page-options": [10, 30, 50, -1]}'
             >
                 <template v-slot:body="{ items }">
-                    <tbody v-if="files.length!=0">
+                    <tbody v-if="items.length!=0">
                         <tr v-for="(item,i) in items" :key="i">
                             <td>
                                 <div class="text-center">
@@ -230,7 +230,7 @@ module.exports = {
                 for(var i=0;i<searchInProperties.length;i++){
                     if(this.files[k][searchInProperties[i]] == undefined || this.files[k][searchInProperties[i]] == '' || typeof this.files[k][searchInProperties[i]] == 'boolean' || this.files[k][searchInProperties[i]] == 'object') continue;
 
-                    var valSearchProperties=this.files[k][searchInProperties[i]];
+                    var valSearchProperties=String(this.tasksExecutions[k][searchInProperties[i]]);
                     var valSearch=val;
 
                     for(var c=0;c<split.length;c++){

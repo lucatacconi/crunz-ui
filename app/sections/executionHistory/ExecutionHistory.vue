@@ -157,17 +157,16 @@
 
             <v-data-table
                 :headers="headers"
-                :items="tasksExecutions"
+                :items="search.length > 0 ? searchResult : tasksExecutions"
                 :sort-desc.sync="sortDesc"
                 :sort-by.sync="sortBy"
                 :custom-sort="customSort"
-                :search="search"
                 :items-per-page="10"
                 :footer-props='{ "items-per-page-options": [10, 30, 50, -1]}'
                 class="mt-3"
             >
-                <template v-if="tasksExecutions.length!=0" v-slot:body="{ items }">
-                    <tbody>
+                <template v-slot:body="{ items }">
+                    <tbody v-if="items.length!=0">
                         <tr v-for="(item,i) in items" :key="i">
                             <td>
                                 <div class="text-center">
@@ -390,7 +389,7 @@ module.exports = {
                 for(var i=0;i<searchInProperties.length;i++){
                     if(this.tasksExecutions[k][searchInProperties[i]] == undefined || this.tasksExecutions[k][searchInProperties[i]] == '' || typeof this.tasksExecutions[k][searchInProperties[i]] == 'boolean' || this.tasksExecutions[k][searchInProperties[i]] == 'object') continue;
 
-                    var valSearchProperties=this.tasksExecutions[k][searchInProperties[i]];
+                    var valSearchProperties=String(this.tasksExecutions[k][searchInProperties[i]]);
                     var valSearch=val;
 
                     for(var c=0;c<split.length;c++){
@@ -591,9 +590,6 @@ module.exports = {
 
     mounted:function(){
         this.readLovs();
-    },
-
-    watch: {
     },
 
     components:{
