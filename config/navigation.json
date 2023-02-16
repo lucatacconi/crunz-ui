@@ -196,8 +196,8 @@
                     }
                 },
                 {
-                    "title": "User configuration",
-                    "subtitle": "Manage users and levels",
+                    "title": "User Management",
+                    "subtitle": "Configure users and levels",
                     "allowed": ["admin"],
                     "visible": true,
 
