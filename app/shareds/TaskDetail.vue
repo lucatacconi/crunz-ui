@@ -20,7 +20,7 @@
                 </v-toolbar-items>
             </v-toolbar>
 
-            <v-card-text class="pt-0">
+            <v-card-text class="pt-2">
                 <v-container>
                     <v-row>
                         <v-col cols="6" class="py-0">

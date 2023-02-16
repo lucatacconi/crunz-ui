@@ -22,7 +22,7 @@
                 </v-toolbar-items>
             </v-toolbar>
 
-            <v-card-text class="pt-3">
+            <v-card-text class="pt-2">
 
                 <tree-view v-on:select-folder="formData.path=$event" v-if="showTree" :path-folder="pathFolder"></tree-view>
 
