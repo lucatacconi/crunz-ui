@@ -1968,7 +1968,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 throw new Exception("ERROR - Error uploading file ($file_name)");
             }
 
-            if( substr($file_data["name"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ) throw new Exception("ERROR - Remove '".$TASK_SUFFIX."' from the end of filename. ($file_name)");
+            if( substr($file_data["name"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ) throw new Exception("ERROR - Add '".$TASK_SUFFIX."' at the end of filename. ($file_name)");
 
             $accepted_file_ext = ["php"];
             $aFILENAME = explode('.', $file_data["name"]);
