@@ -292,7 +292,7 @@ module.exports = {
             ],
             tasksExecutions: [],
             searchResult: [],
-            caseSensitive:true,
+            caseSensitive:false,
             oldTaskContent:null,
             editData: false,
             uploadData: false,

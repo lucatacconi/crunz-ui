@@ -228,7 +228,7 @@ module.exports = {
             ],
             files: [],
             searchResult: [],
-            caseSensitive:true,
+            caseSensitive:false,
             oldTaskContent:null,
             editData: false,
             uploadData: false,

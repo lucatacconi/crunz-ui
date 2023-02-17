@@ -186,7 +186,7 @@ module.exports = {
             ],
             files: [],
             searchResult: [],
-            caseSensitive:true,
+            caseSensitive:false,
             oldTaskContent:null,
             editData: false,
             message: 'No tasks found on server. Eventually check tasks directory path.',
