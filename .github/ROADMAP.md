@@ -25,8 +25,10 @@ Crunz-ui updated stable release:
 * Several improvements, bug fixes and and code cleanup throughout the application
 * Happy Italian Carnival Day
 
+**Advanced search tool refactored:**
 ![Advanced search tool refactored](https://user-images.githubusercontent.com/9921890/219686300-5126d524-eab4-4a5f-b4a1-ff3b37effa0d.png)
 
+**Analytics and statistics:**
 ![Analytics and statistics](https://user-images.githubusercontent.com/9921890/219686347-d9aa244f-6a3d-420a-bdf7-8f47dd54a7c1.png)
 
 
