@@ -17,6 +17,7 @@ Crunz-ui updated stable release:
 * New section for the management of users authorized to access. Functionality enabled only for admin users
 * New section for managing Crunz configuration directly from the interface. Functionality enabled only for admin users
 * New section for analyzing tasks operation, system load, logs occupation and more
+* Reorganization of Tasks' execution outcome list section to improve its ergonomics
 * New functionality for cloning an already existing task in Tasks Table
 * Refactoring of the task reading and management engine
 * Statistics engine refactoring
