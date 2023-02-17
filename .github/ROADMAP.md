@@ -7,6 +7,20 @@
 
 ## Release history
 
+### v.2.7.9 (2023-02-17)
+
+Crunz-ui updated stable release:
+* Implementation of [Crunzphp/Crunz](https://github.com/crunzphp/crunz) v3.4.1 in Crunz-ui
+* New section for the management of users authorized to access. Functionality enabled only for admin users
+* New section for managing Crunz configuration directly from the interface. Functionality enabled only for admin users
+* New section for analyzing tasks operation, system load, logs occupation and more
+* New functionality for cloning an already existing task in Tasks Table
+* Refactoring of the task reading and management engine
+* Statistics engine refactoring
+* Advanced search: it is now possible to concatenate search parameters with the + or select whether to carry out searches with case sensitive or not
+* Several improvements, bug fixes and and code cleanup throughout the application
+* Happy Italian Carnival Day
+
 ### v.2.7.5 (2022-04-25)
 
 Crunz-ui updated stable release:
