@@ -1,6 +1,14 @@
 <template>
     <div>
 
+        <!-- New task modal -->
+        <new-task
+            v-if="showNewTaskModal"
+            :old-task-content="oldTaskContent"
+            @on-close-modal="closeNewTaskModal($event)"
+            origin="archived"
+        ></new-task>
+
         <!-- Edit modal -->
         <task-edit
             v-if="showEditModal"
@@ -16,23 +24,45 @@
                 <v-text-field
                     v-model="search"
                     append-icon="mdi-magnify"
-                    label="Search"
+                    label="Search (Use + to concatenate search criteria)"
                     single-line
                     hide-details
                     class="mt-0"
                 ></v-text-field>
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            fab
+                            rounded
+                            :outlined="!caseSensitive"
+                            @click="caseSensitive=!caseSensitive;customSearch(search)"
+                            color="green"
+                            dark
+                            x-small
+                            class="mt-2"
+                            v-bind="attrs"
+                            v-on="on"
+                        >
+                            <v-icon>
+                                mdi-format-letter-case
+                            </v-icon>
+                        </v-btn>
+                    </template>
+                    <span>Case sensitive search ON/OFF</span>
+                </v-tooltip>
             </v-card-title>
 
             <v-data-table
                 :headers="headers"
-                :items="files"
+                :items="search.length > 0 ? searchResult : files"
                 :sort-desc.sync="sortDesc"
                 :sort-by.sync="sortBy"
                 :custom-sort="customSort"
-                :search="search"
+                :items-per-page="10"
+                :footer-props='{ "items-per-page-options": [10, 30, 50, -1]}'
             >
-                <template v-if="files.length!=0" v-slot:body="{ items }">
-                    <tbody>
+                <template v-slot:body="{ items }">
+                    <tbody v-if="items.length!=0">
                         <tr v-for="(item,i) in items" :key="i">
                             <td>
                                 <div class="text-center">
@@ -52,6 +82,10 @@
                                                 <v-list-item @click="openEditModal(item, i)">
                                                     <v-list-item-icon><v-icon>mdi-archive-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item @click="openNewTaskModal(item, i)">
+                                                    <v-list-item-icon><v-icon>mdi-content-duplicate</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>Clone task</v-list-item-title>
                                                 </v-list-item>
 
 
@@ -193,6 +227,9 @@ module.exports = {
                 { text: 'Archiving date', value: 'storage_datetime', align: 'center' }
             ],
             files: [],
+            searchResult: [],
+            caseSensitive:false,
+            oldTaskContent:null,
             editData: false,
             uploadData: false,
             logData: false,
@@ -213,6 +250,53 @@ module.exports = {
                     self.message = "No archived tasks found on server. Eventually check tasks directory path."
                 }
             });
+        },
+
+        customSearch: function (val){
+            var res=[];
+            var searchInProperties=[];
+            var extraSearchInProperties=[
+                "event_unique_key"
+            ];
+            for(var i=0;i<this.headers.length;i++){
+                if(this.headers[i]['value']==undefined || this.headers[i]['value']=='') continue;
+                searchInProperties.push(this.headers[i]['value']);
+            }
+            searchInProperties=searchInProperties.concat(extraSearchInProperties);
+
+            var split=[];
+
+            split=val.split("+");
+            var count=0;
+
+            for(var k=0;k<this.files.length;k++){
+                count=0;
+                var find=[];
+                for(var i=0;i<searchInProperties.length;i++){
+                    if(this.files[k][searchInProperties[i]] == undefined || this.files[k][searchInProperties[i]] == '' || typeof this.files[k][searchInProperties[i]] == 'boolean' || this.files[k][searchInProperties[i]] == 'object') continue;
+
+                    var valSearchProperties=String(this.files[k][searchInProperties[i]]);
+                    var valSearch=val;
+
+                    for(var c=0;c<split.length;c++){
+                        valSearch=split[c];
+                        if(!this.caseSensitive){
+                            valSearchProperties=valSearchProperties.toLowerCase();
+                            valSearch=valSearch.toLowerCase();
+                        }
+                        if(valSearchProperties.includes(valSearch)){
+                            if(find.includes(valSearch)) continue;
+                            find.push(valSearch);
+                            count++;
+                        }
+                    }
+                }
+                if(count>=split.length){
+                    res.push(this.files[k]);
+                }
+            }
+
+            this.searchResult=res;
         },
 
         customSort(items, index, isDesc) {
@@ -237,9 +321,6 @@ module.exports = {
 
                     b_h = "00";
                     if(!isNaN(b_split[1])) b_h = zeroPad(parseInt(b_split[1], 10), 2);
-
-                    console.log(a_h + a_m);
-                    console.log(b_h + b_m);
 
                     if (!isDesc) {
                         return (a_h + a_m) < (b_h + b_m) ? -1 : 1;
@@ -315,6 +396,26 @@ module.exports = {
             }
         },
 
+        openNewTaskModal: function (item) {
+            this.oldTaskContent=null;
+            if(item!=undefined){
+                this.oldTaskContent = {
+                    subdir: item.subdir,
+                    real_path: item.real_path,
+                    task_path: item.task_path,
+                    filename: item.filename,
+                    event_unique_key: item.event_unique_key
+                }
+            };
+            this.showNewTaskModal = true;
+        },
+        closeNewTaskModal: function (result) {
+            this.showNewTaskModal = false;
+            if(typeof result !== 'undefined' && result){
+                this.readData();
+            }
+        },
+
         dearchiveItem: function (rowdata) {
             var self = this;
             Utils.showAlertDialog(
@@ -385,6 +486,12 @@ module.exports = {
         }
     },
 
+    watch: {
+        search: function (val) {
+            this.customSearch(val);
+        }
+    },
+
     created:function() {
         this.readData();
     },
@@ -400,7 +507,8 @@ module.exports = {
     },
 
     components:{
-        'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime())
+        'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime()),
+        'new-task': httpVueLoader('../../shareds/NewTask.vue' + '?v=' + new Date().getTime())
     }
 }
 </script>

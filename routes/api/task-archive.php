@@ -93,14 +93,18 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
         foreach ($files as $archFile) {
 
-            $file_content_orig = file_get_contents($archFile->getRealPath(), true);
+            $file_content_check = $file_content_orig = file_get_contents($archFile->getRealPath(), true);
             $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content_orig);
 
+            $file_content_check = preg_replace('/\/\*[\s\S]+?\*\//', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\r/', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\n/', '', $file_content_check);
+
             if(
-                strpos($file_content, 'use Crunz\Schedule;') === false ||
-                strpos($file_content, '= new Schedule()') === false ||
-                strpos($file_content, '->run(') === false ||
-                strpos($file_content, 'return $schedule;') === false
+                strpos($file_content_check, 'use Crunz\Schedule;') === false ||
+                strpos($file_content_check, '= new Schedule()') === false ||
+                strpos($file_content_check, '->run(') === false ||
+                strpos($file_content_check, 'return $schedule;') === false
             ){
                 continue;
             }
@@ -114,6 +118,32 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                     }
                 }
             }
+
+
+            //Cron expression check
+            $cron_presence = false;
+            if(strpos($file_content_check, '->cron(\'') !== false){
+                $pos_start = strpos($file_content_check, '->cron(\'');
+                $cron_presence = true;
+            }
+            if(strpos($file_content_check, '->cron("') !== false){
+                $pos_start = strpos($file_content_check, '->cron("');
+                $cron_presence = true;
+            }
+
+            if($cron_presence){
+                $cron_str_tmp = str_replace( ['->cron(\'', '->cron("'], '', substr($file_content_check, $pos_start) );
+                $aTMP = explode(")", $cron_str_tmp);
+
+                $cron_str = str_replace( ['\'', '"'], '', $aTMP[0] );
+
+                try {
+                    $cron_check = new Cron\CronExpression($cron_str);
+                } catch (Exception $e) {
+                    continue;
+                }
+            }
+
 
             unset($schedule);
             require $archFile->getRealPath();
@@ -197,8 +227,8 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                 //Check task lifetime
                 $from = '';
                 $to = '';
-                $lifetime_from = '';
-                $lifetime_to = '';
+                $life_datetime_from = '';
+                $life_datetime_to = '';
 
                 $delimiter = '#';
                 $startTag = '->between(';
@@ -208,14 +238,14 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                                     . preg_quote($endTag, $delimiter)
                                     . $delimiter
                                     . 's';
-                preg_match($regex, $file_content, $matches);
+                preg_match($regex, $file_content_check, $matches);
                 if(!empty($matches) and strpos($matches[1], ',') !== false){
                     $aTIMELIFE = explode(",", $matches[1]);
-                    $lifetime_from = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[0] ));
-                    $lifetime_to = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[1] ));
+                    $life_datetime_from = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[0] ));
+                    $life_datetime_to = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[1] ));
                 }
 
-                if(empty($lifetime_from)){
+                if(empty($life_datetime_from)){
                     $delimiter = '#';
                     $startTag = '->from(';
                     $endTag = ')';
@@ -224,13 +254,13 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                                         . preg_quote($endTag, $delimiter)
                                         . $delimiter
                                         . 's';
-                    preg_match($regex, $file_content,$matches);
+                    preg_match($regex, $file_content_check, $matches);
                     if(!empty($matches)){
-                        $lifetime_from = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
+                        $life_datetime_from = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
                     }
                 }
 
-                if(empty($lifetime_to)){
+                if(empty($life_datetime_to)){
                     $delimiter = '#';
                     $startTag = '->to(';
                     $endTag = ')';
@@ -239,29 +269,29 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                                         . preg_quote($endTag, $delimiter)
                                         . $delimiter
                                         . 's';
-                    preg_match($regex, $file_content,$matches);
+                    preg_match($regex, $file_content_check, $matches);
                     if(!empty($matches)){
-                        $lifetime_to = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
+                        $life_datetime_to = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
                     }
                 }
 
-                if(!empty($lifetime_from)){
-                    $row["lifetime_from"] = date('Y-m-d H:i:s', $lifetime_from);
+                if(!empty($life_datetime_from)){
+                    $row["life_datetime_from"] = date('Y-m-d H:i:s', $life_datetime_from);
                 }
-                if(!empty($lifetime_to)){
-                    $row["lifetime_to"] = date('Y-m-d H:i:s', $lifetime_to);
+                if(!empty($life_datetime_to)){
+                    $row["life_datetime_to"] = date('Y-m-d H:i:s', $life_datetime_to);
                 }
 
-                if(!empty($row["lifetime_from"]) || !empty($row["lifetime_to"])){
+                if(!empty($row["life_datetime_from"]) || !empty($row["life_datetime_to"])){
 
                     $lifetime_descr = " (Executed";
 
-                    if(!empty($row["lifetime_from"])){
-                        $lifetime_descr .= " from ".$row["lifetime_from"];
+                    if(!empty($row["life_datetime_from"])){
+                        $lifetime_descr .= " from ".$row["life_datetime_from"];
                     }
 
-                    if(!empty($row["lifetime_to"])){
-                        $lifetime_descr .= " to ".$row["lifetime_to"];
+                    if(!empty($row["life_datetime_to"])){
+                        $lifetime_descr .= " to ".$row["life_datetime_to"];
                     }
 
                     $lifetime_descr .= ")";
@@ -281,9 +311,6 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                     $row["expression"] = '0 0'.substr($row["expression"],3);
                 }
 
-                unset($cron);
-                $cron = Cron\CronExpression::factory($row["expression"]);
-
 
                 //Check log file configured by user appendOutputTo() or sendOutputTo()
                 $custom_log = '';
@@ -302,12 +329,12 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                                     . $delimiter
                                     . 's';
 
-                preg_match($regex, $file_content,$matches);
+                preg_match($regex, $file_content_check, $matches);
                 if(!empty($matches) && empty($custom_log)){
                     $custom_log = str_replace(array("'", "\""), '', $matches[1] );
                 }
 
-                preg_match($regex2, $file_content,$matches);
+                preg_match($regex2, $file_content_check, $matches);
                 if(!empty($matches) && empty($custom_log)){
                     $custom_log = str_replace(array("'", "\""), '', $matches[1] );
                 }

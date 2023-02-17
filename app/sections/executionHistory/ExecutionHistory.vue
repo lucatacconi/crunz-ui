@@ -15,6 +15,13 @@
             :rowdata="logData"
         ></task-edit>
 
+        <!-- New task modal -->
+        <new-task
+            v-if="showNewTaskModal"
+            :old-task-content="oldTaskContent"
+            @on-close-modal="closeNewTaskModal($event)"
+        ></new-task>
+
         <!-- Picker modal -->
         <picker-modal @result="closePicker($event)" ref="picker"></picker-modal>
 
@@ -68,7 +75,7 @@
                                     @click:append="openPicker('executionIntervalFrom','execution_interval_from')"
                                     append-outer-icon="mdi-filter-remove-outline"
                                     @click:append-outer="search_params.executionIntervalFrom = null"
-                                >2022-02-08</v-text-field>
+                                ></v-text-field>
                             </validationprovider>
                         </v-flex>
                         <v-flex xs12 md6>
@@ -95,18 +102,54 @@
                                 label="Amount of logs"
                                 hide-details
                                 class="mt-3 mr-md-2"
-                                :items="['100','200','300','All']"
+                                :items="['50','100','200','300','All']"
                             ></v-select>
                         </v-flex>
                         <v-flex xs12 md6>
+                            <v-btn
+                                class="mt-5 mr-md-2"
+                                outlined
+                                color="red"
+                                block
+                                @click="launchSearch()"
+                            >
+                                <v-icon left>
+                                    mdi-magnify
+                                </v-icon>
+                                Search
+                            </v-btn>
+                        </v-flex>
+                        <v-flex xs12 md6 offset-md6 class="text-right">
                             <v-text-field
                                 v-model="search"
-                                append-icon="mdi-magnify"
-                                label="Search in log interval"
+                                append-icon="biotech"
+                                label="Search within the search result (+ to concatenate criteria)"
                                 single-line
                                 hide-details
-                                class="mt-3"
-                            ></v-text-field>
+                            >
+                                <template v-slot:append-outer>
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-btn
+                                                fab
+                                                rounded
+                                                :outlined="!caseSensitive"
+                                                @click="caseSensitive=!caseSensitive;customSearch(search)"
+                                                color="green"
+                                                dark
+                                                x-small
+                                                v-bind="attrs"
+                                                v-on="on"
+                                            >
+                                                <v-icon>
+                                                    mdi-format-letter-case
+                                                </v-icon>
+                                            </v-btn>
+                                        </template>
+                                        <span>Case sensitive search ON/OFF</span>
+                                    </v-tooltip>
+                                </template>
+                            </v-text-field>
                         </v-flex>
                     </v-layout>
                 </v-form>
@@ -114,14 +157,16 @@
 
             <v-data-table
                 :headers="headers"
-                :items="tasksExecutions"
+                :items="search.length > 0 ? searchResult : tasksExecutions"
                 :sort-desc.sync="sortDesc"
                 :sort-by.sync="sortBy"
                 :custom-sort="customSort"
-                :search="search"
+                :items-per-page="10"
+                :footer-props='{ "items-per-page-options": [10, 30, 50, -1]}'
+                class="mt-3"
             >
-                <template v-if="tasksExecutions.length!=0" v-slot:body="{ items }">
-                    <tbody>
+                <template v-slot:body="{ items }">
+                    <tbody v-if="items.length!=0">
                         <tr v-for="(item,i) in items" :key="i">
                             <td>
                                 <div class="text-center">
@@ -141,6 +186,10 @@
                                                 <v-list-item @click="openEditModal(item, i)">
                                                     <v-list-item-icon><v-icon>mdi-file-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item @click="openNewTaskModal(item, i)">
+                                                    <v-list-item-icon><v-icon>mdi-content-duplicate</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>Clone task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="openLastLogModal(item, i)">
                                                     <v-list-item-icon><v-icon>mdi-comment-check</v-icon></v-list-item-icon>
@@ -205,42 +254,6 @@
             </v-data-table>
 
         </v-card>
-
-        <v-speed-dial
-            absolute
-            fixed
-            bottom
-            right
-            direction="left"
-            transition="slide-y-reverse-transition"
-            style="margin-bottom:30px;"
-        >
-            <template v-slot:activator>
-                <v-btn
-                    color="blue darken-2"
-                    dark
-                    fab
-                >
-                    <v-icon large>mdi-cog</v-icon>
-                </v-btn>
-            </template>
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                    <v-btn
-                        fab
-                        dark
-                        small
-                        color="indigo"
-                        @click="readData()"
-                        v-on="on"
-                    >
-                        <v-icon>mdi-refresh</v-icon>
-                    </v-btn>
-                </template>
-                <span>Refresh</span>
-            </v-tooltip>
-        </v-speed-dial>
-
     </div>
 </template>
 
@@ -254,13 +267,14 @@ module.exports = {
                 eventUniqueId:null,
                 executionIntervalFrom:null,
                 executionIntervalTo:null,
-                amountLogs:'100'
+                amountLogs:'50'
             },
             pointer:null,
             sortBy:'execution_datatime',
             sortDesc:true,
             search: '',
             showEditModal: false,
+            showNewTaskModal:false,
             showLogModal: false,
             headers: [
                 {
@@ -277,10 +291,13 @@ module.exports = {
                 { text: 'Outcome', value: 'outcome', align: 'center' }
             ],
             tasksExecutions: [],
+            searchResult: [],
+            caseSensitive:false,
+            oldTaskContent:null,
             editData: false,
             uploadData: false,
             logData: false,
-            message: 'No tasks execution log found on server.',
+            message: 'No tasks execution log selected by criteria. Modify your search criteria and press Search button.',
 
             clipboad_enabled: false
         }
@@ -323,7 +340,7 @@ module.exports = {
                     .then(function (response) {
                         self.tasksExecutions = response.data;
                         if(response.data.length==0){
-                            self.message = "No tasks execution log found on server.";
+                            self.message = "No tasks execution log selected by criteria. Modify your search criteria and press Search button.";
                         }
                     });
                 }
@@ -343,11 +360,57 @@ module.exports = {
             Utils.apiCall("get", "/task/exec-history",params, options)
             .then(function (response) {
                 self.tasksExecutions = response.data;
-                self.readLovs(options);
                 if(response.data.length == 0){
-                    self.message = "No tasks execution log found on server.";
+                    self.message = "No tasks execution log selected by criteria. Modify your search criteria and press Search button.";
                 }
             });
+        },
+
+        customSearch: function (val){
+            var res=[];
+            var searchInProperties=[];
+            var extraSearchInProperties=[
+                "event_unique_key"
+            ];
+            for(var i=0;i<this.headers.length;i++){
+                if(this.headers[i]['value']==undefined || this.headers[i]['value']=='') continue;
+                searchInProperties.push(this.headers[i]['value']);
+            }
+            searchInProperties=searchInProperties.concat(extraSearchInProperties);
+
+            var split=[];
+
+            split=val.split("+");
+            var count=0;
+
+            for(var k=0;k<this.tasksExecutions.length;k++){
+                count=0;
+                var find=[];
+                for(var i=0;i<searchInProperties.length;i++){
+                    if(this.tasksExecutions[k][searchInProperties[i]] == undefined || this.tasksExecutions[k][searchInProperties[i]] == '' || typeof this.tasksExecutions[k][searchInProperties[i]] == 'boolean' || this.tasksExecutions[k][searchInProperties[i]] == 'object') continue;
+
+                    var valSearchProperties=String(this.tasksExecutions[k][searchInProperties[i]]);
+                    var valSearch=val;
+
+                    for(var c=0;c<split.length;c++){
+                        valSearch=split[c];
+                        if(!this.caseSensitive){
+                            valSearchProperties=valSearchProperties.toLowerCase();
+                            valSearch=valSearch.toLowerCase();
+                        }
+                        if(valSearchProperties.includes(valSearch)){
+                            if(find.includes(valSearch)) continue;
+                            find.push(valSearch);
+                            count++;
+                        }
+                    }
+                }
+                if(count>=split.length){
+                    res.push(this.tasksExecutions[k]);
+                }
+            }
+
+            this.searchResult=res;
         },
 
         customSort(items, index, isDesc) {
@@ -371,8 +434,6 @@ module.exports = {
                     }else{
                         b_conv = 0;
                     }
-
-                    console.log(!isDesc[0]);
 
                     if (isDesc[0]) {
                         return a_conv >= b_conv ? 1 : -1;
@@ -442,7 +503,7 @@ module.exports = {
             self.search_params.eventUniqueId = null
             self.search_params.executionIntervalFrom = null
             self.search_params.executionIntervalTo = null
-            self.search_params.amountLogs = '100'
+            self.search_params.amountLogs = '50'
             Utils.apiCall("get", "/task/filename",{},options)
             .then(function (response) {
                 self.task_path_lovs=[]
@@ -450,6 +511,9 @@ module.exports = {
                     self.task_path_lovs.push(response.data[i].task_path)
                 }
             });
+
+            self.search_params.executionIntervalFrom = dayjs().subtract(1, 'days').format('YYYY-MM-DD HH:mm');
+            self.search_params.executionIntervalTo = dayjs().format('YYYY-MM-DD HH:mm');
         },
 
         openLogModal: function (rowdata) {
@@ -478,9 +542,12 @@ module.exports = {
         },
         closeEditModal: function (result) {
             this.showEditModal = false;
-            if(typeof result !== 'undefined' && result){
-                this.readData();
-            }
+        }
+    },
+
+    watch: {
+        search: function (val) {
+            this.customSearch(val);
         }
     },
 
@@ -491,8 +558,6 @@ module.exports = {
     },
 
     created:function() {
-
-        this.readData();
 
         VeeValidate.extend('date_format', value => {
 
@@ -521,31 +586,10 @@ module.exports = {
             },
             message: 'Date range is incorrect'
         });
-
-        // this.search_params.executionIntervalFrom = dayjs().subtract(1, 'days').format('YYYY-MM-DD HH:mm');
-        // this.search_params.executionIntervalTo = dayjs().format('YYYY-MM-DD HH:mm');
     },
 
     mounted:function(){
-        this.readData();
-    },
-
-    watch: {
-        'search_params.taskPath': function (newValue, preValue) {
-            this.launchSearch();
-        },
-        'search_params.eventUniqueId': function (newValue, preValue) {
-            this.launchSearch();
-        },
-        'search_params.executionIntervalFrom': function (newValue, preValue) {
-            this.launchSearch();
-        },
-        'search_params.executionIntervalTo': function (newValue, preValue) {
-            this.launchSearch();
-        },
-        'search_params.amountLogs': function (newValue, preValue) {
-            this.launchSearch();
-        }
+        this.readLovs();
     },
 
     components:{

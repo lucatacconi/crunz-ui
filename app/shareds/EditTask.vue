@@ -114,10 +114,19 @@ module.exports = {
             var self = this;
             var params = {
                 "return_task_cont": "Y",
-                "unique_id": self.rowdata.event_unique_key
+                "unique_id": self.rowdata.event_unique_key,
+                "task_path": self.rowdata.task_path
             }
 
-            Utils.apiCall("get", this.origin=='archived' ? "/task-archive/" : "/task/",params)
+            let dest = '/task/';
+            if(this.origin=='archived'){
+                dest = '/task-archive/';
+            }
+            if(this.origin=='linted'){
+                dest = '/task/draft';
+            }
+
+            Utils.apiCall("get", dest, params)
             .then(function (response) {
                 if(response.data.length!=0){
                     task_detail = response.data[0];

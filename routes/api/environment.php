@@ -12,6 +12,39 @@ use Symfony\Component\Yaml\Yaml;
 
 $app->group('/environment', function (RouteCollectorProxy $group) {
 
+    $group->get('/crunz-default-config', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml.example" )) throw new Exception("ERROR - Crunz.yml example configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."//crunz.yml.example");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz example configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz  example configuration file error");
+        }
+
+        $data = $crunz_config;
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
     $group->get('/crunz-config', function (Request $request, Response $response, array $args) {
 
         $data = [];
@@ -39,6 +72,137 @@ $app->group('/environment', function (RouteCollectorProxy $group) {
         }
 
         $data = $crunz_config;
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
+    $group->post('/crunz-config', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $params = [];
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        $crunz_config_path = $base_path."/crunz.yml";
+
+        if(!file_exists($crunz_config_path)){
+            if(!is_writable($base_path)) throw new Exception('ERROR - Config file path not writable');
+        }else{
+            if(!is_writable($crunz_config_path)) throw new Exception('ERROR - Config file not writable');
+        }
+
+        if(empty($params["CONFIG_CONTENT"])) throw new Exception("ERROR - Crunz configuration empty");
+
+        $crunz_config_content = base64_decode($params["CONFIG_CONTENT"]);
+
+        if(empty($crunz_config_content)) throw new Exception("ERROR - Crunz configuration empty");
+
+
+        $crunz_config_handle = fopen($crunz_config_path, "w");
+        if($crunz_config_handle === false) throw new Exception('ERROR - Error in opening config file');
+
+        fwrite($crunz_config_handle, $crunz_config_content);
+        fclose($crunz_config_handle);
+
+
+        $data["result"] = true;
+        $data["result_msg"] = '';
+
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
+    $group->get('/users-config', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(!file_exists ( $crunz_base_dir."/config/accounts.json" )) throw new Exception("ERROR - Users configuration not found");
+        $users_config = file_get_contents($crunz_base_dir."/config/accounts.json");
+
+        if(empty($users_config)) throw new Exception("ERROR - Users configuration empty");
+
+        $data = json_decode($users_config, true);
+
+        if(is_null($data)){
+            throw new Exception("ERROR - Users configuration error");
+        }
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
+    $group->post('/users-config', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $params = [];
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        $users_config_path = $base_path."/config/accounts.json";
+
+        if(!file_exists($users_config_path)){
+            throw new Exception('ERROR - Users configuration not exist');
+        }
+
+        if(!is_writable($users_config_path)){
+            throw new Exception('ERROR - Users configuration not writable');
+        }
+
+        if(empty($params["CONFIG_CONTENT"])) throw new Exception("ERROR - Users configuration empty");
+
+        $users_config_content = base64_decode($params["CONFIG_CONTENT"]);
+
+        if(empty($users_config_content)) throw new Exception("ERROR - Users configuration empty");
+
+
+        $crunz_config_handle = fopen($users_config_path, "w");
+        if($crunz_config_handle === false) throw new Exception('ERROR - Users in opening config file');
+
+        fwrite($crunz_config_handle, $users_config_content);
+        fclose($crunz_config_handle);
+
+
+        $data["result"] = true;
+        $data["result_msg"] = '';
+
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)

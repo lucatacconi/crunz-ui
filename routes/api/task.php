@@ -75,7 +75,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $date_ref = date("Y-m-d H:i:s");
         if(!empty($params["DATE_REF"])){
-            $date_ref = date($params["DATE_REF"]);
+            $date_ref = date("Y-m-d H:i:s", strtotime($params["DATE_REF"]));
         }
 
         $date_now = date("Y-m-d H:i:s");
@@ -162,7 +162,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             $glob_filter = $LOGS_DIR."/";
             $glob_filter .= "*";
             $glob_filter .= date('Ymd', strtotime($interval_from))."*_";
-            $glob_filter .= date('Ymd', strtotime($interval_to))."*";
+            $glob_filter .= "*";
             $glob_filter .= ".log";
 
         }else{
@@ -177,18 +177,17 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                 if( substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1) == substr(date('Ymd', strtotime($interval_to)), $chr_selector, 1) ){
                     $glob_filter_from .= substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1);
-                    $glob_filter_to .= substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1);
                 }else{
                     break;
                 }
             }
 
             $glob_filter .= $glob_filter_from."*_";
-            $glob_filter .= $glob_filter_to."*";
+            $glob_filter .= "*";
             $glob_filter .= ".log";
         }
 
-        $aLOGNAME_all = glob($glob_filter); //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
+        array_multisort(array_map('filemtime', ($aLOGNAME_all = glob($glob_filter))), SORT_DESC, $aLOGNAME_all); //UNIQUE_KEY_OK_20191001100_20191001110.log | UNIQUE_KEY_KO_20191001100_20191001110.log
 
         $aLOGNAME_perkey = [];
         foreach($aLOGNAME_all as $logkey => $logfile){
@@ -206,25 +205,53 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         $task_counter = 0;
         foreach ($files as $taskFile) {
 
-            $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
+            $file_content_check = $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
             $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content_orig);
 
+            $file_content_check = preg_replace('/\/\*[\s\S]+?\*\//', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\r/', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\n/', '', $file_content_check);
+
             if(
-                strpos($file_content, 'use Crunz\Schedule;') === false ||
-                strpos($file_content, '= new Schedule()') === false ||
-                strpos($file_content, '->run(') === false ||
-                strpos($file_content, 'return $schedule;') === false
+                strpos($file_content_check, 'use Crunz\Schedule;') === false ||
+                strpos($file_content_check, '= new Schedule()') === false ||
+                strpos($file_content_check, '->run(') === false ||
+                strpos($file_content_check, 'return $schedule;') === false
             ){
                 continue;
             }
 
-            if(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec')){
-                if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
+            if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
+                if(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec')){
                     $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
                     if(strpos($file_check_result, 'No syntax errors detected in') === false){
                         //Syntax error in file
                         continue;
                     }
+                }
+            }
+
+            //Cron expression check
+            $cron_presence = false;
+            if(strpos($file_content_check, '->cron(\'') !== false){
+                $pos_start = strpos($file_content_check, '->cron(\'');
+                $cron_presence = true;
+            }
+            if(strpos($file_content_check, '->cron("') !== false){
+                $pos_start = strpos($file_content_check, '->cron("');
+                $cron_presence = true;
+            }
+
+            if($cron_presence){
+                $cron_str_tmp = str_replace( ['->cron(\'', '->cron("'], '', substr($file_content_check, $pos_start) );
+                $aTMP = explode(")", $cron_str_tmp);
+
+                $cron_str = str_replace( ['\'', '"'], '', $aTMP[0] );
+
+                try {
+                    $cron_check = new Cron\CronExpression($cron_str);
+                } catch (Exception $e) {
+                    continue;
                 }
             }
 
@@ -319,92 +346,169 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     $row["high_frequency_day_round"] = $round_day;
                 }
 
+                if(!empty($params["TASK_TYPE"])){
+                    if($params["TASK_TYPE"] == "STD"){
+                        if($row["high_frequency"]){
+                            continue;
+                        }
+                    }else if($params["TASK_TYPE"] == "HFT"){
+                        if(!$row["high_frequency"]){
+                            continue;
+                        }
+                    }
+                }
 
                 //Check task lifetime
                 $from = '';
                 $to = '';
-                $lifetime_from = '';
-                $lifetime_to = '';
+                $life_datetime_from = '';
+                $life_datetime_to = '';
+                $life_time_from = '';
+                $life_time_to = '';
 
-                $delimiter = '#';
-                $startTag = '->between(';
-                $endTag = ')';
-                $regex = $delimiter . preg_quote($startTag, $delimiter)
-                                    . '(.*?)'
-                                    . preg_quote($endTag, $delimiter)
-                                    . $delimiter
-                                    . 's';
-                preg_match($regex, $file_content, $matches);
-                if(!empty($matches) and strpos($matches[1], ',') !== false){
-                    $aTIMELIFE = explode(",", $matches[1]);
-                    $lifetime_from = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[0] ));
-                    $lifetime_to = strtotime( str_replace(array("'", "\""), '', $aTIMELIFE[1] ));
-                }
+                //Evaluate task lifetime between
+                $matches_details = null;
+                $pattern = '/->between\((.*?)\)/';
+                preg_match_all($pattern, $file_content_check, $matches_between);
 
-                if(empty($lifetime_from)){
-                    $delimiter = '#';
-                    $startTag = '->from(';
-                    $endTag = ')';
-                    $regex = $delimiter . preg_quote($startTag, $delimiter)
-                                        . '(.*?)'
-                                        . preg_quote($endTag, $delimiter)
-                                        . $delimiter
-                                        . 's';
-                    preg_match($regex, $file_content,$matches);
-                    if(!empty($matches)){
-                        $lifetime_from = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
+                foreach($matches_between[1] as $match_between){
+                    $match_between = str_replace(' ', '', $match_between);
+
+                    $pattern = '/["\'](\d{2}:\d{2} \d{4}-\d{2}-\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})["\'],["\'](\d{2}:\d{2} \d{4}-\d{2}-\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})["\']/';
+                    preg_match_all($pattern, $match_between, $matches_details);
+
+                    if(!empty($matches_details[0])){
+
+                        if (preg_match('/^([0-9]*):([0-9]*)$/', $matches_details[1][0])) {
+                            $life_time_from = $matches_details[1][0];
+                        }else{
+                            $life_datetime_from = $matches_details[1][0];
+                        }
+
+                        if (preg_match('/^([0-9]*):([0-9]*)$/', $matches_details[2][0])) {
+                            $life_time_to = $matches_details[2][0];
+                        }else{
+                            $life_datetime_to = $matches_details[2][0];
+                        }
                     }
                 }
 
-                if(empty($lifetime_to)){
-                    $delimiter = '#';
-                    $startTag = '->to(';
-                    $endTag = ')';
-                    $regex = $delimiter . preg_quote($startTag, $delimiter)
-                                        . '(.*?)'
-                                        . preg_quote($endTag, $delimiter)
-                                        . $delimiter
-                                        . 's';
-                    preg_match($regex, $file_content,$matches);
-                    if(!empty($matches)){
-                        $lifetime_to = strtotime( str_replace(array("'", "\""), '', $matches[1] ));
+                //Evaluate task lifetime from
+                $matches_details = null;
+                $pattern = '/->from\(["\'](.*?)["\']\)/';
+                preg_match_all($pattern, $file_content_check, $matches_from);
+
+                if(!empty($matches_from[1])){
+                    foreach($matches_from[1] as $match_from){
+                        $pattern = '/(\d{2}:\d{2} \d{4}-\d{2}-\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})/';
+                        preg_match_all($pattern, $match_from, $matches_details);
+
+                        foreach($matches_details[1] as $match_tmp){
+                            if (preg_match('/^([0-9]*):([0-9]*)$/', $match_tmp)) {
+                                $life_time_from = $match_tmp;
+                            }else{
+                                $life_datetime_from = $match_tmp;
+                            }
+                        }
                     }
                 }
 
-                if(!empty($lifetime_from)){
-                    $row["lifetime_from"] = date('Y-m-d H:i:s', $lifetime_from);
-                    if($event_interval_from <  $row["lifetime_from"]){
-                        $event_interval_from = $row["lifetime_from"];
+                //Evaluate task lifetime to
+                $matches_details = null;
+                $pattern = '/->to\(["\'](.*?)["\']\)/';
+                preg_match_all($pattern, $file_content_check, $matches_to);
+
+                if(!empty($matches_to[1])){
+                    foreach($matches_to[1] as $match_to){
+                        $pattern = '/(\d{2}:\d{2} \d{4}-\d{2}-\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})/';
+                        preg_match_all($pattern, $match_to, $matches_details);
+
+                        foreach($matches_details[1] as $match_tmp){
+                            if (preg_match('/^([0-9]*):([0-9]*)$/', $match_tmp)) {
+                                $life_time_to = $match_tmp;
+                            }else{
+                                $life_datetime_to = $match_tmp;
+                            }
+                        }
                     }
                 }
-                if(!empty($lifetime_to)){
-                    $row["lifetime_to"] = date('Y-m-d H:i:s', $lifetime_to);
-                    if($event_interval_to >  $row["lifetime_to"]){
-                        $event_interval_to = $row["lifetime_to"];
+
+                if(!empty($life_datetime_from)){
+                    $life_datetime_from = date('Y-m-d H:i:s', strtotime($life_datetime_from));
+                }
+
+                if(!empty($life_datetime_to)){
+                    $life_datetime_to = date('Y-m-d H:i:s', strtotime($life_datetime_to));
+                }
+
+                $row["life_datetime_from"] = $life_datetime_from;
+                $row["life_datetime_to"] = $life_datetime_to;
+                $row["life_time_from"] = $life_time_from;
+                $row["life_time_to"] = $life_time_to;
+
+                if(!empty($life_datetime_from)){
+                    if($event_interval_from <  $row["life_datetime_from"]){
+                        $event_interval_from = $row["life_datetime_from"];
+                    }
+                }
+                if(!empty($life_datetime_to)){
+                    if($event_interval_to >  $row["life_datetime_to"]){
+                        $event_interval_to = $row["life_datetime_to"];
+                    }
+                }
+
+                if(!empty($life_time_from) and !empty($life_time_to)){
+                    if(strtotime($life_time_from) - strtotime($life_time_to) >= 86400){
+                        $row["life_time_from"] = '';
+                        $row["life_time_to"] = '';
                     }
                 }
 
                 $event_interval_from_orig = $event_interval_from;
                 $event_interval_to_orig = $event_interval_to;
 
+                $date1 = new DateTime($event_interval_from);
+                $date2 = new DateTime($event_interval_to);
+                $diff = date_diff($date1, $date2);
+                $round_limit = 1 + $diff->i + $diff->h * 60 + $diff->days * 24 * 60;
 
-                if(!empty($row["lifetime_from"]) || !empty($row["lifetime_to"])){
+                if(!empty($row["life_datetime_from"]) || !empty($row["life_datetime_to"]) || !empty($row["life_time_from"]) || !empty($row["life_time_to"])){
 
-                    $lifetime_descr = " (Executed";
+                    $interval_descr = " (Executed";
 
-                    if(!empty($row["lifetime_from"])){
-                        $lifetime_descr .= " from ".$row["lifetime_from"];
+                    if(!empty($row["life_datetime_from"])){
+                        $interval_descr .= " from ".$row["life_datetime_from"];
                     }
 
-                    if(!empty($row["lifetime_to"])){
-                        $lifetime_descr .= " to ".$row["lifetime_to"];
+                    if(!empty($row["life_datetime_to"])){
+                        $interval_descr .= " to ".$row["life_datetime_to"];
                     }
 
-                    $lifetime_descr .= ")";
+                    if(!empty($row["life_time_from"])){
+                        $interval_descr .= " from ".$row["life_time_from"];
+                    }
 
-                    $row["task_description"] = $row["task_description"].$lifetime_descr;
+                    if(!empty($row["life_time_to"])){
+                        $interval_descr .= " to ".$row["life_time_to"];
+                    }
+
+                    $interval_descr .= ")";
+
+                    $row["task_description"] = $row["task_description"].$interval_descr;
                 }
 
+                $row["active"] = true;
+                if(!empty($row["life_datetime_from"])){
+                    if(empty($row["life_datetime_from"]) > date('Y-m-d H:i:s')){
+                        $row["active"] = false;
+                    }
+                }
+
+                if(!empty($row["life_datetime_to"])){
+                    if(empty($row["life_datetime_to"]) < date('Y-m-d H:i:s')){
+                        $row["active"] = false;
+                    }
+                }
 
                 try {
                     $row["expression_readable"] = CronTranslator::translate($row["expression"]);
@@ -412,14 +516,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     $row["expression_readable"] = "";
                 }
 
-                //$row["commnad"] = $oEVENT->getCommandForDisplay();
-
                 if(substr($row["expression"], 0, 3) == '* *' && substr($row["expression"], 4) != '* * *'){
                     $row["expression"] = '0 0'.substr($row["expression"],3);
                 }
-
-                unset($cron);
-                $cron = Cron\CronExpression::factory($row["expression"]);
 
 
                 //Check log file configured by user appendOutputTo() or sendOutputTo()
@@ -439,12 +538,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                                     . $delimiter
                                     . 's';
 
-                preg_match($regex, $file_content,$matches);
+                preg_match($regex, $file_content_check, $matches);
                 if(!empty($matches) && empty($custom_log)){
                     $custom_log = str_replace(array("'", "\""), '', $matches[1] );
                 }
 
-                preg_match($regex2, $file_content,$matches);
+                preg_match($regex2, $file_content_check, $matches);
                 if(!empty($matches) && empty($custom_log)){
                     $custom_log = str_replace(array("'", "\""), '', $matches[1] );
                 }
@@ -480,7 +579,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 }
 
                 if(!empty($aLOGNAME)){
-                    usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
 
                     //0 UNIQUE_KEY
                     //1 Outcome
@@ -504,7 +602,14 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                             $task_start = DateTime::createFromFormat('YmdHi', $aLOGFOCUS[2]);
                             $task_stop = DateTime::createFromFormat('YmdHi', $aLOGFOCUS[3]);
 
-                            if($task_start->format('Y-m-d H:i:s') < $event_interval_from || $task_start->format('Y-m-d H:i:s') > $event_interval_to){
+                            if($task_start->format('Y-m-d H:i:s') < $event_interval_from_orig || $task_start->format('Y-m-d H:i:s') > $event_interval_to_orig){
+                                continue;
+                            }
+
+                            if(!empty($row["life_time_from"]) && $task_start->format('H:i') < $row["life_time_from"]){
+                                continue;
+                            }
+                            if(!empty($row["life_time_to"]) && $task_start->format('H:i') > $row["life_time_to"]){
                                 continue;
                             }
 
@@ -556,89 +661,144 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }
                 }
 
+                unset($cron);
+                $cron = new Cron\CronExpression($row["expression"]);
+
 
                 //Next run calculation
-                if(empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
-                    $next_run = $cron->getNextRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
-                }else if(!empty($row["lifetime_to"]) && $row["lifetime_to"] < $date_ref){
-                    $next_run = '';
+                $nincrement = 0;
+                $step = 0;
+                $date_ref_tmp = $date_ref;
+                $next_run = '';
+
+                if(!empty($row["life_datetime_to"]) && $row["life_datetime_to"] < $date_ref_tmp){
+                    //Task is out of life date time
                 }else{
+                    while($nincrement < $round_limit){ //Use the maximum number of minutes in the given range
 
-                    $nincrement = 0;
-                    $next_run = '';
+                        $aDATEREF = explode(' ', $date_ref_tmp);
 
-                    while($nincrement < 1000){ //Use the same hard limit of cron-expression library
-                        $calc_run = $cron->getNextRunDate($date_ref, $nincrement, true)->format('Y-m-d H:i:s');
+                        if(!empty($life_time_from) && date('Y-m-d H:i:s', strtotime($date_ref_tmp)) < date('Y-m-d H:i:s', strtotime($aDATEREF[0].' '.$life_time_from))){
+                            $date_ref_tmp = date('Y-m-d H:i', strtotime($aDATEREF[0].' '.$life_time_from));
 
-                        if($calc_run > $interval_to) break;
-
-                        if(!empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
-                            if($calc_run <= $row["lifetime_to"]  ){
-                                $next_run = $calc_run;
+                            $step = 0;
+                            try{
+                                $date_ref_tmp = $cron->getNextRunDate($date_ref_tmp, $step, true)->format('Y-m-d H:i');
+                                $nincrement++;
+                            }catch(Exception $e){
                                 break;
                             }
-                        }else if(empty($row["lifetime_from"]) && !empty($row["lifetime_to"])){
-                            if($calc_run <= $row["lifetime_to"]  ){
-                                $next_run = $calc_run;
-                                break;
-                            }
-                        }else if(!empty($row["lifetime_from"]) && !empty($row["lifetime_to"])){
-                            if($calc_run >= $row["lifetime_from"] && $calc_run <= $row["lifetime_to"]  ){
-                                $next_run = $calc_run;
+                            $step = 1;
+
+                        }else{
+                            try{
+                                $date_ref_tmp = $cron->getNextRunDate($date_ref_tmp, $step, true)->format('Y-m-d H:i');
+                                $nincrement++;
+                            }catch(Exception $e){
                                 break;
                             }
                         }
 
-                        $nincrement++;
+                        $aDATEREF = explode(' ', $date_ref_tmp);
+
+                        if(!empty($life_time_to) && date('Y-m-d H:i:s', strtotime($date_ref_tmp)) > date('Y-m-d H:i:s', strtotime($aDATEREF[0].' '.$life_time_to))){
+                            if(!empty($row["life_time_from"])){
+                                $date_ref_tmp = date('Y-m-d H:i:s', strtotime($aDATEREF[0]." ".$life_time_from." +1 day"));
+                            }else{
+                                $date_ref_tmp = date('Y-m-d H:i:s', strtotime($aDATEREF[0]." +1 day"));
+                            }
+
+                            $step = 0;
+                            continue;
+                        }
+
+                        if($date_ref_tmp < $event_interval_from_orig){
+                            continue;
+                        }
+
+                        if($date_ref_tmp > $event_interval_to_orig){
+                            break;
+                        }
+
+                        $step = 1;
+
+                        $next_run = $date_ref_tmp;
+                        break;
                     }
                 }
 
                 $row["next_run"] = $next_run;
 
-                //Calculeted but not necessarily executed
-                if(empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
-                    $calculeted_last_run = $cron->getPreviousRunDate($date_ref, 0, true)->format('Y-m-d H:i:s');
-                }else if(!empty($row["lifetime_from"]) && $row["lifetime_from"] > $date_ref){
-                    $calculeted_last_run = '';
+
+                //Last run calculation - Calculated but not necessarily executed
+                $nincrement = 0;
+                $step = 0;
+                $date_ref_tmp = $date_ref;
+                $calculated_last_run = '';
+
+                if(!empty($row["life_datetime_from"]) && $row["life_datetime_from"] > $date_ref_tmp){
+                    //Task is out of life date time
                 }else{
+                    while($nincrement < $round_limit){ //Use the maximum number of minutes in the given range
 
-                    $nincrement = 0;
-                    $calculeted_last_run = '';
+                        $aDATEREF = explode(' ', $date_ref_tmp);
 
-                    while($nincrement < 1000){ //Use the same hard limit of cron-expression library
-                        $calc_run = $cron->getPreviousRunDate($date_ref, $nincrement, true)->format('Y-m-d H:i:s');
+                        if(!empty($life_time_to) && date('Y-m-d H:i:s', strtotime($date_ref_tmp)) > date('Y-m-d H:i:s', strtotime($aDATEREF[0].' '.$life_time_to))){
+                            $date_ref_tmp = date('Y-m-d H:i', strtotime($aDATEREF[0].' '.$life_time_to));
 
-                        if($calc_run < $interval_from) break;
-
-                        if(!empty($row["lifetime_from"]) && empty($row["lifetime_to"])){
-                            if($calc_run >= $row["lifetime_from"] ){
-                                $calculeted_last_run = $calc_run;
+                            $step = 0;
+                            try{
+                                $date_ref_tmp = $cron->getPreviousRunDate($date_ref_tmp, $step, true)->format('Y-m-d H:i');
+                                $nincrement++;
+                            }catch(Exception $e){
                                 break;
                             }
-                        }else if(empty($row["lifetime_from"]) && !empty($row["lifetime_to"])){
-                            if($calc_run <= $row["lifetime_to"]  ){
-                                $calculeted_last_run = $calc_run;
-                                break;
-                            }
-                        }else if(!empty($row["lifetime_from"]) && !empty($row["lifetime_to"])){
-                            if($calc_run >= $row["lifetime_from"] && $calc_run <= $row["lifetime_to"]  ){
-                                $calculeted_last_run = $calc_run;
+                            $step = 1;
+                        }else{
+                            try{
+                                $date_ref_tmp = $cron->getPreviousRunDate($date_ref_tmp, $step, true)->format('Y-m-d H:i');
+                                $nincrement++;
+                            }catch(Exception $e){
                                 break;
                             }
                         }
 
-                        $nincrement++;
+                        $aDATEREF = explode(' ', $date_ref_tmp);
+
+                        if(!empty($life_time_from) && date('Y-m-d H:i:s', strtotime($date_ref_tmp)) < date('Y-m-d H:i:s', strtotime($aDATEREF[0].' '.$life_time_from))){
+                            if(!empty($row["life_time_to"])){
+                                $date_ref_tmp = date('Y-m-d H:i:s', strtotime($aDATEREF[0]." ".$life_time_to." -1 day"));
+                            }else{
+                                $date_ref_tmp = date('Y-m-d H:i:s', strtotime($aDATEREF[0]." -1 day"));
+                            }
+
+                            $step = 0;
+                            continue;
+                        }
+
+                        if($date_ref_tmp > $event_interval_to_orig){
+                            continue;
+                        }
+
+                        if($date_ref_tmp < $event_interval_from_orig){
+                            break;
+                        }
+
+                        $step = 1;
+
+                        $calculated_last_run = $date_ref_tmp;
+                        break;
                     }
                 }
 
-                $row["calculeted_last_run"] = $calculeted_last_run;
+                $row["calculated_last_run"] = $calculated_last_run;
 
                 if(!empty($row["executed_task_lst"])){
                     $row["executed_last_run"] = array_key_last($row["executed_task_lst"]);
                 }
 
                 $row["last_run_actually_executed"] = false;
-                $aLASTLOG = preg_grep( "#^$LOGS_DIR+\/".$row["event_unique_key"]."_[OK]{2}_".date("YmdHi", strtotime($row["calculeted_last_run"]))."_[0-9]{12}_[a-zA-Z0-9-]{4}.log$#", $aLOGNAME );
+                $aLASTLOG = preg_grep( "#^$LOGS_DIR+\/".$row["event_unique_key"]."_[OK]{2}_".date("YmdHi", strtotime($row["calculated_last_run"]))."_[0-9]{12}_[a-zA-Z0-9-]{4}.log$#", $aLOGNAME );
 
                 if(!empty($aLASTLOG)){
                     $row["last_run_actually_executed"] = true;
@@ -646,9 +806,10 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
 
                 //Calculating run list of the interval
-                $calc_run = false;
+                $calc_run_ref = false;
                 $tmp_interval_lst = [];
                 $nincrement = 0;
+                $step = 0;
 
                 if($calc_run_lst == "Y"){
 
@@ -661,8 +822,20 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                                 $calc_run_ref = $event_interval_from_orig;
                             }
 
-                            $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $nincrement, true)->format('Y-m-d H:i:s');
-                            if($nincrement == 0) $nincrement++;
+                            try{
+                                $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $nincrement, true)->format('Y-m-d H:i:s');
+                                if($nincrement == 0) $nincrement++;
+                            }catch(Exception $e){
+                                // die(print_r($row,true)."-$nincrement-".$e->getMessage());
+                                break;
+                            }
+
+                            if(!empty($row["life_time_from"]) && date('H:i', strtotime($calc_run_ref)) < $row["life_time_from"] ){
+                                continue;
+                            }
+                            if(!empty($row["life_time_to"]) && date('H:i', strtotime($calc_run_ref)) > $row["life_time_to"] ){
+                                continue;
+                            }
 
                             $row["planned_in_interval"]++;
 
@@ -690,40 +863,75 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                     }else{
 
-                        while($nincrement < 1000){ //Use the same hard limit of cron-expression library
-                            $calc_run = $cron->getNextRunDate($event_interval_from_orig, $nincrement, true)->format('Y-m-d H:i:s');
+                        $calc_run_ref = $event_interval_from_orig;
 
-                            if($calc_run > $event_interval_to){
-                                break;
+                        while($nincrement < $round_limit){ //Use the maximum number of minutes in the given range
+
+                            $aDATEREF = explode(' ', $event_interval_from_orig);
+
+                            if(!empty($life_time_from) && date('Y-m-d H:i:s', strtotime($calc_run_ref)) < date('Y-m-d H:i:s', strtotime($aDATEREF[0].' '.$life_time_from))){
+                                $calc_run_ref = date('Y-m-d H:i', strtotime($aDATEREF[0].' '.$life_time_from));
+
+                                $step = 0;
+                                try{
+                                    $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $step, true)->format('Y-m-d H:i');
+                                    $nincrement++;
+                                }catch(Exception $e){
+                                    break;
+                                }
+                                $step = 1;
+
+                            }else{
+                                try{
+                                    $calc_run_ref = $cron->getNextRunDate($calc_run_ref, $step, true)->format('Y-m-d H:i');
+                                    $nincrement++;
+                                }catch(Exception $e){
+                                    break;
+                                }
                             }
 
-                            $nincrement++;
+                            $aDATEREF = explode(' ', $calc_run_ref);
 
-                            $tmp_interval_lst[$calc_run] = $calc_run;
+                            if(!empty($life_time_to) && date('Y-m-d H:i:s', strtotime($calc_run_ref)) > date('Y-m-d H:i:s', strtotime($aDATEREF[0].' '.$life_time_to))){
+                                if(!empty($row["life_time_from"])){
+                                    $calc_run_ref = date('Y-m-d H:i:s', strtotime($aDATEREF[0]." ".$life_time_from." +1 day"));
+                                }else{
+                                    $calc_run_ref = date('Y-m-d H:i:s', strtotime($aDATEREF[0]." +1 day"));
+                                }
 
-                            if($calc_run < $event_interval_from){
+                                $step = 0;
                                 continue;
                             }
 
-                            if($calc_run < $date_now && $past_planned_tasks != "Y"){
-                                if(array_key_exists($calc_run, $row["executed_task_lst"])){
-                                    if($calc_run == $row["executed_task_lst"][$calc_run]){
-                                        $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + 1 minute"));
+                            if($calc_run_ref < $event_interval_from_orig){
+                                continue;
+                            }
+
+                            if($calc_run_ref > $event_interval_to_orig){
+                                break;
+                            }
+
+                            $step = 1;
+
+                            if($calc_run_ref < $date_now && $past_planned_tasks != "Y"){
+                                if(array_key_exists($calc_run_ref, $row["executed_task_lst"])){
+                                    if($calc_run_ref == $row["executed_task_lst"][$calc_run_ref]){
+                                        $row["interval_run_lst"][$calc_run_ref] = date('Y-m-d H:i:s', strtotime("$calc_run_ref + 1 minute"));
                                     }else{
-                                        $row["interval_run_lst"][$calc_run] = $row["executed_task_lst"][$calc_run];
+                                        $row["interval_run_lst"][$calc_run_ref] = $row["executed_task_lst"][$calc_run_ref];
                                     }
                                 }
                             }else{
-                                $row["interval_run_lst"][$calc_run] = date('Y-m-d H:i:s', strtotime("$calc_run + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
+                                $row["interval_run_lst"][$calc_run_ref] = date('Y-m-d H:i:s', strtotime("$calc_run_ref + ".($row["last_duration"] != 0 ? $row["last_duration"] : 1) ." minute"));
                             }
                         }
 
                         foreach($row["executed_task_lst"] as $exec_task_start => $exec_task_end){
-                            if($exec_task_start >= $event_interval_from_orig && $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $tmp_interval_lst)){
-                                $tmp_interval_lst[$calc_run] = $calc_run;
+                            if($exec_task_start >= $event_interval_from_orig && $exec_task_start <= $event_interval_to_orig && !array_key_exists($exec_task_start, $tmp_interval_lst)){
+                                $tmp_interval_lst[$calc_run_ref] = $calc_run_ref;
                             }
 
-                            if($exec_task_start >= $event_interval_from && $exec_task_start <= $event_interval_to && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
+                            if($exec_task_start >= $event_interval_from_orig && $exec_task_start <= $event_interval_to_orig && !array_key_exists($exec_task_start, $row["interval_run_lst"])){
                                 $row["interval_run_lst"][$exec_task_start] = $exec_task_end;
                             }
                         }
@@ -757,6 +965,101 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         };
 
         $data = $aTASKs;
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
+    $group->get('/draft', function (Request $request, Response $response, array $args) {
+
+        // RETURN_TASK_CONT - Y | N - set API to show content of the task (PHP code)
+
+        $data = [];
+
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+
+        $return_task_content = "N";
+        if(!empty($params["RETURN_TASK_CONT"])){
+            $return_task_content = $params["RETURN_TASK_CONT"];
+        }
+
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty($crunz_config["timezone"])) throw new Exception("ERROR - Wrong timezone configuration");
+
+        date_default_timezone_set($crunz_config["timezone"]);
+
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        $TASK_SUFFIX = $crunz_config["suffix"];
+
+
+        $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
+
+        $directoryIterator = new \RecursiveDirectoryIterator($base_tasks_path);
+        $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
+
+
+        $quotedSuffix = \preg_quote($TASK_SUFFIX, '/');
+        $regexIterator = new \RegexIterator( $recursiveIterator, "/^.+{$quotedSuffix}$/i", \RecursiveRegexIterator::GET_MATCH );
+
+        $files = \array_map(
+            static function (array $file) {
+                return new \SplFileInfo(\reset($file));
+            },
+            \iterator_to_array($regexIterator)
+        );
+
+        $aFILEs = [];
+        $task_counter = 0;
+        foreach ($files as $taskFile) {
+
+            $row = [];
+
+            $row["filename"] = $taskFile->getFilename();
+            $row["real_path"] = $taskFile->getRealPath();
+            $row["subdir"] = str_replace( array( $TASKS_DIR, $row["filename"]),'',$row["real_path"]);
+            $row["task_path"] = str_replace($TASKS_DIR, '', $row["real_path"]);
+
+            if(!empty($params["TASK_PATH"])){
+                if($row["task_path"] != $params["TASK_PATH"]){
+                    continue;
+                }
+            }
+
+            $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
+            $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content_orig);
+
+            if($return_task_content == "Y"){
+                $row["task_content"] = base64_encode($file_content_orig);
+            }
+
+            $aFILEs[] = $row;
+        }
+
+        $data = $aFILEs;
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
@@ -818,14 +1121,18 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         $task_counter = 0;
         foreach ($files as $taskFile) {
 
-            $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
+            $file_content_check = $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
             $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content_orig);
 
+            $file_content_check = preg_replace('/\/\*[\s\S]+?\*\//', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\r/', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\n/', '', $file_content_check);
+
             if(
-                strpos($file_content, 'use Crunz\Schedule;') === false ||
-                strpos($file_content, '= new Schedule()') === false ||
-                strpos($file_content, '->run(') === false ||
-                strpos($file_content, 'return $schedule;') === false
+                strpos($file_content_check, 'use Crunz\Schedule;') === false ||
+                strpos($file_content_check, '= new Schedule()') === false ||
+                strpos($file_content_check, '->run(') === false ||
+                strpos($file_content_check, 'return $schedule;') === false
             ){
                 continue;
             }
@@ -934,14 +1241,18 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         foreach ($files as $taskFile) {
 
-            $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
+            $file_content_check = $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
             $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content_orig);
 
+            $file_content_check = preg_replace('/\/\*[\s\S]+?\*\//', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\r/', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\n/', '', $file_content_check);
+
             if(
-                strpos($file_content, 'use Crunz\Schedule;') === false ||
-                strpos($file_content, '= new Schedule()') === false ||
-                strpos($file_content, '->run(') === false ||
-                strpos($file_content, 'return $schedule;') === false
+                strpos($file_content_check, 'use Crunz\Schedule;') === false ||
+                strpos($file_content_check, '= new Schedule()') === false ||
+                strpos($file_content_check, '->run(') === false ||
+                strpos($file_content_check, 'return $schedule;') === false
             ){
                 continue;
             }
@@ -1272,16 +1583,46 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         if( empty($params["TASK_CONTENT"]) ) throw new Exception("ERROR - No task content submitted");
 
-        $params["TASK_CONTENT"] = base64_decode($params["TASK_CONTENT"]);
+        $file_content_check = $params["TASK_CONTENT"] = base64_decode($params["TASK_CONTENT"]);
         $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $params["TASK_CONTENT"]);
 
+        $file_content_check = preg_replace('/\/\*[\s\S]+?\*\//', '', $file_content_check);
+        $file_content_check = preg_replace('/\/\/[\s\S]+?\r/', '', $file_content_check);
+        $file_content_check = preg_replace('/\/\/[\s\S]+?\n/', '', $file_content_check);
+
         if(
-            strpos($file_content, 'use Crunz\Schedule;') === false ||
-            strpos($file_content, '= new Schedule()') === false ||
-            strpos($file_content, '->run(') === false
+            strpos($file_content_check, 'use Crunz\Schedule;') === false ||
+            strpos($file_content_check, '= new Schedule()') === false ||
+            strpos($file_content_check, '->run(') === false
         ){
             throw new Exception("ERROR - Wrong task configuration in task file");
         }
+
+
+        //Cron expression check
+        $cron_presence = false;
+        if(strpos($file_content_check, '->cron(\'') !== false){
+            $pos_start = strpos($file_content_check, '->cron(\'');
+            $cron_presence = true;
+        }
+        if(strpos($file_content_check, '->cron("') !== false){
+            $pos_start = strpos($file_content_check, '->cron("');
+            $cron_presence = true;
+        }
+
+        if($cron_presence){
+            $cron_str_tmp = str_replace( ['->cron(\'', '->cron("'], '', substr($file_content_check, $pos_start) );
+            $aTMP = explode(")", $cron_str_tmp);
+
+            $cron_str = str_replace( ['\'', '"'], '', $aTMP[0] );
+
+            try {
+                $cron_check = new Cron\CronExpression($cron_str);
+            } catch (Exception $e) {
+                throw new Exception("ERROR - Wrong crontab expression in task file");
+            }
+        }
+
 
         fwrite($task_tester_handle, $params["TASK_CONTENT"]);
         fclose($task_tester_handle);
@@ -1627,7 +1968,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 throw new Exception("ERROR - Error uploading file ($file_name)");
             }
 
-            if( substr($file_data["name"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ) throw new Exception("ERROR - Remove '".$TASK_SUFFIX."' from the end of filename. ($file_name)");
+            if( substr($file_data["name"], - strlen($TASK_SUFFIX)) != $TASK_SUFFIX ) throw new Exception("ERROR - Add '".$TASK_SUFFIX."' at the end of filename. ($file_name)");
 
             $accepted_file_ext = ["php"];
             $aFILENAME = explode('.', $file_data["name"]);
@@ -1643,16 +1984,46 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
 
             //Check if file is a task file
-            $file_content = file_get_contents($file_data["tmp_name"], true);
+            $file_content_check = $file_content = file_get_contents($file_data["tmp_name"], true);
             $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content);
 
+            $file_content_check = preg_replace('/\/\*[\s\S]+?\*\//', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\r/', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\n/', '', $file_content_check);
+
             if(
-                strpos($file_content, 'use Crunz\Schedule;') === false ||
-                strpos($file_content, '= new Schedule()') === false ||
-                strpos($file_content, '->run(') === false
+                strpos($file_content_check, 'use Crunz\Schedule;') === false ||
+                strpos($file_content_check, '= new Schedule()') === false ||
+                strpos($file_content_check, '->run(') === false
             ){
                 throw new Exception("ERROR - Wrong task configuration in task file ($file_name)");
             }
+
+
+            //Cron expression check
+            $cron_presence = false;
+            if(strpos($file_content_check, '->cron(\'') !== false){
+                $pos_start = strpos($file_content_check, '->cron(\'');
+                $cron_presence = true;
+            }
+            if(strpos($file_content_check, '->cron("') !== false){
+                $pos_start = strpos($file_content_check, '->cron("');
+                $cron_presence = true;
+            }
+
+            if($cron_presence){
+                $cron_str_tmp = str_replace( ['->cron(\'', '->cron("'], '', substr($file_content_check, $pos_start) );
+                $aTMP = explode(")", $cron_str_tmp);
+
+                $cron_str = str_replace( ['\'', '"'], '', $aTMP[0] );
+
+                try {
+                    $cron_check = new Cron\CronExpression($cron_str);
+                } catch (Exception $e) {
+                    throw new Exception("ERROR - Wrong crontab expression in task file ($file_name)");
+                }
+            }
+
 
             $file_check_result = exec("php -l \"".$file_data["tmp_name"]."\"");
             if(strpos($file_check_result, 'No syntax errors detected in') === false){
@@ -1858,14 +2229,18 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         $task_counter = 0;
         foreach ($files as $taskFile) {
 
-            $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
+            $file_content_check = $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
             $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content_orig);
 
+            $file_content_check = preg_replace('/\/\*[\s\S]+?\*\//', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\r/', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\n/', '', $file_content_check);
+
             if(
-                strpos($file_content, 'use Crunz\Schedule;') === false ||
-                strpos($file_content, '= new Schedule()') === false ||
-                strpos($file_content, '->run(') === false ||
-                strpos($file_content, 'return $schedule;') === false
+                strpos($file_content_check, 'use Crunz\Schedule;') === false ||
+                strpos($file_content_check, '= new Schedule()') === false ||
+                strpos($file_content_check, '->run(') === false ||
+                strpos($file_content_check, 'return $schedule;') === false
             ){
                 continue;
             }
@@ -2067,16 +2442,31 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             \iterator_to_array($regexIterator)
         );
 
+
+        //Check configurations erros in task
+        $aOUTPUT=null;
+        $retval=null;
+        $config_error = false;
+        exec("cd $crunz_base_dir && vendor/bin/crunz schedule:list 2>&1", $aOUTPUT, $retval);
+
+        if( strpos($aOUTPUT[0], "PHP Fatal error") !== false ){
+            $config_error = true;
+        }
+
         foreach ($files as $taskFile) {
 
-            $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
+            $file_content_check = $file_content_orig = file_get_contents($taskFile->getRealPath(), true);
             $file_content = str_replace(array("   ","  ","\t","\n","\r"), ' ', $file_content_orig);
 
+            $file_content_check = preg_replace('/\/\*[\s\S]+?\*\//', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\r/', '', $file_content_check);
+            $file_content_check = preg_replace('/\/\/[\s\S]+?\n/', '', $file_content_check);
+
             if(
-                strpos($file_content, 'use Crunz\Schedule;') === false ||
-                strpos($file_content, '= new Schedule()') === false ||
-                strpos($file_content, '->run(') === false ||
-                strpos($file_content, 'return $schedule;') === false
+                strpos($file_content_check, 'use Crunz\Schedule;') === false ||
+                strpos($file_content_check, '= new Schedule()') === false ||
+                strpos($file_content_check, '->run(') === false ||
+                strpos($file_content_check, 'return $schedule;') === false
             ){
                 continue;
             }
@@ -2097,6 +2487,42 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             }else{
                 $row["syntax_check"] = false;
                 $row["error_detected"] = $file_check_result;
+            }
+
+            if($config_error && $row["syntax_check"]){
+                if(strpos($aOUTPUT[0], $taskFile->getRealPath()) !== false){
+                    $row["syntax_check"] = false;
+                    $row["error_detected"] = $aOUTPUT[0];
+                }
+	    }
+
+	    $row["cron_presence"] = $cron_presence = false;
+
+            if($row["syntax_check"]){
+                if(strpos($file_content_check, '->cron(\'') !== false){
+                    $pos_start = strpos($file_content_check, '->cron(\'');
+                    $cron_presence = true;
+                }
+                if(strpos($file_content_check, '->cron("') !== false){
+                    $pos_start = strpos($file_content_check, '->cron("');
+                    $cron_presence = true;
+		}
+
+		$row["cron_presence"] = $cron_presence;
+
+                if($cron_presence){
+                    $cron_str_tmp = str_replace( ['->cron(\'', '->cron("'], '', substr($file_content_check, $pos_start) );
+                    $aTMP = explode(")", $cron_str_tmp);
+
+                    $cron_str = str_replace( ['\'', '"'], '', $aTMP[0] );
+
+                    try {
+                        $cron_check = new Cron\CronExpression($cron_str);
+                    } catch (Exception $e) {
+                        $row["syntax_check"] = false;
+                        $row["error_detected"] = $e->getMessage();
+                    }
+		}
             }
 
             $data[] = $row;

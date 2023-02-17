@@ -137,6 +137,9 @@ module.exports = {
 
     },
     watch: {
+        drawer:function(value){
+            this.$emit("auto-change",value)
+        },
         '$route': function (to, from) {
             this.activeRoute = to.fullPath;
         }

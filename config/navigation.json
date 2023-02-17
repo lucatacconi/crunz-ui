@@ -127,7 +127,7 @@
         },
 
         {
-            "title": "Tasks code checker",
+            "title": "Tasks code inspector",
             "subtitle": "Lint PHP tasks' file",
             "allowed":["admin","user"],
             "visible": true,
@@ -143,6 +143,77 @@
                 "color": false,
                 "class": false
             }
+        },
+
+        {
+            "title": "Analytics",
+            "subtitle": "Analytics and statistics",
+            "allowed":["admin","user"],
+            "visible": true,
+
+            "action":{
+                "path": "/analytics/Analytics",
+                "component": "../../app/sections/analytics/Analytics.vue"
+            },
+
+            "layout":{
+                "icon": "mdi-speedometer",
+                "disabled": false,
+                "color": false,
+                "class": false
+            }
+        },
+
+        {
+            "title": "App administration",
+            "subtitle": "Setup and configs",
+            "allowed": ["admin"],
+            "visible": true,
+            "layout": {
+                "icon": "mdi-tune-vertical-variant",
+                "expanded": false,
+                "disabled": false,
+                "color": false,
+                "class": false
+            },
+            "subMenuItems":[
+                {
+                    "title": "Crunz configuration editor",
+                    "subtitle": "Manage Crunz configuration",
+                    "allowed": ["admin"],
+                    "visible": true,
+
+                    "action":{
+                        "path": "/crunzConfigMgr/CrunzConfigMgr",
+                        "component": "../../app/sections/crunzConfigMgr/CrunzConfigMgr.vue"
+                    },
+
+                    "layout":{
+                        "icon": "mdi-cog-outline",
+                        "disabled": false,
+                        "color": false,
+                        "class": false
+                    }
+                },
+                {
+                    "title": "User Management",
+                    "subtitle": "Configure users and levels",
+                    "allowed": ["admin"],
+                    "visible": true,
+
+                    "action":{
+                        "path": "/accountMgr/AccountMgr",
+                        "component": "../../app/sections/accountMgr/AccountMgr.vue"
+                    },
+
+                    "layout":{
+                        "icon": "mdi-account-multiple",
+                        "disabled": false,
+                        "color": false,
+                        "class": false
+                    }
+                }
+            ]
         }
     ]
 }

@@ -8,5 +8,15 @@
         "active":"Y",
         "expireDate":"2040-10-10",
         "customSessionDuration":""
+    },
+    {
+        "username":"user",
+        "name":"Basic user",
+        "userType":"user",
+        "email":"user@nomail.com",
+        "password":"password",
+        "active":"Y",
+        "expireDate":"2040-10-10",
+        "customSessionDuration":""
     }
 ]
