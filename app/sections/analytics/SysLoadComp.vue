@@ -1,7 +1,7 @@
 <template>
     <v-col xl="4" lg="6" md="12" sm="12" xs="12">
         <v-card class="fill-height">
-            <v-card-title :class="getTheme ? '' : 'grey lighten-4'">
+            <v-card-title :class="getTheme ? 'grey darken-3' : 'brown lighten-4'">
                 System load average:
             </v-card-title>
             <v-card-text>

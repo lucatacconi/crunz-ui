@@ -850,9 +850,9 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
         $aLOAD = sys_getloadavg();
 
-        $data["load-1"] = $aLOAD[0];
-        $data["load-5"] = $aLOAD[1];
-        $data["load-15"] = $aLOAD[2];
+        $data["load-1"] = number_format($aLOAD[0], 2, '.', '');
+        $data["load-5"] = number_format($aLOAD[1], 2, '.', '');
+        $data["load-15"] = number_format($aLOAD[2], 2, '.', '');
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
