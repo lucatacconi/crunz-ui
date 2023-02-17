@@ -2,8 +2,11 @@
 
 ## Upcoming/Desiderata implementations
 
-* Vue-cli scaffolding conversion
-
+* Vue-cli or Vite scaffolding conversion
+* VeeValidate versione update
+* Possible conversion of the interfaces to Quasar Framework
+* Log compression
+* Data tank in json format to be used within the tasks
 
 ## Release history
 
