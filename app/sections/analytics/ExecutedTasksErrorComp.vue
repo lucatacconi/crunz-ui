@@ -7,7 +7,7 @@
             <v-card-text>
                 <br>
                 <p>
-                    <template v-if="executedTasksError['num-daily-with-errors'] === false">
+                    <template v-if="calculated === false">
                         <v-progress-circular
                         :size="50"
                         :width="7"
@@ -52,6 +52,7 @@
     module.exports = {
         data:function(){
             return{
+                "calculated": false,
                 "executedTasksError" : {
                     "num-daily-with-errors": false,
                     "num-monthly-with-errors": false,
@@ -75,15 +76,6 @@
                     showLoading: false
                 };
 
-                var params = {}
-
-                Utils.apiCall("get", "/task-stat/executed-tasks",params, options)
-                .then(function (response) {
-                    if(response.data && response.data['num-period-with-errors']){
-                        self['executedTasksError']['num-monthly-with-errors'] = response.data['num-period-with-errors'];
-                    }
-                });
-
                 var params = {
                     "interval_from": dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
                     "interval_to": dayjs().subtract(1, 'day').format('YYYY-MM-DD')
@@ -91,8 +83,18 @@
 
                 Utils.apiCall("get", "/task-stat/executed-tasks",params, options)
                 .then(function (response) {
-                    if(response.data && response.data['num-period-with-errors']){
+                    if(response.data && typeof response.data['num-period-with-errors'] !== 'undefined'){
                         self['executedTasksError']['num-daily-with-errors'] = response.data['num-period-with-errors'];
+                    }
+                });
+
+                var params = {}
+
+                Utils.apiCall("get", "/task-stat/executed-tasks",params, options)
+                .then(function (response) {
+                    if(response.data && typeof response.data['num-period-with-errors'] !== 'undefined'){
+                        self['executedTasksError']['num-monthly-with-errors'] = response.data['num-period-with-errors'];
+                        self.calculated = true;
                     }
                 });
             }

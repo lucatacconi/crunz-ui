@@ -7,7 +7,7 @@
             <v-card-text>
                 <br>
                 <p>
-                    <template v-if="executedTasks['num-daily'] === false">
+                    <template v-if="calculated === false">
                         <v-progress-circular
                         :size="50"
                         :width="7"
@@ -52,6 +52,7 @@
     module.exports = {
         data:function(){
             return{
+                "calculated": false,
                 "executedTasks" : {
                     "num-daily": false,
                     "num-monthly": false,
@@ -75,15 +76,6 @@
                     showLoading: false
                 };
 
-                var params = {}
-
-                Utils.apiCall("get", "/task-stat/executed-tasks",params, options)
-                .then(function (response) {
-                    if(response.data && response.data['num-period']){
-                        self['executedTasks']['num-monthly'] = response.data['num-period'];
-                    }
-                });
-
                 var params = {
                     "interval_from": dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
                     "interval_to": dayjs().subtract(1, 'day').format('YYYY-MM-DD')
@@ -91,8 +83,18 @@
 
                 Utils.apiCall("get", "/task-stat/executed-tasks",params, options)
                 .then(function (response) {
-                    if(response.data && response.data['num-period']){
+                    if(response.data && typeof response.data['num-period'] !== 'undefined'){
                         self['executedTasks']['num-daily'] = response.data['num-period'];
+                    }
+                });
+
+                var params = {}
+
+                Utils.apiCall("get", "/task-stat/executed-tasks",params, options)
+                .then(function (response) {
+                    if(response.data && typeof response.data['num-period'] !== 'undefined'){
+                        self['executedTasks']['num-monthly'] = response.data['num-period'];
+                        self.calculated = true;
                     }
                 });
             }
