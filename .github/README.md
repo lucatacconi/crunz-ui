@@ -5,7 +5,7 @@
 [![Latest Unstable Version](https://poser.pugx.org/lucatacconi/crunz-ui/v/unstable)](https://packagist.org/packages/lucatacconi/crunz-ui)
 [![License](https://poser.pugx.org/lucatacconi/crunz-ui/license)](https://packagist.org/packages/lucatacconi/crunz-ui)
 
-![Crunz-ui](https://user-images.githubusercontent.com/9921890/105859101-6cf75080-5fec-11eb-9ede-0b6da2ec9898.png)
+![Crunz-ui](https://user-images.githubusercontent.com/9921890/219971153-9e5ef715-0759-4462-8c2d-3391b278d6ba.png)
 <br />
 <br />
 <br />
@@ -49,7 +49,7 @@ Crunz-ui starts from the most famous GitHub [Crunzphp/Crunz](https://github.com/
 ## What Crunz is and how Crunz-ui connects to it
 Crunz is an application that allows users to schedule tasks natively written in PHP, programming date and time of start, interval and conditions of execution, and init.
 
-You can find details about Crunz and how to write and schedule tasks at the following address: https://github.com/lavary/crunz
+You can find details about Crunz and how to write and schedule tasks at the following address: https://github.com/crunzphp/crunz
 
 Crunz task example:
 ```php
@@ -80,6 +80,10 @@ In addition to displaying tasks in tabular or graphic format, Crunz-ui allows yo
 * Forced run of the task, even outside the scheduled time with an eventual display of the log once the execution is completed
 
 <br />
+<br />
+<br />
+
+![Crunz-ui](https://user-images.githubusercontent.com/9921890/105859101-6cf75080-5fec-11eb-9ede-0b6da2ec9898.png)
 
 <!-- ## Demo environment
 
