@@ -238,7 +238,7 @@ module.exports = {
                     }
                 }
             }
-            this.$emit('select-folder',selectFolder)
+            this.$emit('select-folder',selectFolder);
         }
         this.readTree(selectFolder,openNodes);
     }
