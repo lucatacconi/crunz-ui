@@ -202,7 +202,8 @@ module.exports = {
             Utils.apiCall("get", "/task/lint",params, options)
             .then(function (response) {
                 self.files = response.data;
-                if(response.data.length==0){
+                if(self.search.length > 0) self.customSearch(self.search);
+                if(response.data.length == 0){
                     self.message = "No tasks found on server. Eventually check tasks directory path."
                 }
             });
