@@ -120,19 +120,19 @@ module.exports = {
     methods: {
         checkFolder:function(event) {
             if(event.length!=0){
-                this.selectFolder=event
+                this.selectFolder=event;
             }else{
-                this.selectFolder=['/']
+                this.selectFolder=['/'];
             }
-            this.$emit('select-folder',this.selectFolder[0])
+            this.$emit('select-folder',this.selectFolder[0]);
         },
         openNewFolderModal:function(item){
-            this.temp_item=item
-            this.add_folder=true
-            this.new_folder_name=''
+            this.temp_item=item;
+            this.add_folder=true;
+            this.new_folder_name='';
         },
         addFolder:function(){
-            var self=this
+            var self=this;
 
             if(this.new_folder_name==null||this.new_folder_name==''){
                 Utils.showAlertDialog('ERROR',"Directory name is empty",'error');
@@ -175,7 +175,7 @@ module.exports = {
                 Utils.apiCall("delete", "task-container/dir",params)
                 .then(function (response) {
                     if(response.data.result){
-                        self.readTree()
+                        self.readTree();
                         Utils.showAlertDialog('Folder deleted',response.data.result_msg,'success');
                     }else{
                         Utils.showAlertDialog('ERROR',response.data.result_msg,'error');

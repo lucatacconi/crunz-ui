@@ -104,29 +104,29 @@ return $schedule;`
             self.$emit('on-close-modal',result);
         },
         getEditor:function(editor){
-            this.editor=editor
+            this.editor=editor;
         },
         saveFile: function (edit_modal_close) {
             var self=this;
 
-            if(this.editor==undefined) return
-            if(this.editor==null) return
+            if(this.editor==undefined) return;
+            if(this.editor==null) return;
             if(this.formData.task_name==null||this.formData.task_name==''){
                 Utils.showAlertDialog('ERROR',"Task file name is empty",'error');
-                return
+                return;
             }
-            var suffix=this.formData.task_name.slice((this.formData.task_name.length -  this.suffix.length), this.formData.task_name.length)
+            var suffix=this.formData.task_name.slice((this.formData.task_name.length -  this.suffix.length), this.formData.task_name.length);
             if(suffix.toLowerCase()==this.suffix.toLowerCase()){
                 this.formData.task_name = this.formData.task_name.slice(0, (this.formData.task_name.length -  this.suffix.length));
             }
             var regex = /[^a-zA-Z0-9_-]/g
             if(regex.test(this.formData.task_name)){
                 Utils.showAlertDialog('ERROR',"Task file name being added contains not allowed characters (Only a-z, A-Z, 0-9, -, _ characters allowed)",'error');
-                return
+                return;
             }
             if(this.editor.getValue().trim()==""){
                 Utils.showAlertDialog('ERROR',"Task content is empty",'error');
-                return
+                return;
             }
 
             var apiParams = {
@@ -149,12 +149,12 @@ return $schedule;`
         },
     },
     created:function() {
-        var self=this
+        var self=this;
 
         Utils.apiCall("get", "/environment/crunz-config")
         .then(function (response) {
             if(response.data.suffix){
-                self.suffix=response.data.suffix
+                self.suffix=response.data.suffix;
                 if(self.oldTaskContent){
                     var params = {
                         "return_task_cont": "Y",
