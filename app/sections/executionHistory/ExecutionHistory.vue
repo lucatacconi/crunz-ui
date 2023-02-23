@@ -360,6 +360,7 @@ module.exports = {
             Utils.apiCall("get", "/task/exec-history",params, options)
             .then(function (response) {
                 self.tasksExecutions = response.data;
+                if(self.search.length > 0) self.customSearch(self.search);
                 if(response.data.length == 0){
                     self.message = "No tasks execution log selected by criteria. Modify your search criteria and press Search button.";
                 }
