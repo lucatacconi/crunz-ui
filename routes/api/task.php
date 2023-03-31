@@ -716,9 +716,10 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                             continue;
                         }
 
-                        if($date_ref_tmp > $event_interval_to_orig){
-                            break;
-                        }
+                        //Need a limit to avoid infinite loop
+                        // if($date_ref_tmp > $event_interval_to_orig){
+                        //     break;
+                        // }
 
                         $step = 1;
 
