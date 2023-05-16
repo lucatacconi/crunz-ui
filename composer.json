@@ -38,6 +38,7 @@
         "twig/twig": "^3",
 
         "crunzphp/crunz": "^3",
+        "symfony/yaml": "^6",
         "lorisleiva/cron-translator": ">=0.3.2"
     }
 }
