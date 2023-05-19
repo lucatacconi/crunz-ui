@@ -17,6 +17,10 @@ foreach (glob(__DIR__ . '/../classes/*.php') as $filename){
 }
 
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Address;
 
 $app->group('/tools', function (RouteCollectorProxy $group) {
 
@@ -88,10 +92,10 @@ $app->group('/tools', function (RouteCollectorProxy $group) {
 
             $from = new Address($crunz_config["mailer"]["sender_email"], $crunz_config["mailer"]["sender_name"]);
 
-            unset($messageObject);
-
             $aSENT = [];
             foreach ($params["RECIPIENT_LST"] ?? [] as $recipient_name => $recipient_mail) {
+
+                unset($messageObject);
 
                 $messageObject = (new Email())
                     ->from($from)
@@ -100,12 +104,14 @@ $app->group('/tools', function (RouteCollectorProxy $group) {
                 ;
 
                 $messageObject->addTo(new Address($recipient_mail, $recipient_name));
+		
+		$check_mail = $mailer->send($messageObject);
 
-                if($mailer->send($messageObject)){
+                if( $check_mail == null ){
                     $aSENT[$recipient_name] = 'SENT';
                 }else{
                     $aSENT[$recipient_name] = 'ERR';
-                }
+		}
             }
 
         }else{
