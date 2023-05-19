@@ -781,10 +781,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                             continue;
                         }
 
-                        if($date_ref_tmp < $event_interval_from_orig){
-                            break;
-                        }
-
                         $step = 1;
 
                         $calculated_last_run = $date_ref_tmp;
@@ -906,10 +902,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                             if($calc_run_ref < $event_interval_from_orig){
                                 continue;
-                            }
-
-                            if($calc_run_ref > $event_interval_to_orig){
-                                break;
                             }
 
                             $step = 1;
