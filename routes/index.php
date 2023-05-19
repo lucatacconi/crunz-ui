@@ -67,7 +67,24 @@ $app->add(new Tuupola\Middleware\JwtAuthentication([
     "secure" => false,
     "secret" => $_ENV["JWT_SECRET"],
 
-    "ignore" => [$base_path."/auth/login", $base_path."/test"],
+    "ignore" => [$base_path."/auth/login", $base_path."/tools" ],
+
+    "error" => function ($response, $arguments) {
+        $data = [];
+        $data["status"] = "Authentication error";
+        $data["message"] = $arguments["message"];
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withHeader("Content-Type", "application/json");
+    }
+]));
+
+$app->add(new Tuupola\Middleware\HttpBasicAuthentication([
+    "path" => [ $base_path."/tools" ],
+    "realm" => "Protected",
+    "users" => [
+        $_ENV["TOOLS_LOGIN"] => $_ENV["TOOLS_PASSWORD"]
+    ],
 
     "error" => function ($response, $arguments) {
         $data = [];

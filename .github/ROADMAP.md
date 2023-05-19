@@ -10,6 +10,15 @@
 
 ## Release history
 
+### v.2.7.10 (2023-05-19)
+
+Crunz-ui updated stable release:
+* Tools api accessible via basic authentication
+* PHP 8.1 compatibility fix
+* Library version update
+* Bug fixes and and code cleanup
+
+
 ### v.2.7.9 (2023-02-17)
 
 Crunz-ui updated stable release:
