@@ -1,6 +1,6 @@
-# Crunz-ui Ubuntu install example
+# Crunz-ui install example on a Apache/PHP Ubuntu server
 
-Here is the procedure for activating Crunz-ui with the use of Crunz embedded in a newly installed Ubuntu system.
+Here is the procedure for activating Crunz-ui with the use of Crunz embedded in a newly installed Ubuntu/Apache/PHP server.
 
 Update of system packages and installation of net-tools to have tools like ifconfig and others available:
 

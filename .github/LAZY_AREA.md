@@ -18,4 +18,12 @@ Instructions for installing Docker on a Linux machine and procedure for installi
 
 Instructions for setup a Apache/PHP Ubuntu server and installing and configuring Crunz-ui
 
-[Ubuntu/Debian Crunz-ui setup procedure example](UBUNTU_EXPL.md)
+[Apache/PHP + Ubuntu/Debian Crunz-ui setup procedure example](APACHE_UBUNTU_EXPL.md)
+
+## Crunz-ui in Nginx/PHP Ubuntu server
+
+![Composer](https://user-images.githubusercontent.com/9921890/161096990-07c1a090-bfc7-4a2f-b2c6-824f92d6b9f5.png "Composer") ![Nginx](https://github.com/lucatacconi/crunz-ui/assets/9921890/d95e5974-8334-47b1-9d95-18795c86821b "Nginx")
+
+Instructions for setup a Nginx/PHP Ubuntu server and installing and configuring Crunz-ui
+
+[Nginx/PHP + Ubuntu/Debian Crunz-ui setup procedure example](NGINX_UBUNTU_EXPL.md)
