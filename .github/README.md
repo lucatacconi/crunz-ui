@@ -164,7 +164,7 @@ Please refer to [Ubuntu/Debian Docker setup example](DOCKER_EXPL.md) for suggest
 
 Otherwise It's recommended that you use [Composer](https://getcomposer.org/) to install Crunz-ui.
 
-Starting from your **Apache Server**'s **Document Root** folder or from a directory served by a virtual host, begin the application setup by Composer command:
+Starting from your **Web Server**'s **Document Root** folder or from a directory served by a virtual host, begin the application setup by Composer command:
 ```
 composer create-project lucatacconi/crunz-ui
 ```
@@ -216,7 +216,7 @@ If you have configured a custom log folder, the crontab configuration must be ch
 * * * * * cd /[BASE_CRUNZUI_PATH] && ./crunz-ui.sh -l [LOGS_PATH]
 ```
 
-Please refer to [Ubuntu/Debian setup example](UBUNTU_EXPL.md) for suggestion.
+Please refer to [Apache/PHP in Ubuntu/Debian server setup example](APACHE_UBUNTU_EXPL.md) or [Nginx/PHP in Ubuntu/Debian server setup example](NGINX_UBUNTU_EXPL.md) for suggestion.
 
 ### Usage on a previous installation of Crunz
 
