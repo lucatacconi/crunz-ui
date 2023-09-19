@@ -14,7 +14,7 @@ Instructions for installing Docker on a Linux machine and procedure for installi
 
 ## Crunz-ui in Apache/PHP Ubuntu server
 
-![Composer](https://user-images.githubusercontent.com/9921890/161096990-07c1a090-bfc7-4a2f-b2c6-824f92d6b9f5.png)
+![Composer](https://user-images.githubusercontent.com/9921890/161096990-07c1a090-bfc7-4a2f-b2c6-824f92d6b9f5.png)  ![Apache](https://github.com/lucatacconi/crunz-ui/assets/9921890/22c3daba-bc98-4696-b23b-1af634301dec "Apache")
 
 Instructions for setup a Apache/PHP Ubuntu server and installing and configuring Crunz-ui
 
@@ -22,7 +22,7 @@ Instructions for setup a Apache/PHP Ubuntu server and installing and configuring
 
 ## Crunz-ui in Nginx/PHP Ubuntu server
 
-![Composer](https://user-images.githubusercontent.com/9921890/161096990-07c1a090-bfc7-4a2f-b2c6-824f92d6b9f5.png "Composer") ![Nginx](https://github.com/lucatacconi/crunz-ui/assets/9921890/d95e5974-8334-47b1-9d95-18795c86821b "Nginx")
+![Composer](https://user-images.githubusercontent.com/9921890/161096990-07c1a090-bfc7-4a2f-b2c6-824f92d6b9f5.png "Composer")  ![Nginx](https://github.com/lucatacconi/crunz-ui/assets/9921890/d59abd1e-3acb-445b-9476-305e3390b480 "Nginx")
 
 Instructions for setup a Nginx/PHP Ubuntu server and installing and configuring Crunz-ui
 
