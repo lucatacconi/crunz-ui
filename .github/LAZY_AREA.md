@@ -4,7 +4,7 @@
 
 I'm a black belt in lazy development so I understand you; you are in the right section! If you want to skip information about Crunz and Crunz-ui and go straight to setup procedures use the links below.
 
-## Ready to use Docker container
+## Ready to use Docker container (Apache/PHP based)
 
 ![docker](https://user-images.githubusercontent.com/9921890/160177107-15558348-d185-448d-8113-74fe700bd9f7.png)
 
@@ -18,7 +18,7 @@ Instructions for installing Docker on a Linux machine and procedure for installi
 
 Instructions for setup a Apache/PHP Ubuntu server and installing and configuring Crunz-ui
 
-[Apache/PHP + Ubuntu/Debian Crunz-ui setup procedure example](APACHE_UBUNTU_EXPL.md)
+[Apache/PHP in a Ubuntu/Debian server Crunz-ui setup procedure example](APACHE_UBUNTU_EXPL.md)
 
 ## Crunz-ui in Nginx/PHP Ubuntu server
 
@@ -26,4 +26,4 @@ Instructions for setup a Apache/PHP Ubuntu server and installing and configuring
 
 Instructions for setup a Nginx/PHP Ubuntu server and installing and configuring Crunz-ui
 
-[Nginx/PHP + Ubuntu/Debian Crunz-ui setup procedure example](NGINX_UBUNTU_EXPL.md)
+[Nginx/PHP in a Ubuntu/Debian server Crunz-ui setup procedure example](NGINX_UBUNTU_EXPL.md)
