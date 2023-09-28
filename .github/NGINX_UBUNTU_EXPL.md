@@ -37,6 +37,40 @@ Check your nginx installation and the installed version:
 sudo systemctl status php8.1-fpm
 ```
 
+Modify the nginx site-available defaul configuration file to allow php execution and to set the crunz-ui directory:
+```
+vi /etc/nginx/sites-available/default
+```
+
+Add index.php to the index line:
+```
+index index.php index.html index.htm index.nginx-debian.html;
+```
+Deny access to Apache's .htaccess files:
+```
+location ~ /\.ht {
+    deny all;
+}
+```
+
+Enable route management for apis (Add at the end of the file):
+```
+location /crunz-ui/routes {
+        alias /var/www/html/crunz-ui/routes;
+        try_files $uri $uri/ @crunz-ui-routes;
+
+        location ~ \.php$ {
+                include snippets/fastcgi-php.conf;
+                fastcgi_param SCRIPT_FILENAME $request_filename;
+                fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+        }
+}
+
+location @crunz-ui-routes {
+            rewrite /crunz-ui/routes/(.*)$ /crunz-ui/routes/index.php?/$1 last;
+}
+```
+
 Installation of composer
 ```
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"

@@ -296,6 +296,9 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["expression"] = $row["expression_orig"] = $oEVENT->getExpression();
                 $row["event_unique_key"] = md5($row["task_path"] . $row["task_description"] . $row["expression"]);
 
+                $row["from"] = $oEVENT->getFrom();
+                $row["to"] = $oEVENT->getTo();
+
                 if(!empty($params["UNIQUE_ID"])){
                     if($row["event_unique_key"] != $params["UNIQUE_ID"]){
                         continue;
