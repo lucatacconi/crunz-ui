@@ -118,12 +118,9 @@ module.exports = {
                 "task_path": self.rowdata.task_path
             }
 
-            let dest = '/task/';
+            let dest = '/task/draft';
             if(this.origin=='archived'){
                 dest = '/task-archive/';
-            }
-            if(this.origin=='linted'){
-                dest = '/task/draft';
             }
 
             Utils.apiCall("get", dest, params)
