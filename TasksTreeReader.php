@@ -88,7 +88,6 @@ class TasksTreeReader {
         return $task_counter;
     }
 
-
     public static function getAllTree() {
 
         $crunz_base_dir = ".";
@@ -178,8 +177,6 @@ class TasksTreeReader {
 
         return json_encode($aTASKs);
     }
-
-
 
     public static function getEventUniqueKey($event_launch_id_req = '') {
 
