@@ -22,9 +22,12 @@ foreach (glob(__DIR__ . '/../classes/*.php') as $filename){
 use Lorisleiva\CronTranslator\CronTranslator;
 use Symfony\Component\Yaml\Yaml;
 
+
 $app->group('/task', function (RouteCollectorProxy $group) {
 
-    $group->get('/', function (Request $request, Response $response, array $args) {
+    $forced_task_path = '';
+
+    $group->get('/', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
 
         //Parameters list
@@ -123,7 +126,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
 
         if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
@@ -136,7 +144,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         if(!is_dir($LOGS_DIR)) throw new Exception('ERROR - Logs destination path not exist');
         if(!is_writable($LOGS_DIR)) throw new Exception('ERROR - Logs directory not writable');
-
 
 
         $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
@@ -295,9 +302,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 $row["task_description"] = $oEVENT->description;
                 $row["expression"] = $row["expression_orig"] = $oEVENT->getExpression();
                 $row["event_unique_key"] = md5($row["task_path"] . $row["task_description"] . $row["expression"]);
-
-                $row["from"] = $oEVENT->getFrom();
-                $row["to"] = $oEVENT->getTo();
 
                 if(!empty($params["UNIQUE_ID"])){
                     if($row["event_unique_key"] != $params["UNIQUE_ID"]){
@@ -967,7 +971,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->get('/draft', function (Request $request, Response $response, array $args) {
+    $group->get('/draft', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         // RETURN_TASK_CONT - Y | N - set API to show content of the task (PHP code)
 
@@ -1008,7 +1012,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
 
 
@@ -1062,7 +1071,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->get('/event-unique-key', function (Request $request, Response $response, array $args) {
+    $group->get('/event-unique-key', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -1094,7 +1103,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
 
         $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
@@ -1173,7 +1187,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->get('/filename', function (Request $request, Response $response, array $args) {
+    $group->get('/filename', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -1205,7 +1219,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
@@ -1268,7 +1287,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->get('/exec-outcome', function (Request $request, Response $response, array $args) {
+    $group->get('/exec-outcome', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -1302,7 +1321,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
 
         if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
@@ -1488,7 +1512,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->post('/', function (Request $request, Response $response, array $args) {
+    $group->post('/', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -1524,8 +1548,14 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
+
         $TASK_SUFFIX_ARCH = str_replace(".php", ".arch", $crunz_config["suffix"]);
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
@@ -1644,7 +1674,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->post('/execute', function (Request $request, Response $response, array $args) {
+    $group->post('/execute', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -1690,7 +1720,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
 
         if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
@@ -1867,7 +1902,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->post('/upload', function (Request $request, Response $response, array $args) {
+    $group->post('/upload', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -1902,7 +1937,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
@@ -2048,7 +2088,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->delete('/', function (Request $request, Response $response, array $args) {
+    $group->delete('/', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -2083,8 +2123,14 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
+
         $TASK_SUFFIX_ARCH = str_replace(".php", ".arch", $crunz_config["suffix"]);
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
@@ -2139,7 +2185,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->get('/exec-history', function (Request $request, Response $response, array $args) {
+    $group->get('/exec-history', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -2191,7 +2237,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
@@ -2376,7 +2427,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->get('/lint', function (Request $request, Response $response, array $args) {
+    $group->get('/lint', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -2408,7 +2459,12 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');

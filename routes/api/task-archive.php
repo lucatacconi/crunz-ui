@@ -24,7 +24,9 @@ use Symfony\Component\Yaml\Yaml;
 
 $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
-    $group->get('/', function (Request $request, Response $response, array $args) {
+    $forced_task_path = '';
+
+    $group->get('/', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
 
         //Parameters list
@@ -69,7 +71,12 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = str_replace(".php", ".arch", $crunz_config["suffix"]);
 
         $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
@@ -362,7 +369,7 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->post('/archive', function (Request $request, Response $response, array $args) {
+    $group->post('/archive', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -397,7 +404,12 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
@@ -459,7 +471,7 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
     });
 
 
-    $group->post('/de-archive', function (Request $request, Response $response, array $args) {
+    $group->post('/de-archive', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -494,7 +506,12 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX_DEST = $crunz_config["suffix"];
         $TASK_SUFFIX = str_replace(".php", ".arch", $crunz_config["suffix"]);
 
