@@ -42,7 +42,9 @@ Crunz-ui starts from the most famous GitHub [Crunzphp/Crunz](https://github.com/
 <br />
 
 > :information_source: **Use the link below if you want to skip information about Crunz and Crunz-ui and go straight to setup procedures:
-<br /> [Shortcuts to Docker and Composer setup procedure](LAZY_AREA.md)**
+<br />
+
+[Shortcuts to Docker and Composer setup procedure](LAZY_AREA.md)
 
 <br />
 
