@@ -25,7 +25,7 @@
         "slim/slim": "^4",
         "slim/psr7": "^1",
         "nyholm/psr7": "^1",
-        "nyholm/psr7-server": ">=0",
+        "nyholm/psr7-server": "^1",
         "guzzlehttp/guzzle": "^7",
         "laminas/laminas-diactoros": "^2",
         "php-di/php-di": "^6",
@@ -38,6 +38,6 @@
         "twig/twig": "^3",
 
         "crunzphp/crunz": "^3",
-        "lorisleiva/cron-translator": ">=0.3.2"
+        "lorisleiva/cron-translator": "^0"
     }
 }
