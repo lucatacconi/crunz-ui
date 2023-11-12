@@ -6,6 +6,9 @@
         "Slim4", "Api", "JWT", "Vue", "Vuetify", "Router", "Http-vue-loader", "Protected area", "Login system", "Menu tool", "Crunz" , "Crontab"
     ],
     "homepage": "https://github.com/lucatacconi/crunz-ui/tree/master",
+    "support": {
+        "issues": "https://github.com/lucatacconi/crunz-ui/issues"
+    },
     "license": "MIT",
     "authors": [
         {
@@ -39,5 +42,10 @@
 
         "crunzphp/crunz": ">=3.6.0 ^3",
         "lorisleiva/cron-translator": "^0"
-    }
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3"
+    },
+    "minimum-stability": "beta",
+    "prefer-stable": true
 }
