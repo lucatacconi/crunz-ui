@@ -37,7 +37,7 @@
         "vlucas/phpdotenv": "^5",
         "twig/twig": "^3",
 
-        "crunzphp/crunz": "^3",
+        "crunzphp/crunz": ">=3.6.0 ^3",
         "lorisleiva/cron-translator": "^0"
     }
 }
