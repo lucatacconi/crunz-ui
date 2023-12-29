@@ -826,4 +826,57 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         return $response->withStatus(200)
                         ->withHeader("Content-Type", "application/json");
     });
+
+    $group->get('/log-partition-usage', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
+        }else{
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
+        }
+
+        $aUNITS = ['B'=>0, 'KB' => 1, 'MB' => 2, 'GB' => 3, 'TB' => 4];
+
+        $unit = 'B';
+        if(!empty($params["UNIT"])){
+            $unit = strtoupper($params["UNIT"]);
+        }
+
+        $exponent = 0;
+        if(!empty($aUNITS[$unit])){
+            $exponent = $aUNITS[$unit];
+        }
+
+        $total_space = $total_space_disp = disk_total_space($LOGS_DIR);
+        $free_space = $free_space_disp = disk_free_space($LOGS_DIR);
+
+        if($exponent > 0){
+            $total_space_disp = number_format(($total_space / pow(1024, $exponent)), 2, '.', '');
+            $free_space_disp = number_format(($free_space / pow(1024, $exponent)), 2, '.', '');
+        }
+
+        $data["total-partition-size"] = $total_space_disp;
+        $data["partition-free-space"] = $free_space_disp;
+        $data["unit"] = $unit;
+        $data["free-space-percentage"] = number_format(($free_space / $total_space) * 100, 2, '.', '');
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
 });
