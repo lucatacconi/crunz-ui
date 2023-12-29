@@ -734,11 +734,6 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
-        $date_ref = date("Y-m-d H:i:s");
-        if(!empty($params["DATE_REF"])){
-            $date_ref = date($params["DATE_REF"]);
-        }
-
         $date_now = date("Y-m-d H:i:s");
 
         $interval_from = date("Y-m-d", strtotime('-1 month'));
