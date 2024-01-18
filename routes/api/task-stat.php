@@ -203,10 +203,14 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
             $error_presence = false;
             if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
                 if(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec')){
-                    $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
-                    if(strpos($file_check_result, 'No syntax errors detected in') === false){
-                        //Syntax error in file
-                        $error_presence = true;
+
+                    //Check the syntax of the file only if it was uploaded/modified today or yesterday
+                    if( date('Y-m-d', filemtime($taskFile->getRealPath())) == date('Y-m-d') || date('Y-m-d', filemtime($taskFile->getRealPath())) == date('Y-m-d', strtotime('-1 day')) ){
+                        $file_check_result = shell_exec("php -l \"".$taskFile->getRealPath()."\"");
+                        if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                            //Syntax error in file
+                            $error_presence = true;
+                        }
                     }
                 }
             }
@@ -859,16 +863,20 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
         $total_space = $total_space_disp = disk_total_space($LOGS_DIR);
         $free_space = $free_space_disp = disk_free_space($LOGS_DIR);
+        $used_space = $used_space_disp = $total_space - $free_space;
 
         if($exponent > 0){
             $total_space_disp = number_format(($total_space / pow(1024, $exponent)), 2, '.', '');
             $free_space_disp = number_format(($free_space / pow(1024, $exponent)), 2, '.', '');
+            $used_space_disp = number_format(($used_space / pow(1024, $exponent)), 2, '.', '');
         }
 
         $data["total-partition-size"] = $total_space_disp;
         $data["partition-free-space"] = $free_space_disp;
+        $data["partition-used-space"] = $used_space_disp;
         $data["unit"] = $unit;
         $data["free-space-percentage"] = number_format(($free_space / $total_space) * 100, 2, '.', '');
+        $data["used-space-percentage"] = number_format(($used_space / $total_space) * 100, 2, '.', '');
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)

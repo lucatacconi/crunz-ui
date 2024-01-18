@@ -230,10 +230,14 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
             if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
                 if(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec')){
-                    $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
-                    if(strpos($file_check_result, 'No syntax errors detected in') === false){
-                        //Syntax error in file
-                        continue;
+
+                    //Check the syntax of the file only if it was uploaded/modified today or yesterday
+                    if( date('Y-m-d', filemtime($taskFile->getRealPath())) == date('Y-m-d') || date('Y-m-d', filemtime($taskFile->getRealPath())) == date('Y-m-d', strtotime('-1 day')) ){
+                        $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
+                        if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                            //Syntax error in file
+                            continue;
+                        }
                     }
                 }
             }
@@ -2246,10 +2250,14 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
             if(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec')){
                 if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
-                    $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
-                    if(strpos($file_check_result, 'No syntax errors detected in') === false){
-                        //Syntax error in file
-                        continue;
+
+                    //Check the syntax of the file only if it was uploaded/modified today or yesterday
+                    if( date('Y-m-d', filemtime($taskFile->getRealPath())) == date('Y-m-d') || date('Y-m-d', filemtime($taskFile->getRealPath())) == date('Y-m-d', strtotime('-1 day')) ){
+                        $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
+                        if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                            //Syntax error in file
+                            continue;
+                        }
                     }
                 }
             }
