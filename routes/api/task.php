@@ -1971,7 +1971,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             if( empty($file_data["size"]) ) throw new Exception("ERROR - Zero byte task file submitted ($file_name)");
 
             if($can_rewrite != "Y"){
-                if (file_exists($destination_path."/".$file_data["name"])) throw new Exception("ERROR - Same task file in the same position fouded. Can't overwrite ($file_name)");
+                if (file_exists($destination_path."/".$file_data["name"])) throw new Exception("ERROR - Same task file in the same position found. Can't overwrite ($file_name)");
             }
 
 
@@ -2035,6 +2035,89 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             }
         }
 
+
+        $data["result"] = true;
+        $data["result_msg"] = '';
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
+    $group->post('/move-rename', function (Request $request, Response $response, array $args) use($forced_task_path) {
+
+        $data = [];
+
+        $params = [];
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(!file_exists ( $crunz_base_dir."/crunz.yml" )) throw new Exception("ERROR - Crunz.yml configuration file not found");
+        $crunz_config_yml = file_get_contents($crunz_base_dir."/crunz.yml");
+
+        if(empty($crunz_config_yml)) throw new Exception("ERROR - Crunz configuration file empty");
+
+        try {
+            $crunz_config = Yaml::parse($crunz_config_yml);
+        } catch (ParseException $exception) {
+            throw new Exception("ERROR - Crunz configuration file error");
+        }
+
+        if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
+        if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
+        if(empty($crunz_config["timezone"])) throw new Exception("ERROR - Wrong timezone configuration");
+
+        date_default_timezone_set($crunz_config["timezone"]);
+
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
+        $TASK_SUFFIX = $crunz_config["suffix"];
+
+        if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
+
+        $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
+
+        if( empty($params["TASKS_SOURCE_FILE"]) ) throw new Exception("ERROR - No source file submitted");
+
+        $source_task_file_path = $base_tasks_path . "/".trim($params["TASKS_SOURCE_FILE"],"/");
+
+
+        //Check destination
+        if( empty($params["TASKS_DESTINATION_PATH"]) ) throw new Exception("ERROR - No task path destination submitted");
+
+        if(trim($params["TASKS_DESTINATION_PATH"],"/") == ""){
+            $destination_path = $base_tasks_path;
+        }else{
+            $destination_path = $base_tasks_path . "/".trim($params["TASKS_DESTINATION_PATH"],"/");
+        }
+
+        if(!is_dir($destination_path)) throw new Exception('ERROR - Destination path not exist');
+        if(!is_writable($destination_path)) throw new Exception('ERROR - File not writable');
+
+
+        if( empty($params["NEW_TASK_FILENAME"]) ) throw new Exception("ERROR - No task filename submitted");
+
+        $new_filename = $params["NEW_TASK_FILENAME"];
+        if (file_exists($destination_path."/".$new_filename)) throw new Exception("ERROR - Same task file in the same position found. Can't overwrite ($new_filename)");
+
+        $mv_outcome = rename ($source_task_file_path, $destination_path."/".$new_filename);
+        if(!$mv_outcome){
+            throw new Exception("ERROR - Error moving/renameing task file");
+        }
 
         $data["result"] = true;
         $data["result_msg"] = '';
