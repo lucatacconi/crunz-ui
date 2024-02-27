@@ -122,6 +122,9 @@ module.exports = {
             if(this.origin=='archived'){
                 dest = '/task-archive/';
             }
+            if(this.origin=='linted'){
+                dest = '/task/draft';
+            }
 
             Utils.apiCall("get", dest, params)
             .then(function (response) {
