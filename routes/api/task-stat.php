@@ -856,14 +856,29 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
             $unit = strtoupper($params["UNIT"]);
         }
 
+        $total_space = $total_space_disp = disk_total_space($LOGS_DIR);
+        $free_space = $free_space_disp = disk_free_space($LOGS_DIR);
+        $used_space = $used_space_disp = $total_space - $free_space;
+
+        $num_len = strlen($used_space);
+        if($unit = 'AUTO'){
+            if($num_len < 4){
+                $unit = 'B';
+            }else if($num_len >= 4 && $num_len < 8){
+                $unit = 'KB';
+            }else if($num_len >= 8 && $num_len < 12){
+                $unit = 'MB';
+            }else if($num_len >= 12 && $num_len < 16){
+                $unit = 'GB';
+            }else{
+                $unit = 'TB';
+            }
+        }
+
         $exponent = 0;
         if(!empty($aUNITS[$unit])){
             $exponent = $aUNITS[$unit];
         }
-
-        $total_space = $total_space_disp = disk_total_space($LOGS_DIR);
-        $free_space = $free_space_disp = disk_free_space($LOGS_DIR);
-        $used_space = $used_space_disp = $total_space - $free_space;
 
         if($exponent > 0){
             $total_space_disp = number_format(($total_space / pow(1024, $exponent)), 2, '.', '');
@@ -872,6 +887,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         }
 
         $data["total-partition-size"] = $total_space_disp;
+        $data["total-log-size-yesterday"] = 0;  //need implementation
         $data["partition-free-space"] = $free_space_disp;
         $data["partition-used-space"] = $used_space_disp;
         $data["unit"] = $unit;

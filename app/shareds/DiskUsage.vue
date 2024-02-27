@@ -3,11 +3,44 @@
         <v-card>
             <v-card-title>Log's directory usage</v-card-title>
             <v-card-text id="usage-data-area-container">
-                <canvas v-show="calcStatExecuted">
+                <template v-if="calcStatExecuted">
+                    <div>
+                        <p>
+                            Occupancy percentage of the partition where log folder resides.
+                        </p>
 
+                        <!-- Need to change color when over 80 (orange) and 90 (red) -->
+                        <v-progress-linear
+                            v-model="diskUsageData['used-space-percentage']"
+                            height="30"
+                        >
+                            <strong>{{ Math.ceil(diskUsageData['used-space-percentage']) }}%</strong>
+                        </v-progress-linear>
 
+                        </div>
+                            <br><br>
+                            <p>
+                                <template>
+                                    <span class="text-h2 text--primary">
+                                        <strong>{{ diskUsageData['partition-used-space'] }} {{ diskUsageData['unit'] }}.</strong>
+                                    </span>
+                                    <span class="text-h5 text--gray">
+                                        /{{ diskUsageData['total-partition-size'] }} {{ diskUsageData['unit'] }}
+                                    </span>
+                                    <span class="text-h6 text--gray">
+                                        <br>
+                                        <strong class="pl-3">({{ diskUsageData['total-log-size-yesterday'] }}</strong> {{ diskUsageData['unit'] }} - amount of logs collected yesterday)
+                                    </span>
+                                </template>
+                            </p>
+                        <div>
 
-                </canvas>
+                        <!-- Need to be completed -->
+                        lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
+                        lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
+                    </div>
+                </template>
+
                 <v-progress-circular
                 :size="100"
                 :width="7"
@@ -25,7 +58,7 @@
         data: function() {
             return {
                 diskUsageData: {},
-                calcStatExecuted: false
+                calcStatExecuted: true
             }
         },
 
@@ -41,56 +74,13 @@
                 };
 
                 var params = {
+                    "unit": "AUTO"
                 }
 
                 Utils.apiCall("get", "/task-stat/log-partition-usage",params, options)
                 .then(function (response) {
-
                     self.calcStatExecuted = true;
                     self.diskUsageData = response.data;
-
-                    // if(response.data.length != 0){
-                    //     self.graphFree.push(self.diskUsageData['free-space-percentage']);
-                    //     self.graphUsed.push(self.diskUsageData['used-space-percentage']);
-                    // }
-
-                    // self.graphLabel.push('Percentage occupancy status of the log directory');
-
-                    // var config_graph_disk_usage = {
-                    //     type: 'bar',
-                    //     data: {
-                    //         labels: self.graphLabel,
-
-                    //         datasets: [
-                    //             {
-                    //                 label: 'Perc. used',
-                    //                 backgroundColor: "#FFA182",
-                    //                 borderColor: "#FF5074",
-                    //                 borderWidth: 1,
-                    //                 stack: 'Stack 0',
-                    //                 data: self.graphUsed
-                    //             }, {
-                    //                 label: 'Free space left',
-                    //                 backgroundColor: "#6DCEE8",
-                    //                 borderColor: "#9199FE",
-                    //                 borderWidth: 1,
-                    //                 stack: 'Stack 0',
-                    //                 data: self.graphFree
-                    //             }
-                    //         ]
-                    //     },
-                    //     options: {
-                    //         responsive: true,
-                    //         plugins: {
-                    //             legend: {
-                    //                 position: 'right'
-                    //             }
-                    //         }
-                    //     }
-                    // };
-
-                    // let graph_container_disk_usage = document.getElementById('graph-area-disk-usage');
-                    // graphDiskUsage = new Chart(graph_container_disk_usage, config_graph_disk_usage);
                 });
             }
         },
