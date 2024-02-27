@@ -882,4 +882,53 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         return $response->withStatus(200)
                         ->withHeader("Content-Type", "application/json");
     });
+
+    $group->delete('/obsolete-logs', function (Request $request, Response $response, array $args) use($forced_task_path) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
+        }else{
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
+        }
+
+        if( empty($params["OLDER_THAN"]) ) throw new Exception("ERROR - No margin period indicated for deletion");
+
+        $log_name_format = '*.log';
+        $aFILE = glob($LOGS_DIR .'/'. $log_name_format);
+
+        $margin_date = strtotime('-'.$params["OLDER_THAN"].' months');
+
+        $data["total-log-files"] = 0;
+        $data["removed-log-files"] = 0;
+
+        foreach ($aFILE as $file) {
+
+            $data["total-log-files"]++;
+
+            if (filemtime($file) < $margin_date) {
+                unlink($file);
+                $data["removed-log-files"]++;
+            }
+        }
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+
+    });
 });
