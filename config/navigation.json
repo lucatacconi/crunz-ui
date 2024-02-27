@@ -196,8 +196,8 @@
                     }
                 },
                 {
-                    "title": "User Management",
-                    "subtitle": "Configure users and levels",
+                    "title": "User configuration",
+                    "subtitle": "Manage users and levels",
                     "allowed": ["admin"],
                     "visible": true,
 
@@ -208,6 +208,24 @@
 
                     "layout":{
                         "icon": "mdi-account-multiple",
+                        "disabled": false,
+                        "color": false,
+                        "class": false
+                    }
+                },
+                {
+                    "title": "Log directory manager",
+                    "subtitle": "Log space management",
+                    "allowed": ["admin"],
+                    "visible": true,
+
+                    "action":{
+                        "path": "/logDirectoryMgr/LogDirectoryMgr",
+                        "component": "../../app/sections/logDirectoryMgr/LogDirectoryMgr.vue"
+                    },
+
+                    "layout":{
+                        "icon": "mdi-shredder",
                         "disabled": false,
                         "color": false,
                         "class": false
