@@ -860,6 +860,14 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         $free_space = $free_space_disp = disk_free_space($LOGS_DIR);
         $used_space = $used_space_disp = $total_space - $free_space;
 
+        $date_focus = strtotime('yesterday');
+        $aFILE = glob($LOGS_DIR .'/'. '*_'.date("Y-m-d", $date_focus).'*_'.date("Y-m-d", $date_focus).'_*.log');
+
+        $total_space_yesterday = 0;
+        foreach ($aFILE as $file) {
+            $total_space_yesterday += filesize($file);
+        }
+
         $num_len = strlen($used_space);
         if($unit = 'AUTO'){
             if($num_len < 4){
@@ -884,10 +892,17 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
             $total_space_disp = number_format(($total_space / pow(1024, $exponent)), 2, '.', '');
             $free_space_disp = number_format(($free_space / pow(1024, $exponent)), 2, '.', '');
             $used_space_disp = number_format(($used_space / pow(1024, $exponent)), 2, '.', '');
+            $total_space_yesterday_disp = number_format(($total_space_yesterday / pow(1024, $exponent)), 2, '.', '');
         }
 
         $data["total-partition-size"] = $total_space_disp;
-        $data["total-log-size-yesterday"] = 0;  //need implementation
+        $data["total-log-space-yesterday"] = $total_space_yesterday_disp;
+
+        $data["day-left"] = "";
+        if($total_space_yesterday > 0){
+            $data["day-left"] = ceil($free_space / $total_space_yesterday);
+        }
+
         $data["partition-free-space"] = $free_space_disp;
         $data["partition-used-space"] = $used_space_disp;
         $data["unit"] = $unit;

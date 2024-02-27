@@ -6,13 +6,13 @@
                 <template v-if="calcStatExecuted">
                     <div>
                         <p>
-                            Occupancy percentage of the partition where log folder resides.
+                            Occupancy percentage of disk's partition where log folder resides.
                         </p>
 
-                        <!-- Need to change color when over 80 (orange) and 90 (red) -->
                         <v-progress-linear
                             v-model="diskUsageData['used-space-percentage']"
                             height="30"
+                            :color="progressBarColor(diskUsageData['used-space-percentage'])"
                         >
                             <strong>{{ Math.ceil(diskUsageData['used-space-percentage']) }}%</strong>
                         </v-progress-linear>
@@ -29,15 +29,20 @@
                                     </span>
                                     <span class="text-h6 text--gray">
                                         <br>
-                                        <strong class="pl-3">({{ diskUsageData['total-log-size-yesterday'] }}</strong> {{ diskUsageData['unit'] }} - amount of logs collected yesterday)
+                                        (
+                                            <strong>{{ diskUsageData['total-log-space-yesterday'] }}</strong> {{ diskUsageData['unit'] }} amount of logs collected yesterday
+                                            <template v-if=" diskUsageData['day-left'] != '' && diskUsageData['day-left'] > 0 && diskUsageData['day-left'] <= 365 ">
+                                                , {{ diskUsageData['day-left'] }} day/s left.
+                                            </template>
+                                        )
                                     </span>
                                 </template>
                             </p>
                         <div>
 
-                        <!-- Need to be completed -->
-                        lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-                        lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
+                        The bar representing the percentage of disk occupancy will change color to identify an emergency situation.
+                        <br>
+                        The daily log size data will allow you to calculate the time available to fill the disk
                     </div>
                 </template>
 
@@ -82,6 +87,16 @@
                     self.calcStatExecuted = true;
                     self.diskUsageData = response.data;
                 });
+            },
+
+            progressBarColor(percentage) {
+                if (percentage > 90) {
+                    return 'red';
+                } else if (percentage > 80) {
+                    return 'orange';
+                } else {
+                    return 'primary';
+                }
             }
         },
 
