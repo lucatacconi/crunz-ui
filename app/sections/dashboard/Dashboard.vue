@@ -6,7 +6,7 @@
                     <dailygraph :environmentStatus="environmentStatus"></dailygraph>
                 </v-col>
                 <v-col lg="6" md="12" class="pr-lg-0 pl-lg-1 mx-md-0 px-md-0">
-                    <weeklygraph :environmentStatus="environmentStatus"></weeklygraph>
+                    <diskusage :environmentStatus="environmentStatus"></diskusage>
                 </v-col>
             </v-row>
 
@@ -27,7 +27,8 @@
 
         components: {
             'dailygraph': httpVueLoader('../../shareds/DailyGraph.vue' + '?v=' + new Date().getTime()),
-            'weeklygraph': httpVueLoader('../../shareds/WeeklyGraph.vue' + '?v=' + new Date().getTime()),
+            'diskusage': httpVueLoader('../../shareds/DiskUsage.vue' + '?v=' + new Date().getTime()),
+            // 'weeklygraph': httpVueLoader('../../shareds/WeeklyGraph.vue' + '?v=' + new Date().getTime()),
             'environmentcheck': httpVueLoader('../../shareds/EnvironmentCheck.vue' + '?v=' + new Date().getTime())
         }
     }
