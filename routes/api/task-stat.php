@@ -918,7 +918,10 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
         $data = [];
 
-        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+        $params = [];
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
 
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
@@ -952,10 +955,18 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
             $data["total-log-files"]++;
 
             if (filemtime($file) < $margin_date) {
-                unlink($file);
+
+                try {
+                    unlink($file);
+                } catch(Exception $e) {
+                    throw new Exception("ERROR - Error deleting logs");
+                }
                 $data["removed-log-files"]++;
             }
         }
+
+        $data["result"] = true;
+        $data["result_msg"] = '';
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)

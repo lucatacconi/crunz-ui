@@ -10,7 +10,7 @@
                         </p>
 
                         <v-progress-linear
-                            v-model="diskUsageData['used-space-percentage']"
+                            :value="diskUsageData['used-space-percentage']"
                             height="30"
                             :color="progressBarColor(diskUsageData['used-space-percentage'])"
                         >
@@ -30,7 +30,7 @@
                                     <span class="text-h6 text--gray">
                                         <br>
                                         (
-                                            <strong>{{ diskUsageData['total-log-space-yesterday'] }}</strong> <span>{{ diskUsageData['unit'] }}</span> amount of logs collected yesterday
+                                            <strong>{{ diskUsageData['total-log-space-yesterday'] }}</strong> <span>{{ diskUsageData['unit'] }}</span> average logs per day
                                             <template v-if=" diskUsageData['day-left'] != '' && diskUsageData['day-left'] > 0 && diskUsageData['day-left'] <= 365 ">
                                                 , {{ diskUsageData['day-left'] }} day/s left.
                                             </template>
