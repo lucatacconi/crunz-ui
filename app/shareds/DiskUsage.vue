@@ -6,7 +6,7 @@
                 <template v-if="calcStatExecuted">
                     <div>
                         <p>
-                            Occupancy percentage of disk's partition where log folder resides.
+                            Occupancy percentage of disk's partition where log folder resides:
                         </p>
 
                         <v-progress-linear
@@ -22,17 +22,20 @@
                             <p>
                                 <template>
                                     <span class="text-h2 text--primary">
-                                        <strong>{{ diskUsageData['partition-used-space'] }} {{ diskUsageData['unit'] }}.</strong>
+                                        <strong>{{ diskUsageData['partition-used-space'] }}<span>{{ diskUsageData['unit'] }}</span>.</strong>
                                     </span>
                                     <span class="text-h5 text--gray">
-                                        /{{ diskUsageData['total-partition-size'] }} {{ diskUsageData['unit'] }}
+                                        /{{ diskUsageData['total-partition-size'] }}<span>{{ diskUsageData['unit'] }}</span>
                                     </span>
                                     <span class="text-h6 text--gray">
                                         <br>
                                         (
-                                            <strong>{{ diskUsageData['total-log-space-yesterday'] }}</strong> {{ diskUsageData['unit'] }} amount of logs collected yesterday
+                                            <strong>{{ diskUsageData['total-log-space-yesterday'] }}</strong> <span>{{ diskUsageData['unit'] }}</span> amount of logs collected yesterday
                                             <template v-if=" diskUsageData['day-left'] != '' && diskUsageData['day-left'] > 0 && diskUsageData['day-left'] <= 365 ">
                                                 , {{ diskUsageData['day-left'] }} day/s left.
+                                            </template>
+                                            <template v-else>
+                                                , -- day/s left.
                                             </template>
                                         )
                                     </span>
@@ -42,7 +45,7 @@
 
                         The bar representing the percentage of disk occupancy will change color to identify an emergency situation.
                         <br>
-                        The daily log size data will allow you to calculate the time available to fill the disk
+                        The daily log size data will allow you to calculate the time available to fill the disk.
                     </div>
                 </template>
 
@@ -86,6 +89,9 @@
                 .then(function (response) {
                     self.calcStatExecuted = true;
                     self.diskUsageData = response.data;
+
+                    self.diskUsageData['unit'] = self.diskUsageData['unit'].toLowerCase();
+                    self.diskUsageData['unit'] = self.diskUsageData['unit'][0].toUpperCase() + self.diskUsageData['unit'].slice(1);
                 });
             },
 
