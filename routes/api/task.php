@@ -2116,7 +2116,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $mv_outcome = rename ($source_task_file_path, $destination_path."/".$new_filename);
         if(!$mv_outcome){
-            throw new Exception("ERROR - Error moving/renameing task file");
+            throw new Exception("ERROR - Error moving/renaming task file");
         }
 
         $data["result"] = true;
