@@ -28,6 +28,13 @@
             :rowdata="logData"
         ></task-edit>
 
+        <!-- Move modal -->
+        <task-move
+            v-if="showMoveModal"
+            @on-close-modal="closeMoveModal"
+            :rowdata="logData"
+        ></task-move>
+
         <v-card class="mb-16">
             <v-card-title >
                 Task list
@@ -115,6 +122,10 @@
                                                 <v-list-item @click="openEditModal(item, i)">
                                                     <v-list-item-icon><v-icon>mdi-file-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item @click="openMoveModal(item, i)">
+                                                    <v-list-item-icon><v-icon>mdi-file-move</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>Move/rename task</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item @click="openNewTaskModal(item, i)">
                                                     <v-list-item-icon><v-icon>mdi-content-duplicate</v-icon></v-list-item-icon>
@@ -242,6 +253,7 @@ module.exports = {
             showNewTaskModal:false,
             showUploadModal: false,
             showEditModal: false,
+            showMoveModal: false,
             showLogModal: false,
             headers: [
                 {
@@ -465,6 +477,17 @@ module.exports = {
             }
         },
 
+        openMoveModal: function (rowdata) {
+            this.showMoveModal = true;
+            this.logData = rowdata != undefined ? rowdata : false;
+        },
+        closeMoveModal: function (result) {
+            this.showMoveModal = false;
+            if(typeof result !== 'undefined' && result){
+                this.readData();
+            }
+        },
+
         archiveItem: function (rowdata) {
             var self = this;
             Utils.showAlertDialog(
@@ -591,6 +614,7 @@ module.exports = {
         'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue' + '?v=' + new Date().getTime()),
         'tasks-upload': httpVueLoader('../../shareds/TasksUpload.vue' + '?v=' + new Date().getTime()),
         'new-task': httpVueLoader('../../shareds/NewTask.vue' + '?v=' + new Date().getTime()),
+        'task-move': httpVueLoader('../../shareds/MoveTask.vue' + '?v=' + new Date().getTime()),
         'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime()),
         'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime())
     }
