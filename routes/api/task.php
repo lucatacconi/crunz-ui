@@ -335,7 +335,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }else if(strpos($aFREQ_M, "/") !== false){
                         $round_hour = round(60 / str_replace("*/", "", $aFREQ_M));
                     }else if(strpos($aFREQ_M, ",") !== false){
-                        $aINT = explode("-", $aFREQ_M);
+                        $aINT = explode(",", $aFREQ_M);
                         $round_hour = count($aINT);
                     }
 
@@ -350,7 +350,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     }else if(strpos($aFREQ_H, "/") !== false){
                         $round_day = round(24 / str_replace("*/", "", $aFREQ_H)) * $round_hour;
                     }else if(strpos($aFREQ_H, ",") !== false){
-                        $aINT = explode("-", $aFREQ_H);
+                        $aINT = explode(",", $aFREQ_H);
                         $round_day = count($aINT) * $round_hour;
                     }
 
