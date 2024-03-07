@@ -58,9 +58,8 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty($_ENV["CRUNZ_BASE_DIR"])){
-            $crunz_base_dir = $base_path;
-        }else{
+        $crunz_base_dir = $base_path;
+        if(!empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
         }
 
@@ -81,9 +80,8 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        if(empty($forced_task_path)){
-            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
-        }else{
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(!empty($forced_task_path)){
             $TASKS_DIR = $forced_task_path;
         }
 
@@ -153,6 +151,9 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
         $aLOGNAME_perkey = [];
         foreach($aLOGNAME_all as $logkey => $logfile){
+
+            if(substr(basename($logfile), 0, 1) == ".") continue;
+
             $aLOG =explode('_', str_replace($LOGS_DIR."/", "", $logfile));
 
             if( empty($aLOGNAME_perkey[$aLOG[0]]) || count($aLOGNAME_perkey[$aLOG[0]]) == 0 ){
