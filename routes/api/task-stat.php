@@ -861,8 +861,10 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         $free_space = $free_space_disp = disk_free_space($LOGS_DIR);
         $used_space = $used_space_disp = $total_space - $free_space;
 
+        //[0] => /var/www/html/crunz-ui-test/./var/logs/00478b4c76f2f1a05be37b9c156ffe08_KO_202403051740_202403051740_aVsr.log
+
         $date_focus = strtotime('yesterday');
-        $aFILE = glob($LOGS_DIR .'/'. '*_'.date("Y-m-d", $date_focus).'*_'.date("Y-m-d", $date_focus).'_*.log');
+        $aFILE = glob($LOGS_DIR .'/'. '*_'.date("Ymd", $date_focus).'*_'.date("Ymd", $date_focus).'*_*.log');
 
         $total_space_yesterday = 0;
         foreach ($aFILE as $file) {
@@ -870,7 +872,8 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         }
 
         $num_len = strlen($used_space);
-        if($unit = 'AUTO'){
+
+        if($unit == 'AUTO'){
             if($num_len < 4){
                 $unit = 'B';
             }else if($num_len >= 4 && $num_len < 8){

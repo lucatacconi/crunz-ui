@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-card>
-            <v-card-title>Log's directory usage</v-card-title>
+            <v-card-title>Log's partition usage</v-card-title>
             <v-card-text id="usage-data-area-container">
                 <template v-if="calcStatExecuted">
                     <div>
@@ -32,10 +32,10 @@
                                         (
                                             <strong>{{ diskUsageData['total-log-space-yesterday'] }}</strong> <span>{{ diskUsageData['unit'] }}</span> average logs per day
                                             <template v-if=" diskUsageData['day-left'] != '' && diskUsageData['day-left'] > 0 && diskUsageData['day-left'] <= 365 ">
-                                                , {{ diskUsageData['day-left'] }} day/s left.
+                                                , {{ diskUsageData['day-left'] }} day/s left
                                             </template>
                                             <template v-else>
-                                                , -- day/s left.
+                                                , >365 day/s left
                                             </template>
                                         )
                                     </span>
