@@ -62,6 +62,21 @@
             </template>
             <span>Refresh</span>
         </v-tooltip>
+        <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+                <v-btn
+                    fab
+                    dark
+                    small
+                    color="amber darken-1"
+                    @click="exportTaskList()"
+                    v-on="on"
+                >
+                    <v-icon>mdi-cloud-download-outline</v-icon>
+                </v-btn>
+            </template>
+            <span>Export task list</span>
+        </v-tooltip>
     </v-speed-dial>
 </template>
 
@@ -73,6 +88,9 @@ module.exports = {
     methods: {
         readData:function(){
             this.$emit('read-data',true)
+        },
+        exportTaskList:function(){
+            this.$emit('export-task-list',true)
         },
         openUploadModal:function(){
             this.$emit('upload-modal',true)

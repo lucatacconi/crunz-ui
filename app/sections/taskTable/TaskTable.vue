@@ -238,7 +238,7 @@
         </v-card>
 
         <!-- Actions buttons -->
-        <actions-buttons v-on:read-data="readData()" v-on:edit-modal="opendEditModal()" v-on:new-task-modal="openNewTaskModal()" v-on:upload-modal="openUploadModal()"></actions-buttons>
+        <actions-buttons v-on:read-data="readData()" v-on:export-task-list="exportTaskList()" v-on:edit-modal="opendEditModal()" v-on:new-task-modal="openNewTaskModal()" v-on:upload-modal="openUploadModal()"></actions-buttons>
 
     </div>
 </template>
@@ -293,6 +293,37 @@ module.exports = {
                 if(self.search.length > 0) self.customSearch(self.search);
                 if(response.data.length == 0){
                     self.message = "No tasks found on server. Eventually check tasks directory path."
+                }
+            });
+        },
+
+        exportTaskList:function(){
+
+            var self = this;
+            var params = {}
+
+            Utils.apiCall("get", "/task/export",params, {})
+            .then(function (response) {
+
+                error_dwl_msg = "Error exporting task list";
+
+                if(response.data.length!=0){
+                    if(response.data.content != '' && response.data.filename != ''){
+                        if(response.data.content == ''){
+                            Utils.showAlertDialog('Export content empty','Export content is empty','error');
+                            return;
+                        }
+                        if(response.data.filename == ''){
+                            Utils.showAlertDialog('Filename empty','Filename is empty','error');
+                            return;
+                        }
+                        var dec = atob(response.data.content);
+                        Utils.downloadFile(dec,response.data.filename);
+                    }else{
+                        Utils.showAlertDialog('ERROR',error_dwl_msg,'error');
+                    }
+                }else{
+                    Utils.showAlertDialog('ERROR',error_dwl_msg,'error');
                 }
             });
         },
