@@ -639,9 +639,8 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
         if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
 
-        if(empty($forced_task_path)){
-            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
-        }else{
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(!empty($forced_task_path)){
             $TASKS_DIR = $forced_task_path;
         }
 
@@ -707,9 +706,8 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
         if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
 
-        if(empty($forced_task_path)){
-            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
-        }else{
+        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(!empty($forced_task_path)){
             $TASKS_DIR = $forced_task_path;
         }
 
