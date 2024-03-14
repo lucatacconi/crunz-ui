@@ -874,11 +874,11 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         if($unit == 'AUTO'){
             if($num_len < 4){
                 $unit = 'B';
-            }else if($num_len >= 4 && $num_len < 8){
+            }else if($num_len >= 3 && $num_len < 7){
                 $unit = 'KB';
-            }else if($num_len >= 8 && $num_len < 12){
+            }else if($num_len >= 7 && $num_len < 11){
                 $unit = 'MB';
-            }else if($num_len >= 12 && $num_len < 16){
+            }else if($num_len >= 11 && $num_len < 15){
                 $unit = 'GB';
             }else{
                 $unit = 'TB';
