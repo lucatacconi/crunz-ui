@@ -916,6 +916,74 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
+    $group->get('/log-list', function (Request $request, Response $response, array $args) use($forced_task_path) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
+        }else{
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
+        }
+
+        $log_filter = '';
+
+        // fe4b3a887c21bf1cd19bcb4eb84bbe42_OK_202403140030_202403140030_IQU8.log
+
+        if(!empty($params["UNIQUE_ID"])){
+            $log_filter .= $params["UNIQUE_ID"].'_';
+        }else{
+            $log_filter .= '*_';
+        }
+
+        if(!empty($params["OUTCOME"])){
+            $log_filter .= $params["OUTCOME"].'_';
+        }else{
+            $log_filter .= '*_';
+        }
+
+        if(!empty($params["DATETIME_FROM"])){
+            $log_filter .= str_replace([' ','-',':'], '', $params["DATETIME_FROM"]).'*_';
+        }else{
+            $log_filter .= '*_';
+        }
+
+        if(!empty($params["DATETIME_TO"])){
+            $log_filter .= str_replace([' ','-',':'], '', $params["DATETIME_TO"]).'*_';
+        }else{
+            $log_filter .= '*_';
+        }
+
+        $log_filter .= '*.log';
+
+        $aFILE = glob($LOGS_DIR .'/'. $log_filter);
+
+        $data['log-list'] = [];
+        foreach ($aFILE as $file) {
+            $data['log-list'][] = str_replace($LOGS_DIR.'/', '', $file);
+        }
+
+        $data['log-counmt'] = count($data['log-list']);
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+
+    });
+
     $group->delete('/obsolete-logs', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
