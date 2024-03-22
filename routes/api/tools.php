@@ -104,7 +104,7 @@ $app->group('/tools', function (RouteCollectorProxy $group) {
                 ;
 
                 $messageObject->addTo(new Address($recipient_mail, $recipient_name));
-		
+
 		$check_mail = $mailer->send($messageObject);
 
                 if( $check_mail == null ){
@@ -119,6 +119,38 @@ $app->group('/tools', function (RouteCollectorProxy $group) {
         }
 
         $data = $aSENT;
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
+    $group->get('/disk/free-space', function (Request $request, Response $response, array $args) {
+
+        $data = 0;
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
+        }else{
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
+        }
+
+        $total_space = $total_space_disp = disk_total_space($LOGS_DIR);
+        $free_space = $free_space_disp = disk_free_space($LOGS_DIR);
+        $used_space = $used_space_disp = $total_space - $free_space;
+
+        $data = $free_space;
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)

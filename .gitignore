@@ -9,6 +9,7 @@ tasks/*
 !tasks/.htaccess
 !tasks/testTasks.php
 !tasks/testAliveTasks.php
+!tasks/chkFreeSpaceTasks.php
 
 # Ignore all logs files everywhere
 *.log
