@@ -476,7 +476,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 try {
                     $row["expression_readable"] = CronTranslator::translate($row["expression"]);
                 } catch (Exception $e) {
-                    $row["expression_readable"] = "";
+                    $row["expression_readable"] = $row["expression"];
                 }
 
                 if(substr($row["expression"], 0, 3) == '* *' && substr($row["expression"], 4) != '* * *'){
