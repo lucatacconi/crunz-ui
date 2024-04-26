@@ -637,6 +637,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                 if(!empty($row["life_datetime_to"]) && $row["life_datetime_to"] < $date_ref_tmp){
                     //Task is out of life date time
                 }else{
+
                     while($nincrement < $round_limit){ //Use the maximum number of minutes in the given range
 
                         $aDATEREF = explode(' ', $date_ref_tmp);
@@ -676,13 +677,8 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         }
 
                         if($date_ref_tmp < $event_interval_from_orig){
-                            continue;
+                            $date_ref_tmp = $event_interval_from_orig;
                         }
-
-                        //Need a limit to avoid infinite loop
-                        // if($date_ref_tmp > $event_interval_to_orig){
-                        //     break;
-                        // }
 
                         $step = 1;
 
@@ -740,10 +736,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                             continue;
                         }
 
-                        if($date_ref_tmp > $event_interval_to_orig){
-                            continue;
-                        }
-
                         $step = 1;
 
                         $calculated_last_run = $date_ref_tmp;
@@ -764,6 +756,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                     $row["last_run_actually_executed"] = true;
                 }
 
+                // die($calc_run_lst);
 
                 //Calculating run list of the interval
                 $calc_run_ref = false;
@@ -2317,7 +2310,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
         return $response->withStatus(200)
                         ->withHeader("Content-Type", "application/json");
     });
-
 
     $group->post('/', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
