@@ -790,6 +790,10 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                                 continue;
                             }
 
+                            if($calc_run_ref > $event_interval_to_orig){
+                                break;
+                            }
+
                             $row["planned_in_interval"]++;
 
                             if($calc_run_ref < $date_now && $past_planned_tasks != "Y"){
@@ -820,7 +824,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
                         while($nincrement < $round_limit){ //Use the maximum number of minutes in the given range
 
-                            $aDATEREF = explode(' ', $event_interval_from_orig);
+                            $aDATEREF = explode(' ', $calc_run_ref);
 
                             if(!empty($life_time_from) && date('Y-m-d H:i:s', strtotime($calc_run_ref)) < date('Y-m-d H:i:s', strtotime($aDATEREF[0].' '.$life_time_from))){
                                 $calc_run_ref = date('Y-m-d H:i', strtotime($aDATEREF[0].' '.$life_time_from));
@@ -856,11 +860,11 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                                 continue;
                             }
 
-                            if($calc_run_ref < $event_interval_from_orig){
-                                continue;
-                            }
-
                             $step = 1;
+
+                            if($calc_run_ref > $event_interval_to_orig){
+                                break;
+                            }
 
                             if($calc_run_ref < $date_now && $past_planned_tasks != "Y"){
                                 if(array_key_exists($calc_run_ref, $row["executed_task_lst"])){
