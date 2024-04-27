@@ -451,8 +451,10 @@ $app->group('/task', function (RouteCollectorProxy $group) {
                         $interval_descr .= " from ".$row["life_time_from"];
                     }
 
-                    if(!empty($row["life_time_to"])){
+                    if(!empty($row["life_time_to"]) && !empty($row["life_time_from"])){
                         $interval_descr .= " to ".$row["life_time_to"];
+                    }else{
+                        $interval_descr .= " until ".$row["life_time_to"];
                     }
 
                     $interval_descr .= ")";
