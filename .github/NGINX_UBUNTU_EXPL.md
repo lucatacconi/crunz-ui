@@ -37,6 +37,8 @@ Check your nginx installation and the installed version:
 sudo systemctl status php8.1-fpm
 ```
 
+Editing to php configuration file /etc/php/8.X/fpm/php.ini and /etc/php/8.X/cli/php.ini to set timezone and to increase the maximum execution time of the scripts. To select the correct maximum execution time, consider the time required to execute the longest task you want to schedule.
+
 Modify the nginx site-available defaul configuration file to allow php execution and to set the crunz-ui directory:
 ```
 vi /etc/nginx/sites-available/default
