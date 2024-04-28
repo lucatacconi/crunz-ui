@@ -41,6 +41,10 @@ sudo systemctl enable apache2
 ```
 
 Editing to php configuration file /etc/php/8.X/apache2/php.ini and /etc/php/8.X/cli/php.ini to set timezone and to increase the maximum execution time of the scripts. To select the correct maximum execution time, consider the time required to execute the longest task you want to schedule.
+```
+sudo vi /etc/php/8.3/apache2/php.ini
+sudo vi /etc/php/8.3/cli/php.ini
+```
 
 Editing to apache configuration file /etc/apache2/apache2.conf to add Crunz-ui location mapping (Approximately line 185 of apache version 2.4.X):
 
