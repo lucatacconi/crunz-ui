@@ -2,13 +2,28 @@
 
 ## Upcoming/Desiderata implementations
 
-* Vue-cli or Vite scaffolding conversion
-* VeeValidate versione update
-* Possible conversion of the interfaces to Quasar Framework
+* Nuxt framework conversion
+* Vue 3 migration
+* Vuetify 3 migration
 * Log compression
 * Data tank in json format to be used within the tasks
 
 ## Release history
+
+### v.2.7.24 (2024-04-27)
+
+Crunz-ui updated stable release:
+* New section for checking log occupancy directly from the interface with the possibility of removing older logs. Functionality enabled only for admin users
+* Display of free space on the log partition and estimate of the time remaining until saturation
+* New system task to notify via email of running out of space on the log partition
+* Instruction for installation and configuration on Nginx server
+* New functionality for move o rename an task in Tasks Table
+* Refactoring of the task reading and management engine
+* PHP 8.3 compatibility fix
+* Acquisition of new Crunz library updates and functions
+* Several improvements, bug fixes and and code cleanup throughout the application
+* Faq and troubleshooting page updated
+
 
 ### v.2.7.10 (2023-05-19)
 
