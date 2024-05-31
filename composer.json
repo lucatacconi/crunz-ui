@@ -32,12 +32,13 @@
 
         "monolog/monolog": "^2",
         "tuupola/base62": "^2",
-        "tuupola/slim-jwt-auth": "^3",
         "tuupola/slim-basic-auth": "^3",
         "vlucas/phpdotenv": "^5",
         "twig/twig": "^3",
 
         "crunzphp/crunz": "^3",
-        "lorisleiva/cron-translator": ">=0.3.2"
+        "lorisleiva/cron-translator": ">=0.3.2",
+        "jimtools/jwt-auth": "^1.0",
+        "firebase/php-jwt": "^6.10"
     }
 }
