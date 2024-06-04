@@ -162,3 +162,10 @@ For the standard execution of batches by crunz, since they are executed in batch
 ## Discrepancy in the time calculated on the interface and that calculated by the batches launched by Crunz.
 
 In case of discrepancies in the time calculated on the interface and that calculated by the batches launched by Crunz, set the correct **timezone** in the php.ini, both that relating to the http server and that of the php executed locally.
+
+
+## Errors in the calculation of statistics in the case of a very large list of tasks
+
+If errors are found in the calculation of statistics in the case of a very large task list, it is possible that the server is unable to handle the request due to reaching the memory limit.
+
+Modify the **memory_limit** parameter within the php.ini file relating to the Apache or Nginx server.
