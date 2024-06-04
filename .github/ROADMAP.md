@@ -20,9 +20,11 @@ Crunz-ui updated stable release:
 * New functionality for move o rename an task in Tasks Table
 * Refactoring of the task reading and management engine
 * PHP 8.3 compatibility fix
+* JWT Authentication Middleware update to other library (JimTools/jwt-auth)
 * Acquisition of new Crunz library updates and functions
 * Several improvements, bug fixes and and code cleanup throughout the application
 * Faq and troubleshooting page updated
+* Updated documentation for installation and configuration
 
 
 ### v.2.7.10 (2023-05-19)
