@@ -21,14 +21,30 @@
                             <br><br>
                             <p>
                                 <template>
+
                                     <span class="text-h2 text--primary">
-                                        <strong>{{ diskUsageData['partition-used-space'] }}<span>{{ diskUsageData['unit'] }}</span>.</strong>
+                                        <strong>{{ diskUsageData['partition-used-space'] }}</strong>
                                     </span>
+
+                                    <span class="text-h5 text--primary">
+                                       <strong>{{ diskUsageData['unit'] }} used </strong>
+                                    </span>
+
+                                    <span class="text-h4 text--gray">
+                                        /
+                                    </span>
+
+                                    <span class="text-h4 text--gray">
+                                        <strong>{{ diskUsageData['total-partition-size'] }}</strong>
+                                    </span>
+
                                     <span class="text-h5 text--gray">
-                                        /{{ diskUsageData['total-partition-size'] }}<span>{{ diskUsageData['unit'] }}</span>
+                                       <strong>{{ diskUsageData['unit'] }} tot.space</strong>
                                     </span>
-                                    <span class="text-h6 text--gray">
-                                        <br>
+
+
+                                    <div class="ml-3 text-h6 text--gray">
+
                                         (
                                             <strong>{{ diskUsageData['total-log-space-yesterday'] }}</strong> <span>{{ diskUsageData['unit'] }}</span> average logs per day
                                             <template v-if=" diskUsageData['day-left'] != '' && diskUsageData['day-left'] > 0 && diskUsageData['day-left'] <= 365 ">
@@ -38,10 +54,11 @@
                                                 , >365 day/s left
                                             </template>
                                         )
-                                    </span>
+                                    </div>
                                 </template>
                             </p>
                         <div>
+
 
                         The bar representing the percentage of disk occupancy will change color to identify an emergency situation.
                         <br>
