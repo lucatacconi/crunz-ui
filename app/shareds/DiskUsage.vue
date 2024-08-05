@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-card>
-            <v-card-title>Log's partition usage</v-card-title>
+            <v-card-title>Log's disk or partition usage</v-card-title>
             <v-card-text id="usage-data-area-container">
                 <template v-if="calcStatExecuted">
                     <div>
@@ -61,7 +61,6 @@
 
 
                         The bar representing the percentage of disk or disk's partition occupancy will change color to identify an emergency situation.
-                        <br>
                         The daily log size data will allow you to calculate the time available to fill the available space.
                     </div>
                 </template>
