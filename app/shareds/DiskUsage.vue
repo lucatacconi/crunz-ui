@@ -6,7 +6,7 @@
                 <template v-if="calcStatExecuted">
                     <div>
                         <p>
-                            Occupancy percentage of disk's partition where log folder resides:
+                            Occupancy percentage of disk or disk's partition where log folder resides:
                         </p>
 
                         <v-progress-linear
@@ -60,9 +60,9 @@
                         <div>
 
 
-                        The bar representing the percentage of disk occupancy will change color to identify an emergency situation.
+                        The bar representing the percentage of disk or disk's partition occupancy will change color to identify an emergency situation.
                         <br>
-                        The daily log size data will allow you to calculate the time available to fill the disk.
+                        The daily log size data will allow you to calculate the time available to fill the available space.
                     </div>
                 </template>
 

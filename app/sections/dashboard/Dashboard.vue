@@ -28,7 +28,6 @@
         components: {
             'dailygraph': httpVueLoader('../../shareds/DailyGraph.vue' + '?v=' + new Date().getTime()),
             'diskusage': httpVueLoader('../../shareds/DiskUsage.vue' + '?v=' + new Date().getTime()),
-            // 'weeklygraph': httpVueLoader('../../shareds/WeeklyGraph.vue' + '?v=' + new Date().getTime()),
             'environmentcheck': httpVueLoader('../../shareds/EnvironmentCheck.vue' + '?v=' + new Date().getTime())
         }
     }
