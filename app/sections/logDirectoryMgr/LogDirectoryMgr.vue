@@ -28,7 +28,7 @@
                                         </template>
                                     </p>
                                     <div>
-                                        Represents the amount of total GB available on the partition where the log folder resides.
+                                        Represents the amount of total GB available on the disk or partition where the log folder resides.
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -48,7 +48,7 @@
                                         </template>
                                     </p>
                                     <div>
-                                        Represents the amount of total GB occupied by the logs generated and saved on the system and system files on the partition where the log folder resides.
+                                        Represents the amount of total GB occupied by the logs generated and saved on the system and system files on the disk or partition where the log folder resides.
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -74,7 +74,7 @@
                                         </template>
                                     </p>
                                     <div>
-                                        Represents the average amount of logs that are generated daily. It provides useful data to avoid completely occupying the disk partition used for logs.
+                                        Represents the average amount of logs that are generated daily. It provides useful data to avoid completely occupying the disk or partition used for logs.
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -84,7 +84,7 @@
                     <v-row>
                         <v-col cols="12">
                             <p>
-                                Occupancy percentage of disk's partition where log folder resides:
+                                Occupancy percentage of disk or partition where log folder resides:
                             </p>
 
                             <v-progress-linear
