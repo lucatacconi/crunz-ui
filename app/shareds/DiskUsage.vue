@@ -60,7 +60,7 @@
                         <div>
 
 
-                        The bar representing the percentage of disk or disk's partition occupancy will change color to identify an emergency situation.
+                        The bar representing the percentage of log disk or disk's log partition occupancy will change color to identify an emergency situation.
                         The daily log size data will allow you to calculate the time available to fill the available space.
                     </div>
                 </template>
