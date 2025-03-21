@@ -3079,8 +3079,19 @@ $app->group('/task', function (RouteCollectorProxy $group) {
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
 
+if(empty($params["INTERVAL_FROM"]) && empty($params["INTERVAL_TO"])){
+            $interval_from = date('Y-m-d 00:00', strtotime('-1 month'));
+            $interval_to = date('Y-m-d 23:59');
+        }else if(empty($params["INTERVAL_FROM"]) && !empty($params["INTERVAL_TO"])){
+            $interval_from = date('Y-m-d 00:00', strtotime($params["INTERVAL_TO"].' -1 month'));
+        }else if(!empty($params["INTERVAL_FROM"]) && empty($params["INTERVAL_TO"])){
+            if(strtotime($params["INTERVAL_FROM"].' +1 month') > strtotime(date('Y-m-d'))){
+                $interval_to = date('Y-m-d 23:59');
+            }else{
+                $interval_to = date('Y-m-d 23:59', strtotime($params["INTERVAL_FROM"].' +1 month'));
+            }
+        }
 
-        $interval_from = '';
         if(!empty($params["INTERVAL_FROM"])){
             $interval_from = date($params["INTERVAL_FROM"]);
             if(strlen($interval_from) == 10){
@@ -3089,7 +3100,6 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             $interval_from = substr($interval_from, 0, 16);
         }
 
-        $interval_to = '';
         if(!empty($params["INTERVAL_TO"])){
             $interval_to = date($params["INTERVAL_TO"]);
             if(strlen($interval_to) == 10){
@@ -3244,12 +3254,41 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             }
         }
 
-        $log_filter = '*';
+
+        //Reading all log releted to the interval
+        $glob_filter = $LOGS_DIR."/";
+
         if(!empty($params["UNIQUE_ID"])){
-            $log_filter = $params["UNIQUE_ID"]."_*";
+            $glob_filter .= $params["UNIQUE_ID"]."_";
+        }else{
+            $glob_filter .= "*_";
         }
 
-        $aLOGNAME = glob($LOGS_DIR."/"."$log_filter.log");
+        if( date('Y-m-d', strtotime($interval_from)) == date('Y-m-d', strtotime($interval_to)) ){
+
+            $glob_filter .= date('Ymd', strtotime($interval_from))."*_";
+            $glob_filter .= "*";
+
+        }else{
+
+            $glob_filter_from = '';
+
+            for($chr_selector = 0; $chr_selector < 10; $chr_selector++){
+
+                if( substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1) == substr(date('Ymd', strtotime($interval_to)), $chr_selector, 1) ){
+                    $glob_filter_from .= substr(date('Ymd', strtotime($interval_from)), $chr_selector, 1);
+                }else{
+                    break;
+                }
+            }
+
+            $glob_filter .= $glob_filter_from."*_";
+            $glob_filter .= "*";
+        }
+
+        $glob_filter .= ".log";
+
+        $aLOGNAME = glob($glob_filter);
 
         if(!empty($aLOGNAME)){
             usort( $aLOGNAME, function( $a, $b ) { return filemtime($b) - filemtime($a); } );
