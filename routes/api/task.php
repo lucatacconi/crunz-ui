@@ -3264,7 +3264,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             foreach($aEVENTUNIQUEKEY as $aEVENTUNIQUEKEY_key => $event_unique_key){
 
                 $glob_filter = $LOGS_DIR."/";
-                $glob_filter .= $event_unique_key."_";
+                $glob_filter .= $event_unique_key."_*_";
 
                 if( date('Y-m-d', strtotime($interval_from)) == date('Y-m-d', strtotime($interval_to)) ){
 
@@ -3301,7 +3301,7 @@ $app->group('/task', function (RouteCollectorProxy $group) {
             $glob_filter = $LOGS_DIR."/";
 
             if(!empty($params["UNIQUE_ID"])){
-                $glob_filter .= $params["UNIQUE_ID"]."_";
+                $glob_filter .= $params["UNIQUE_ID"]."_*_";
             }else{
                 $glob_filter .= "*_";
             }
