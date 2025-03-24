@@ -25,6 +25,12 @@ Crunz-ui updated stable release:
 * Several improvements, bug fixes and and code cleanup throughout the application
 * Faq and troubleshooting page updated
 * Updated documentation for installation and configuration
+* Library version update
+* Bug fixes and and code cleanup
+* Fixes issue #26
+
+**Log directory manager:**
+![Image](https://github.com/user-attachments/assets/6f774252-8ea6-466b-b101-6170d3c3d453)
 
 
 ### v.2.7.10 (2023-05-19)
