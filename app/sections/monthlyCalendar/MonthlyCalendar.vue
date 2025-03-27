@@ -219,9 +219,9 @@ module.exports = {
 
                                 let event_color = self.stringToColor(response.data[i].task_path);
 
-                                r = parseInt(event_color.substring(1,2),16);
-                                g = parseInt(event_color.substring(3,2),16);
-                                b = parseInt(event_color.substring(4,2),16);
+                                r = parseInt(event_color.slice(1,3),16);
+                                g = parseInt(event_color.slice(3,5),16);
+                                b = parseInt(event_color.slice(5,7),16);
                                 yiq = ( (r * 299) + (g * 587) + (b * 114)) / 1000;
 
                                 let event_color_text = "#FFFFFF";
