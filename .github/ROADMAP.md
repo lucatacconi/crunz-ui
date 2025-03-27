@@ -10,7 +10,7 @@
 
 ## Release history
 
-### v.2.7.24 (2025-03-21)
+### v.2.7.24 (2025-03-30)
 
 Crunz-ui updated stable release:
 * New section for checking log occupancy directly from the interface with the possibility of removing older logs. Functionality enabled only for admin users
@@ -26,7 +26,7 @@ Crunz-ui updated stable release:
 * Faq and troubleshooting page updated
 * Updated documentation for installation and configuration
 * Library version update
-* Bug fixes and and code cleanup
+* Bug fixes and code cleanup
 * Fixes issue #26 and #27
 
 **Log directory manager:**
