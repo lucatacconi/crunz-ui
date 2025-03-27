@@ -296,10 +296,6 @@ module.exports = {
 
                 if(response.data.length!=0){
                     if(response.data.content != '' && response.data.filename != ''){
-                        if(response.data.filename == ''){
-                            Utils.showAlertDialog('Filename empty','Filename is empty','error');
-                            return;
-                        }
                         var dec = atob(response.data.content);
                         Utils.downloadFile(dec,response.data.filename);
                     }else{
