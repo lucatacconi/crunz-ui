@@ -307,23 +307,11 @@ module.exports = {
 
                 error_dwl_msg = "Error exporting task list";
 
-                if(response.data.length!=0){
-                    if(response.data.content != '' && response.data.filename != ''){
-                        if(response.data.content == ''){
-                            Utils.showAlertDialog('Export content empty','Export content is empty','error');
-                            return;
-                        }
-                        if(response.data.filename == ''){
-                            Utils.showAlertDialog('Filename empty','Filename is empty','error');
-                            return;
-                        }
-                        var dec = atob(response.data.content);
-                        Utils.downloadFile(dec,response.data.filename);
-                    }else{
-                        Utils.showAlertDialog('ERROR',error_dwl_msg,'error');
-                    }
-                }else{
-                    Utils.showAlertDialog('ERROR',error_dwl_msg,'error');
+                if(response.data.length != 0 && response.data.content != '' && response.data.filename != ''){
+                    var dec = atob(response.data.content);
+                    Utils.downloadFile(dec, response.data.filename);
+                } else {
+                    Utils.showAlertDialog('ERROR', error_dwl_msg, 'error');
                 }
             });
         },
