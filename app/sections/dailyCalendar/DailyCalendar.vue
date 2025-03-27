@@ -292,14 +292,10 @@ module.exports = {
             Utils.apiCall("get", "/task/export",params, {})
             .then(function (response) {
 
-                error_dwl_msg = "Error exporting task list";
+                let error_dwl_msg = "Error exporting task list";
 
                 if(response.data.length!=0){
                     if(response.data.content != '' && response.data.filename != ''){
-                        if(response.data.content == ''){
-                            Utils.showAlertDialog('Export content empty','Export content is empty','error');
-                            return;
-                        }
                         if(response.data.filename == ''){
                             Utils.showAlertDialog('Filename empty','Filename is empty','error');
                             return;

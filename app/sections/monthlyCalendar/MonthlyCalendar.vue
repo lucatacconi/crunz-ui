@@ -256,7 +256,7 @@ module.exports = {
             Utils.apiCall("get", "/task/export",params, {})
             .then(function (response) {
 
-                error_dwl_msg = "Error exporting task list";
+                let error_dwl_msg = "Error exporting task list";
 
                 if(response.data.length!=0){
                     if(response.data.content != '' && response.data.filename != ''){

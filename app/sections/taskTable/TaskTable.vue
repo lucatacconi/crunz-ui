@@ -421,7 +421,7 @@ module.exports = {
             Utils.apiCall("get", "/task/",params, {})
             .then(function (response) {
 
-                error_dwl_msg = "Error downloading task content";
+                let error_dwl_msg = "Error downloading task content";
 
                 if(response.data.length!=0){
                     task_detail = response.data[0];
