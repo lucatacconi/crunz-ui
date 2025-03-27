@@ -17,7 +17,7 @@ Crunz-ui updated stable release:
 * Display of free space on the log partition and estimate of the time remaining until saturation
 * New system task to notify via email of running out of space on the log partition
 * Instruction for installation and configuration on Nginx server
-* New functionality for move o rename an task in Tasks Table
+* New functionality for move or rename an task in Tasks Table
 * Refactoring of the task reading and management engine
 * PHP 8.3 compatibility fix
 * JWT Authentication Middleware update to other library (JimTools/jwt-auth)
