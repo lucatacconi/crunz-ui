@@ -82,7 +82,7 @@
         data: function() {
             return {
                 diskUsageData: {},
-                calcStatExecuted: true
+                calcStatExecuted: false
             }
         },
 
