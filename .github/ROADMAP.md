@@ -28,6 +28,7 @@ Crunz-ui updated stable release:
 * Library version update
 * Bug fixes and code cleanup
 * Fixes issue #26 and #27
+* Copilot review
 
 **Log directory manager:**
 ![Image](https://github.com/user-attachments/assets/6f774252-8ea6-466b-b101-6170d3c3d453)

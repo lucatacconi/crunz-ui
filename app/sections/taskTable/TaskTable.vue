@@ -111,31 +111,31 @@
                                                         <v-list-item-title> <span>Execute and wait log</span> </v-list-item-title>
                                                     </template>
                                                 </v-list-item>
-                                                <v-list-item @click="openLogModal(item, i)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
+                                                <v-list-item @click="openLogModal(item)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
                                                     <v-list-item-icon><v-icon>mdi-comment-check</v-icon></v-list-item-icon>
                                                     <v-list-item-title>View last log</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="downloadTask(item,i)">
+                                                <v-list-item @click="downloadTask(item)">
                                                     <v-list-item-icon><v-icon>mdi-file-download</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Download task</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="openEditModal(item, i)">
+                                                <v-list-item @click="openEditModal(item)">
                                                     <v-list-item-icon><v-icon>mdi-file-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="openMoveModal(item, i)">
+                                                <v-list-item @click="openMoveModal(item)">
                                                     <v-list-item-icon><v-icon>mdi-file-move</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Move/rename task</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="openNewTaskModal(item, i)">
+                                                <v-list-item @click="openNewTaskModal(item)">
                                                     <v-list-item-icon><v-icon>mdi-content-duplicate</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Clone task</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="archiveItem(item, i)">
+                                                <v-list-item @click="archiveItem(item)">
                                                     <v-list-item-icon><v-icon color="red">mdi-archive</v-icon></v-list-item-icon>
                                                     <v-list-item-title > <span class="red--text">Archive task</span> </v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="deleteItem(item, i)">
+                                                <v-list-item @click="deleteItem(item)">
                                                     <v-list-item-icon><v-icon color="red">mdi-delete</v-icon></v-list-item-icon>
                                                     <v-list-item-title > <span class="red--text">Delete task</span> </v-list-item-title>
                                                 </v-list-item>
@@ -221,8 +221,8 @@
                                 <span v-else>--</span>
                             </td>
                             <td class="text-center" >
-                                <v-icon v-if="item.last_outcome=='OK'" color="green darken-2" @click="openLogModal(item,i)" small>mdi-comment-check</v-icon>
-                                <v-icon v-else-if="item.last_outcome=='KO'" color="red" @click="openLogModal(item,i)" small>mdi-comment-alert</v-icon>
+                                <v-icon v-if="item.last_outcome=='OK'" color="green darken-2" @click="openLogModal(item)" small>mdi-comment-check</v-icon>
+                                <v-icon v-else-if="item.last_outcome=='KO'" color="red" @click="openLogModal(item)" small>mdi-comment-alert</v-icon>
                                 <span v-else>--</span>
                             </td>
                         </tr>
