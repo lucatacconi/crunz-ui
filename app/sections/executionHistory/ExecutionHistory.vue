@@ -27,7 +27,7 @@
 
         <v-card class="mb-16">
             <v-card-title >
-                Tasks' execution outcome list
+                Tasks' execution list
             </v-card-title>
             <validationobserver ref="observer">
                 <v-form>

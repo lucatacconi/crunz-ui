@@ -24,7 +24,9 @@ use Symfony\Component\Yaml\Yaml;
 
 $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
-    $group->get('/period', function (Request $request, Response $response, array $args) {
+    $forced_task_path = '';
+
+    $group->get('/period', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -56,9 +58,8 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         $app_configs = $this->get('configs')["app_configs"];
         $base_path =$app_configs["paths"]["base_path"];
 
-        if(empty($_ENV["CRUNZ_BASE_DIR"])){
-            $crunz_base_dir = $base_path;
-        }else{
+        $crunz_base_dir = $base_path;
+        if(!empty($_ENV["CRUNZ_BASE_DIR"])){
             $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
         }
 
@@ -80,6 +81,10 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         date_default_timezone_set($crunz_config["timezone"]);
 
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(!empty($forced_task_path)){
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
 
         if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
@@ -146,6 +151,9 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
 
         $aLOGNAME_perkey = [];
         foreach($aLOGNAME_all as $logkey => $logfile){
+
+            if(substr(basename($logfile), 0, 1) == ".") continue;
+
             $aLOG =explode('_', str_replace($LOGS_DIR."/", "", $logfile));
 
             if( empty($aLOGNAME_perkey[$aLOG[0]]) || count($aLOGNAME_perkey[$aLOG[0]]) == 0 ){
@@ -196,10 +204,14 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
             $error_presence = false;
             if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
                 if(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec')){
-                    $file_check_result = exec("php -l \"".$taskFile->getRealPath()."\"");
-                    if(strpos($file_check_result, 'No syntax errors detected in') === false){
-                        //Syntax error in file
-                        $error_presence = true;
+
+                    //Check the syntax of the file only if it was uploaded/modified today or yesterday
+                    if( date('Y-m-d', filemtime($taskFile->getRealPath())) == date('Y-m-d') || date('Y-m-d', filemtime($taskFile->getRealPath())) == date('Y-m-d', strtotime('-1 day')) ){
+                        $file_check_result = shell_exec("php -l \"".$taskFile->getRealPath()."\"");
+                        if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                            //Syntax error in file
+                            $error_presence = true;
+                        }
                     }
                 }
             }
@@ -308,70 +320,22 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                 $life_time_from = '';
                 $life_time_to = '';
 
-                //Evaluate task lifetime between
-                $matches_details = null;
-                $pattern = '/->between\((.*?)\)/';
-                preg_match_all($pattern, $file_content_check, $matches_between);
+                $life_datetime_from_tmp = $oEVENT->getFrom();
+                $life_datetime_to_tmp = $oEVENT->getTo();
 
-                foreach($matches_between[1] as $match_between){
-                    $match_between = str_replace(' ', '', $match_between);
-
-                    $pattern = '/["\'](\d{2}:\d{2} \d{4}-\d{2}-\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})["\'],["\'](\d{2}:\d{2} \d{4}-\d{2}-\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})["\']/';
-                    preg_match_all($pattern, $match_between, $matches_details);
-
-                    if(!empty($matches_details[0])){
-
-                        if (preg_match('/^([0-9]*):([0-9]*)$/', $matches_details[1][0])) {
-                            $life_time_from = $matches_details[1][0];
-                        }else{
-                            $life_datetime_from = $matches_details[1][0];
-                        }
-
-                        if (preg_match('/^([0-9]*):([0-9]*)$/', $matches_details[2][0])) {
-                            $life_time_to = $matches_details[2][0];
-                        }else{
-                            $life_datetime_to = $matches_details[2][0];
-                        }
+                if(!empty($life_datetime_from_tmp)){
+                    if (preg_match('/^([0-9]*):([0-9]*)$/', $life_datetime_from_tmp)) {
+                        $life_time_from = $life_datetime_from_tmp;
+                    }else{
+                        $life_datetime_from = $life_datetime_from_tmp;
                     }
                 }
 
-                //Evaluate task lifetime from
-                $matches_details = null;
-                $pattern = '/->from\(["\'](.*?)["\']\)/';
-                preg_match_all($pattern, $file_content_check, $matches_from);
-
-                if(!empty($matches_from[1])){
-                    foreach($matches_from[1] as $match_from){
-                        $pattern = '/(\d{2}:\d{2} \d{4}-\d{2}-\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})/';
-                        preg_match_all($pattern, $match_from, $matches_details);
-
-                        foreach($matches_details[1] as $match_tmp){
-                            if (preg_match('/^([0-9]*):([0-9]*)$/', $match_tmp)) {
-                                $life_time_from = $match_tmp;
-                            }else{
-                                $life_datetime_from = $match_tmp;
-                            }
-                        }
-                    }
-                }
-
-                //Evaluate task lifetime to
-                $matches_details = null;
-                $pattern = '/->to\(["\'](.*?)["\']\)/';
-                preg_match_all($pattern, $file_content_check, $matches_to);
-
-                if(!empty($matches_to[1])){
-                    foreach($matches_to[1] as $match_to){
-                        $pattern = '/(\d{2}:\d{2} \d{4}-\d{2}-\d{2}|\d{4}-\d{2}-\d{2}|\d{2}:\d{2})/';
-                        preg_match_all($pattern, $match_to, $matches_details);
-
-                        foreach($matches_details[1] as $match_tmp){
-                            if (preg_match('/^([0-9]*):([0-9]*)$/', $match_tmp)) {
-                                $life_time_to = $match_tmp;
-                            }else{
-                                $life_datetime_to = $match_tmp;
-                            }
-                        }
+                if(!empty($life_datetime_to_tmp)){
+                    if (preg_match('/^([0-9]*):([0-9]*)$/', $life_datetime_to_tmp)) {
+                        $life_time_to = $life_datetime_to_tmp;
+                    }else{
+                        $life_datetime_to = $life_datetime_to_tmp;
                     }
                 }
 
@@ -647,7 +611,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->get('/active-tasks', function (Request $request, Response $response, array $args) {
+    $group->get('/active-tasks', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -676,6 +640,10 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         if(empty($crunz_config["suffix"])) throw new Exception("ERROR - Wrong tasks configuration");
 
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(!empty($forced_task_path)){
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
 
 
@@ -711,7 +679,7 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->get('/archived-tasks', function (Request $request, Response $response, array $args) {
+    $group->get('/archived-tasks', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -739,6 +707,9 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
 
         $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(!empty($forced_task_path)){
+            $TASKS_DIR = $forced_task_path;
+        }
 
         $archived_tasks_size = 0;
         $num_archived_tasks = 0;
@@ -765,11 +736,6 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         $data = [];
 
         $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
-
-        $date_ref = date("Y-m-d H:i:s");
-        if(!empty($params["DATE_REF"])){
-            $date_ref = date($params["DATE_REF"]);
-        }
 
         $date_now = date("Y-m-d H:i:s");
 
@@ -857,5 +823,224 @@ $app->group('/task-stat', function (RouteCollectorProxy $group) {
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         return $response->withStatus(200)
                         ->withHeader("Content-Type", "application/json");
+    });
+
+    $group->get('/log-partition-usage', function (Request $request, Response $response, array $args) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
+        }else{
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
+        }
+
+        $aUNITS = ['B'=>0, 'KB' => 1, 'MB' => 2, 'GB' => 3, 'TB' => 4];
+
+        $unit = 'B';
+        if(!empty($params["UNIT"])){
+            $unit = strtoupper($params["UNIT"]);
+        }
+
+        $total_space = $total_space_disp = disk_total_space($LOGS_DIR);
+        $free_space = $free_space_disp = disk_free_space($LOGS_DIR);
+        $used_space = $used_space_disp = $total_space - $free_space;
+
+        //[0] => /var/www/html/crunz-ui-test/./var/logs/00478b4c76f2f1a05be37b9c156ffe08_KO_202403051740_202403051740_aVsr.log
+
+        $date_focus = strtotime('yesterday');
+        $aFILE = glob($LOGS_DIR .'/'. '*_'.date("Ymd", $date_focus).'*_'.date("Ymd", $date_focus).'*_*.log');
+
+        $total_space_yesterday = 0;
+        foreach ($aFILE as $file) {
+            $total_space_yesterday += filesize($file);
+        }
+
+        $num_len = strlen($used_space);
+
+        if($unit == 'AUTO'){
+            if($num_len < 4){
+                $unit = 'B';
+            }else if($num_len >= 3 && $num_len < 7){
+                $unit = 'KB';
+            }else if($num_len >= 7 && $num_len < 11){
+                $unit = 'MB';
+            }else if($num_len >= 11 && $num_len < 15){
+                $unit = 'GB';
+            }else{
+                $unit = 'TB';
+            }
+        }
+
+        $exponent = 0;
+        if(!empty($aUNITS[$unit])){
+            $exponent = $aUNITS[$unit];
+        }
+
+        if($exponent > 0){
+            $total_space_disp = number_format(($total_space / pow(1024, $exponent)), 2, '.', '');
+            $free_space_disp = number_format(($free_space / pow(1024, $exponent)), 2, '.', '');
+            $used_space_disp = number_format(($used_space / pow(1024, $exponent)), 2, '.', '');
+            $total_space_yesterday_disp = number_format(($total_space_yesterday / pow(1024, $exponent)), 2, '.', '');
+        }
+
+        $data["total-partition-size"] = $total_space_disp;
+        $data["total-log-space-yesterday"] = $total_space_yesterday_disp;
+
+        $data["day-left"] = "";
+        if($total_space_yesterday > 0){
+            $data["day-left"] = ceil($free_space / $total_space_yesterday);
+        }
+
+        $data["partition-free-space"] = $free_space_disp;
+        $data["partition-used-space"] = $used_space_disp;
+        $data["unit"] = $unit;
+        $data["free-space-percentage"] = number_format(($free_space / $total_space) * 100, 2, '.', '');
+        $data["used-space-percentage"] = number_format(($used_space / $total_space) * 100, 2, '.', '');
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+    });
+
+    $group->get('/log-list', function (Request $request, Response $response, array $args) use($forced_task_path) {
+
+        $data = [];
+
+        $params = array_change_key_case($request->getQueryParams(), CASE_UPPER);
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
+        }else{
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
+        }
+
+        $log_filter = '';
+
+        // fe4b3a887c21bf1cd19bcb4eb84bbe42_OK_202403140030_202403140030_IQU8.log
+
+        if(!empty($params["UNIQUE_ID"])){
+            $log_filter .= $params["UNIQUE_ID"].'_';
+        }else{
+            $log_filter .= '*_';
+        }
+
+        if(!empty($params["OUTCOME"])){
+            $log_filter .= $params["OUTCOME"].'_';
+        }else{
+            $log_filter .= '*_';
+        }
+
+        if(!empty($params["DATETIME_FROM"])){
+            $log_filter .= str_replace([' ','-',':'], '', $params["DATETIME_FROM"]).'*_';
+        }else{
+            $log_filter .= '*_';
+        }
+
+        if(!empty($params["DATETIME_TO"])){
+            $log_filter .= str_replace([' ','-',':'], '', $params["DATETIME_TO"]).'*_';
+        }else{
+            $log_filter .= '*_';
+        }
+
+        $log_filter .= '*.log';
+
+        $aFILE = glob($LOGS_DIR .'/'. $log_filter);
+
+        $data['log-list'] = [];
+        foreach ($aFILE as $file) {
+            $data['log-list'][] = str_replace($LOGS_DIR.'/', '', $file);
+        }
+
+        $data['log-counmt'] = count($data['log-list']);
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+
+    });
+
+    $group->delete('/obsolete-logs', function (Request $request, Response $response, array $args) use($forced_task_path) {
+
+        $data = [];
+
+        $params = [];
+        if(!empty($request->getParsedBody())){
+            $params = array_change_key_case($request->getParsedBody(), CASE_UPPER);
+        }
+
+        $app_configs = $this->get('configs')["app_configs"];
+        $base_path =$app_configs["paths"]["base_path"];
+
+        if(empty($_ENV["CRUNZ_BASE_DIR"])){
+            $crunz_base_dir = $base_path;
+        }else{
+            $crunz_base_dir = $_ENV["CRUNZ_BASE_DIR"];
+        }
+
+        if(empty($_ENV["LOGS_DIR"])) throw new Exception("ERROR - Logs directory configuration empty");
+
+        if(substr($_ENV["LOGS_DIR"], 0, 2) == "./"){
+            $LOGS_DIR = $base_path . "/" . $_ENV["LOGS_DIR"];
+        }else{
+            $LOGS_DIR = $_ENV["LOGS_DIR"];
+        }
+
+        if( empty($params["OLDER_THAN"]) ) throw new Exception("ERROR - No margin period indicated for deletion");
+
+        $log_name_format = '*.log';
+        $aFILE = glob($LOGS_DIR .'/'. $log_name_format);
+
+        $margin_date = strtotime('-'.$params["OLDER_THAN"].' months');
+
+        $data["total-log-files"] = 0;
+        $data["removed-log-files"] = 0;
+
+        foreach ($aFILE as $file) {
+
+            $data["total-log-files"]++;
+
+            if (filemtime($file) < $margin_date) {
+
+                try {
+                    unlink($file);
+                } catch(Exception $e) {
+                    throw new Exception("ERROR - Error deleting logs");
+                }
+                $data["removed-log-files"]++;
+            }
+        }
+
+        $data["result"] = true;
+        $data["result_msg"] = '';
+
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withStatus(200)
+                        ->withHeader("Content-Type", "application/json");
+
     });
 });

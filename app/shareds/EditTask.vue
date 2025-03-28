@@ -44,7 +44,7 @@
                         </v-row>
 
                     </v-container>
-                <v-form>
+                </v-form>
             </v-card-text>
 
             <v-card-actions class="pt-4 pr-9 pb-3">
@@ -118,7 +118,7 @@ module.exports = {
                 "task_path": self.rowdata.task_path
             }
 
-            let dest = '/task/';
+            let dest = '/task/draft';
             if(this.origin=='archived'){
                 dest = '/task-archive/';
             }

@@ -6,6 +6,9 @@
         "Slim4", "Api", "JWT", "Vue", "Vuetify", "Router", "Http-vue-loader", "Protected area", "Login system", "Menu tool", "Crunz" , "Crontab"
     ],
     "homepage": "https://github.com/lucatacconi/crunz-ui/tree/master",
+    "support": {
+        "issues": "https://github.com/lucatacconi/crunz-ui/issues"
+    },
     "license": "MIT",
     "authors": [
         {
@@ -25,7 +28,7 @@
         "slim/slim": "^4",
         "slim/psr7": "^1",
         "nyholm/psr7": "^1",
-        "nyholm/psr7-server": ">=0",
+        "nyholm/psr7-server": "^1",
         "guzzlehttp/guzzle": "^7",
         "laminas/laminas-diactoros": "^2",
         "php-di/php-di": "^6",
@@ -36,9 +39,16 @@
         "vlucas/phpdotenv": "^5",
         "twig/twig": "^3",
 
-        "crunzphp/crunz": "^3",
-        "lorisleiva/cron-translator": ">=0.3.2",
+        "crunzphp/crunz": ">=3.6.0 ^3",
+        "lorisleiva/cron-translator": "^0",
+        "dragonmantank/cron-expression": "^3.1",
+
         "jimtools/jwt-auth": "^1.0",
         "firebase/php-jwt": "^6.10"
-    }
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3"
+    },
+    "minimum-stability": "beta",
+    "prefer-stable": true
 }

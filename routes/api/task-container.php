@@ -8,7 +8,9 @@ use CrunzUI\Tools\CrunzUITools;
 
 $app->group('/task-container', function (RouteCollectorProxy $group) {
 
-    $group->get('/tree', function (Request $request, Response $response, array $args) {
+    $forced_task_path = '';
+
+    $group->get('/tree', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -37,7 +39,11 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
 
         $data = CrunzUITools::taskDirectoryRotator($TASKS_DIR);
         sort($data);
@@ -47,7 +53,7 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->get('/tree/display', function (Request $request, Response $response, array $args) {
+    $group->get('/tree/display', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -76,7 +82,11 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
 
         $aTASKS_DIR = CrunzUITools::taskDirectoryRotator($TASKS_DIR);
         sort($aTASKS_DIR);
@@ -148,7 +158,7 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->post('/dir', function (Request $request, Response $response, array $args) {
+    $group->post('/dir', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -194,7 +204,11 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
 
         $aPATH = CrunzUITools::taskDirectoryRotator($TASKS_DIR);
 
@@ -246,7 +260,7 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->delete('/dir', function (Request $request, Response $response, array $args) {
+    $group->delete('/dir', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -287,7 +301,11 @@ $app->group('/task-container', function (RouteCollectorProxy $group) {
 
         if(empty($crunz_config["source"])) throw new Exception("ERROR - Tasks directory configuration empty");
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
 
         try {
 

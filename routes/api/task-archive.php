@@ -24,7 +24,9 @@ use Symfony\Component\Yaml\Yaml;
 
 $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
-    $group->get('/', function (Request $request, Response $response, array $args) {
+    $forced_task_path = '';
+
+    $group->get('/', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
 
         //Parameters list
@@ -69,7 +71,12 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = str_replace(".php", ".arch", $crunz_config["suffix"]);
 
         $base_tasks_path = $TASKS_DIR; //Must be absolute path on server
@@ -111,10 +118,14 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
             if(is_callable('shell_exec') && false === stripos(ini_get('disable_functions'), 'shell_exec')){
                 if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
-                    $file_check_result = exec("php -l \"".$archFile->getRealPath()."\"");
-                    if(strpos($file_check_result, 'No syntax errors detected in') === false){
-                        //Syntax error in file
-                        continue;
+
+                    //Check the syntax of the file only if it was uploaded/modified today or yesterday
+                    if( date('Y-m-d', filemtime($taskFile->getRealPath())) == date('Y-m-d') || date('Y-m-d', filemtime($taskFile->getRealPath())) == date('Y-m-d', strtotime('-1 day')) ){
+                        $file_check_result = exec("php -l \"".$archFile->getRealPath()."\"");
+                        if(strpos($file_check_result, 'No syntax errors detected in') === false){
+                            //Syntax error in file
+                            continue;
+                        }
                     }
                 }
             }
@@ -362,7 +373,7 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                         ->withHeader("Content-Type", "application/json");
     });
 
-    $group->post('/archive', function (Request $request, Response $response, array $args) {
+    $group->post('/archive', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -397,7 +408,12 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX = $crunz_config["suffix"];
 
         if(!is_writable($TASKS_DIR)) throw new Exception('ERROR - Tasks directory not writable');
@@ -459,7 +475,7 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
     });
 
 
-    $group->post('/de-archive', function (Request $request, Response $response, array $args) {
+    $group->post('/de-archive', function (Request $request, Response $response, array $args) use($forced_task_path) {
 
         $data = [];
 
@@ -494,7 +510,12 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
 
         date_default_timezone_set($crunz_config["timezone"]);
 
-        $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        if(empty($forced_task_path)){
+            $TASKS_DIR = $crunz_base_dir . "/" . ltrim($crunz_config["source"], "/");
+        }else{
+            $TASKS_DIR = $forced_task_path;
+        }
+
         $TASK_SUFFIX_DEST = $crunz_config["suffix"];
         $TASK_SUFFIX = str_replace(".php", ".arch", $crunz_config["suffix"]);
 

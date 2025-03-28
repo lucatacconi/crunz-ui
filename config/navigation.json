@@ -33,7 +33,7 @@
 
         {
             "title": "Tasks table",
-            "subtitle": "Show tasks list",
+            "subtitle": "Shows tasks list",
             "allowed":["admin","user"],
             "visible": true,
 
@@ -52,7 +52,7 @@
 
         {
             "title": "Tasks' execution list",
-            "subtitle": "Executions result",
+            "subtitle": "Shows runs filtered by parameters",
             "allowed":["admin","user"],
             "visible": true,
 
@@ -71,7 +71,7 @@
 
         {
             "title": "Monthly calendar",
-            "subtitle": "Show monthly tasks",
+            "subtitle": "Shows monthly tasks",
             "allowed":["admin","user"],
             "visible": true,
 
@@ -90,7 +90,7 @@
 
         {
             "title": "Daily calendar",
-            "subtitle": "Show daily tasks",
+            "subtitle": "Shows daily tasks",
             "allowed":["admin","user"],
             "visible": true,
 
@@ -109,7 +109,7 @@
 
         {
             "title": "Archived task files",
-            "subtitle": "Show all archived task files",
+            "subtitle": "Shows all archived task files",
             "allowed":["admin","user"],
             "visible": true,
 
@@ -196,8 +196,8 @@
                     }
                 },
                 {
-                    "title": "User Management",
-                    "subtitle": "Configure users and levels",
+                    "title": "User configuration",
+                    "subtitle": "Manage users and levels",
                     "allowed": ["admin"],
                     "visible": true,
 
@@ -208,6 +208,24 @@
 
                     "layout":{
                         "icon": "mdi-account-multiple",
+                        "disabled": false,
+                        "color": false,
+                        "class": false
+                    }
+                },
+                {
+                    "title": "Log directory manager",
+                    "subtitle": "Log space management",
+                    "allowed": ["admin"],
+                    "visible": true,
+
+                    "action":{
+                        "path": "/logDirectoryMgr/LogDirectoryMgr",
+                        "component": "../../app/sections/logDirectoryMgr/LogDirectoryMgr.vue"
+                    },
+
+                    "layout":{
+                        "icon": "mdi-shredder",
                         "disabled": false,
                         "color": false,
                         "class": false

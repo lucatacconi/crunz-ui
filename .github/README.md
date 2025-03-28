@@ -107,7 +107,7 @@ It is possible to access the demo area from the following link:
 
 * Linux OS and Bash shell
 * Service ntp enabled
-* Apache and PHP 7.4 or newer, with rewrite.load module enabled
+* Apache with rewrite.load module enabled or Nginx and PHP 8.0 or newer,
 * Composer
 * Sudo capabilities
 
@@ -169,7 +169,7 @@ Please refer to [Ubuntu/Debian Docker setup example](DOCKER_EXPL.md) for suggest
 
 Otherwise It's recommended that you use [Composer](https://getcomposer.org/) to install Crunz-ui.
 
-Starting from your **Apache Server**'s **Document Root** folder or from a directory served by a virtual host, begin the application setup by Composer command:
+Starting from your **Web Server**'s **Document Root** folder or from a directory served by a virtual host, begin the application setup by Composer command:
 ```
 composer create-project lucatacconi/crunz-ui
 ```
@@ -214,19 +214,19 @@ Then set an ordinary cron job (a crontab entry) which runs every minute, and del
 ```
 
 By default the configured log folder is **./var/logs** inside Crunz-ui folder. To use custom log folder configure the **.env** file with the path of new log folder.
-The folder must be accessible and writeable by the Apache user.
+The folder must be accessible and writeable by the Web Server user.
 
 If you have configured a custom log folder, the crontab configuration must be changed as follows:
 ```
 * * * * * cd /[BASE_CRUNZUI_PATH] && ./crunz-ui.sh -l [LOGS_PATH]
 ```
 
-Please refer to [Ubuntu/Debian setup example](UBUNTU_EXPL.md) for suggestion.
+Please refer to [Apache/PHP in Ubuntu/Debian server setup example](APACHE_UBUNTU_EXPL.md) or [Nginx/PHP in Ubuntu/Debian server setup example](NGINX_UBUNTU_EXPL.md) for suggestion.
 
 ### Usage on a previous installation of Crunz
 
 First of all you need to tell Crunz-ui the exact location where Crunz is installed.
-To do this, edit the **.env** file inside the main folder of Crunz-ui by un-commenting the entry **CRUNZ_BASE_DIR** and indicating into that the value of the absolute path of Crunz installation. In order to be able to insert, modify and delete tasks, the Apache user must have access and write permissions to the tasks folder.
+To do this, edit the **.env** file inside the main folder of Crunz-ui by un-commenting the entry **CRUNZ_BASE_DIR** and indicating into that the value of the absolute path of Crunz installation. In order to be able to insert, modify and delete tasks, the Web Server user must have access and write permissions to the tasks folder.
 
 Then copy crunz-ui.sh file and TasksTreeReader.php into the Crunz base folder:
 ```
@@ -234,7 +234,7 @@ cp /[BASE_CRUNZUI_PATH]/crunz-ui.sh /[BASE_CRUNZ_PATH]
 cp /[BASE_CRUNZUI_PATH]/TasksTreeReader.php /[BASE_CRUNZ_PATH]
 ```
 
-By default **crunz.ui.sh** batch will search for standard log folder **./var/logs** inside main Crunz folder. Therefore, if you want to use standard configuration, you need to create default folder for logs. The folder must be accessible and writeable by the Apache user:
+By default **crunz.ui.sh** batch will search for standard log folder **./var/logs** inside main Crunz folder. Therefore, if you want to use standard configuration, you need to create default folder for logs. The folder must be accessible and writeable by the Web Server user:
 ```
 cd /[BASE_CRUNZ_PATH]
 mkdir ./var ./var/logs
@@ -245,7 +245,7 @@ Modify the Crunz process, configured in Crontab during the Crunz installation, r
 * * * * * cd /[BASE_CRUNZ_PATH] && ./crunz-ui.sh
 ```
 
-Configure, if needed, Crunz-ui **.env** file with a custom path of the log folder. In this case too it is important that the folder is accessible and writeable by the Apache user.
+Configure, if needed, Crunz-ui **.env** file with a custom path of the log folder. In this case too it is important that the folder is accessible and writeable by the Web Server user.
 If you have configured a custom log folder, the crontab configuration must be changed as follows:
 ```
 * * * * * cd /[BASE_CRUNZ_PATH] && ./crunz-ui.sh -l [LOGS_PATH]
@@ -256,7 +256,7 @@ Refer to [Accounts configuration](#Accounts-configuration) section to configure 
 
 ### Custom log directory configuration
 
-By default, the configured log folder is **./var/logs** inside Crunz / Crunz-ui folder. The folder must be accessible and writeable by the Apache user.
+By default, the configured log folder is **./var/logs** inside Crunz / Crunz-ui folder. The folder must be accessible and writeable by the Web Server user.
 
 To configure custom folder set the **.env** file with the path of new log folder.
 

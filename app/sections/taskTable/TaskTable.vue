@@ -28,6 +28,13 @@
             :rowdata="logData"
         ></task-edit>
 
+        <!-- Move modal -->
+        <task-move
+            v-if="showMoveModal"
+            @on-close-modal="closeMoveModal"
+            :rowdata="logData"
+        ></task-move>
+
         <v-card class="mb-16">
             <v-card-title >
                 Task list
@@ -104,27 +111,31 @@
                                                         <v-list-item-title> <span>Execute and wait log</span> </v-list-item-title>
                                                     </template>
                                                 </v-list-item>
-                                                <v-list-item @click="openLogModal(item, i)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
+                                                <v-list-item @click="openLogModal(item)" :class="item.last_outcome=='OK'||item.last_outcome=='KO' ? '' : 'd-none'">
                                                     <v-list-item-icon><v-icon>mdi-comment-check</v-icon></v-list-item-icon>
                                                     <v-list-item-title>View last log</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="downloadTask(item,i)">
+                                                <v-list-item @click="downloadTask(item)">
                                                     <v-list-item-icon><v-icon>mdi-file-download</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Download task</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="openEditModal(item, i)">
+                                                <v-list-item @click="openEditModal(item)">
                                                     <v-list-item-icon><v-icon>mdi-file-edit</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Edit task</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="openNewTaskModal(item, i)">
+                                                <v-list-item @click="openMoveModal(item)">
+                                                    <v-list-item-icon><v-icon>mdi-file-move</v-icon></v-list-item-icon>
+                                                    <v-list-item-title>Move/rename task</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item @click="openNewTaskModal(item)">
                                                     <v-list-item-icon><v-icon>mdi-content-duplicate</v-icon></v-list-item-icon>
                                                     <v-list-item-title>Clone task</v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="archiveItem(item, i)">
+                                                <v-list-item @click="archiveItem(item)">
                                                     <v-list-item-icon><v-icon color="red">mdi-archive</v-icon></v-list-item-icon>
                                                     <v-list-item-title > <span class="red--text">Archive task</span> </v-list-item-title>
                                                 </v-list-item>
-                                                <v-list-item @click="deleteItem(item, i)">
+                                                <v-list-item @click="deleteItem(item)">
                                                     <v-list-item-icon><v-icon color="red">mdi-delete</v-icon></v-list-item-icon>
                                                     <v-list-item-title > <span class="red--text">Delete task</span> </v-list-item-title>
                                                 </v-list-item>
@@ -210,8 +221,8 @@
                                 <span v-else>--</span>
                             </td>
                             <td class="text-center" >
-                                <v-icon v-if="item.last_outcome=='OK'" color="green darken-2" @click="openLogModal(item,i)" small>mdi-comment-check</v-icon>
-                                <v-icon v-else-if="item.last_outcome=='KO'" color="red" @click="openLogModal(item,i)" small>mdi-comment-alert</v-icon>
+                                <v-icon v-if="item.last_outcome=='OK'" color="green darken-2" @click="openLogModal(item)" small>mdi-comment-check</v-icon>
+                                <v-icon v-else-if="item.last_outcome=='KO'" color="red" @click="openLogModal(item)" small>mdi-comment-alert</v-icon>
                                 <span v-else>--</span>
                             </td>
                         </tr>
@@ -227,8 +238,7 @@
         </v-card>
 
         <!-- Actions buttons -->
-        <actions-buttons v-on:read-data="readData()" v-on:edit-modal="opendEditModal()" v-on:new-task-modal="openNewTaskModal()" v-on:upload-modal="openUploadModal()"></actions-buttons>
-
+        <actions-buttons v-on:read-data="readData()" v-on:export-task-list="exportTaskList()" v-on:edit-modal="openEditModal()" v-on:new-task-modal="openNewTaskModal()" v-on:upload-modal="openUploadModal()"></actions-buttons>
     </div>
 </template>
 
@@ -242,6 +252,7 @@ module.exports = {
             showNewTaskModal:false,
             showUploadModal: false,
             showEditModal: false,
+            showMoveModal: false,
             showLogModal: false,
             headers: [
                 {
@@ -281,6 +292,25 @@ module.exports = {
                 if(self.search.length > 0) self.customSearch(self.search);
                 if(response.data.length == 0){
                     self.message = "No tasks found on server. Eventually check tasks directory path."
+                }
+            });
+        },
+
+        exportTaskList:function(){
+
+            var self = this;
+            var params = {}
+
+            Utils.apiCall("get", "/task/export",params, {})
+            .then(function (response) {
+
+                let error_dwl_msg = "Error exporting task list";
+
+                if(response.data.length != 0 && response.data.content != '' && response.data.filename != ''){
+                    var dec = atob(response.data.content);
+                    Utils.downloadFile(dec, response.data.filename);
+                } else {
+                    Utils.showAlertDialog('ERROR', error_dwl_msg, 'error');
                 }
             });
         },
@@ -390,7 +420,7 @@ module.exports = {
             Utils.apiCall("get", "/task/",params, {})
             .then(function (response) {
 
-                error_dwl_msg = "Error downloading task content";
+                let error_dwl_msg = "Error downloading task content";
 
                 if(response.data.length!=0){
                     task_detail = response.data[0];
@@ -460,6 +490,17 @@ module.exports = {
         },
         closeEditModal: function (result) {
             this.showEditModal = false;
+            if(typeof result !== 'undefined' && result){
+                this.readData();
+            }
+        },
+
+        openMoveModal: function (rowdata) {
+            this.showMoveModal = true;
+            this.logData = rowdata != undefined ? rowdata : false;
+        },
+        closeMoveModal: function (result) {
+            this.showMoveModal = false;
             if(typeof result !== 'undefined' && result){
                 this.readData();
             }
@@ -591,6 +632,7 @@ module.exports = {
         'actions-buttons': httpVueLoader('../../shareds/ActionsButtons.vue' + '?v=' + new Date().getTime()),
         'tasks-upload': httpVueLoader('../../shareds/TasksUpload.vue' + '?v=' + new Date().getTime()),
         'new-task': httpVueLoader('../../shareds/NewTask.vue' + '?v=' + new Date().getTime()),
+        'task-move': httpVueLoader('../../shareds/MoveTask.vue' + '?v=' + new Date().getTime()),
         'task-log': httpVueLoader('../../shareds/ExecutionLog.vue' + '?v=' + new Date().getTime()),
         'task-edit': httpVueLoader('../../shareds/EditTask.vue' + '?v=' + new Date().getTime())
     }

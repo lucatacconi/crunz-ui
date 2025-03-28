@@ -12,6 +12,8 @@ Below are a number of useful tips for configuring the system and for solving com
 - [I don't know the password to access the system](#i-dont-know-the-password-to-access-the-system)
 - [After successful login the system returns to the login page](#after-successful-login-the-system-returns-to-the-login-page)
 - [Time discrepancies in execution task during daylight saving time switch](#time-discrepancies-in-execution-task-during-daylight-saving-time-switch)
+- [Timeout error in the task reading interfaces or in the batch execution with display of the result from the interface](#timeout-error-in-the-task-reading-interfaces-or-in-the-batch-execution-with-display-of-the-result-from-the-interface)
+- [Discrepancy in the time calculated on the interface and that calculated by the batches launched by Crunz](#discrepancy-in-the-time-calculated-on-the-interface-and-that-calculated-by-the-batches-launched-by-crunz)
 
 
 ## In the initial check on the dashboard I am reported configuration errors
@@ -149,3 +151,21 @@ The problem is only related to the graphical display of the execution status of 
 
 If there are no accuracy problems in the task execution time, a solution could be to disable the ntp server at the beginning of the day and re-enable it at 23:59.
 
+
+## Timeout error in the task reading interfaces or in the batch execution with display of the result from the interface
+
+If it is necessary to execute tasks from the interface that take longer than 30 seconds or there are so many tasks that they require a long loading time, it will be necessary to modify the **max_execution_time** parameter within the php.ini relating to the Apache or Nginx server.
+
+For the standard execution of batches by crunz, since they are executed in batch mode it is not necessary to set a max_execution_time
+
+
+## Discrepancy in the time calculated on the interface and that calculated by the batches launched by Crunz.
+
+In case of discrepancies in the time calculated on the interface and that calculated by the batches launched by Crunz, set the correct **timezone** in the php.ini, both that relating to the http server and that of the php executed locally.
+
+
+## Errors in the calculation of statistics in the case of a very large list of tasks
+
+If errors are found in the calculation of statistics in the case of a very large task list, it is possible that the server is unable to handle the request due to reaching the memory limit.
+
+Modify the **memory_limit** parameter within the php.ini file relating to the Apache or Nginx server.
