@@ -238,8 +238,7 @@
         </v-card>
 
         <!-- Actions buttons -->
-        <actions-buttons v-on:read-data="readData()" v-on:export-task-list="exportTaskList()" v-on:edit-modal="opendEditModal()" v-on:new-task-modal="openNewTaskModal()" v-on:upload-modal="openUploadModal()"></actions-buttons>
-
+        <actions-buttons v-on:read-data="readData()" v-on:export-task-list="exportTaskList()" v-on:edit-modal="openEditModal()" v-on:new-task-modal="openNewTaskModal()" v-on:upload-modal="openUploadModal()"></actions-buttons>
     </div>
 </template>
 
