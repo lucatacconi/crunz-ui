@@ -22,7 +22,7 @@ Crunz-ui updated stable release:
 * PHP 8.3 compatibility fix
 * JWT Authentication Middleware update to other library (JimTools/jwt-auth)
 * Acquisition of new Crunz library updates and functions
-* Several improvements, bug fixes and and code cleanup throughout the application
+* Several improvements, bug fixes and code cleanup throughout the application
 * Faq and troubleshooting page updated
 * Updated documentation for installation and configuration
 * Library version update
@@ -39,7 +39,7 @@ Crunz-ui updated stable release:
 * Tools api accessible via basic authentication
 * PHP 8.1 compatibility fix
 * Library version update
-* Bug fixes and and code cleanup
+* Bug fixes and code cleanup
 
 
 ### v.2.7.9 (2023-02-17)
@@ -54,7 +54,7 @@ Crunz-ui updated stable release:
 * Refactoring of the task reading and management engine
 * Statistics engine refactoring
 * Advanced search: it is now possible to concatenate search parameters with the + or select whether to carry out searches with case sensitive or not
-* Several improvements, bug fixes and and code cleanup throughout the application
+* Several improvements, bug fixes and code cleanup throughout the application
 * Happy Italian Carnival Day
 
 **Advanced search tool refactored:**
@@ -79,7 +79,7 @@ Crunz-ui updated stable release:
 * Removed Swift mailer using Simphony mailer instead for [Crunzphp/Crunz](https://github.com/crunzphp/crunz) consistency
 * Improvements in interface ergonomics
 * System icons uniformed to material design icon
-* Several improvements, bug fixes and and code cleanup throughout the application
+* Several improvements, bug fixes and code cleanup throughout the application
 * Happy Italian Liberation Day
 <!-- * Demo environment for testing the application -->
 
