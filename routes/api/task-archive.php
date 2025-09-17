@@ -120,7 +120,7 @@ $app->group('/task-archive', function (RouteCollectorProxy $group) {
                 if(filter_var($_ENV["CHECK_PHP_TASKS_SYNTAX"], FILTER_VALIDATE_BOOLEAN)){
 
                     //Check the syntax of the file only if it was uploaded/modified today or yesterday
-                    if( date('Y-m-d', filemtime($taskFile->getRealPath())) == date('Y-m-d') || date('Y-m-d', filemtime($taskFile->getRealPath())) == date('Y-m-d', strtotime('-1 day')) ){
+                    if( date('Y-m-d', filemtime($archFile->getRealPath())) == date('Y-m-d') || date('Y-m-d', filemtime($archFile->getRealPath())) == date('Y-m-d', strtotime('-1 day')) ){
                         $file_check_result = exec("php -l \"".$archFile->getRealPath()."\"");
                         if(strpos($file_check_result, 'No syntax errors detected in') === false){
                             //Syntax error in file
