@@ -6,7 +6,6 @@ use Slim\Routing\RouteCollectorProxy;
 
 use Ramsey\Uuid\Uuid;
 use Firebase\JWT\JWT;
-use Tuupola\Base62;
 
 $app->group('/auth', function (RouteCollectorProxy $group) {
 
@@ -72,7 +71,7 @@ $app->group('/auth', function (RouteCollectorProxy $group) {
             $now = new DateTime();
             $future = new DateTime("now +$duration");
             $server = $request->getServerParams();
-            $jti = (new Base62)->encode(random_bytes(16));
+            $jti = \Ramsey\Uuid\Uuid::uuid4()->toString();
 
             $payload = [
                 "iat" => $now->getTimeStamp(),

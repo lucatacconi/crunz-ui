@@ -4,8 +4,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Routing\RouteCollectorProxy;
 
-use Ramsey\Uuid\Uuid;
-
 use Crunz\Configuration\Configuration;
 use Crunz\Schedule;
 use Crunz\Filesystem;

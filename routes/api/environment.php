@@ -4,10 +4,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Routing\RouteCollectorProxy;
 
-use Ramsey\Uuid\Uuid;
-use Firebase\JWT\JWT;
-use Tuupola\Base62;
-
 use Symfony\Component\Yaml\Yaml;
 
 $app->group('/environment', function (RouteCollectorProxy $group) {

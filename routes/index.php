@@ -63,7 +63,7 @@ $app->setBasePath($base_path);
 
 
 //Starting Jwt Authenticationim
-$app->add(new Tuupola\Middleware\JwtAuthentication([
+$app->add(new JimTools\JwtAuth\Middleware\JwtAuthentication([
     "secure" => false,
     "secret" => $_ENV["JWT_SECRET"],
 
@@ -79,22 +79,49 @@ $app->add(new Tuupola\Middleware\JwtAuthentication([
     }
 ]));
 
-$app->add(new Tuupola\Middleware\HttpBasicAuthentication([
-    "path" => [ $base_path."/tools" ],
-    "realm" => "Protected",
-    "users" => [
-        $_ENV["TOOLS_LOGIN"] => $_ENV["TOOLS_PASSWORD"]
-    ],
+// Starting HTTP Basic Authentication
+$basicAuthMiddleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($base_path): ResponseInterface {
+    $path = $base_path . "/tools";
+    $uriPath = $request->getUri()->getPath();
 
-    "error" => function ($response, $arguments) {
-        $data = [];
-        $data["status"] = "Authentication error";
-        $data["message"] = $arguments["message"];
+    // Check if the request matches the protected path
+    if (str_starts_with($uriPath, $path)) {
+        $authHeader = $request->getHeaderLine('Authorization');
 
-        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-        return $response->withHeader("Content-Type", "application/json");
+        $authenticated = false;
+        if (str_starts_with($authHeader, 'Basic ')) {
+            $decoded = base64_decode(substr($authHeader, 6));
+            if ($decoded !== false && str_contains($decoded, ':')) {
+                [$user, $password] = explode(':', $decoded, 2);
+
+                // Check credentials from $_ENV
+                // Use hash_equals to prevent timing attacks
+                if (isset($_ENV["TOOLS_LOGIN"], $_ENV["TOOLS_PASSWORD"]) &&
+                    hash_equals($_ENV["TOOLS_LOGIN"], $user) &&
+                    hash_equals($_ENV["TOOLS_PASSWORD"], $password)) {
+                    $authenticated = true;
+                }
+            }
+        }
+
+        if (!$authenticated) {
+            $response = new Response();
+            $data = [
+                "status" => "Authentication error",
+                "message" => "Authentication required"
+            ];
+
+            $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+            return $response
+                ->withHeader("Content-Type", "application/json")
+                ->withHeader("WWW-Authenticate", 'Basic realm="Protected"')
+                ->withStatus(401);
+        }
     }
-]));
+
+    return $handler->handle($request);
+};
+$app->add($basicAuthMiddleware);
 
 
 // Add Custom Error Handler
