@@ -69,15 +69,18 @@ $app->setBasePath($base_path);
 $jwtAuthMiddleware = function (Request $request, RequestHandlerInterface $handler) use ($base_path): Response {
     $uriPath = $request->getUri()->getPath();
 
-    // Define paths to ignore for JWT authentication
-    $ignoredPaths = [
-        $base_path . "/auth/login",
-        $base_path . "/tools"
+    // Routes to ignore (we check if the URI contains these strings)
+    $ignoredRoutes = [
+        '/auth/login',
+        '/tools'
     ];
 
-    // If the current path is among the ignored ones, skip the check
-    foreach ($ignoredPaths as $ignoredPath) {
-        if ($uriPath === $ignoredPath || str_starts_with($uriPath, $ignoredPath . '/')) {
+    foreach ($ignoredRoutes as $route) {
+        // Normalize the path by combining it with the base_path (if present)
+        $fullIgnoredPath = rtrim($base_path, '/') . '/' . ltrim($route, '/');
+
+        // If the current path matches or ends with the ignored route, skip the check
+        if ($uriPath === $fullIgnoredPath || str_ends_with($uriPath, $route) || str_ends_with($uriPath, $route . '/')) {
             return $handler->handle($request);
         }
     }
