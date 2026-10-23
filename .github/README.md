@@ -147,7 +147,7 @@ Manually edit Crunz configurations present in the Crunz.yml file. Inside the fil
 
 Initialize Crunz-iu Docker container. Be careful to select the correct timezone before running the command. (ex. TIMEZONE=Europe/Rome)
 ```
-sudo docker build -t crunz-ui --build-arg TIMEZONE=Europe/Rome:
+sudo docker build -t crunz-ui --build-arg TIMEZONE=Europe/Rome .
 ```
 
 Start Crunz-iu Docker container indicating the port through which to access the web interface (ex. DEST_PORT:ORIG_PORT 80:80 ):
