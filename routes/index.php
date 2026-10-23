@@ -106,10 +106,10 @@ $jwtAuthMiddleware = function (Request $request, RequestHandlerInterface $handle
     try {
         // Validate the token using firebase/php-jwt ^7.0 with the Key object
         $secret = $_ENV["JWT_SECRET"];
-        $decoded = JWT::decode($token, new Key($secret, 'HS256'));
+        $decoded = (array) JWT::decode($token, new Key($secret, 'HS256'));
 
-        // Save the decoded data in the request to use it in the controllers
-        $request = $request->withAttribute('jwt', $decoded);
+        // Save the decoded payload in the "token" attribute of the request
+        $request = $request->withAttribute('token', $decoded);
 
     } catch (\Exception $e) {
         $response = new \Slim\Psr7\Response();
