@@ -3,8 +3,11 @@
 use DI\Container;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Factory\AppFactory;
 use Slim\Routing\RouteCollectorProxy;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 require '../vendor/autoload.php';
 
@@ -62,25 +65,66 @@ $base_path = str_replace('/index.php', '', $_SERVER['SCRIPT_NAME']);
 $app->setBasePath($base_path);
 
 
-//Starting Jwt Authenticationim
-$app->add(new JimTools\JwtAuth\Middleware\JwtAuthentication([
-    "secure" => false,
-    "secret" => $_ENV["JWT_SECRET"],
+//Starting Jwt Authentication middleware
+$jwtAuthMiddleware = function (Request $request, RequestHandlerInterface $handler) use ($base_path): Response {
+    $uriPath = $request->getUri()->getPath();
 
-    "ignore" => [$base_path."/auth/login", $base_path."/tools" ],
+    // Define paths to ignore for JWT authentication
+    $ignoredPaths = [
+        $base_path . "/auth/login",
+        $base_path . "/tools"
+    ];
 
-    "error" => function ($response, $arguments) {
-        $data = [];
-        $data["status"] = "Authentication error";
-        $data["message"] = $arguments["message"];
-
-        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-        return $response->withHeader("Content-Type", "application/json");
+    // If the current path is among the ignored ones, skip the check
+    foreach ($ignoredPaths as $ignoredPath) {
+        if ($uriPath === $ignoredPath || str_starts_with($uriPath, $ignoredPath . '/')) {
+            return $handler->handle($request);
+        }
     }
-]));
+
+    $authHeader = $request->getHeaderLine('Authorization');
+    $token = null;
+
+    // Extract the Bearer token from the Authorization header
+    if (!empty($authHeader) && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $token = $matches[1];
+    }
+
+    if (!$token) {
+        $response = new \Slim\Psr7\Response();
+        $data = [
+            "status" => "Authentication error",
+            "message" => "Token not found"
+        ];
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withHeader("Content-Type", "application/json")->withStatus(401);
+    }
+
+    try {
+        // Validate the token using firebase/php-jwt ^7.0 with the Key object
+        $secret = $_ENV["JWT_SECRET"];
+        $decoded = JWT::decode($token, new Key($secret, 'HS256'));
+
+        // Save the decoded data in the request to use it in the controllers
+        $request = $request->withAttribute('jwt', $decoded);
+
+    } catch (\Exception $e) {
+        $response = new \Slim\Psr7\Response();
+        $data = [
+            "status" => "Authentication error",
+            "message" => $e->getMessage()
+        ];
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        return $response->withHeader("Content-Type", "application/json")->withStatus(401);
+    }
+
+    return $handler->handle($request);
+};
+// Aggiungi il middleware alla tua applicazione Slim
+$app->add($jwtAuthMiddleware);
 
 // Starting HTTP Basic Authentication
-$basicAuthMiddleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($base_path): ResponseInterface {
+$basicAuthMiddleware = function (Request $request, RequestHandlerInterface $handler) use ($base_path): Response {
     $path = $base_path . "/tools";
     $uriPath = $request->getUri()->getPath();
 
