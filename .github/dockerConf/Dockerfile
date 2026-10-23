@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM php:8.2-apache
 MAINTAINER monolite.net
 
 ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -11,12 +11,12 @@ RUN apt-get update
 #
 # ATTENTION, replace the indicated time zone with the correct one
 #
-RUN apt-get install -y ntp
+RUN apt-get install -y ntpsec
 ARG TIMEZONE=Europe/Rome
 RUN echo "TIMEZONE selected: $TIMEZONE"
 RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime && echo $TIMEZONE > /etc/timezone
 
-RUN service ntp restart
+RUN service ntpsec restart
 
 
 #Apache module, php extensions and compsoer installation
@@ -40,7 +40,10 @@ RUN sed -i -r "s|;date.timezone =|date.timezone = ${TIMEZONE}|g" /usr/local/etc/
 
 RUN cd /var/www/html/
 ARG VERSION=""
-RUN composer create-project lucatacconi/crunz-ui$VERSION
+# TODO: Use the original line when the fix-dependencies branch is no longer needed and new version is available
+# ORIGINAL LINE
+# RUN composer create-project lucatacconi/crunz-ui$VERSION
+RUN composer create-project lucatacconi/crunz-ui:dev-fix-dependencies
 
 #Crunz configuration installation
 #
