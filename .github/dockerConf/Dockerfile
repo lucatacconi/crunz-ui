@@ -1,5 +1,5 @@
 FROM php:8.2-apache
-MAINTAINER monolite.net
+LABEL maintainer="monolite.net"
 
 ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
@@ -88,7 +88,7 @@ RUN ln -s /etc/apache2/conf-available/crunz-ui.conf /etc/apache2/conf-enabled
 
 
 # Apache and cron start
-CMD service apache2 restart && cron -f
+CMD ["sh", "-c", "service apache2 restart && cron -f"]
 
 
 # Exposure of the port selected for the web service
