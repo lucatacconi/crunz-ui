@@ -141,7 +141,9 @@ First of all, download both files to Github server.
 
 - **[Dockerfile](dockerConf/Dockerfile)** - Docker container configuration file
 - **[Crunz.yml](dockerConf/crunz.yml)** - Crunz standard configuration file
+- **[.env](dockerConf/.env)** - Crunz-ui environment variables
 
+Manually edit crunz-ui evinironment variables present in the .env file. Inside the file, there are suggestions about the individual configuration parameters.
 Manually edit Crunz configurations present in the Crunz.yml file. Inside the file, there are suggestions about the individual configuration parameters. Please refer to [Crunzphp/Crunz](https://github.com/crunzphp/crunz) for more details on the configuration.
 
 
